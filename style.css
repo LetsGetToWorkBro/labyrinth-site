@@ -133,7 +133,10 @@ body {
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  max-width: var(--container);
+  /* Wider than the reading column on purpose: the nav has 12 links, a phone
+     number and a CTA to fit, and nothing about it needs to line up with body
+     text. min() so it still shrinks on a narrow window. */
+  max-width: min(1400px, 100%);
   margin: 0 auto;
   padding: 0 var(--space-6);
 }
@@ -178,7 +181,12 @@ body {
 .nav__links {
   display: flex;
   align-items: center;
-  gap: clamp(12px, 1.5vw, 32px);
+  /* Was clamp(12px, 1.5vw, 32px). The gap grew with the VIEWPORT while
+     .nav__inner stays capped at --container, so every extra inch of screen
+     pushed the links further past the box: 82px over at 1280, 176px at 1728.
+     A wider monitor made it worse, which is why it looked like the nav bar
+     extended past the page on a MacBook. */
+  gap: clamp(10px, 0.9vw, 18px);
 }
 
 .nav__link {
@@ -3168,7 +3176,12 @@ body {
 
 
 /* Nav collapses to hamburger at 1024px to prevent link overlap */
-@media (max-width: 1024px) {
+/* Nav only. The desktop nav carries 12 links, a phone number and a CTA;
+   measured across 1181-1920px it needs about 1260px to fit, which is well
+   before the tablet layout breakpoint. Kept as its own query so raising it
+   does not drag the grid, pricing and coach layouts up with it — which is
+   exactly what happened when it was changed in place. */
+@media (max-width: 1260px) {
   :root {
     --nav-height: 64px;
   }
