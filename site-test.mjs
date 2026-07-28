@@ -37,7 +37,7 @@ for (const path of pages) {
   }
 }
 check('L1 no broken internal links', broken.length === 0, '\n    ' + broken.slice(0,8).join('\n    '))
-check('L1 all 14 pages served 200', pages.length === 14, 'pages: ' + pages.length)
+check('L1 all 20 pages served 200', pages.length === 20, 'pages: ' + pages.length)
 
 // ── L2: no .html blog links survive ──
 await page.goto('http://localhost:4620/blog/', { waitUntil:'domcontentloaded' })
@@ -50,8 +50,10 @@ const canon = await page.$eval('link[rel=canonical]', el => el.href)
 check('L3 canonical is extensionless', !canon.endsWith('.html'), canon)
 
 // ── L4: the CTA is present and points at the booking form ──
-const cta = await page.$('.blog-cta__btn')
+const cta = await page.$('.article-cta__btn')
 check('L4 blog post has a booking CTA', !!cta)
+const ctas = await page.$$('.article-cta__btn, .blog-cta__btn')
+check('L4 exactly one in-article CTA', ctas.length === 1, 'found ' + ctas.length)
 check('L4 CTA points at #contact', (await cta.getAttribute('href')).includes('#contact'))
 
 // ── L5: the contact form now POSTs to the CRM and honours the response ──

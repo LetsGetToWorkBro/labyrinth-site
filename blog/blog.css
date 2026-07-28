@@ -737,31 +737,3 @@ img { max-width: 100%; height: auto; display: block; }
   }
 }
 
-
-/* ── Booking call to action on blog posts ────────────────────────────────────
-   Every post is a search landing page, and a reader who reaches the end should
-   not have to go hunting for the way in. */
-.blog-cta {
-  margin: 56px 0 8px;
-  padding: 32px;
-  border: 1px solid rgba(200, 162, 76, .35);
-  border-radius: 16px;
-  background: linear-gradient(180deg, rgba(200, 162, 76, .10), rgba(200, 162, 76, .03));
-  text-align: center;
-}
-.blog-cta__title { margin: 0 0 10px; font-size: 1.6rem; line-height: 1.2; }
-.blog-cta__body { margin: 0 auto 22px; max-width: 46ch; line-height: 1.65; opacity: .85; }
-.blog-cta__actions {
-  display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; align-items: center;
-}
-.blog-cta__btn {
-  display: inline-block; padding: 14px 28px; border-radius: 10px;
-  background: #C8A24C; color: #0d0b09; font-weight: 700; text-decoration: none;
-}
-.blog-cta__btn:hover { filter: brightness(1.07); }
-.blog-cta__link { color: inherit; opacity: .8; text-decoration: underline; }
-.blog-cta__link:hover { opacity: 1; }
-@media (max-width: 480px) {
-  .blog-cta { padding: 24px 18px; }
-  .blog-cta__btn { width: 100%; }
-}

@@ -3,7 +3,7 @@
   <!-- Main Site -->
   <url>
     <loc>https://labyrinth.vision/</loc>
-    <lastmod>2026-03-22</lastmod>
+    <lastmod>2026-07-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -11,7 +11,7 @@
   <!-- Blog Index -->
   <url>
     <loc>https://labyrinth.vision/blog/</loc>
-    <lastmod>2026-03-22</lastmod>
+    <lastmod>2026-07-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -19,31 +19,31 @@
   <!-- Blog Articles — Round 1 -->
   <url>
     <loc>https://labyrinth.vision/blog/benefits-of-bjj-for-kids</loc>
-    <lastmod>2026-03-22</lastmod>
+    <lastmod>2026-07-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://labyrinth.vision/blog/what-age-should-kids-start-jiu-jitsu</loc>
-    <lastmod>2026-03-22</lastmod>
+    <lastmod>2026-07-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://labyrinth.vision/blog/bjj-vs-karate-for-kids</loc>
-    <lastmod>2026-03-22</lastmod>
+    <lastmod>2026-07-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://labyrinth.vision/blog/what-to-expect-first-bjj-class</loc>
-    <lastmod>2026-03-22</lastmod>
+    <lastmod>2026-07-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://labyrinth.vision/blog/how-bjj-builds-confidence-discipline-children</loc>
-    <lastmod>2026-03-22</lastmod>
+    <lastmod>2026-07-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -51,25 +51,25 @@
   <!-- Blog Articles — Round 2 -->
   <url>
     <loc>https://labyrinth.vision/blog/best-bjj-gym-fulshear-tx</loc>
-    <lastmod>2026-03-22</lastmod>
+    <lastmod>2026-07-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://labyrinth.vision/blog/kids-martial-arts-katy-tx</loc>
-    <lastmod>2026-03-22</lastmod>
+    <lastmod>2026-07-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://labyrinth.vision/blog/bjj-for-women</loc>
-    <lastmod>2026-03-22</lastmod>
+    <lastmod>2026-07-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://labyrinth.vision/blog/first-bjj-tournament-guide</loc>
-    <lastmod>2026-03-22</lastmod>
+    <lastmod>2026-07-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -77,19 +77,57 @@
   <!-- Blog Articles — Round 3 -->
   <url>
     <loc>https://labyrinth.vision/blog/how-to-choose-bjj-gym</loc>
-    <lastmod>2026-03-22</lastmod>
+    <lastmod>2026-07-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://labyrinth.vision/blog/bjj-belt-system-explained</loc>
-    <lastmod>2026-03-22</lastmod>
+    <lastmod>2026-07-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://labyrinth.vision/blog/is-bjj-good-for-adhd-kids</loc>
-    <lastmod>2026-03-22</lastmod>
+    <lastmod>2026-07-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <!-- Blog Articles — Round 4 (local & audience-specific) -->
+  <url>
+    <loc>https://labyrinth.vision/blog/new-to-fulshear-kids-activities</loc>
+    <lastmod>2026-07-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://labyrinth.vision/blog/jiu-jitsu-near-fulshear-neighborhoods</loc>
+    <lastmod>2026-07-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://labyrinth.vision/blog/starting-bjj-in-your-30s-40s-50s</loc>
+    <lastmod>2026-07-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://labyrinth.vision/blog/how-much-does-bjj-cost-fulshear</loc>
+    <lastmod>2026-07-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://labyrinth.vision/blog/bjj-vs-wrestling-for-kids</loc>
+    <lastmod>2026-07-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://labyrinth.vision/blog/homeschool-after-school-martial-arts-fulshear</loc>
+    <lastmod>2026-07-28</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -97,7 +135,7 @@
   <!-- Sub-sites -->
   <url>
     <loc>https://calendar.labyrinth.vision/</loc>
-    <lastmod>2026-03-22</lastmod>
+    <lastmod>2026-07-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
