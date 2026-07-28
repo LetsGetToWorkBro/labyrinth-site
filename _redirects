@@ -1,0 +1,40 @@
+# Cloudflare Pages redirects.
+#
+# These are URLs from the academy's previous website. They are still in Google's
+# index, still on old flyers, and still being crawled — Search Console reports
+# eight of them returning 404. A 404 throws away whatever standing the URL had;
+# a 301 hands it to the page that replaced it.
+#
+# The current site is one page with anchors, so most of these land on a section
+# of the homepage rather than a page of their own. That is the honest mapping:
+# the content still exists, it just lives further down.
+
+/plans-and-pricing              /#pricing           301
+/schedule                       /#schedule          301
+/contact-us                     /#contact           301
+/summer-camp                    /#programs          301
+/2nd-annniversary-celebration   /                   301
+/sauna-cold-plunge-dashboard    /                   301
+
+# Wix leftovers. `fera.admin.js` was a review-app asset on the old platform and
+# `/1/1` is a stray gallery path; neither has an equivalent, so both go home
+# rather than 404.
+/assets/public/*                /                   301
+/1/1                            /                   301
+
+# Common guesses at pages this site does not have, so a mistyped or misremembered
+# URL lands somewhere useful instead of on the 404 page.
+/pricing                        /#pricing           301
+/classes                        /#programs          301
+/programs                       /#programs          301
+/contact                        /#contact           301
+/coaches                        /#coaches           301
+/faq                            /#faq               301
+/free-trial                     /#contact           301
+/trial                          /#contact           301
+
+# Cloudflare Pages already serves /blog/<slug> for /blog/<slug>.html via a 308.
+# Those .html URLs are in Google's index from the old sitemap, so they are named
+# explicitly as 301s — a permanent redirect is what tells Google to move the
+# indexing to the new URL, which a 308 does not do as clearly.
+/blog/:slug.html                /blog/:slug         301

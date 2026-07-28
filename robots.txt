@@ -1,0 +1,12 @@
+# Labyrinth BJJ — robots.txt
+# https://labyrinth.vision
+
+User-agent: *
+Allow: /
+
+# Block admin/API paths
+Disallow: /admin/
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://labyrinth.vision/sitemap.xml

@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — Labyrinth BJJ</title>
+  <meta name="description" content="Privacy Policy for Labyrinth BJJ. Learn how we collect, use, and protect your personal information." />
+  <meta name="robots" content="noindex, follow" />
+  <link rel="canonical" href="https://labyrinth.vision/privacy-policy" />
+
+  <!-- Fonts -->
+  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=general-sans@300,400,500,600,700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ========================================
+       LABYRINTH BJJ — Design Tokens
+    ======================================== */
+    :root {
+      --bg: #0A0A0A;
+      --surface: #141414;
+      --surface-elevated: #1A1A1A;
+      --border: rgba(255,255,255,0.08);
+      --border-strong: rgba(255,255,255,0.14);
+      --text: #F0F0F0;
+      --text-muted: #8A8A8A;
+      --text-faint: #555555;
+      --gold: #C8A24C;
+      --gold-hover: #D4B465;
+      --red: #E74C3C;
+      --font-display: "Clash Display", sans-serif;
+      --font-body: "General Sans", sans-serif;
+      --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px;
+      --space-5: 20px; --space-6: 24px; --space-8: 32px; --space-10: 40px;
+      --space-12: 48px; --space-16: 64px; --space-20: 80px; --space-24: 96px;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --transition-fast: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+      --container: 1200px; --container-narrow: 900px; --nav-height: 72px;
+      --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; scroll-padding-top: 88px; }
+    body { font-family: var(--font-body); font-size: 16px; color: var(--text); background: var(--bg); line-height: 1.7; min-height: 100dvh; }
+    a { color: var(--gold); text-decoration: none; transition: color var(--transition-fast); }
+    a:hover { color: var(--gold-hover); text-decoration: underline; }
+    img, picture, svg { display: block; max-width: 100%; }
+    button { cursor: pointer; background: none; border: none; font: inherit; color: inherit; }
+
+    /* ===== NAV ===== */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: var(--nav-height); display: flex; align-items: center;
+      transition: background 300ms var(--ease-out), box-shadow 300ms var(--ease-out);
+    }
+    .nav--scrolled {
+      background: rgba(10,10,10,0.92);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      box-shadow: 0 1px 0 var(--border);
+    }
+    .nav__inner {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; max-width: var(--container); margin: 0 auto; padding: 0 var(--space-6);
+    }
+    .nav__logo { display: flex; align-items: center; gap: var(--space-3); flex-shrink: 0; text-decoration: none; }
+    .nav__logo svg { width: 36px; height: 36px; }
+    .nav__logo-text { font-family: var(--font-display); font-weight: 700; font-size: 20px; letter-spacing: 0.08em; color: var(--text); }
+    .nav__links { display: flex; align-items: center; gap: clamp(12px,1.5vw,32px); }
+    .nav__link {
+      font-size: 14px; font-weight: 500; color: var(--text-muted);
+      transition: color var(--transition-fast); position: relative; text-decoration: none;
+    }
+    .nav__link:hover { color: var(--text); text-decoration: none; }
+    .nav__link::after {
+      content: ""; position: absolute; bottom: -4px; left: 0; width: 0; height: 2px;
+      background: var(--gold); transition: width var(--transition-fast);
+    }
+    .nav__link:hover::after { width: 100%; box-shadow: 0 0 8px rgba(200,162,76,0.5); }
+    .nav__divider { width: 1px; height: 16px; background: var(--border); flex-shrink: 0; }
+    .nav__cta {
+      font-size: 14px; font-weight: 600; padding: 10px 22px; background: var(--gold);
+      color: #0A0A0A; border-radius: var(--radius-sm); text-decoration: none;
+      transition: background var(--transition-fast), transform var(--transition-fast);
+    }
+    .nav__cta:hover { background: var(--gold-hover); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(200,162,76,0.3); text-decoration: none; color: #0A0A0A; }
+    .nav__hamburger { display: none; flex-direction: column; gap: 5px; padding: 8px; cursor: pointer; }
+    .nav__hamburger span { display: block; width: 24px; height: 2px; background: var(--text); transition: transform 300ms var(--ease-out), opacity 200ms; }
+    .nav__hamburger.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav__hamburger.active span:nth-child(2) { opacity: 0; }
+    .nav__hamburger.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .nav__mobile {
+      display: none; position: fixed; top: var(--nav-height); left: 0; right: 0; bottom: 0;
+      background: rgba(10,10,10,0.97); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      z-index: 99; padding: var(--space-10) var(--space-6) var(--space-16);
+      flex-direction: column; gap: var(--space-6); overflow-y: auto;
+    }
+    .nav__mobile.open { display: flex; }
+    .nav__mobile a {
+      font-family: var(--font-display); font-size: 28px; font-weight: 600; color: var(--text);
+      padding: var(--space-3) 0; border-bottom: 1px solid var(--border); text-decoration: none;
+    }
+    .nav__mobile .nav__cta { display: inline-block; text-align: center; margin-top: var(--space-4); font-size: 16px; padding: 14px 28px; }
+
+    /* ===== PAGE HERO ===== */
+    .page-hero {
+      padding-top: calc(var(--nav-height) + var(--space-16));
+      padding-bottom: var(--space-12);
+      padding-inline: var(--space-6);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .page-hero::before {
+      content: "";
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 10% 0%, rgba(200,162,76,0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .page-hero__inner { max-width: var(--container-narrow); margin: 0 auto; position: relative; z-index: 1; }
+    .page-hero__label {
+      font-size: 12px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: var(--space-4);
+    }
+    .page-hero__title {
+      font-family: var(--font-display); font-weight: 700; font-size: clamp(32px,4vw,52px);
+      line-height: 1.1; color: var(--text); margin-bottom: var(--space-4);
+    }
+    .page-hero__meta { font-size: 14px; color: var(--text-faint); }
+
+    /* ===== POLICY LAYOUT ===== */
+    .policy-wrapper {
+      max-width: var(--container-narrow); margin: 0 auto;
+      padding: var(--space-16) var(--space-6) var(--space-24);
+      display: grid; grid-template-columns: 220px 1fr; gap: var(--space-12); align-items: start;
+    }
+
+    /* Sticky TOC */
+    .policy-toc {
+      position: sticky; top: calc(var(--nav-height) + var(--space-6));
+      padding: var(--space-5); background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+    }
+    .policy-toc__title {
+      font-family: var(--font-display); font-size: 11px; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted);
+      margin-bottom: var(--space-4);
+    }
+    .policy-toc__list { list-style: none; display: flex; flex-direction: column; gap: var(--space-2); }
+    .policy-toc__list a {
+      font-size: 13px; color: var(--text-muted); text-decoration: none;
+      transition: color var(--transition-fast); line-height: 1.4; display: block; padding: 2px 0;
+    }
+    .policy-toc__list a:hover { color: var(--gold); text-decoration: none; }
+    .policy-toc__list a.active { color: var(--gold); }
+
+    /* Policy content */
+    .policy-content { min-width: 0; }
+    .policy-section { margin-bottom: var(--space-12); scroll-margin-top: calc(var(--nav-height) + 24px); }
+    .policy-section:last-child { margin-bottom: 0; }
+    .policy-section h2 {
+      font-family: var(--font-display); font-weight: 700; font-size: clamp(20px,2.5vw,28px);
+      color: var(--text); margin-bottom: var(--space-5); line-height: 1.2;
+      padding-bottom: var(--space-3); border-bottom: 1px solid var(--border);
+    }
+    .policy-section h3 {
+      font-family: var(--font-display); font-weight: 600; font-size: 17px;
+      color: var(--text); margin-top: var(--space-6); margin-bottom: var(--space-3);
+    }
+    .policy-section p { font-size: 15px; color: var(--text-muted); line-height: 1.75; margin-bottom: var(--space-4); max-width: 70ch; }
+    .policy-section p:last-child { margin-bottom: 0; }
+    .policy-section ul, .policy-section ol {
+      margin: var(--space-3) 0 var(--space-4) var(--space-5);
+      display: flex; flex-direction: column; gap: var(--space-2);
+    }
+    .policy-section li { font-size: 15px; color: var(--text-muted); line-height: 1.7; max-width: 68ch; }
+    .policy-section strong { color: var(--text); font-weight: 600; }
+    .policy-section a { color: var(--gold); }
+    .policy-section a:hover { color: var(--gold-hover); }
+
+    /* Highlight box */
+    .policy-highlight {
+      background: var(--surface); border: 1px solid var(--border-strong);
+      border-radius: var(--radius-md); padding: var(--space-5) var(--space-6);
+      margin: var(--space-5) 0;
+    }
+    .policy-highlight p { margin-bottom: 0; }
+    .policy-highlight--gold {
+      border-color: rgba(200,162,76,0.2); background: rgba(200,162,76,0.04);
+    }
+
+    /* Contact card */
+    .policy-contact-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: var(--space-6);
+      margin-top: var(--space-6);
+    }
+    .policy-contact-card__title {
+      font-family: var(--font-display); font-size: 16px; font-weight: 600;
+      color: var(--text); margin-bottom: var(--space-3);
+    }
+    .policy-contact-card p { margin-bottom: var(--space-2); font-size: 14px; }
+
+    /* ===== FOOTER ===== */
+    .footer {
+      background: var(--surface); border-top: 1px solid var(--border);
+      padding: var(--space-16) 0 var(--space-8);
+    }
+    .footer__inner {
+      max-width: var(--container); margin: 0 auto; padding: 0 var(--space-6);
+    }
+    .footer__grid {
+      display: grid; grid-template-columns: 1.5fr repeat(3,1fr); gap: var(--space-10);
+      margin-bottom: var(--space-12); padding-bottom: var(--space-12);
+      border-bottom: 1px solid var(--border);
+    }
+    .footer__brand-name {
+      font-family: var(--font-display); font-weight: 700; font-size: 20px;
+      letter-spacing: 0.08em; color: var(--text); margin-bottom: var(--space-3);
+      display: flex; align-items: center; gap: var(--space-2);
+    }
+    .footer__brand-name svg { width: 28px; height: 28px; }
+    .footer__brand-desc { font-size: 14px; color: var(--text-muted); line-height: 1.65; max-width: 280px; margin-bottom: var(--space-5); }
+    .footer__col-title { font-family: var(--font-display); font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint); margin-bottom: var(--space-4); }
+    .footer__links { list-style: none; display: flex; flex-direction: column; gap: var(--space-3); }
+    .footer__links li a { font-size: 14px; color: var(--text-muted); text-decoration: none; transition: color var(--transition-fast); }
+    .footer__links li a:hover { color: var(--text); text-decoration: none; }
+    .footer__bottom { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-4); }
+    .footer__copy { font-size: 13px; color: var(--text-faint); }
+    .footer__legal-links { display: flex; gap: var(--space-5); }
+    .footer__legal-links a { font-size: 13px; color: var(--text-faint); text-decoration: none; transition: color var(--transition-fast); }
+    .footer__legal-links a:hover { color: var(--text-muted); text-decoration: none; }
+    .footer__legal-links a.active { color: var(--gold); }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 900px) {
+      .policy-wrapper { grid-template-columns: 1fr; }
+      .policy-toc { position: static; }
+      .footer__grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 640px) {
+      .nav__links, .nav__divider, .nav__cta { display: none; }
+      .nav__hamburger { display: flex; }
+      .footer__grid { grid-template-columns: 1fr; }
+      .footer__bottom { flex-direction: column; align-items: flex-start; }
+    }
+
+    /* ===== SCROLL REVEAL ===== */
+    .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out); }
+    .reveal.visible { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none; } }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav" id="nav" aria-label="Main navigation">
+    <div class="nav__inner">
+      <a href="https://labyrinth.vision/" class="nav__logo" aria-label="Labyrinth BJJ Home">
+        <svg viewBox="0 0 36 36" fill="none" aria-hidden="true">
+          <rect width="36" height="36" rx="8" fill="#C8A24C" fill-opacity="0.12"/>
+          <path d="M18 6 L30 13 L30 23 L18 30 L6 23 L6 13 Z" stroke="#C8A24C" stroke-width="1.5" fill="none"/>
+          <path d="M18 6 L18 30 M6 13 L30 23 M30 13 L6 23" stroke="#C8A24C" stroke-width="1" opacity="0.4"/>
+        </svg>
+        <span class="nav__logo-text">LABYRINTH BJJ</span>
+      </a>
+      <div class="nav__links">
+        <a href="https://labyrinth.vision/#programs" class="nav__link">Programs</a>
+        <a href="https://labyrinth.vision/#schedule" class="nav__link">Schedule</a>
+        <a href="https://labyrinth.vision/#instructors" class="nav__link">Instructors</a>
+        <a href="https://labyrinth.vision/blog" class="nav__link">Blog</a>
+        <div class="nav__divider" aria-hidden="true"></div>
+        <a href="https://labyrinth.vision/#book" class="nav__cta">Try a Free Class</a>
+      </div>
+      <button class="nav__hamburger" id="hamburger" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- MOBILE NAV -->
+  <div class="nav__mobile" id="mobileNav" role="dialog" aria-label="Mobile navigation">
+    <a href="https://labyrinth.vision/#programs">Programs</a>
+    <a href="https://labyrinth.vision/#schedule">Schedule</a>
+    <a href="https://labyrinth.vision/#instructors">Instructors</a>
+    <a href="https://labyrinth.vision/blog">Blog</a>
+    <a href="https://labyrinth.vision/#book" class="nav__cta">Try a Free Class</a>
+  </div>
+
+  <!-- PAGE HERO -->
+  <header class="page-hero">
+    <div class="page-hero__inner">
+      <p class="page-hero__label">Legal</p>
+      <h1 class="page-hero__title">Privacy Policy</h1>
+      <p class="page-hero__meta">Effective Date: April 9, 2026 &nbsp;·&nbsp; Last Updated: April 9, 2026</p>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main>
+    <div class="policy-wrapper">
+
+      <!-- STICKY TOC -->
+      <aside class="policy-toc" aria-label="Table of contents">
+        <p class="policy-toc__title">On this page</p>
+        <ul class="policy-toc__list" role="list">
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#information-we-collect">Information We Collect</a></li>
+          <li><a href="#how-we-use">How We Use It</a></li>
+          <li><a href="#sharing">Sharing &amp; Disclosure</a></li>
+          <li><a href="#cookies">Cookies &amp; Tracking</a></li>
+          <li><a href="#data-retention">Data Retention</a></li>
+          <li><a href="#your-rights">Your Rights</a></li>
+          <li><a href="#children">Children&apos;s Privacy (COPPA)</a></li>
+          <li><a href="#security">Security</a></li>
+          <li><a href="#third-party">Third-Party Services</a></li>
+          <li><a href="#texas">Texas Residents</a></li>
+          <li><a href="#app-stores">App Store Compliance</a></li>
+          <li><a href="#changes">Policy Changes</a></li>
+          <li><a href="#contact">Contact Us</a></li>
+        </ul>
+      </aside>
+
+      <!-- POLICY BODY -->
+      <article class="policy-content">
+
+        <section class="policy-section reveal" id="overview">
+          <h2>Overview</h2>
+          <div class="policy-highlight policy-highlight--gold">
+            <p>Labyrinth BJJ ("we," "our," or "us") operates the website at <strong>labyrinthbjj.com</strong> and any associated mobile applications. We are committed to protecting your personal information and your right to privacy. This policy explains what data we collect, why we collect it, and the choices you have.</p>
+          </div>
+          <p>By using our website or apps, you agree to the collection and use of information in accordance with this policy. If you do not agree, please discontinue use of our services.</p>
+          <p>Our business address is: <strong>6615 West Cross Creek Bend Lane, Suite #400, Fulshear, TX 77441</strong>. You can reach us at <a href="mailto:info@labyrinthbjj.com">info@labyrinthbjj.com</a> or <a href="tel:+12813937983">(281) 393-7983</a>.</p>
+        </section>
+
+        <section class="policy-section reveal" id="information-we-collect">
+          <h2>Information We Collect</h2>
+
+          <h3>Information You Provide Directly</h3>
+          <p>We collect information you voluntarily give us when you:</p>
+          <ul>
+            <li>Fill out a trial class booking form (name, email, phone number, child's age/name)</li>
+            <li>Sign up for a membership or submit a contact inquiry</li>
+            <li>Purchase products or services (billing name, address, payment details — processed securely via Stripe)</li>
+            <li>Subscribe to our email list or SMS updates</li>
+            <li>Register for a competition or event</li>
+          </ul>
+
+          <h3>Information Collected Automatically</h3>
+          <p>When you visit our website or use our app, we may automatically collect:</p>
+          <ul>
+            <li><strong>Device &amp; browser data:</strong> IP address, browser type, operating system, device identifiers</li>
+            <li><strong>Usage data:</strong> Pages visited, time on page, referring URL, click paths</li>
+            <li><strong>Location data:</strong> General geographic location derived from IP address (city/state level only — we do not collect precise GPS location without explicit permission)</li>
+            <li><strong>Cookies and similar tracking technologies</strong> (see the Cookies section below)</li>
+          </ul>
+
+          <h3>Information from Third Parties</h3>
+          <p>We may receive information about you from third-party services such as Google Analytics, Meta (Facebook/Instagram) advertising pixels, and our gym management software (GymDesk) when you interact with those platforms in connection with our services.</p>
+        </section>
+
+        <section class="policy-section reveal" id="how-we-use">
+          <h2>How We Use Your Information</h2>
+          <p>We use the information we collect for the following purposes:</p>
+          <ul>
+            <li><strong>To provide and manage services:</strong> Confirm trial class bookings, manage memberships, process payments, and communicate class schedules</li>
+            <li><strong>To communicate with you:</strong> Send booking confirmations, schedule reminders, belt promotion updates, and administrative notices</li>
+            <li><strong>To improve our website and services:</strong> Analyze usage patterns, fix bugs, and optimize the user experience</li>
+            <li><strong>For marketing (with consent):</strong> Send promotional emails or SMS messages about programs, events, and offers — you can opt out at any time</li>
+            <li><strong>To comply with legal obligations:</strong> Respond to lawful requests, enforce our terms, and protect the rights of our members and staff</li>
+            <li><strong>For safety and liability purposes:</strong> Maintain participant waivers and emergency contact information for minors enrolled in youth programs</li>
+          </ul>
+          <p>We do <strong>not</strong> sell your personal information to third parties. We do <strong>not</strong> use your data for automated profiling or decision-making that would have legal or significant effects on you.</p>
+        </section>
+
+        <section class="policy-section reveal" id="sharing">
+          <h2>Sharing &amp; Disclosure</h2>
+          <p>We share your personal information only in the following circumstances:</p>
+
+          <h3>Service Providers</h3>
+          <p>We work with trusted third-party vendors who help us operate our business. These providers only receive the minimum data necessary to perform their specific function and are contractually prohibited from using it for other purposes:</p>
+          <ul>
+            <li><strong>Stripe</strong> — Payment processing. Stripe's privacy policy governs how payment card data is handled. We never store raw card numbers on our servers.</li>
+            <li><strong>GymDesk</strong> — Gym management software (class scheduling, membership records, waivers).</li>
+            <li><strong>Google Analytics / Google Tag Manager</strong> — Website analytics and performance measurement.</li>
+            <li><strong>Meta Pixel</strong> — Advertising effectiveness measurement (Facebook/Instagram ads).</li>
+            <li><strong>Cloudflare</strong> — DNS, CDN, and security. Traffic may pass through Cloudflare's network.</li>
+            <li><strong>Email/SMS providers</strong> — For sending booking confirmations and marketing communications.</li>
+          </ul>
+
+          <h3>Legal Requirements</h3>
+          <p>We may disclose your information if required to do so by law or in response to valid requests by public authorities (e.g., a court or government agency), or if we believe disclosure is necessary to protect the safety of any person, prevent fraud, or protect our legal rights.</p>
+
+          <h3>Business Transfers</h3>
+          <p>If Labyrinth BJJ is involved in a merger, acquisition, or sale of assets, your information may be transferred as part of that transaction. You will be notified via email and/or a prominent notice on our site of any change in ownership or uses of your personal information.</p>
+        </section>
+
+        <section class="policy-section reveal" id="cookies">
+          <h2>Cookies &amp; Tracking Technologies</h2>
+          <p>We use cookies and similar technologies (web beacons, pixels, local storage) to operate and improve our website. Below is a summary of the types we use:</p>
+          <ul>
+            <li><strong>Essential cookies:</strong> Required for the site to function (e.g., session state, security tokens). Cannot be disabled.</li>
+            <li><strong>Analytics cookies:</strong> Help us understand how visitors use the site (Google Analytics). These collect anonymous aggregate data.</li>
+            <li><strong>Marketing/advertising cookies:</strong> Used by Meta Pixel and Google Ads to measure ad performance and enable retargeting. These may track you across third-party sites.</li>
+            <li><strong>Preference cookies:</strong> Remember settings like language or location to personalize your experience.</li>
+          </ul>
+          <p>You can manage or disable non-essential cookies through your browser settings. Note that disabling certain cookies may affect site functionality. You may also opt out of Google Analytics at <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer">tools.google.com/dlpage/gaoptout</a> and Meta ad tracking via your <a href="https://www.facebook.com/settings?tab=ads" target="_blank" rel="noopener noreferrer">Facebook ad preferences</a>.</p>
+          <p>We do not currently respond to browser "Do Not Track" signals as there is no industry-wide standard for doing so.</p>
+        </section>
+
+        <section class="policy-section reveal" id="data-retention">
+          <h2>Data Retention</h2>
+          <p>We retain your personal information for as long as necessary to provide you services, comply with our legal obligations, resolve disputes, and enforce our agreements. Specific retention periods include:</p>
+          <ul>
+            <li><strong>Active member records:</strong> Retained for the duration of your membership plus 3 years after cancellation.</li>
+            <li><strong>Trial class inquiries:</strong> Retained for 12 months if you do not enroll.</li>
+            <li><strong>Payment and billing records:</strong> Retained for 7 years as required by U.S. tax law.</li>
+            <li><strong>Minor participant waivers:</strong> Retained until the minor reaches age 18 plus an additional 3 years, in compliance with Texas statute of limitations rules.</li>
+            <li><strong>Marketing contact lists:</strong> Retained until you unsubscribe or request deletion.</li>
+            <li><strong>Analytics data:</strong> Anonymized and aggregated; retained indefinitely in aggregate form.</li>
+          </ul>
+          <p>When data is no longer needed, we securely delete or anonymize it.</p>
+        </section>
+
+        <section class="policy-section reveal" id="your-rights">
+          <h2>Your Rights</h2>
+          <p>Depending on your location and applicable law, you may have the following rights regarding your personal information:</p>
+          <ul>
+            <li><strong>Right to access:</strong> Request a copy of the personal information we hold about you.</li>
+            <li><strong>Right to correction:</strong> Ask us to correct inaccurate or incomplete information.</li>
+            <li><strong>Right to deletion:</strong> Request that we delete your personal data, subject to legal retention requirements.</li>
+            <li><strong>Right to opt out of marketing:</strong> Unsubscribe from emails at any time using the "unsubscribe" link in any email, or reply STOP to any SMS. You can also contact us directly.</li>
+            <li><strong>Right to data portability:</strong> Request your data in a structured, commonly used format.</li>
+            <li><strong>Right to lodge a complaint:</strong> If you are in the EU/EEA, you may file a complaint with your local supervisory authority. U.S. residents may contact the FTC at <a href="https://www.ftc.gov" target="_blank" rel="noopener noreferrer">ftc.gov</a>.</li>
+          </ul>
+          <p>To exercise any of these rights, please email us at <a href="mailto:info@labyrinthbjj.com">info@labyrinthbjj.com</a>. We will respond within 30 days.</p>
+        </section>
+
+        <section class="policy-section reveal" id="children">
+          <h2>Children's Privacy (COPPA Compliance)</h2>
+          <div class="policy-highlight policy-highlight--gold">
+            <p>Because Labyrinth BJJ offers youth programs for children as young as age 3, we take the privacy of children very seriously and comply with the <strong>Children's Online Privacy Protection Act (COPPA)</strong>.</p>
+          </div>
+
+          <h3>Under Age 13</h3>
+          <p>We do not knowingly collect personal information directly from children under age 13. All information for children under 13 must be provided by a verifiable parent or legal guardian. When enrolling a child under 13, we collect:</p>
+          <ul>
+            <li>Child's name, date of birth, and age/belt level</li>
+            <li>Parent/guardian name, email address, phone number, and billing information</li>
+            <li>Emergency contact information and any relevant health disclosures</li>
+          </ul>
+          <p>This information is used solely to manage the child's enrollment, ensure their safety, and communicate with parents. We do not use children's information for advertising or share it with third parties for marketing purposes.</p>
+          <p>Parents and guardians may review, update, or request deletion of their child's information at any time by contacting us at <a href="mailto:info@labyrinthbjj.com">info@labyrinthbjj.com</a>.</p>
+
+          <h3>Ages 13–17</h3>
+          <p>Teens ages 13–17 may use our website and app, but account creation and membership enrollment still require parent or guardian consent. We treat teen users' data with the same protections applied to children under 13.</p>
+
+          <h3>Parental Controls</h3>
+          <p>If you believe we have inadvertently collected information from a child under 13 without verifiable parental consent, please contact us immediately and we will promptly delete it.</p>
+        </section>
+
+        <section class="policy-section reveal" id="security">
+          <h2>Security</h2>
+          <p>We implement industry-standard technical and organizational measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. These measures include:</p>
+          <ul>
+            <li>TLS/SSL encryption for all data transmitted between your browser and our servers</li>
+            <li>Cloudflare DDoS protection and WAF (Web Application Firewall)</li>
+            <li>Payment card data handled exclusively by Stripe, which is PCI-DSS Level 1 certified</li>
+            <li>Access controls limiting staff access to personal data on a need-to-know basis</li>
+            <li>Regular security reviews and updates</li>
+          </ul>
+          <p>No method of transmission over the Internet or electronic storage is 100% secure. While we strive to protect your personal information, we cannot guarantee absolute security. In the event of a data breach that creates a risk of harm, we will notify affected individuals as required by applicable law.</p>
+        </section>
+
+        <section class="policy-section reveal" id="third-party">
+          <h2>Third-Party Services &amp; Links</h2>
+          <p>Our website may contain links to third-party websites (e.g., jits.gg for competition stats, IBJJF, YouTube video embeds) and our booking flow may redirect to third-party platforms. We are not responsible for the privacy practices of these external sites. We encourage you to review the privacy policies of any third-party sites you visit.</p>
+          <p>Third-party services integrated into our platform that may collect data independently include:</p>
+          <ul>
+            <li><strong>Google (Analytics, Fonts, Maps):</strong> Subject to <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google's Privacy Policy</a></li>
+            <li><strong>Meta/Facebook (Pixel):</strong> Subject to <a href="https://www.facebook.com/policy.php" target="_blank" rel="noopener noreferrer">Meta's Data Policy</a></li>
+            <li><strong>Stripe:</strong> Subject to <a href="https://stripe.com/privacy" target="_blank" rel="noopener noreferrer">Stripe's Privacy Policy</a></li>
+            <li><strong>YouTube (embedded videos):</strong> Subject to <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google's Privacy Policy</a></li>
+          </ul>
+        </section>
+
+        <section class="policy-section reveal" id="texas">
+          <h2>Texas Residents</h2>
+          <p>Labyrinth BJJ is headquartered in Fulshear, Texas. If you are a Texas resident, you have rights under the <strong>Texas Data Privacy and Security Act (TDPSA)</strong>, which took effect July 1, 2024.</p>
+          <p>Texas residents have the right to:</p>
+          <ul>
+            <li>Know what personal data we collect and how it is used</li>
+            <li>Access and correct personal data we hold about you</li>
+            <li>Delete personal data you have provided to us</li>
+            <li>Opt out of the sale of personal data (we do not sell personal data)</li>
+            <li>Opt out of targeted advertising using your personal data</li>
+            <li>Opt out of profiling in furtherance of decisions that produce legal or similarly significant effects</li>
+          </ul>
+          <p>To submit a TDPSA request, email <a href="mailto:info@labyrinthbjj.com">info@labyrinthbjj.com</a> with the subject line "Texas Privacy Request." We will respond within 45 days, with a possible 45-day extension if needed. If we deny your request, you may appeal by replying to our denial notice. If your appeal is denied, you may contact the <strong>Texas Attorney General's Office</strong> at <a href="https://www.texasattorneygeneral.gov" target="_blank" rel="noopener noreferrer">texasattorneygeneral.gov</a>.</p>
+        </section>
+
+        <section class="policy-section reveal" id="app-stores">
+          <h2>App Store Compliance (Apple &amp; Google)</h2>
+          <p>If Labyrinth BJJ operates a mobile application distributed through the Apple App Store or Google Play Store, we comply with both platforms' developer guidelines regarding user data:</p>
+
+          <h3>Apple App Store (iOS)</h3>
+          <p>In compliance with Apple's App Store Review Guidelines and App Privacy requirements:</p>
+          <ul>
+            <li>We provide an accurate <strong>App Privacy Nutrition Label</strong> in the App Store disclosing all data collected and its purpose</li>
+            <li>We do not use any data collected via Apple's frameworks for advertising or tracking without explicit App Tracking Transparency (ATT) consent</li>
+            <li>We honor ATT opt-out requests — if you decline tracking permission, we will not share your IDFA or use cross-app data</li>
+            <li>We comply with Apple's guidelines on <strong>minimum necessary data collection</strong> — our app does not request permissions beyond what is needed</li>
+            <li>If our app offers in-app purchases, payment is processed via Apple's secure IAP framework or Stripe — no card data is stored in-app</li>
+          </ul>
+
+          <h3>Google Play Store (Android)</h3>
+          <p>In compliance with Google Play's User Data policy:</p>
+          <ul>
+            <li>We disclose all data collection in our <strong>Data Safety section</strong> in the Play Store listing</li>
+            <li>We comply with Google's <strong>prominent disclosure</strong> requirements before collecting sensitive data</li>
+            <li>We do not use the Android Advertising ID (AAID) for interest-based advertising without user consent</li>
+            <li>We honor Android's permission model — we request only permissions necessary for core app functionality</li>
+            <li>Our app complies with Google's policy on <strong>device and network abuse</strong> and does not collect data in the background beyond what is necessary and disclosed</li>
+          </ul>
+
+          <h3>Push Notifications</h3>
+          <p>If our app sends push notifications, you may manage notification preferences at any time in your device Settings app. We only send notifications related to your enrollment, bookings, and (with consent) class announcements. We do not send unsolicited promotional push notifications.</p>
+        </section>
+
+        <section class="policy-section reveal" id="changes">
+          <h2>Policy Changes</h2>
+          <p>We may update this Privacy Policy from time to time to reflect changes in our practices, technology, legal requirements, or other factors. When we make material changes, we will:</p>
+          <ul>
+            <li>Update the "Last Updated" date at the top of this page</li>
+            <li>Post a notice on our website for at least 30 days</li>
+            <li>For significant changes affecting active members, send an email notification to the address on file</li>
+          </ul>
+          <p>Your continued use of our services after any changes to this policy constitutes your acceptance of the updated policy. We encourage you to review this page periodically.</p>
+        </section>
+
+        <section class="policy-section reveal" id="contact">
+          <h2>Contact Us</h2>
+          <p>If you have any questions about this Privacy Policy, wish to exercise your rights, or want to report a concern, please reach out:</p>
+          <div class="policy-contact-card">
+            <p class="policy-contact-card__title">Labyrinth BJJ — Privacy Inquiries</p>
+            <p><strong>Email:</strong> <a href="mailto:info@labyrinthbjj.com">info@labyrinthbjj.com</a></p>
+            <p><strong>Phone:</strong> <a href="tel:+12813937983">(281) 393-7983</a></p>
+            <p><strong>Address:</strong> 6615 West Cross Creek Bend Lane, Suite #400, Fulshear, TX 77441</p>
+            <p style="margin-top:12px;font-size:13px;color:var(--text-faint);">We aim to respond to all privacy-related inquiries within 30 days.</p>
+          </div>
+        </section>
+
+      </article>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__grid">
+        <div class="footer__brand">
+          <p class="footer__brand-name">
+            <svg viewBox="0 0 28 28" fill="none" aria-hidden="true">
+              <rect width="28" height="28" rx="6" fill="#C8A24C" fill-opacity="0.12"/>
+              <path d="M14 4 L23 9 L23 19 L14 24 L5 19 L5 9 Z" stroke="#C8A24C" stroke-width="1.2" fill="none"/>
+              <path d="M14 4 L14 24 M5 9 L23 19 M23 9 L5 19" stroke="#C8A24C" stroke-width="0.8" opacity="0.4"/>
+            </svg>
+            LABYRINTH BJJ
+          </p>
+          <p class="footer__brand-desc">The #1 ranked BJJ academy in Texas. World-class instruction in Fulshear, Katy, and beyond.</p>
+        </div>
+        <div>
+          <p class="footer__col-title">Programs</p>
+          <ul class="footer__links" role="list">
+            <li><a href="https://labyrinth.vision/#programs">Kids BJJ</a></li>
+            <li><a href="https://labyrinth.vision/#programs">Adults Gi &amp; No-Gi</a></li>
+            <li><a href="https://labyrinth.vision/#programs">Elite Competition</a></li>
+            <li><a href="https://labyrinth.vision/#programs">Wrestling</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer__col-title">Academy</p>
+          <ul class="footer__links" role="list">
+            <li><a href="https://labyrinth.vision/#instructors">Instructors</a></li>
+            <li><a href="https://labyrinth.vision/#schedule">Schedule</a></li>
+            <li><a href="/#membership">Membership</a></li>
+            <li><a href="/#find-us">Locations</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer__col-title">Resources</p>
+          <ul class="footer__links" role="list">
+            <li><a href="https://labyrinth.vision/blog">Blog</a></li>
+            <li><a href="/#faq">FAQ</a></li>
+            <li><a href="/privacy-policy">Privacy Policy</a></li>
+            <li><a href="https://labyrinth.vision/#book">Book a Trial</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p class="footer__copy">&copy; 2026 Labyrinth BJJ. All rights reserved. Fulshear, TX.</p>
+        <div class="footer__legal-links">
+          <a href="/privacy-policy" class="active">Privacy Policy</a>
+          <a href="https://labyrinth.vision/#book">Book a Trial</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Nav scroll
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('nav--scrolled', window.scrollY > 20);
+    }, { passive: true });
+
+    // Mobile nav
+    const hamburger = document.getElementById('hamburger');
+    const mobileNav = document.getElementById('mobileNav');
+    hamburger.addEventListener('click', () => {
+      const open = mobileNav.classList.toggle('open');
+      hamburger.classList.toggle('active', open);
+      hamburger.setAttribute('aria-expanded', open);
+      document.body.style.overflow = open ? 'hidden' : '';
+    });
+    mobileNav.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+      mobileNav.classList.remove('open');
+      hamburger.classList.remove('active');
+      hamburger.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    }));
+
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+    }, { threshold: 0.08 });
+    reveals.forEach(el => observer.observe(el));
+
+    // TOC active state
+    const sections = document.querySelectorAll('.policy-section');
+    const tocLinks = document.querySelectorAll('.policy-toc__list a');
+    const tocObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          tocLinks.forEach(l => l.classList.remove('active'));
+          const link = document.querySelector('.policy-toc__list a[href="#' + e.target.id + '"]');
+          if (link) link.classList.add('active');
+        }
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    sections.forEach(s => tocObserver.observe(s));
+  </script>
+
+</body>
+</html>
