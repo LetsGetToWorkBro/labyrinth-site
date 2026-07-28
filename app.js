@@ -1038,15 +1038,17 @@
     {name:'Adult BJJ', type:'Gi', day:'Mon', time:'6:30 PM'},
     {name:'Adult BJJ', type:'No-Gi', day:'Tue', time:'6:30 AM'},
     {name:'Adult BJJ', type:'No-Gi', day:'Tue', time:'6:30 PM'},
+    {name:'Adult BJJ', type:'Gi', day:'Wed', time:'6:30 AM'},
     {name:'Adult BJJ', type:'No-Gi', day:'Wed', time:'11:00 AM'},
     {name:'Adult BJJ', type:'Gi', day:'Wed', time:'6:30 PM'},
     {name:'Adult BJJ', type:'No-Gi', day:'Thu', time:'6:30 AM'},
     {name:'Adult BJJ', type:'No-Gi', day:'Thu', time:'6:30 PM'},
-    {name:'Adult BJJ', type:'Gi', day:'Fri', time:'6:30 AM'},
     {name:'Adult BJJ', type:'Gi', day:'Fri', time:'11:00 AM'},
     {name:'Adult Comp', type:'Gi', day:'Fri', time:'6:30 PM'},
     {name:'Adult Comp', type:'No-Gi', day:'Sat', time:'9:00 AM'},
     {name:'Adult & Teens', type:'No-Gi', day:'Sat', time:'11:00 AM'},
+    {name:'Strength & Conditioning', type:'', day:'Tue', time:'4:15 PM'},
+    {name:'Strength & Conditioning', type:'', day:'Thu', time:'4:15 PM'},
     {name:'Open Mat', type:'', day:'Sun', time:'10:30 AM'}
   ];
 

@@ -5306,3 +5306,30 @@ body {
     padding: var(--space-6) var(--space-4);
   }
 }
+
+
+/* ── Strength & Conditioning ─────────────────────────────────────────────────
+   A fourth category on the schedule, alongside Adults, Kids & Teens and
+   Wrestling. It is all-ages, so it deliberately does not borrow the adult or
+   kids colour — it needs to read as its own thing at a glance. */
+.sched-type--sc {
+  background: rgba(90, 160, 200, 0.16);
+  color: #7fb9d8;
+  border: 1px solid rgba(90, 160, 200, 0.32);
+}
+.sched-section-label--sc { color: #7fb9d8; }
+.sched-section-label__note {
+  margin-left: 8px; font-weight: 400; font-size: 0.82em; opacity: 0.65;
+}
+.schedule-day__section-label--sc { color: #7fb9d8; }
+.schedule-day__class--sc .schedule-day__time { color: #7fb9d8; }
+
+
+/* The live-stream notice sits alongside the kids-trial one and should read as
+   information rather than a second warning, so it is cooler and quieter. */
+.schedule-trial-banner--stream {
+  border-color: rgba(90, 160, 200, 0.30);
+  background: rgba(90, 160, 200, 0.07);
+}
+.schedule-trial-banner--stream a { color: #7fb9d8; text-decoration: underline; }
+.schedule-trial-banner--stream a:hover { color: #a5d2ea; }
