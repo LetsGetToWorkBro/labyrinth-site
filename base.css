@@ -14,7 +14,12 @@ html {
 }
 
 body {
+  /* iOS Safari: 100vh is the height with the toolbar RETRACTED, so it is
+     taller than what you can actually see and the page ends up longer
+     than the screen. 100dvh is the visible height and shrinks with the
+     toolbar. vh first so old browsers still get something sensible. */
   min-height: 100vh;
+  min-height: 100dvh;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

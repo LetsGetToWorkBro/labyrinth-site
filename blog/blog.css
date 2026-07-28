@@ -179,7 +179,12 @@ img { max-width: 100%; height: auto; display: block; }
 /* --- Page Wrapper --- */
 .blog-page {
   padding-top: var(--nav-height);
+  /* iOS Safari: 100vh is the height with the toolbar RETRACTED, so it is
+     taller than what you can actually see and the page ends up longer
+     than the screen. 100dvh is the visible height and shrinks with the
+     toolbar. vh first so old browsers still get something sensible. */
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
 }

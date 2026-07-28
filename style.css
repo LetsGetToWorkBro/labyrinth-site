@@ -3484,7 +3484,7 @@ body {
 
 .lightbox__img {
   max-width: 90vw;
-  max-height: 90vh;
+  max-height: 90vh; max-height: 90dvh;
   object-fit: contain;
   border-radius: var(--radius-sm);
   box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6);
@@ -3663,7 +3663,7 @@ body {
   position: relative;
   width: 100%;
   max-width: 480px;
-  max-height: 90vh;
+  max-height: 90vh; max-height: 90dvh;
   overflow-y: auto;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -4267,7 +4267,7 @@ body {
 
   .booking-modal {
     max-width: 100%;
-    max-height: 92vh;
+    max-height: 92vh; max-height: 92dvh;
     border-radius: 20px 20px 0 0;
     transform: translateY(100%);
   }
