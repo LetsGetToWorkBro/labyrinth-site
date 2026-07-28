@@ -91,6 +91,25 @@ const bogus = [...popup].filter(p => !crmPairs.has(p))
 if (bogus.length) report(`bookable times that are not in the CRM: ${bogus.join(', ')}`)
 else console.log('  every bookable time exists in the CRM')
 
+// Every class entry must sit inside its day's container AND under a category
+// label. Two did not: my insertion anchored on `<div class="schedule-day__class`
+// which also matches the container `schedule-day__classes`, so the entry landed
+// outside it and rendered above its own heading with no category at all.
+console.log('\nDay card structure:')
+for (const day of ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']) {
+  const st = html.indexOf(`schedule-day__header">${day}<`)
+  if (st < 0) { report(`${day}: no day card`); continue }
+  const ends = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday']
+    .map(d => html.indexOf(`schedule-day__header">${d}<`)).filter(x => x > st)
+  const blk = html.slice(st, ends.length ? Math.min(...ends) : st + 4000)
+  const container = blk.indexOf('schedule-day__classes')
+  const orphan = [...blk.matchAll(/<div class="schedule-day__class /g)].filter(m => m.index < container)
+  const empty = blk.match(/<div class="schedule-day__class[^"]*"[^>]*>\s*<\/div>/g) || []
+  if (orphan.length) report(`${day}: ${orphan.length} class outside the container (renders with no category)`)
+  else if (empty.length) report(`${day}: ${empty.length} empty class div`)
+  else console.log(`  ${day} ok`)
+}
+
 console.log(problems ? `\n${problems} problem(s) — update the page, or the CRM, whichever is wrong.`
                      : '\nThe site and the CRM agree.')
 process.exit(problems ? 1 : 0)
