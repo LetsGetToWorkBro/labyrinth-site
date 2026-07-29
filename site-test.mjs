@@ -54,7 +54,13 @@ const cta = await page.$('.article-cta__btn')
 check('L4 blog post has a booking CTA', !!cta)
 const ctas = await page.$$('.article-cta__btn, .blog-cta__btn')
 check('L4 exactly one in-article CTA', ctas.length === 1, 'found ' + ctas.length)
-check('L4 CTA points at #contact', (await cta.getAttribute('href')).includes('#contact'))
+// It used to point at the front page's #contact section, which meant a reader
+// who had decided to come in was sent back to the front page to find the
+// booking button. It now opens the booking modal on the post itself — and keeps
+// an href to /#book so it still reaches a booking form with JavaScript off.
+// booking.test.mjs drives the modal itself; this only guards the markup.
+check('L4 CTA opens the booking modal', await cta.getAttribute('data-book-trial') !== null)
+check('L4 CTA still works without JS', (await cta.getAttribute('href')).includes('#book'))
 
 // ── L5: the contact form now POSTs to the CRM and honours the response ──
 await page.goto('http://localhost:4620/', { waitUntil:'domcontentloaded' })

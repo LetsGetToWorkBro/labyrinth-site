@@ -3,7 +3,7 @@
  *
  * The schedule is written into this site in four places — the desktop table,
  * the mobile day cards, the Gi/No-Gi drawers on the programme cards, and
- * ADULT_CLASSES in app.js, which is what the booking popup offers. Keeping four
+ * ADULT_CLASSES in booking.js, which is what the booking popup offers. Keeping four
  * copies in step by hand is how a class ends up advertised on the website months
  * after it stopped running.
  *
@@ -30,7 +30,9 @@ const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 import { readFileSync } from 'node:fs'
 
 const html = readFileSync(new URL('./index.html', import.meta.url), 'utf8')
-const appjs = readFileSync(new URL('./app.js', import.meta.url), 'utf8')
+// The class tables moved to booking.js when the blog started using the
+// booking modal too. This reads them wherever they are.
+const appjs = readFileSync(new URL('./booking.js', import.meta.url), 'utf8')
 
 let res
 try {
@@ -82,7 +84,7 @@ for (const day of DAYS) {
 
 // The booking popup is the one that actually costs somebody a class, because a
 // visitor books a time that does not exist and turns up to a closed room.
-console.log('\nBooking popup (app.js):')
+console.log('\nBooking popup (booking.js):')
 const popup = new Set(
   [...appjs.matchAll(/\{name:'[^']+', type:'[^']*', day:'(\w+)', time:'([^']+)'\}/g)]
     .map(m => `${m[1]} ${m[2]}`))

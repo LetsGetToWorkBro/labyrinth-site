@@ -8,6 +8,10 @@ cannot drift. Every URL it emits is extensionless, which is the form Cloudflare
 Pages actually serves; the .html form 308-redirects and Google files it as
 "Page with redirect" and indexes nothing.
 
+Every post loads booking.js, so "Book a Free Trial" opens the booking modal on
+the post itself. It used to link to the front page's contact section, which made
+a reader who had already decided go and find the button again.
+
 Re-running it overwrites only the posts listed in POSTS. Existing posts are left
 alone.
 """
@@ -69,6 +73,7 @@ def page(slug, title, description, og_description, subtitle, read, hero, hero_al
 <link rel="preload" as="style" href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=general-sans@300,400,500,600,700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=general-sans@300,400,500,600,700&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="blog.css">
+<link rel="stylesheet" href="../booking.css">
 
 <title>{title} | Labyrinth BJJ</title>
 <meta name="description" content="{description}">
@@ -100,7 +105,7 @@ def page(slug, title, description, og_description, subtitle, read, hero, hero_al
     <div class="blog-nav__links">
       <a href="https://labyrinth.vision" class="blog-nav__link">← Main Site</a>
       <a href="/blog/" class="blog-nav__link blog-nav__link--active">Blog</a>
-      <a href="https://labyrinth.vision/#contact" class="blog-nav__cta">Free Trial</a>
+      <a data-book-trial href="https://labyrinth.vision/#book" class="blog-nav__cta">Free Trial</a>
     </div>
   </div>
 </nav>
@@ -142,7 +147,7 @@ def page(slug, title, description, og_description, subtitle, read, hero, hero_al
       <div class="article-cta__box">
         <h3 class="article-cta__title">Come and Try a Class</h3>
         <p class="article-cta__text">Your first class at Labyrinth BJJ is free — no experience needed, nothing to pay, and no commitment. We'll lend you everything you need.</p>
-        <a href="https://labyrinth.vision/#contact" class="article-cta__btn">Book a Free Trial →</a>
+        <a data-book-trial href="https://labyrinth.vision/#book" class="article-cta__btn">Book a Free Trial →</a>
       </div>
     </div>
 
@@ -174,7 +179,7 @@ def page(slug, title, description, og_description, subtitle, read, hero, hero_al
         <a href="https://labyrinth.vision">Home</a>
         <a href="https://labyrinth.vision/#programs">Programs</a>
         <a href="https://labyrinth.vision/#schedule">Schedule</a>
-        <a href="https://labyrinth.vision/#contact">Free Trial</a>
+        <a data-book-trial href="https://labyrinth.vision/#book">Free Trial</a>
       </div>
       <div class="blog-footer__copy">© 2026 Labyrinth Brazilian Jiu Jitsu · {FACTS["address"]} · {FACTS["phone"]}</div>
     </div>
@@ -191,6 +196,8 @@ def page(slug, title, description, og_description, subtitle, read, hero, hero_al
     }}, {{ passive: true }});
   }}
 </script>
+
+<script src="../booking.js"></script>
 
 </body>
 </html>
