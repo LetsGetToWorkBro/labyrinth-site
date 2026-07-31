@@ -96,18 +96,13 @@
     padding: 10px 48px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;   /* header pinned top, strip pinned bottom */
+    justify-content: space-between;   /* even air above and below the clock */
   }
 
-  /* The clock is centred on the stage itself, not laid out between the header
-     and the strip, so it sits in the middle of the TV. */
-  .centre {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    pointer-events: none;
-  }
+  /* The clock sits between the lockup and the strip rather than being centred
+     on the stage, so the air above and below it is always equal — space-between
+     splits the spare height into two identical gaps. Centring it on the screen
+     left it hard against the strip with a hundred points of nothing overhead. */
 
   header { display: flex; align-items: flex-start; justify-content: space-between; }
 
@@ -130,6 +125,7 @@
   /* ---------- clock face ---------- */
   .facecol {
     width: 1180px;
+    align-self: center;
     display: flex; flex-direction: column; align-items: center; gap: 18px;
   }
 
@@ -280,17 +276,6 @@
     <div class="hairline"></div>
     <div class="vignette"></div>
 
-    <div class="centre">
-      <div class="facecol">
-        <div class="badge">
-          <span class="k">Round</span>
-          <span class="n" id="round-no">1</span>
-        </div>
-        <div class="face" id="face">05:00</div>
-        <div class="track"><i id="track"></i><u id="mark" hidden></u></div>
-      </div>
-    </div>
-
     <div class="frame">
       <header>
         <div class="lockup">
@@ -302,6 +287,15 @@
           <div class="label date" id="wall-date" style="font-size:20px;letter-spacing:3px">Thursday, 30 Jul</div>
         </div>
       </header>
+
+      <div class="facecol">
+        <div class="badge">
+          <span class="k">Round</span>
+          <span class="n" id="round-no">1</span>
+        </div>
+        <div class="face" id="face">05:00</div>
+        <div class="track"><i id="track"></i><u id="mark" hidden></u></div>
+      </div>
 
       <footer>
         <div class="transport" id="transport"></div>

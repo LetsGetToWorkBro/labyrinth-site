@@ -27,13 +27,16 @@ struct TimerScreen: View {
         ZStack {
             Backdrop(accent: accent, intensity: timer.running ? 1 : 0.55)
 
-            // Centred in the ZStack rather than laid out between the header and
-            // the strip, so the clock is genuinely in the middle of the screen.
-            face
-
+            // The clock sits between the lockup and the control strip with a
+            // Spacer either side, so the air above and below it is always
+            // equal. Centring it on the screen instead left it hard against
+            // the strip with a hundred points of nothing over its head — and
+            // it self-corrects if the lockup or the strip ever changes height.
             VStack(spacing: 0) {
                 header
-                Spacer(minLength: 0)
+                Spacer(minLength: 24)
+                face
+                Spacer(minLength: 24)
                 controlStrip
             }
             .padding(.horizontal, 48)

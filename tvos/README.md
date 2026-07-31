@@ -1,7 +1,7 @@
 # Labyrinth Round Timer — Apple TV
 
-A branded round timer for the mats. One screen, no settings page: the clock sits
-dead centre of the TV and everything you can touch is in the strip along the
+A branded round timer for the mats. One screen, no settings page: the clock owns
+the middle of the TV and everything you can touch is in the strip along the
 bottom — start/pause, reset, and the three colour-coded settings. It runs round
 after round until somebody stops it.
 
