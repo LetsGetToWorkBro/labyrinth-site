@@ -2,8 +2,8 @@
 
 A branded round timer for the mats. One screen, no settings page: round length,
 warning and rest sit on the right rail and change with a left/right press on the
-remote. Pause and restart-round live along the bottom, exactly like the timer
-we've been using — just in the gym's own colours.
+remote. Start/pause and reset live along the bottom — the same shape as the
+timer we've been using, in the gym's own colours.
 
 <p align="center">
   <em>Ink, gold, the roundel turning behind the clock. Same palette as
@@ -54,7 +54,7 @@ Deployment target is tvOS 17. It runs on Apple TV HD and every Apple TV 4K.
 | --- | --- |
 | ▲ ▼ | Move between the rail cards and the transport row |
 | ◀ ▶ | Change the focused card's value |
-| Click | Fires the focused transport button |
+| Click | Fires the focused button |
 | Play/Pause | Starts and pauses from anywhere on the screen |
 
 - **Round** — 0:30 to 30:00. Fifteen-second steps up to five minutes, then
@@ -64,6 +64,10 @@ Deployment target is tvOS 17. It runs on Apple TV HD and every Apple TV 4K.
 - **Rest** — 0 to 10:00. At `OFF` the rounds run back to back.
 - **Rounds** — `∞`, or a fixed session of up to 30. A fixed session ends on a
   flourish instead of rolling into another round.
+
+**Start/Pause** is one button — it shows whichever the clock needs next.
+**Reset** zeroes everything out: back to the top of round 1, stopped, with the
+full round on the face. Press play and the session runs from the start.
 
 Every setting is remembered between launches. Changing the round length while
 the clock is running takes effect on the next round; when it's parked at the

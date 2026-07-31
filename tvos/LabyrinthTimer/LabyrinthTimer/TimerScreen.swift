@@ -9,7 +9,7 @@ struct TimerScreen: View {
 
     enum Field: Hashable {
         case round, warning, rest, rounds
-        case restart, playPause, reset
+        case playPause, reset
 
         var isCard: Bool {
             switch self {
@@ -20,7 +20,11 @@ struct TimerScreen: View {
     }
 
     private static let cards: [Field] = [.round, .warning, .rest, .rounds]
-    private static let transport: [Field] = [.restart, .playPause, .reset]
+    private static let transport: [Field] = [.playPause, .reset]
+
+    /// Width of the right rail. The clock face takes whatever is left, and the
+    /// transport row below lines up with it.
+    private static let railWidth: CGFloat = 520
 
     var body: some View {
         ZStack {
@@ -31,7 +35,7 @@ struct TimerScreen: View {
                 Spacer(minLength: 24)
                 HStack(alignment: .center, spacing: 72) {
                     face
-                    rail.frame(width: 430)
+                    rail.frame(width: Self.railWidth)
                 }
                 Spacer(minLength: 24)
                 footer
@@ -88,7 +92,7 @@ struct TimerScreen: View {
     // MARK: The right rail
 
     private var rail: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 22) {
             card(.round,
                  title: "Round",
                  value: Clockface.compact(timer.roundLength),
@@ -132,25 +136,23 @@ struct TimerScreen: View {
 
     // MARK: Transport
 
+    /// Two controls, the same size, evenly spaced and sitting on the clock's
+    /// own centre line. The hint keeps to the rail's column on the right.
     private var footer: some View {
-        HStack(alignment: .bottom) {
-            HStack(alignment: .top, spacing: 52) {
-                transportButton(.restart, symbol: "arrow.counterclockwise", caption: "Restart round") {
-                    timer.restartPhase()
-                }
+        HStack(alignment: .bottom, spacing: 72) {
+            HStack(alignment: .top, spacing: 96) {
                 transportButton(.playPause,
                                 symbol: timer.running ? "pause.fill" : "play.fill",
                                 caption: timer.running ? "Pause" : "Start",
-                                prominent: true) {
+                                primary: true) {
                     timer.toggle()
                 }
-                transportButton(.reset, symbol: "backward.end.fill", caption: "Reset") {
+                transportButton(.reset, symbol: "arrow.counterclockwise", caption: "Reset") {
                     timer.reset()
                 }
             }
             .focusSection()
-
-            Spacer()
+            .frame(maxWidth: .infinity)
 
             VStack(alignment: .trailing, spacing: 10) {
                 Text("◀ ▶  adjust      ▲ ▼  move")
@@ -158,7 +160,8 @@ struct TimerScreen: View {
                 Text("play/pause on the remote works anywhere")
                     .captionStyle(16, tracking: 2, color: Palette.faint.opacity(0.7), weight: .medium)
             }
-            .padding(.bottom, 34)
+            .frame(width: Self.railWidth, alignment: .trailing)
+            .padding(.bottom, 40)
         }
     }
 
@@ -166,16 +169,16 @@ struct TimerScreen: View {
         _ field: Field,
         symbol: String,
         caption: String,
-        prominent: Bool = false,
+        primary: Bool = false,
         action: @escaping () -> Void
     ) -> some View {
         Button(action: action) {
             TransportButton(
                 symbol: symbol,
                 caption: caption,
-                accent: prominent ? accent : Palette.gold,
+                accent: primary ? accent : Palette.gold,
                 isFocused: focus == field,
-                prominent: prominent
+                primary: primary
             )
         }
         .buttonStyle(.plain)

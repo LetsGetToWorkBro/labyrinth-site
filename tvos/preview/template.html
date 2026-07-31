@@ -177,62 +177,65 @@
   .status.live { color: var(--accent); }
 
   /* ---------- right rail ---------- */
-  .rail { width: 430px; display: flex; flex-direction: column; gap: 20px; }
+  .rail { width: 520px; display: flex; flex-direction: column; gap: 22px; }
 
+  /* Label left, value right, on one line: the numbers are what a coach reads
+     from across the mat, so they get the room. */
   .card {
-    display: flex; align-items: center; gap: 16px;
-    padding: 18px 26px;
-    border-radius: 16px;
-    background: color-mix(in srgb, var(--surface) 70%, transparent);
-    border: 1px solid rgba(255,255,255,0.08);
+    display: flex; align-items: center; gap: 14px;
+    padding: 18px 28px;
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--surface) 90%, transparent);
+    border: 1px solid rgba(255,255,255,0.12);
     transition: transform 320ms cubic-bezier(.2,.9,.3,1.2), border-color 200ms, background 200ms, box-shadow 200ms;
   }
   .card.on {
     background: var(--surface-lift);
-    border: 2.5px solid var(--gold);
-    transform: scale(1.05);
+    border: 3px solid var(--gold);
+    transform: scale(1.04);
     box-shadow: 0 12px 28px rgba(0,0,0,0.55);
   }
   .card .chev {
-    width: 26px; font-size: 26px; font-weight: 900; color: var(--gold);
+    width: 30px; font-size: 30px; font-weight: 900; color: var(--gold);
     opacity: 0; text-align: center; line-height: 1;
   }
   .card.on .chev { opacity: 1; }
   .card.on .chev.off { opacity: 0.15; }
-  .card .body { flex: 1; min-width: 0; }
-  .card .t { font-size: 19px; letter-spacing: 4px; font-weight: 700; text-transform: uppercase; color: var(--muted); }
+  .card .t { font-size: 22px; letter-spacing: 5px; font-weight: 700; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
   .card.on .t { color: var(--gold); }
-  .card .v { font-size: 46px; font-weight: 800; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .card .spacer { flex: 1; min-width: 12px; }
+  .card .v { font-size: 60px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums;
+             color: color-mix(in srgb, var(--bone) 92%, transparent); white-space: nowrap; }
+  .card.on .v { color: var(--bone); }
 
   /* ---------- transport ---------- */
-  footer { display: flex; align-items: flex-end; justify-content: space-between; }
-  .transport { display: flex; gap: 52px; align-items: flex-start; }
+  footer { display: flex; align-items: flex-end; gap: 72px; }
+  /* The row takes the clock's column so the buttons sit on its centre line. */
+  .transport { flex: 1; display: flex; gap: 96px; align-items: flex-start; justify-content: center; }
 
-  .tbtn { display: flex; flex-direction: column; align-items: center; gap: 14px;
+  .tbtn { display: flex; flex-direction: column; align-items: center; gap: 16px;
           transition: transform 320ms cubic-bezier(.2,.9,.3,1.2); cursor: pointer; }
-  .tbtn.on { transform: scale(1.12); }
+  .tbtn.on { transform: scale(1.09); }
   .tbtn .disc {
-    width: 108px; height: 108px; border-radius: 50%;
+    width: 168px; height: 168px; border-radius: 50%;
     display: grid; place-items: center;
-    background: color-mix(in srgb, var(--surface) 80%, transparent);
-    border: 2px solid color-mix(in srgb, var(--gold) 28%, transparent);
+    background: color-mix(in srgb, var(--surface) 85%, transparent);
+    border: 2.5px solid color-mix(in srgb, var(--gold) 30%, transparent);
     transition: background 200ms, border-color 200ms, box-shadow 200ms;
   }
   .tbtn.big .disc {
-    width: 132px; height: 132px;
-    background: color-mix(in srgb, var(--accent) 16%, transparent);
-    border-color: color-mix(in srgb, var(--accent) 70%, transparent);
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+    border-color: color-mix(in srgb, var(--accent) 75%, transparent);
   }
-  .tbtn.on .disc { background: var(--gold); border-color: transparent; box-shadow: 0 10px 30px color-mix(in srgb, var(--gold) 60%, transparent); }
-  .tbtn.big.on .disc { background: var(--accent); box-shadow: 0 10px 30px color-mix(in srgb, var(--accent) 60%, transparent); }
-  .tbtn .disc svg { width: 40px; height: 40px; fill: var(--bone); }
-  .tbtn.big .disc svg { width: 52px; height: 52px; }
+  .tbtn.on .disc { background: var(--gold); border-color: transparent; box-shadow: 0 12px 34px color-mix(in srgb, var(--gold) 60%, transparent); }
+  .tbtn.big.on .disc { background: var(--accent); box-shadow: 0 12px 34px color-mix(in srgb, var(--accent) 60%, transparent); }
+  .tbtn .disc svg { width: 74px; height: 74px; fill: var(--bone); }
   .tbtn.on .disc svg { fill: var(--ink); }
-  .tbtn .cap { font-size: 17px; letter-spacing: 3px; font-weight: 700; text-transform: uppercase; color: var(--faint); }
+  .tbtn .cap { font-size: 20px; letter-spacing: 4px; font-weight: 700; text-transform: uppercase; color: var(--muted); }
   .tbtn.on .cap { color: var(--gold); }
   .tbtn.big.on .cap { color: var(--accent); }
 
-  .hint { text-align: right; padding-bottom: 34px; }
+  .hint { width: 520px; text-align: right; padding-bottom: 40px; }
   .hint div:first-child { font-size: 18px; letter-spacing: 3px; font-weight: 600; text-transform: uppercase; color: var(--faint); }
   .hint div:last-child { font-size: 16px; letter-spacing: 2px; font-weight: 500; text-transform: uppercase; color: rgba(85,85,85,0.7); margin-top: 10px; }
 
@@ -311,7 +314,7 @@
   };
 
   var CARDS = ["round", "warning", "rest", "rounds"];
-  var BUTTONS = ["restart", "playPause", "reset"];
+  var BUTTONS = ["playPause", "reset"];
   var focus = "playPause";
 
   /* ---------- sound, synthesised the way the app does it ---------- */
@@ -366,7 +369,7 @@
     if (sound) cue(sound);
   }
   function start() {
-    if (S.phase === "finished") { reset(); begin("work", S.round, "roundStart"); return; }
+    if (S.phase === "finished") { clear(); begin("work", S.round, "roundStart"); return; }
     if (S.phase === "ready") { begin("work", S.round, "roundStart"); return; }
     S.deadline = performance.now() + S.remaining * 1000;
     S.running = true; S.lastCued = Infinity;
@@ -377,17 +380,12 @@
     S.running = false; S.deadline = null;
   }
   function toggle() { S.running ? pause() : start(); }
-  function restartPhase() {
-    if (S.phase !== "work" && S.phase !== "rest") { reset(); cue("click"); return; }
-    S.remaining = S.phase === "rest" ? S.rest : S.round;
-    S.lastCued = Infinity;
-    if (S.running) S.deadline = performance.now() + S.remaining * 1000;
-    cue("click");
-  }
-  function reset() {
+  /* Zeroes everything: top of round 1, stopped, full round on the face. */
+  function clear() {
     S.running = false; S.deadline = null; S.phase = "ready"; S.no = 1;
     S.remaining = S.round; S.lastCued = Infinity;
   }
+  function reset() { clear(); cue("click"); }
   function advance() {
     S.lastCued = Infinity;
     if (S.phase === "work") {
@@ -434,7 +432,9 @@
     var el = document.createElement("div");
     el.className = "card"; el.dataset.field = key;
     el.innerHTML = '<span class="chev l">‹</span>' +
-                   '<div class="body"><div class="t">' + LABELS[key] + '</div><div class="v"></div></div>' +
+                   '<span class="t">' + LABELS[key] + '</span>' +
+                   '<span class="spacer"></span>' +
+                   '<span class="v"></span>' +
                    '<span class="chev r">›</span>';
     el.addEventListener("click", function () { focus = key; render(); });
     el.querySelector(".l").addEventListener("click", function (e) { e.stopPropagation(); focus = key; adjust(key, -1); });
@@ -443,13 +443,12 @@
   });
 
   var ICON = {
-    restart: '<path d="M12 5V1L7 6l5 5V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z" transform="scale(2)"/>',
     play: '<path d="M8 5v14l11-7z" transform="scale(2)"/>',
     pause: '<path d="M6 5h4v14H6zm8 0h4v14h-4z" transform="scale(2)"/>',
-    reset: '<path d="M6 6h2v12H6zm3 6l9-6v12z" transform="scale(2)"/>'
+    reset: '<path d="M12 5V1L7 6l5 5V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z" transform="scale(2)"/>'
   };
-  var CAPS = { restart: "Restart round", playPause: "Start", reset: "Reset" };
-  var ACTIONS = { restart: restartPhase, playPause: toggle, reset: reset };
+  var CAPS = { playPause: "Start", reset: "Reset" };
+  var ACTIONS = { playPause: toggle, reset: reset };
   var transport = document.getElementById("transport");
   BUTTONS.forEach(function (key) {
     var el = document.createElement("div");

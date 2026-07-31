@@ -122,7 +122,7 @@ final class RoundTimer: ObservableObject {
     func start() {
         switch phase {
         case .finished:
-            reset()
+            clear()
             begin(phase: .work, seconds: roundLength, cue: .roundStart)
         case .ready:
             begin(phase: .work, seconds: roundLength, cue: .roundStart)
@@ -139,27 +139,14 @@ final class RoundTimer: ObservableObject {
         stopTicker()
     }
 
-    /// Puts the current round (or rest) back to full. Keeps running if it was.
-    func restartPhase() {
-        guard phase == .work || phase == .rest else {
-            reset()
-            cues.play(.click)
-            return
-        }
-        let wasRunning = running
-        remaining = TimeInterval(phase == .rest ? restLength : roundLength)
-        lastCuedSecond = .max
-        if wasRunning {
-            deadline = Date().addingTimeInterval(remaining)
-            startTicker()
-        } else {
-            deadline = nil
-        }
+    /// Zeroes everything: back to the top of round 1, stopped, with the full
+    /// round on the face. Press play and the session starts over.
+    func reset() {
+        clear()
         cues.play(.click)
     }
 
-    /// All the way back to the top of round 1, stopped.
-    func reset() {
+    private func clear() {
         running = false
         deadline = nil
         stopTicker()

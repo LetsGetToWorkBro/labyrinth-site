@@ -110,6 +110,9 @@ struct ProgressTrack: View {
 
 /// One adjustable value on the right rail. Focus it and press left or right on
 /// the remote to change it — there is no settings screen to get lost in.
+///
+/// Label left, value right, on one line: the numbers are what a coach reads
+/// from across the mat, so they get the room.
 struct SettingCard: View {
     var title: String
     var value: String
@@ -119,73 +122,78 @@ struct SettingCard: View {
     var atCeiling: Bool
 
     var body: some View {
-        HStack(spacing: 16) {
+        HStack(spacing: 14) {
             chevron("chevron.left", dimmed: atFloor)
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .captionStyle(19, tracking: 4, color: isFocused ? accent : Palette.muted, weight: .bold)
-                Text(value)
-                    .font(.system(size: 46, weight: .heavy, design: .rounded))
-                    .monospacedDigit()
-                    .foregroundStyle(Palette.bone)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            Text(title)
+                .captionStyle(22, tracking: 5, color: isFocused ? accent : Palette.muted, weight: .bold)
+
+            Spacer(minLength: 12)
+
+            Text(value)
+                .font(.system(size: 60, weight: .heavy, design: .rounded))
+                .monospacedDigit()
+                .foregroundStyle(isFocused ? Palette.bone : Palette.bone.opacity(0.92))
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
 
             chevron("chevron.right", dimmed: atCeiling)
         }
-        .padding(.horizontal, 26)
+        .padding(.horizontal, 28)
         .padding(.vertical, 18)
         .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(isFocused ? Palette.surfaceLift : Palette.surface.opacity(0.7))
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(isFocused ? Palette.surfaceLift : Palette.surface.opacity(0.9))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .stroke(isFocused ? accent : Color.white.opacity(0.08), lineWidth: isFocused ? 2.5 : 1)
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .stroke(isFocused ? accent : Color.white.opacity(0.12), lineWidth: isFocused ? 3 : 1)
         )
         .shadow(color: .black.opacity(isFocused ? 0.55 : 0), radius: 28, y: 12)
-        .scaleEffect(isFocused ? 1.05 : 1)
+        .scaleEffect(isFocused ? 1.04 : 1)
         .animation(.spring(response: 0.32, dampingFraction: 0.75), value: isFocused)
     }
 
     private func chevron(_ symbol: String, dimmed: Bool) -> some View {
         Image(systemName: symbol)
-            .font(.system(size: 26, weight: .black))
+            .font(.system(size: 30, weight: .black))
             .foregroundStyle(accent.opacity(dimmed ? 0.15 : 0.9))
             .opacity(isFocused ? 1 : 0)
-            .frame(width: 26)
+            .frame(width: 30)
     }
 }
 
 // MARK: - Transport button
 
-/// Play / pause / restart / reset. Big round targets, captioned underneath.
+/// The two transport controls. Same size as each other so the row reads evenly;
+/// the primary one is the filled disc.
 struct TransportButton: View {
     var symbol: String
     var caption: String
     var accent: Color
     var isFocused: Bool
-    var prominent: Bool = false
+    var primary: Bool = false
+
+    private let diameter: CGFloat = 168
 
     var body: some View {
-        VStack(spacing: 14) {
+        VStack(spacing: 16) {
             ZStack {
                 Circle()
-                    .fill(isFocused ? accent : (prominent ? accent.opacity(0.16) : Palette.surface.opacity(0.8)))
+                    .fill(isFocused ? accent : (primary ? accent.opacity(0.18) : Palette.surface.opacity(0.85)))
                 Circle()
-                    .stroke(isFocused ? .clear : accent.opacity(prominent ? 0.7 : 0.28), lineWidth: 2)
+                    .stroke(isFocused ? .clear : accent.opacity(primary ? 0.75 : 0.3), lineWidth: 2.5)
                 Image(systemName: symbol)
-                    .font(.system(size: prominent ? 52 : 40, weight: .black))
+                    .font(.system(size: 74, weight: .black))
                     .foregroundStyle(isFocused ? Palette.ink : Palette.bone)
             }
-            .frame(width: prominent ? 132 : 108, height: prominent ? 132 : 108)
-            .shadow(color: accent.opacity(isFocused ? 0.6 : 0), radius: 30, y: 10)
+            .frame(width: diameter, height: diameter)
+            .shadow(color: accent.opacity(isFocused ? 0.6 : 0), radius: 34, y: 12)
 
             Text(caption)
-                .captionStyle(17, tracking: 3, color: isFocused ? accent : Palette.faint, weight: .bold)
+                .captionStyle(20, tracking: 4, color: isFocused ? accent : Palette.muted, weight: .bold)
         }
-        .scaleEffect(isFocused ? 1.12 : 1)
+        .scaleEffect(isFocused ? 1.09 : 1)
         .animation(.spring(response: 0.32, dampingFraction: 0.7), value: isFocused)
     }
 }
