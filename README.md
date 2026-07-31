@@ -18,7 +18,12 @@ _headers              security headers for Cloudflare Pages
 _redirects            301s for the old site's URLs
 sitemap.xml           submitted to Google Search Console
 site-test.mjs         link, SEO and booking tests (see below)
+tvos/                 the Apple TV round timer — not part of the site
 ```
+
+`tvos/` is the only thing here that isn't served: it is the mat-side round timer
+for the Apple TV, built from the same brand marks and palette as the site. See
+[tvos/README.md](tvos/README.md).
 
 ## Running it locally
 

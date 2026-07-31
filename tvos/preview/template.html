@@ -1,0 +1,587 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Labyrinth Round Timer — Apple TV</title>
+<style>
+  /* A 1:1 mirror of the tvOS screen, laid out on the same 1920x1080 point
+     canvas the app draws on and scaled to fit whatever is looking at it.
+     Same palette, same type stack (SF Pro Rounded on Apple hardware), same
+     focus model — so what you see here is what shows up on the TV. */
+  :root {
+    --ink: #0A0A0A;
+    --surface: #141414;
+    --surface-lift: #1A1A1A;
+    --bone: #F0F0F0;
+    --muted: #8A8A8A;
+    --faint: #555555;
+    --gold: #C8A24C;
+    --gold-light: #E8C96B;
+    --red: #E74C3C;
+    --green: #27AE60;
+    --accent: var(--gold);
+    --face: var(--gold);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: #000;
+    overflow: hidden;
+    font-family: ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont,
+                 "Segoe UI", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #viewport { position: fixed; inset: 0; overflow: hidden; }
+
+  /* Pinned to the middle by hand rather than by grid centring: an item larger
+     than its container centres inconsistently, and the whole point is that the
+     1920x1080 canvas lands dead centre at any window size. */
+  #stage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -540px 0 0 -960px;
+    width: 1920px;
+    height: 1080px;
+    background: var(--ink);
+    overflow: hidden;
+    transform-origin: center center;
+    color: var(--bone);
+    transition: background 600ms ease;
+  }
+
+  /* ---------- backdrop ---------- */
+  .bloom {
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 50%,
+      color-mix(in srgb, var(--accent) 16%, transparent) 0px,
+      color-mix(in srgb, var(--accent) 4%, transparent) 520px,
+      transparent 1100px);
+    mix-blend-mode: screen;
+    opacity: var(--bloom, 0.55);
+    transition: opacity 600ms ease, background 600ms ease;
+  }
+
+  .rings {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 1500px; height: 1500px;
+    margin: -750px 0 0 -750px;
+    opacity: 0.06;
+    background: var(--accent);
+    -webkit-mask: url(__RINGS__) center / contain no-repeat;
+    mask: url(__RINGS__) center / contain no-repeat;
+    animation: spin 420s linear infinite;
+    transition: background 600ms ease;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .hairline {
+    position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(200,162,76,0.55), transparent);
+  }
+
+  .vignette {
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at 50% 50%, transparent 500px, rgba(0,0,0,0.75) 1500px);
+    pointer-events: none;
+  }
+
+  /* ---------- layout ---------- */
+  .frame {
+    position: absolute;
+    inset: 60px;                 /* the tvOS safe area */
+    padding: 12px 48px 8px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  header { display: flex; align-items: flex-start; justify-content: space-between; }
+
+  .lockup { display: flex; align-items: center; gap: 24px; }
+  .lockup .kanji { height: 88px; }
+  .lockup .word  { height: 56px; }
+  .mark { display: block; }
+
+  .wallclock { text-align: right; }
+  .wallclock .time {
+    font-size: 54px; font-weight: 600; font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+  .wallclock .date { margin-top: 6px; }
+
+  .label {
+    text-transform: uppercase; color: var(--muted); font-weight: 600;
+  }
+
+  .middle {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 72px;
+    min-height: 0;
+  }
+
+  /* ---------- clock face ---------- */
+  .facecol {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center; gap: 30px;
+    min-width: 0;
+  }
+
+  .badge {
+    display: flex; align-items: center; gap: 18px;
+    padding: 16px 34px;
+    border-radius: 10px;
+    background: color-mix(in srgb, var(--surface) 85%, transparent);
+    border: 1.5px solid color-mix(in srgb, var(--accent) 45%, transparent);
+    transition: border-color 600ms ease;
+  }
+  .badge .k { font-size: 24px; letter-spacing: 6px; font-weight: 700; color: var(--muted); text-transform: uppercase; }
+  .badge .n { font-size: 46px; font-weight: 900; color: var(--accent); font-variant-numeric: tabular-nums; transition: color 600ms ease; }
+  .badge .of { font-size: 24px; letter-spacing: 4px; font-weight: 700; color: var(--faint); text-transform: uppercase; }
+
+  .face {
+    font-size: 300px;
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    color: var(--face);
+    text-shadow: 0 0 60px color-mix(in srgb, var(--face) 30%, transparent);
+    transition: color 400ms ease, transform 260ms cubic-bezier(.2,.9,.3,1.2);
+  }
+  .face.pulse { transform: scale(1.028); }
+
+  .track {
+    width: 100%;
+    height: 14px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.07);
+    overflow: hidden;
+  }
+  .track > i {
+    display: block; height: 100%; border-radius: 999px;
+    background: linear-gradient(90deg,
+      color-mix(in srgb, var(--accent) 75%, transparent), var(--accent));
+    box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 50%, transparent);
+    transition: background 600ms ease;
+  }
+
+  .status {
+    font-size: 24px; letter-spacing: 8px; font-weight: 700; text-transform: uppercase;
+    color: var(--muted); min-height: 30px;
+  }
+  .status.live { color: var(--accent); }
+
+  /* ---------- right rail ---------- */
+  .rail { width: 430px; display: flex; flex-direction: column; gap: 20px; }
+
+  .card {
+    display: flex; align-items: center; gap: 16px;
+    padding: 18px 26px;
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--surface) 70%, transparent);
+    border: 1px solid rgba(255,255,255,0.08);
+    transition: transform 320ms cubic-bezier(.2,.9,.3,1.2), border-color 200ms, background 200ms, box-shadow 200ms;
+  }
+  .card.on {
+    background: var(--surface-lift);
+    border: 2.5px solid var(--gold);
+    transform: scale(1.05);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.55);
+  }
+  .card .chev {
+    width: 26px; font-size: 26px; font-weight: 900; color: var(--gold);
+    opacity: 0; text-align: center; line-height: 1;
+  }
+  .card.on .chev { opacity: 1; }
+  .card.on .chev.off { opacity: 0.15; }
+  .card .body { flex: 1; min-width: 0; }
+  .card .t { font-size: 19px; letter-spacing: 4px; font-weight: 700; text-transform: uppercase; color: var(--muted); }
+  .card.on .t { color: var(--gold); }
+  .card .v { font-size: 46px; font-weight: 800; margin-top: 4px; font-variant-numeric: tabular-nums; }
+
+  /* ---------- transport ---------- */
+  footer { display: flex; align-items: flex-end; justify-content: space-between; }
+  .transport { display: flex; gap: 52px; align-items: flex-start; }
+
+  .tbtn { display: flex; flex-direction: column; align-items: center; gap: 14px;
+          transition: transform 320ms cubic-bezier(.2,.9,.3,1.2); cursor: pointer; }
+  .tbtn.on { transform: scale(1.12); }
+  .tbtn .disc {
+    width: 108px; height: 108px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: color-mix(in srgb, var(--surface) 80%, transparent);
+    border: 2px solid color-mix(in srgb, var(--gold) 28%, transparent);
+    transition: background 200ms, border-color 200ms, box-shadow 200ms;
+  }
+  .tbtn.big .disc {
+    width: 132px; height: 132px;
+    background: color-mix(in srgb, var(--accent) 16%, transparent);
+    border-color: color-mix(in srgb, var(--accent) 70%, transparent);
+  }
+  .tbtn.on .disc { background: var(--gold); border-color: transparent; box-shadow: 0 10px 30px color-mix(in srgb, var(--gold) 60%, transparent); }
+  .tbtn.big.on .disc { background: var(--accent); box-shadow: 0 10px 30px color-mix(in srgb, var(--accent) 60%, transparent); }
+  .tbtn .disc svg { width: 40px; height: 40px; fill: var(--bone); }
+  .tbtn.big .disc svg { width: 52px; height: 52px; }
+  .tbtn.on .disc svg { fill: var(--ink); }
+  .tbtn .cap { font-size: 17px; letter-spacing: 3px; font-weight: 700; text-transform: uppercase; color: var(--faint); }
+  .tbtn.on .cap { color: var(--gold); }
+  .tbtn.big.on .cap { color: var(--accent); }
+
+  .hint { text-align: right; padding-bottom: 34px; }
+  .hint div:first-child { font-size: 18px; letter-spacing: 3px; font-weight: 600; text-transform: uppercase; color: var(--faint); }
+  .hint div:last-child { font-size: 16px; letter-spacing: 2px; font-weight: 500; text-transform: uppercase; color: rgba(85,85,85,0.7); margin-top: 10px; }
+
+  .keys {
+    position: fixed; bottom: 14px; left: 0; right: 0; text-align: center;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px; letter-spacing: 1px; color: #4a4a4a;
+  }
+  @media (max-width: 700px) { .keys { display: none; } }
+</style>
+
+<div id="viewport">
+  <div id="stage">
+    <div class="bloom"></div>
+    <div class="rings"></div>
+    <div class="hairline"></div>
+    <div class="vignette"></div>
+
+    <div class="frame">
+      <header>
+        <div class="lockup">
+          <img class="mark kanji" src="__KANJI__" alt="迷宮">
+          <img class="mark word" src="__WORD__" alt="Labyrinth Brazilian Jiu-Jitsu">
+        </div>
+        <div class="wallclock">
+          <div class="time" id="wall-time">7:26 PM</div>
+          <div class="label date" id="wall-date" style="font-size:20px;letter-spacing:3px">Thursday, 30 Jul</div>
+        </div>
+      </header>
+
+      <div class="middle">
+        <div class="facecol">
+          <div class="badge">
+            <span class="k">Round</span>
+            <span class="n" id="round-no">1</span>
+            <span class="of" id="round-of" hidden></span>
+          </div>
+          <div class="face" id="face">05:00</div>
+          <div class="track"><i id="track"></i></div>
+          <div class="status" id="status">Ready — press start</div>
+        </div>
+
+        <div class="rail" id="rail"></div>
+      </div>
+
+      <footer>
+        <div class="transport" id="transport"></div>
+        <div class="hint">
+          <div>◀ ▶&nbsp;&nbsp;adjust&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▲ ▼&nbsp;&nbsp;move</div>
+          <div>play/pause on the remote works anywhere</div>
+        </div>
+      </footer>
+    </div>
+  </div>
+</div>
+
+<div class="keys">arrow keys move &amp; adjust · enter selects · space starts and pauses</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- the same engine the app runs, in miniature ---------- */
+  var S = {
+    round: 300, warning: 10, rest: 60, rounds: 0,
+    phase: "ready", no: 1, remaining: 300, running: false,
+    deadline: null, lastCued: Infinity
+  };
+
+  var RANGE = {
+    /* Fine steps at the short end, coarse once the rounds get long. */
+    round:   { min: 30, max: 1800, step: function (v, d) { return (d > 0 ? v >= 300 : v > 300) ? 60 : 15; } },
+    warning: { min: 0,  max: 180,  step: 5  },
+    rest:    { min: 0,  max: 600,  step: 15 },
+    rounds:  { min: 0,  max: 30,   step: 1  }
+  };
+
+  var CARDS = ["round", "warning", "rest", "rounds"];
+  var BUTTONS = ["restart", "playPause", "reset"];
+  var focus = "playPause";
+
+  /* ---------- sound, synthesised the way the app does it ---------- */
+  var ctx = null;
+  function audio() {
+    if (!ctx) { try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; } }
+    if (ctx.state === "suspended") ctx.resume();
+    return ctx;
+  }
+  function voice(freq, at, dur, gain, decay) {
+    var c = audio(); if (!c) return;
+    var t = c.currentTime + at;
+    var osc = c.createOscillator(), amp = c.createGain();
+    osc.type = "sine"; osc.frequency.value = freq;
+    amp.gain.setValueAtTime(0, t);
+    amp.gain.linearRampToValueAtTime(gain, t + 0.006);
+    amp.gain.exponentialRampToValueAtTime(0.0001, t + dur * (decay || 1));
+    osc.connect(amp); amp.connect(c.destination);
+    osc.start(t); osc.stop(t + dur * (decay || 1) + 0.05);
+  }
+  function horn(f, at, dur, gain) {
+    voice(f, at, dur, gain, 1); voice(f * 1.5, at, dur, gain * 0.42, 1); voice(f * 2, at, dur, gain * 0.24, 1);
+  }
+  var CUE = {
+    roundStart: function () { horn(392, 0, 0.95, 0.28); horn(587, 0, 0.95, 0.13); },
+    roundEnd:   function () { for (var i = 0; i < 3; i++) { horn(330, i * 0.28, 0.22, 0.28); horn(494, i * 0.28, 0.22, 0.12); } },
+    warning:    function () { voice(880, 0, 0.11, 0.2, 1); voice(880, 0.17, 0.11, 0.2, 1); },
+    tick:       function () { voice(1240, 0, 0.06, 0.14, 1); },
+    sessionEnd: function () { horn(392, 0, 0.2, 0.24); horn(494, 0.2, 0.2, 0.24); horn(587, 0.4, 0.2, 0.26); horn(784, 0.6, 1.2, 0.28); },
+    click:      function () { voice(1500, 0, 0.025, 0.05, 1); }
+  };
+  function cue(name) { if (CUE[name]) CUE[name](); }
+
+  /* ---------- formatting ---------- */
+  function mmss(s) {
+    s = Math.max(0, s);
+    return String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(s % 60).padStart(2, "0");
+  }
+  function compact(s) { return s === 0 ? "OFF" : Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+
+  function phaseLength() { return S.phase === "rest" ? S.rest : S.round; }
+  function displaySeconds() { return Math.max(0, Math.ceil(S.remaining - 0.0001)); }
+  function isWarning() { return S.phase === "work" && S.warning > 0 && S.remaining <= S.warning + 0.001; }
+
+  /* ---------- transport ---------- */
+  function begin(phase, seconds, sound) {
+    S.phase = phase;
+    S.remaining = seconds;
+    S.deadline = performance.now() + seconds * 1000;
+    S.running = true;
+    S.lastCued = Infinity;
+    if (sound) cue(sound);
+  }
+  function start() {
+    if (S.phase === "finished") { reset(); begin("work", S.round, "roundStart"); return; }
+    if (S.phase === "ready") { begin("work", S.round, "roundStart"); return; }
+    S.deadline = performance.now() + S.remaining * 1000;
+    S.running = true; S.lastCued = Infinity;
+  }
+  function pause() {
+    if (!S.running) return;
+    S.remaining = Math.max(0, (S.deadline - performance.now()) / 1000);
+    S.running = false; S.deadline = null;
+  }
+  function toggle() { S.running ? pause() : start(); }
+  function restartPhase() {
+    if (S.phase !== "work" && S.phase !== "rest") { reset(); cue("click"); return; }
+    S.remaining = S.phase === "rest" ? S.rest : S.round;
+    S.lastCued = Infinity;
+    if (S.running) S.deadline = performance.now() + S.remaining * 1000;
+    cue("click");
+  }
+  function reset() {
+    S.running = false; S.deadline = null; S.phase = "ready"; S.no = 1;
+    S.remaining = S.round; S.lastCued = Infinity;
+  }
+  function advance() {
+    S.lastCued = Infinity;
+    if (S.phase === "work") {
+      if (S.rounds > 0 && S.no >= S.rounds) {
+        S.running = false; S.deadline = null; S.phase = "finished"; S.remaining = 0; cue("sessionEnd");
+      } else if (S.rest > 0) {
+        begin("rest", S.rest, "roundEnd");
+      } else {
+        S.no += 1; begin("work", S.round, "roundEnd");
+      }
+    } else if (S.phase === "rest") {
+      S.no += 1; begin("work", S.round, "roundStart");
+    } else { pause(); }
+  }
+
+  /* ---------- chrome ---------- */
+  function accent() {
+    if (S.phase === "rest") return "var(--red)";
+    if (S.phase === "finished") return "var(--green)";
+    if (S.phase === "work" && isWarning()) return "var(--gold-light)";
+    return "var(--gold)";
+  }
+  function faceColour() {
+    if (S.phase === "rest") return "var(--red)";
+    if (S.phase === "finished") return "var(--green)";
+    if (S.phase === "work") return isWarning() ? "var(--gold-light)" : "var(--bone)";
+    return "var(--gold)";
+  }
+  function status() {
+    if (!S.running) {
+      if (S.phase === "ready") return "Ready — press start";
+      if (S.phase === "finished") return "Session complete";
+      return "Paused";
+    }
+    if (S.phase === "rest") return "Rest";
+    if (S.phase === "work") return isWarning() ? "Final " + displaySeconds() + " seconds" : "Round in progress";
+    return "";
+  }
+
+  /* ---------- rail + transport markup ---------- */
+  var LABELS = { round: "Round", warning: "Warning", rest: "Rest", rounds: "Rounds" };
+  var rail = document.getElementById("rail");
+  CARDS.forEach(function (key) {
+    var el = document.createElement("div");
+    el.className = "card"; el.dataset.field = key;
+    el.innerHTML = '<span class="chev l">‹</span>' +
+                   '<div class="body"><div class="t">' + LABELS[key] + '</div><div class="v"></div></div>' +
+                   '<span class="chev r">›</span>';
+    el.addEventListener("click", function () { focus = key; render(); });
+    el.querySelector(".l").addEventListener("click", function (e) { e.stopPropagation(); focus = key; adjust(key, -1); });
+    el.querySelector(".r").addEventListener("click", function (e) { e.stopPropagation(); focus = key; adjust(key, 1); });
+    rail.appendChild(el);
+  });
+
+  var ICON = {
+    restart: '<path d="M12 5V1L7 6l5 5V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z" transform="scale(2)"/>',
+    play: '<path d="M8 5v14l11-7z" transform="scale(2)"/>',
+    pause: '<path d="M6 5h4v14H6zm8 0h4v14h-4z" transform="scale(2)"/>',
+    reset: '<path d="M6 6h2v12H6zm3 6l9-6v12z" transform="scale(2)"/>'
+  };
+  var CAPS = { restart: "Restart round", playPause: "Start", reset: "Reset" };
+  var ACTIONS = { restart: restartPhase, playPause: toggle, reset: reset };
+  var transport = document.getElementById("transport");
+  BUTTONS.forEach(function (key) {
+    var el = document.createElement("div");
+    el.className = "tbtn" + (key === "playPause" ? " big" : "");
+    el.dataset.field = key;
+    el.innerHTML = '<div class="disc"><svg viewBox="0 0 48 48"></svg></div><div class="cap"></div>';
+    el.addEventListener("click", function () { focus = key; ACTIONS[key](); render(); });
+    transport.appendChild(el);
+  });
+
+  /* ---------- input ---------- */
+  function adjust(key, dir) {
+    var r = RANGE[key];
+    var step = typeof r.step === "function" ? r.step(S[key], dir) : r.step;
+    S[key] = Math.min(r.max, Math.max(r.min, S[key] + dir * step));
+    if (key === "round" && !S.running && S.phase === "ready") S.remaining = S.round;
+    cue("click");
+    render();
+  }
+  function move(dir) {
+    var i;
+    if (CARDS.indexOf(focus) >= 0) {
+      i = CARDS.indexOf(focus);
+      if (dir === "left") { adjust(focus, -1); return; }
+      if (dir === "right") { adjust(focus, 1); return; }
+      if (dir === "up") focus = CARDS[Math.max(0, i - 1)];
+      if (dir === "down") focus = i + 1 < CARDS.length ? CARDS[i + 1] : "playPause";
+    } else {
+      i = BUTTONS.indexOf(focus);
+      if (dir === "left") focus = BUTTONS[Math.max(0, i - 1)];
+      if (dir === "right") focus = BUTTONS[Math.min(BUTTONS.length - 1, i + 1)];
+      if (dir === "up") focus = "rounds";
+    }
+    render();
+  }
+  var KEYS = { ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down" };
+  document.addEventListener("keydown", function (e) {
+    if (KEYS[e.key]) { e.preventDefault(); move(KEYS[e.key]); return; }
+    if (e.key === " " || e.key === "MediaPlayPause") { e.preventDefault(); toggle(); render(); return; }
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (ACTIONS[focus]) ACTIONS[focus]();
+      render();
+    }
+  });
+
+  /* ---------- render ---------- */
+  var faceEl = document.getElementById("face");
+  var trackEl = document.getElementById("track");
+  var statusEl = document.getElementById("status");
+  var roundNo = document.getElementById("round-no");
+  var roundOf = document.getElementById("round-of");
+  var stage = document.getElementById("stage");
+  var lastSecond = null;
+
+  function render() {
+    var seconds = displaySeconds();
+    stage.style.setProperty("--accent", accent());
+    stage.style.setProperty("--face", faceColour());
+    stage.style.setProperty("--bloom", S.running ? 1 : 0.55);
+
+    faceEl.textContent = mmss(seconds);
+    var pulsing = (isWarning() || S.phase === "rest") && S.running && seconds % 2 === 0;
+    faceEl.classList.toggle("pulse", pulsing);
+
+    var total = Math.max(1, phaseLength());
+    trackEl.style.width = (Math.max(0, Math.min(1, S.remaining / total)) * 100) + "%";
+
+    statusEl.textContent = status();
+    statusEl.classList.toggle("live", S.running);
+
+    roundNo.textContent = S.no;
+    roundOf.hidden = S.rounds === 0;
+    roundOf.textContent = "of " + S.rounds;
+
+    CARDS.forEach(function (key) {
+      var el = rail.querySelector('[data-field="' + key + '"]');
+      var r = RANGE[key];
+      el.classList.toggle("on", focus === key);
+      el.querySelector(".v").textContent =
+        key === "rounds" ? (S.rounds === 0 ? "∞" : String(S.rounds)) : compact(S[key]);
+      el.querySelector(".l").classList.toggle("off", S[key] <= r.min);
+      el.querySelector(".r").classList.toggle("off", S[key] >= r.max);
+    });
+
+    BUTTONS.forEach(function (key) {
+      var el = transport.querySelector('[data-field="' + key + '"]');
+      el.classList.toggle("on", focus === key);
+      var glyph = key === "playPause" ? (S.running ? ICON.pause : ICON.play) : ICON[key];
+      el.querySelector("svg").innerHTML = glyph;
+      el.querySelector(".cap").textContent = key === "playPause" ? (S.running ? "Pause" : "Start") : CAPS[key];
+    });
+  }
+
+  function frame() {
+    if (S.running && S.deadline !== null) {
+      var left = (S.deadline - performance.now()) / 1000;
+      S.remaining = Math.max(0, left);
+      if (left <= 0) {
+        advance();
+      } else {
+        var second = Math.ceil(left);
+        if (second !== S.lastCued) {
+          var previous = S.lastCued;
+          S.lastCued = second;
+          if (S.phase === "work" && S.warning > 0 && second === S.warning && previous > second) cue("warning");
+          else if (second <= 3 && previous > second) cue("tick");
+        }
+      }
+    }
+    var seconds = displaySeconds();
+    if (seconds !== lastSecond || S.running) { lastSecond = seconds; render(); }
+    requestAnimationFrame(frame);
+  }
+
+  /* ---------- wall clock + scaling ---------- */
+  function wall() {
+    var now = new Date();
+    document.getElementById("wall-time").textContent =
+      now.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+    document.getElementById("wall-date").textContent =
+      now.toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "short" });
+  }
+  setInterval(wall, 10000); wall();
+
+  function fit() {
+    var k = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+    stage.style.transform = "scale(" + k + ")";
+  }
+  window.addEventListener("resize", fit); fit();
+
+  render();
+  requestAnimationFrame(frame);
+})();
+</script>

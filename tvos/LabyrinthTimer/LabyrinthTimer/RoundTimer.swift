@@ -1,0 +1,275 @@
+import Combine
+import Foundation
+
+/// The whole timer: a round, an optional warning inside that round, and an
+/// optional rest between rounds. Nothing else — the coaches asked for the
+/// clock, not a settings app.
+@MainActor
+final class RoundTimer: ObservableObject {
+
+    enum Phase {
+        case ready      // parked at the top of round 1
+        case work       // the round is running
+        case rest       // between rounds
+        case finished   // the last round of a fixed-length session is done
+    }
+
+    // MARK: Settings
+
+    /// Length of a round, in seconds.
+    @Published var roundLength: Int = Defaults.round {
+        didSet { settingChanged(oldValue, roundLength, key: Keys.round, phase: .work) }
+    }
+
+    /// How much time is left in a round when the warning fires. 0 turns it off.
+    @Published var warningLength: Int = Defaults.warning {
+        didSet { store.set(warningLength, forKey: Keys.warning) }
+    }
+
+    /// Rest between rounds. 0 runs the rounds back to back.
+    @Published var restLength: Int = Defaults.rest {
+        didSet { settingChanged(oldValue, restLength, key: Keys.rest, phase: .rest) }
+    }
+
+    /// Rounds in the session. 0 means keep going until someone stops it.
+    @Published var roundCount: Int = Defaults.rounds {
+        didSet { store.set(roundCount, forKey: Keys.rounds) }
+    }
+
+    // MARK: Live state
+
+    @Published private(set) var phase: Phase = .ready
+    @Published private(set) var round: Int = 1
+    @Published private(set) var remaining: TimeInterval = TimeInterval(Defaults.round)
+    @Published private(set) var running = false
+
+    private var deadline: Date?
+    private var ticker: Timer?
+    /// The last whole second we fired a cue for, so a 30 Hz tick doesn't fire
+    /// the same beep thirty times.
+    private var lastCuedSecond: Int = .max
+    private let store = UserDefaults.standard
+    private let cues: Cues
+
+    // MARK: Steps and limits — what a click of the remote is worth
+
+    static let roundRange = 30...1800
+    static let warningRange = 0...180, warningStep = 5
+    static let restRange = 0...600, restStep = 15
+    static let roundCountRange = 0...30   // 0 == unlimited
+
+    /// Fine steps at the short end where fifteen seconds is a real
+    /// difference, coarse once the rounds get long — otherwise dialling in a
+    /// ten-minute round is forty presses of the remote.
+    static func roundStep(from value: Int, going direction: Int) -> Int {
+        let coarseAbove = 300
+        return (direction > 0 ? value >= coarseAbove : value > coarseAbove) ? 60 : 15
+    }
+
+    private enum Defaults {
+        static let round = 300, warning = 10, rest = 60, rounds = 0
+    }
+
+    private enum Keys {
+        static let round = "roundLength", warning = "warningLength"
+        static let rest = "restLength", rounds = "roundCount"
+    }
+
+    init(cues: Cues = .shared) {
+        self.cues = cues
+        if store.object(forKey: Keys.round) != nil {
+            roundLength = clamp(store.integer(forKey: Keys.round), Self.roundRange)
+            warningLength = clamp(store.integer(forKey: Keys.warning), Self.warningRange)
+            restLength = clamp(store.integer(forKey: Keys.rest), Self.restRange)
+            roundCount = clamp(store.integer(forKey: Keys.rounds), Self.roundCountRange)
+        }
+        remaining = TimeInterval(roundLength)
+    }
+
+    // MARK: Derived
+
+    /// The length of whatever is on the clock right now.
+    var phaseLength: Int {
+        switch phase {
+        case .rest: return restLength
+        case .ready, .work, .finished: return roundLength
+        }
+    }
+
+    /// 0 at the start of the phase, 1 when it runs out. Drives the bar.
+    var progress: Double {
+        let total = Double(max(phaseLength, 1))
+        return min(max(1 - remaining / total, 0), 1)
+    }
+
+    /// True once the round is inside its warning window.
+    var isWarning: Bool {
+        phase == .work && warningLength > 0 && remaining <= TimeInterval(warningLength) + 0.001
+    }
+
+    var isUnlimited: Bool { roundCount == 0 }
+
+    /// Seconds shown on the face. Rounded up so a fresh 5:00 round reads 5:00,
+    /// not 4:59.
+    var displaySeconds: Int { max(0, Int(remaining.rounded(.up))) }
+
+    // MARK: Transport
+
+    func toggle() {
+        running ? pause() : start()
+    }
+
+    func start() {
+        switch phase {
+        case .finished:
+            reset()
+            begin(phase: .work, seconds: roundLength, cue: .roundStart)
+        case .ready:
+            begin(phase: .work, seconds: roundLength, cue: .roundStart)
+        case .work, .rest:
+            resume()
+        }
+    }
+
+    func pause() {
+        guard running else { return }
+        remaining = max(0, deadline?.timeIntervalSinceNow ?? remaining)
+        deadline = nil
+        running = false
+        stopTicker()
+    }
+
+    /// Puts the current round (or rest) back to full. Keeps running if it was.
+    func restartPhase() {
+        guard phase == .work || phase == .rest else {
+            reset()
+            cues.play(.click)
+            return
+        }
+        let wasRunning = running
+        remaining = TimeInterval(phase == .rest ? restLength : roundLength)
+        lastCuedSecond = .max
+        if wasRunning {
+            deadline = Date().addingTimeInterval(remaining)
+            startTicker()
+        } else {
+            deadline = nil
+        }
+        cues.play(.click)
+    }
+
+    /// All the way back to the top of round 1, stopped.
+    func reset() {
+        running = false
+        deadline = nil
+        stopTicker()
+        phase = .ready
+        round = 1
+        remaining = TimeInterval(roundLength)
+        lastCuedSecond = .max
+    }
+
+    // MARK: Engine
+
+    private func resume() {
+        guard !running else { return }
+        deadline = Date().addingTimeInterval(remaining)
+        running = true
+        lastCuedSecond = .max
+        startTicker()
+    }
+
+    private func begin(phase newPhase: Phase, seconds: Int, cue: Cues.Cue?) {
+        phase = newPhase
+        remaining = TimeInterval(seconds)
+        deadline = Date().addingTimeInterval(remaining)
+        running = true
+        lastCuedSecond = .max
+        if let cue { cues.play(cue) }
+        startTicker()
+    }
+
+    private func startTicker() {
+        stopTicker()
+        // 30 Hz: smooth enough for the depleting bar, cheap enough to leave
+        // running on a gym TV all evening.
+        let timer = Timer(timeInterval: 1.0 / 30.0, repeats: true) { [weak self] _ in
+            Task { @MainActor in self?.tick() }
+        }
+        // .common so the bar keeps moving while the focus engine is animating.
+        RunLoop.main.add(timer, forMode: .common)
+        ticker = timer
+    }
+
+    private func stopTicker() {
+        ticker?.invalidate()
+        ticker = nil
+    }
+
+    private func tick() {
+        guard running, let deadline else { return }
+        let left = deadline.timeIntervalSinceNow
+        remaining = max(0, left)
+
+        if left <= 0 {
+            advance()
+            return
+        }
+
+        // Cues are keyed off the whole second so they fire exactly once.
+        let second = Int(left.rounded(.up))
+        guard second != lastCuedSecond else { return }
+        let previous = lastCuedSecond
+        lastCuedSecond = second
+
+        if phase == .work, warningLength > 0, second == warningLength, previous > second {
+            cues.play(.warning)
+        } else if second <= 3, previous > second {
+            cues.play(.tick)
+        }
+    }
+
+    /// The clock hit zero — work out what comes next.
+    private func advance() {
+        lastCuedSecond = .max
+        switch phase {
+        case .work:
+            let isLastRound = !isUnlimited && round >= roundCount
+            if isLastRound {
+                stopTicker()
+                running = false
+                deadline = nil
+                phase = .finished
+                remaining = 0
+                cues.play(.sessionEnd)
+            } else if restLength > 0 {
+                begin(phase: .rest, seconds: restLength, cue: .roundEnd)
+            } else {
+                round += 1
+                begin(phase: .work, seconds: roundLength, cue: .roundEnd)
+            }
+        case .rest:
+            round += 1
+            begin(phase: .work, seconds: roundLength, cue: .roundStart)
+        case .ready, .finished:
+            pause()
+        }
+    }
+
+    // MARK: Settings plumbing
+
+    /// A length changed. If the clock is parked, show it immediately; if it is
+    /// running, let the current round finish on the old length and pick the new
+    /// one up next time round.
+    private func settingChanged(_ old: Int, _ new: Int, key: String, phase target: Phase) {
+        store.set(new, forKey: key)
+        guard old != new else { return }
+        if !running && phase == .ready && target == .work {
+            remaining = TimeInterval(new)
+        }
+    }
+}
+
+private func clamp(_ value: Int, _ range: ClosedRange<Int>) -> Int {
+    min(max(value, range.lowerBound), range.upperBound)
+}
