@@ -1,9 +1,8 @@
 # Labyrinth Round Timer — Apple TV
 
-A branded round timer for the mats. One screen, no settings page: round length,
-warning and rest sit on the right rail and change with a left/right press on the
-remote. Start/pause and reset live along the bottom — the same shape as the
-timer we've been using, in the gym's own colours.
+A branded round timer for the mats. One screen, no settings page: the clock sits
+dead centre of the TV and everything you can touch is in the strip along the
+bottom — start/pause, reset, and the three colour-coded settings.
 
 <p align="center">
   <em>Ink, gold, the roundel turning behind the clock. Same palette as
@@ -22,7 +21,7 @@ tvos/
 │       ├── RoundTimer.swift          rounds, warning, rest — the state machine
 │       ├── Cues.swift                horns and beeps, synthesised at launch
 │       ├── Backdrop.swift            the room behind the clock
-│       ├── Components.swift          badge, rail cards, transport, wall clock
+│       ├── Components.swift          badge, setting cards, transport, wall clock
 │       ├── Theme.swift               the palette, lifted from the website
 │       └── Assets.xcassets           app icon, top shelf art, brand marks
 ├── preview/                   a browser mirror of the same screen
@@ -52,18 +51,23 @@ Deployment target is tvOS 17. It runs on Apple TV HD and every Apple TV 4K.
 
 | Remote | What it does |
 | --- | --- |
-| ▲ ▼ | Move between the rail cards and the transport row |
-| ◀ ▶ | Change the focused card's value |
+| ◀ ▶ | Walk along the bottom strip |
+| ▲ ▼ | Change the focused setting |
 | Click | Fires the focused button |
 | Play/Pause | Starts and pauses from anywhere on the screen |
 
-- **Round** — 0:30 to 30:00. Fifteen-second steps up to five minutes, then
-  minute steps, so a long round doesn't cost forty presses.
-- **Warning** — how much time is left in the round when the clock turns gold and
-  the double beep fires. Wind it down to `OFF` to skip it.
-- **Rest** — 0 to 10:00. At `OFF` the rounds run back to back.
-- **Rounds** — `∞`, or a fixed session of up to 30. A fixed session ends on a
-  flourish instead of rolling into another round.
+The strip runs left to right, so left and right do the travelling and up and
+down are free to change values. The focused card shows the ▲▼ stepper, and each
+setting carries its own colour so a coach can find the one they want without
+reading the labels:
+
+- **Round** (green) — 0:30 to 30:00. Fifteen-second steps up to five minutes,
+  then minute steps, so a long round doesn't cost forty presses.
+- **Warning** (yellow) — how much time is left in the round when the clock turns
+  gold and the double beep fires. Wind it down to `OFF` to skip it.
+- **Rest** (red) — 0 to 10:00. At `OFF` the rounds run back to back.
+- **Rounds** (gold) — `∞`, or a fixed session of up to 30. A fixed session ends
+  on a flourish instead of rolling into another round.
 
 **Start/Pause** is one button — it shows whichever the clock needs next.
 **Reset** zeroes everything out: back to the top of round 1, stopped, with the

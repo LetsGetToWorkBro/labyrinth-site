@@ -13,6 +13,11 @@ enum Palette {
     static let goldLight = Color(hex: 0xE8C96B)
     static let red = Color(hex: 0xE74C3C)
     static let green = Color(hex: 0x27AE60)
+
+    /// The three settings are colour-coded — round, warning, rest. `yellow` is
+    /// the site's light gold pushed a little warmer so it can't be mistaken for
+    /// the brand gold sitting next to it on the ROUNDS card.
+    static let yellow = Color(hex: 0xE2B93B)
 }
 
 extension Color {

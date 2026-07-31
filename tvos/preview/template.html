@@ -17,6 +17,7 @@
     --gold-light: #E8C96B;
     --red: #E74C3C;
     --green: #27AE60;
+    --yellow: #E2B93B;
     --accent: var(--gold);
     --face: var(--gold);
   }
@@ -92,9 +93,20 @@
   .frame {
     position: absolute;
     inset: 60px;                 /* the tvOS safe area */
-    padding: 12px 48px 8px;
+    padding: 10px 48px;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;   /* header pinned top, strip pinned bottom */
+  }
+
+  /* The clock is centred on the stage itself, not laid out between the header
+     and the strip, so it sits in the middle of the TV. */
+  .centre {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
   }
 
   header { display: flex; align-items: flex-start; justify-content: space-between; }
@@ -106,29 +118,19 @@
 
   .wallclock { text-align: right; }
   .wallclock .time {
-    font-size: 54px; font-weight: 600; font-variant-numeric: tabular-nums;
-    letter-spacing: -0.01em;
+    font-size: 86px; font-weight: 700; font-variant-numeric: tabular-nums;
+    letter-spacing: -0.015em; line-height: 1.05;
   }
-  .wallclock .date { margin-top: 6px; }
+  .wallclock .date { margin-top: 4px; font-size: 28px; letter-spacing: 4px; font-weight: 700; }
 
   .label {
     text-transform: uppercase; color: var(--muted); font-weight: 600;
   }
 
-  .middle {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 72px;
-    min-height: 0;
-  }
-
   /* ---------- clock face ---------- */
   .facecol {
-    flex: 1;
-    display: flex; flex-direction: column; align-items: center; gap: 30px;
-    min-width: 0;
+    width: 1180px;
+    display: flex; flex-direction: column; align-items: center; gap: 20px;
   }
 
   .badge {
@@ -144,13 +146,13 @@
   .badge .of { font-size: 24px; letter-spacing: 4px; font-weight: 700; color: var(--faint); text-transform: uppercase; }
 
   .face {
-    font-size: 300px;
+    font-size: 260px;
     font-weight: 900;
     line-height: 0.95;
     letter-spacing: -0.02em;
     font-variant-numeric: tabular-nums;
     color: var(--face);
-    text-shadow: 0 0 60px color-mix(in srgb, var(--face) 30%, transparent);
+    text-shadow: 0 0 46px color-mix(in srgb, var(--face) 20%, transparent);
     transition: color 400ms ease, transform 260ms cubic-bezier(.2,.9,.3,1.2);
   }
   .face.pulse { transform: scale(1.028); }
@@ -176,48 +178,50 @@
   }
   .status.live { color: var(--accent); }
 
-  /* ---------- right rail ---------- */
-  .rail { width: 520px; display: flex; flex-direction: column; gap: 22px; }
+  /* ---------- the settings strip ---------- */
+  /* Each card carries its own colour — green for the round, yellow for the
+     warning, red for the rest — so a coach finds the one they want without
+     reading the labels. The strip runs left to right, so left/right walks it
+     and up/down changes the focused value. */
+  .cards { flex: 1; display: flex; gap: 20px; }
 
-  /* Label left, value right, on one line: the numbers are what a coach reads
-     from across the mat, so they get the room. */
   .card {
+    flex: 1; min-width: 0;
     display: flex; align-items: center; gap: 14px;
-    padding: 18px 28px;
-    border-radius: 18px;
-    background: color-mix(in srgb, var(--surface) 90%, transparent);
-    border: 1px solid rgba(255,255,255,0.12);
+    padding: 18px 26px;
+    border-radius: 20px;
+    background: color-mix(in srgb, var(--tint) 12%, transparent);
+    border: 1.5px solid color-mix(in srgb, var(--tint) 42%, transparent);
     transition: transform 320ms cubic-bezier(.2,.9,.3,1.2), border-color 200ms, background 200ms, box-shadow 200ms;
   }
   .card.on {
-    background: var(--surface-lift);
-    border: 3px solid var(--gold);
-    transform: scale(1.04);
-    box-shadow: 0 12px 28px rgba(0,0,0,0.55);
+    background: color-mix(in srgb, var(--tint) 26%, transparent);
+    border: 3.5px solid var(--tint);
+    transform: scale(1.05);
+    box-shadow: 0 12px 28px color-mix(in srgb, var(--tint) 40%, transparent);
   }
-  .card .chev {
-    width: 30px; font-size: 30px; font-weight: 900; color: var(--gold);
-    opacity: 0; text-align: center; line-height: 1;
+  .card .body { flex: 1; min-width: 0; }
+  .card .t { font-size: 21px; letter-spacing: 5px; font-weight: 700; text-transform: uppercase;
+             color: var(--tint); white-space: nowrap; }
+  .card .v { font-size: 58px; font-weight: 800; line-height: 1.12; font-variant-numeric: tabular-nums;
+             color: var(--bone); white-space: nowrap; }
+  .card .step { display: flex; flex-direction: column; opacity: 0; }
+  .card.on .step { opacity: 1; }
+  .card .step span {
+    width: 26px; height: 26px; font-size: 20px; line-height: 26px;
+    text-align: center; color: var(--tint);
   }
-  .card.on .chev { opacity: 1; }
-  .card.on .chev.off { opacity: 0.15; }
-  .card .t { font-size: 22px; letter-spacing: 5px; font-weight: 700; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
-  .card.on .t { color: var(--gold); }
-  .card .spacer { flex: 1; min-width: 12px; }
-  .card .v { font-size: 60px; font-weight: 800; line-height: 1.1; font-variant-numeric: tabular-nums;
-             color: color-mix(in srgb, var(--bone) 92%, transparent); white-space: nowrap; }
-  .card.on .v { color: var(--bone); }
+  .card .step span.off { opacity: 0.18; }
 
   /* ---------- transport ---------- */
-  footer { display: flex; align-items: flex-end; gap: 72px; }
-  /* The row takes the clock's column so the buttons sit on its centre line. */
-  .transport { flex: 1; display: flex; gap: 96px; align-items: flex-start; justify-content: center; }
+  footer { display: flex; align-items: center; gap: 56px; }
+  .transport { display: flex; gap: 44px; align-items: flex-start; }
 
-  .tbtn { display: flex; flex-direction: column; align-items: center; gap: 16px;
+  .tbtn { display: flex; flex-direction: column; align-items: center; gap: 14px;
           transition: transform 320ms cubic-bezier(.2,.9,.3,1.2); cursor: pointer; }
   .tbtn.on { transform: scale(1.09); }
   .tbtn .disc {
-    width: 168px; height: 168px; border-radius: 50%;
+    width: 196px; height: 196px; border-radius: 50%;
     display: grid; place-items: center;
     background: color-mix(in srgb, var(--surface) 85%, transparent);
     border: 2.5px solid color-mix(in srgb, var(--gold) 30%, transparent);
@@ -229,15 +233,11 @@
   }
   .tbtn.on .disc { background: var(--gold); border-color: transparent; box-shadow: 0 12px 34px color-mix(in srgb, var(--gold) 60%, transparent); }
   .tbtn.big.on .disc { background: var(--accent); box-shadow: 0 12px 34px color-mix(in srgb, var(--accent) 60%, transparent); }
-  .tbtn .disc svg { width: 74px; height: 74px; fill: var(--bone); }
+  .tbtn .disc svg { width: 86px; height: 86px; fill: var(--bone); }
   .tbtn.on .disc svg { fill: var(--ink); }
-  .tbtn .cap { font-size: 20px; letter-spacing: 4px; font-weight: 700; text-transform: uppercase; color: var(--muted); }
+  .tbtn .cap { font-size: 22px; letter-spacing: 4px; font-weight: 700; text-transform: uppercase; color: var(--muted); }
   .tbtn.on .cap { color: var(--gold); }
   .tbtn.big.on .cap { color: var(--accent); }
-
-  .hint { width: 520px; text-align: right; padding-bottom: 40px; }
-  .hint div:first-child { font-size: 18px; letter-spacing: 3px; font-weight: 600; text-transform: uppercase; color: var(--faint); }
-  .hint div:last-child { font-size: 16px; letter-spacing: 2px; font-weight: 500; text-transform: uppercase; color: rgba(85,85,85,0.7); margin-top: 10px; }
 
   .keys {
     position: fixed; bottom: 14px; left: 0; right: 0; text-align: center;
@@ -254,6 +254,19 @@
     <div class="hairline"></div>
     <div class="vignette"></div>
 
+    <div class="centre">
+      <div class="facecol">
+        <div class="badge">
+          <span class="k">Round</span>
+          <span class="n" id="round-no">1</span>
+          <span class="of" id="round-of" hidden></span>
+        </div>
+        <div class="face" id="face">05:00</div>
+        <div class="track"><i id="track"></i></div>
+        <div class="status" id="status">Ready — press start</div>
+      </div>
+    </div>
+
     <div class="frame">
       <header>
         <div class="lockup">
@@ -266,27 +279,9 @@
         </div>
       </header>
 
-      <div class="middle">
-        <div class="facecol">
-          <div class="badge">
-            <span class="k">Round</span>
-            <span class="n" id="round-no">1</span>
-            <span class="of" id="round-of" hidden></span>
-          </div>
-          <div class="face" id="face">05:00</div>
-          <div class="track"><i id="track"></i></div>
-          <div class="status" id="status">Ready — press start</div>
-        </div>
-
-        <div class="rail" id="rail"></div>
-      </div>
-
       <footer>
         <div class="transport" id="transport"></div>
-        <div class="hint">
-          <div>◀ ▶&nbsp;&nbsp;adjust&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;▲ ▼&nbsp;&nbsp;move</div>
-          <div>play/pause on the remote works anywhere</div>
-        </div>
+        <div class="cards" id="cards"></div>
       </footer>
     </div>
   </div>
@@ -315,6 +310,9 @@
 
   var CARDS = ["round", "warning", "rest", "rounds"];
   var BUTTONS = ["playPause", "reset"];
+  /* Everything focusable, in the order it appears along the bottom. */
+  var STRIP = BUTTONS.concat(CARDS);
+  var TINT = { round: "var(--green)", warning: "var(--yellow)", rest: "var(--red)", rounds: "var(--gold)" };
   var focus = "playPause";
 
   /* ---------- sound, synthesised the way the app does it ---------- */
@@ -425,21 +423,19 @@
     return "";
   }
 
-  /* ---------- rail + transport markup ---------- */
+  /* ---------- strip markup ---------- */
   var LABELS = { round: "Round", warning: "Warning", rest: "Rest", rounds: "Rounds" };
-  var rail = document.getElementById("rail");
+  var cards = document.getElementById("cards");
   CARDS.forEach(function (key) {
     var el = document.createElement("div");
     el.className = "card"; el.dataset.field = key;
-    el.innerHTML = '<span class="chev l">‹</span>' +
-                   '<span class="t">' + LABELS[key] + '</span>' +
-                   '<span class="spacer"></span>' +
-                   '<span class="v"></span>' +
-                   '<span class="chev r">›</span>';
+    el.style.setProperty("--tint", TINT[key]);
+    el.innerHTML = '<div class="body"><div class="t">' + LABELS[key] + '</div><div class="v"></div></div>' +
+                   '<div class="step"><span class="up">▲</span><span class="down">▼</span></div>';
     el.addEventListener("click", function () { focus = key; render(); });
-    el.querySelector(".l").addEventListener("click", function (e) { e.stopPropagation(); focus = key; adjust(key, -1); });
-    el.querySelector(".r").addEventListener("click", function (e) { e.stopPropagation(); focus = key; adjust(key, 1); });
-    rail.appendChild(el);
+    el.querySelector(".up").addEventListener("click", function (e) { e.stopPropagation(); focus = key; adjust(key, 1); });
+    el.querySelector(".down").addEventListener("click", function (e) { e.stopPropagation(); focus = key; adjust(key, -1); });
+    cards.appendChild(el);
   });
 
   var ICON = {
@@ -468,20 +464,12 @@
     cue("click");
     render();
   }
+  /* Up and down are spent changing values, so left and right do the travelling. */
   function move(dir) {
-    var i;
-    if (CARDS.indexOf(focus) >= 0) {
-      i = CARDS.indexOf(focus);
-      if (dir === "left") { adjust(focus, -1); return; }
-      if (dir === "right") { adjust(focus, 1); return; }
-      if (dir === "up") focus = CARDS[Math.max(0, i - 1)];
-      if (dir === "down") focus = i + 1 < CARDS.length ? CARDS[i + 1] : "playPause";
-    } else {
-      i = BUTTONS.indexOf(focus);
-      if (dir === "left") focus = BUTTONS[Math.max(0, i - 1)];
-      if (dir === "right") focus = BUTTONS[Math.min(BUTTONS.length - 1, i + 1)];
-      if (dir === "up") focus = "rounds";
-    }
+    var i = STRIP.indexOf(focus);
+    if (dir === "left") focus = STRIP[Math.max(0, i - 1)];
+    else if (dir === "right") focus = STRIP[Math.min(STRIP.length - 1, i + 1)];
+    else if (CARDS.indexOf(focus) >= 0) { adjust(focus, dir === "up" ? 1 : -1); return; }
     render();
   }
   var KEYS = { ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down" };
@@ -525,13 +513,13 @@
     roundOf.textContent = "of " + S.rounds;
 
     CARDS.forEach(function (key) {
-      var el = rail.querySelector('[data-field="' + key + '"]');
+      var el = cards.querySelector('[data-field="' + key + '"]');
       var r = RANGE[key];
       el.classList.toggle("on", focus === key);
       el.querySelector(".v").textContent =
         key === "rounds" ? (S.rounds === 0 ? "∞" : String(S.rounds)) : compact(S[key]);
-      el.querySelector(".l").classList.toggle("off", S[key] <= r.min);
-      el.querySelector(".r").classList.toggle("off", S[key] >= r.max);
+      el.querySelector(".up").classList.toggle("off", S[key] >= r.max);
+      el.querySelector(".down").classList.toggle("off", S[key] <= r.min);
     });
 
     BUTTONS.forEach(function (key) {

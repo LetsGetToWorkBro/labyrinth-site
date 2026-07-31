@@ -1,48 +1,43 @@
 import SwiftUI
 
-/// The whole app: one screen, no navigation. Focus a card on the right rail and
-/// press left/right to change it; everything else is the transport row.
+/// The whole app: one screen, no navigation. The clock sits dead centre of the
+/// TV; everything you can touch is in the strip along the bottom.
 struct TimerScreen: View {
 
     @StateObject private var timer = RoundTimer()
     @FocusState private var focus: Field?
 
     enum Field: Hashable {
-        case round, warning, rest, rounds
         case playPause, reset
+        case round, warning, rest, rounds
 
         var isCard: Bool {
             switch self {
             case .round, .warning, .rest, .rounds: return true
-            default: return false
+            case .playPause, .reset: return false
             }
         }
     }
 
-    private static let cards: [Field] = [.round, .warning, .rest, .rounds]
-    private static let transport: [Field] = [.playPause, .reset]
-
-    /// Width of the right rail. The clock face takes whatever is left, and the
-    /// transport row below lines up with it.
-    private static let railWidth: CGFloat = 520
+    /// Everything focusable, in the order it appears along the bottom. Left and
+    /// right walk this list; up and down change whatever card is focused.
+    private static let strip: [Field] = [.playPause, .reset, .round, .warning, .rest, .rounds]
 
     var body: some View {
         ZStack {
             Backdrop(accent: accent, intensity: timer.running ? 1 : 0.55)
 
+            // Centred in the ZStack rather than laid out between the header and
+            // the strip, so the clock is genuinely in the middle of the screen.
+            face
+
             VStack(spacing: 0) {
                 header
-                Spacer(minLength: 24)
-                HStack(alignment: .center, spacing: 72) {
-                    face
-                    rail.frame(width: Self.railWidth)
-                }
-                Spacer(minLength: 24)
-                footer
+                Spacer(minLength: 0)
+                controlStrip
             }
             .padding(.horizontal, 48)
-            .padding(.top, 12)
-            .padding(.bottom, 8)
+            .padding(.vertical, 10)
         }
         .defaultFocus($focus, .playPause)
         .onPlayPauseCommand { timer.toggle() }
@@ -62,15 +57,15 @@ struct TimerScreen: View {
     // MARK: The clock face
 
     private var face: some View {
-        VStack(spacing: 30) {
+        VStack(spacing: 20) {
             RoundBadge(round: timer.round, total: timer.roundCount, accent: accent)
 
             Text(Clockface.time(timer.displaySeconds))
-                .font(.clock(300))
+                .font(.clock(260))
                 .foregroundStyle(faceColour)
                 .lineLimit(1)
                 .minimumScaleFactor(0.4)
-                .shadow(color: faceColour.opacity(timer.running ? 0.35 : 0.12), radius: 60)
+                .shadow(color: faceColour.opacity(timer.running ? 0.24 : 0.1), radius: 46)
                 .contentTransition(.numericText(countsDown: true))
                 .scaleEffect(pulse ? 1.028 : 1)
                 .animation(.spring(response: 0.28, dampingFraction: 0.55), value: timer.displaySeconds)
@@ -81,7 +76,7 @@ struct TimerScreen: View {
                 .captionStyle(24, tracking: 8, color: statusColour, weight: .bold)
                 .animation(.easeInOut(duration: 0.25), value: status)
         }
-        .frame(maxWidth: .infinity)
+        .frame(width: 1_180)
     }
 
     /// The face grows a hair on each tick once the round is nearly up.
@@ -89,58 +84,11 @@ struct TimerScreen: View {
         (timer.isWarning || timer.phase == .rest) && timer.running && timer.displaySeconds % 2 == 0
     }
 
-    // MARK: The right rail
+    // MARK: The control strip
 
-    private var rail: some View {
-        VStack(spacing: 22) {
-            card(.round,
-                 title: "Round",
-                 value: Clockface.compact(timer.roundLength),
-                 atFloor: timer.roundLength <= RoundTimer.roundRange.lowerBound,
-                 atCeiling: timer.roundLength >= RoundTimer.roundRange.upperBound)
-
-            card(.warning,
-                 title: "Warning",
-                 value: Clockface.compact(timer.warningLength),
-                 atFloor: timer.warningLength <= RoundTimer.warningRange.lowerBound,
-                 atCeiling: timer.warningLength >= RoundTimer.warningRange.upperBound)
-
-            card(.rest,
-                 title: "Rest",
-                 value: Clockface.compact(timer.restLength),
-                 atFloor: timer.restLength <= RoundTimer.restRange.lowerBound,
-                 atCeiling: timer.restLength >= RoundTimer.restRange.upperBound)
-
-            card(.rounds,
-                 title: "Rounds",
-                 value: timer.isUnlimited ? "∞" : "\(timer.roundCount)",
-                 atFloor: timer.roundCount <= RoundTimer.roundCountRange.lowerBound,
-                 atCeiling: timer.roundCount >= RoundTimer.roundCountRange.upperBound)
-        }
-        .focusSection()
-    }
-
-    private func card(_ field: Field, title: String, value: String, atFloor: Bool, atCeiling: Bool) -> some View {
-        SettingCard(
-            title: title,
-            value: value,
-            accent: Palette.gold,
-            isFocused: focus == field,
-            atFloor: atFloor,
-            atCeiling: atCeiling
-        )
-        .focusable(true)
-        .focused($focus, equals: field)
-        .onMoveCommand { move($0, from: field) }
-    }
-
-    // MARK: Transport
-
-    /// Two controls, the same size, evenly spaced and sitting on the clock's
-    /// own centre line. The hint keeps to the rail's column on the right.
-    private var footer: some View {
-        HStack(alignment: .bottom, spacing: 72) {
-            HStack(alignment: .top, spacing: 96) {
+    private var controlStrip: some View {
+        HStack(alignment: .center, spacing: 56) {
+            HStack(spacing: 44) {
                 transportButton(.playPause,
                                 symbol: timer.running ? "pause.fill" : "play.fill",
                                 caption: timer.running ? "Pause" : "Start",
@@ -151,18 +99,51 @@ struct TimerScreen: View {
                     timer.reset()
                 }
             }
-            .focusSection()
-            .frame(maxWidth: .infinity)
 
-            VStack(alignment: .trailing, spacing: 10) {
-                Text("◀ ▶  adjust      ▲ ▼  move")
-                    .captionStyle(18, tracking: 3, color: Palette.faint, weight: .semibold)
-                Text("play/pause on the remote works anywhere")
-                    .captionStyle(16, tracking: 2, color: Palette.faint.opacity(0.7), weight: .medium)
+            HStack(spacing: 20) {
+                card(.round,
+                     title: "Round",
+                     value: Clockface.compact(timer.roundLength),
+                     tint: Palette.green,
+                     atFloor: timer.roundLength <= RoundTimer.roundRange.lowerBound,
+                     atCeiling: timer.roundLength >= RoundTimer.roundRange.upperBound)
+
+                card(.warning,
+                     title: "Warning",
+                     value: Clockface.compact(timer.warningLength),
+                     tint: Palette.yellow,
+                     atFloor: timer.warningLength <= RoundTimer.warningRange.lowerBound,
+                     atCeiling: timer.warningLength >= RoundTimer.warningRange.upperBound)
+
+                card(.rest,
+                     title: "Rest",
+                     value: Clockface.compact(timer.restLength),
+                     tint: Palette.red,
+                     atFloor: timer.restLength <= RoundTimer.restRange.lowerBound,
+                     atCeiling: timer.restLength >= RoundTimer.restRange.upperBound)
+
+                card(.rounds,
+                     title: "Rounds",
+                     value: timer.isUnlimited ? "∞" : "\(timer.roundCount)",
+                     tint: Palette.gold,
+                     atFloor: timer.roundCount <= RoundTimer.roundCountRange.lowerBound,
+                     atCeiling: timer.roundCount >= RoundTimer.roundCountRange.upperBound)
             }
-            .frame(width: Self.railWidth, alignment: .trailing)
-            .padding(.bottom, 40)
         }
+    }
+
+    private func card(_ field: Field, title: String, value: String, tint: Color, atFloor: Bool, atCeiling: Bool) -> some View {
+        SettingCard(
+            title: title,
+            value: value,
+            tint: tint,
+            isFocused: focus == field,
+            atFloor: atFloor,
+            atCeiling: atCeiling
+        )
+        .focusable(true)
+        .focused($focus, equals: field)
+        .onMoveCommand { move($0, from: field) }
     }
 
     private func transportButton(
@@ -188,33 +169,27 @@ struct TimerScreen: View {
 
     // MARK: Remote handling
 
-    /// Focus is driven by hand rather than left to the focus engine: on the
-    /// rail, left and right are spent changing the value, so up and down have
-    /// to do all the travelling.
+    /// Focus is driven by hand rather than left to the focus engine: up and
+    /// down are spent changing values, so left and right do all the travelling.
     private func move(_ direction: MoveCommandDirection, from origin: Field) {
-        if origin.isCard {
-            switch direction {
-            case .left: adjust(origin, by: -1)
-            case .right: adjust(origin, by: 1)
-            case .up: focus = neighbour(of: origin, in: Self.cards, by: -1) ?? origin
-            case .down: focus = neighbour(of: origin, in: Self.cards, by: 1) ?? .playPause
-            @unknown default: break
-            }
-        } else {
-            switch direction {
-            case .left: focus = neighbour(of: origin, in: Self.transport, by: -1) ?? origin
-            case .right: focus = neighbour(of: origin, in: Self.transport, by: 1) ?? origin
-            case .up: focus = .rounds
-            case .down: break
-            @unknown default: break
-            }
+        switch direction {
+        case .left:
+            focus = neighbour(of: origin, by: -1) ?? origin
+        case .right:
+            focus = neighbour(of: origin, by: 1) ?? origin
+        case .up:
+            if origin.isCard { adjust(origin, by: 1) }
+        case .down:
+            if origin.isCard { adjust(origin, by: -1) }
+        @unknown default:
+            break
         }
     }
 
-    private func neighbour(of field: Field, in list: [Field], by offset: Int) -> Field? {
-        guard let index = list.firstIndex(of: field) else { return nil }
+    private func neighbour(of field: Field, by offset: Int) -> Field? {
+        guard let index = Self.strip.firstIndex(of: field) else { return nil }
         let target = index + offset
-        return list.indices.contains(target) ? list[target] : nil
+        return Self.strip.indices.contains(target) ? Self.strip[target] : nil
     }
 
     private func adjust(_ field: Field, by direction: Int) {
@@ -228,7 +203,7 @@ struct TimerScreen: View {
             timer.restLength = stepped(timer.restLength, direction * RoundTimer.restStep, RoundTimer.restRange)
         case .rounds:
             timer.roundCount = stepped(timer.roundCount, direction, RoundTimer.roundCountRange)
-        default:
+        case .playPause, .reset:
             return
         }
         Cues.shared.play(.click)

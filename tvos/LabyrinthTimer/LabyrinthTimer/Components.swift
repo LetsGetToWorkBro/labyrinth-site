@@ -25,17 +25,18 @@ struct Lockup: View {
 
 // MARK: - Wall clock
 
-/// Time of day and the date, so the screen is still useful between sessions.
+/// Time of day and the date, so the screen is still useful between sessions —
+/// and big enough to be the wall clock the gym actually reads.
 struct WallClock: View {
     var body: some View {
         TimelineView(.everyMinute) { context in
-            VStack(alignment: .trailing, spacing: 6) {
+            VStack(alignment: .trailing, spacing: 4) {
                 Text(context.date, format: .dateTime.hour().minute())
-                    .font(.system(size: 54, weight: .semibold, design: .rounded))
+                    .font(.system(size: 86, weight: .bold, design: .rounded))
                     .monospacedDigit()
                     .foregroundStyle(Palette.bone)
                 Text(context.date, format: .dateTime.weekday(.wide).day().month(.abbreviated))
-                    .captionStyle(20, tracking: 3)
+                    .captionStyle(28, tracking: 4, color: Palette.muted, weight: .bold)
             }
         }
     }
@@ -108,58 +109,62 @@ struct ProgressTrack: View {
 
 // MARK: - Setting card
 
-/// One adjustable value on the right rail. Focus it and press left or right on
-/// the remote to change it — there is no settings screen to get lost in.
+/// One adjustable value in the strip along the bottom. Each carries its own
+/// colour — green for the round, yellow for the warning, red for the rest — so
+/// a coach can find the one they want without reading the labels.
 ///
-/// Label left, value right, on one line: the numbers are what a coach reads
-/// from across the mat, so they get the room.
+/// The strip runs left to right, so left/right walks it and up/down changes the
+/// focused value. The stacked chevrons say so.
 struct SettingCard: View {
     var title: String
     var value: String
-    var accent: Color
+    var tint: Color
     var isFocused: Bool
     var atFloor: Bool
     var atCeiling: Bool
 
     var body: some View {
         HStack(spacing: 14) {
-            chevron("chevron.left", dimmed: atFloor)
+            VStack(alignment: .leading, spacing: 0) {
+                Text(title)
+                    .captionStyle(21, tracking: 5, color: tint, weight: .bold)
+                Text(value)
+                    .font(.system(size: 58, weight: .heavy, design: .rounded))
+                    .monospacedDigit()
+                    .foregroundStyle(Palette.bone)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+            }
 
-            Text(title)
-                .captionStyle(22, tracking: 5, color: isFocused ? accent : Palette.muted, weight: .bold)
+            Spacer(minLength: 8)
 
-            Spacer(minLength: 12)
-
-            Text(value)
-                .font(.system(size: 60, weight: .heavy, design: .rounded))
-                .monospacedDigit()
-                .foregroundStyle(isFocused ? Palette.bone : Palette.bone.opacity(0.92))
-                .lineLimit(1)
-                .minimumScaleFactor(0.6)
-
-            chevron("chevron.right", dimmed: atCeiling)
+            VStack(spacing: 0) {
+                chevron("chevron.up", dimmed: atCeiling)
+                chevron("chevron.down", dimmed: atFloor)
+            }
         }
-        .padding(.horizontal, 28)
+        .padding(.horizontal, 26)
         .padding(.vertical, 18)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .background(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(isFocused ? Palette.surfaceLift : Palette.surface.opacity(0.9))
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .fill(tint.opacity(isFocused ? 0.26 : 0.12))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .stroke(isFocused ? accent : Color.white.opacity(0.12), lineWidth: isFocused ? 3 : 1)
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .stroke(tint.opacity(isFocused ? 1 : 0.42), lineWidth: isFocused ? 3.5 : 1.5)
         )
-        .shadow(color: .black.opacity(isFocused ? 0.55 : 0), radius: 28, y: 12)
-        .scaleEffect(isFocused ? 1.04 : 1)
+        .shadow(color: tint.opacity(isFocused ? 0.4 : 0), radius: 28, y: 12)
+        .scaleEffect(isFocused ? 1.05 : 1)
         .animation(.spring(response: 0.32, dampingFraction: 0.75), value: isFocused)
     }
 
     private func chevron(_ symbol: String, dimmed: Bool) -> some View {
         Image(systemName: symbol)
-            .font(.system(size: 30, weight: .black))
-            .foregroundStyle(accent.opacity(dimmed ? 0.15 : 0.9))
+            .font(.system(size: 26, weight: .black))
+            .foregroundStyle(tint.opacity(dimmed ? 0.18 : 1))
             .opacity(isFocused ? 1 : 0)
-            .frame(width: 30)
+            .frame(width: 26, height: 30)
     }
 }
 
@@ -174,24 +179,24 @@ struct TransportButton: View {
     var isFocused: Bool
     var primary: Bool = false
 
-    private let diameter: CGFloat = 168
+    private let diameter: CGFloat = 196
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 14) {
             ZStack {
                 Circle()
                     .fill(isFocused ? accent : (primary ? accent.opacity(0.18) : Palette.surface.opacity(0.85)))
                 Circle()
-                    .stroke(isFocused ? .clear : accent.opacity(primary ? 0.75 : 0.3), lineWidth: 2.5)
+                    .stroke(isFocused ? .clear : accent.opacity(primary ? 0.75 : 0.3), lineWidth: 3)
                 Image(systemName: symbol)
-                    .font(.system(size: 74, weight: .black))
+                    .font(.system(size: 86, weight: .black))
                     .foregroundStyle(isFocused ? Palette.ink : Palette.bone)
             }
             .frame(width: diameter, height: diameter)
-            .shadow(color: accent.opacity(isFocused ? 0.6 : 0), radius: 34, y: 12)
+            .shadow(color: accent.opacity(isFocused ? 0.6 : 0), radius: 38, y: 14)
 
             Text(caption)
-                .captionStyle(20, tracking: 4, color: isFocused ? accent : Palette.muted, weight: .bold)
+                .captionStyle(22, tracking: 4, color: isFocused ? accent : Palette.muted, weight: .bold)
         }
         .scaleEffect(isFocused ? 1.09 : 1)
         .animation(.spring(response: 0.32, dampingFraction: 0.7), value: isFocused)
