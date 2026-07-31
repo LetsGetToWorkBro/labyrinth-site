@@ -377,24 +377,31 @@
     /* The boxing bell — a round starts and a round ends on the same sound. */
     bell: function () {
       var c = audio(); if (!c) return;
-      var out = bus(0.34), t = c.currentTime, f0 = 587;
-      var shape = [[1.00, 1.00, 2.00], [1.19, 0.55, 1.65], [1.51, 0.42, 1.35], [2.00, 0.62, 1.20],
-                   [2.51, 0.30, 0.90], [2.99, 0.28, 0.70], [4.13, 0.18, 0.50], [5.42, 0.12, 0.35],
-                   [6.79, 0.08, 0.25]];
+      /* A fifth lower than a hand bell and a good deal shorter: a ring bell
+         is struck brass with somebody's hand near it, not a church tower. */
+      var out = bus(0.34), t = c.currentTime, f0 = 392;
+      var shape = [[1.00, 1.00, 1.05], [1.19, 0.50, 0.85], [1.51, 0.38, 0.70], [2.00, 0.72, 0.62],
+                   [2.51, 0.28, 0.46], [2.99, 0.26, 0.36], [4.13, 0.16, 0.26], [5.42, 0.11, 0.19],
+                   [6.79, 0.07, 0.14]];
       shape.forEach(function (p, i) {
         partial(out, f0 * p[0], p[1], p[2], t);
         /* A few cents apart on the low partials gives the tail its warble. */
         if (i < 4) partial(out, f0 * p[0] * 1.004, p[1] * 0.6, p[2] * 0.85, t);
       });
-      crack(out, t, 0.06, 0.012, 0.5, 3600, 0.9, 1200, 1.4, 0.4);
+      crack(out, t, 0.05, 0.009, 0.55, 2600, 0.8, 900, 1.4, 0.45);
     },
 
-    /* The ten-second clapper. */
+    /* The ten-second clapper: two pieces of hardwood struck together, three
+       times. A hard broadband crack, a short ring from the block itself around
+       2.4 kHz, and a click on top. Almost no tail — wood stops dead. */
     clap: function () {
       var c = audio(); if (!c) return;
-      var out = bus(0.62), t = c.currentTime;
+      var out = bus(0.55), t = c.currentTime;
       for (var i = 0; i < 3; i++) {
-        crack(out, t + i * 0.22, 0.22, 0.022, 0.95, 1900, 1.1, 430, 2.2, 0.45);
+        var at = t + i * 0.20;
+        crack(out, at, 0.12, 0.0045, 1.0, 1150, 0.7, 520, 2.0, 0.55);
+        crack(out, at, 0.12, 0.0095, 0.7, 2400, 2.6, 0, 1, 0);
+        crack(out, at, 0.12, 0.0028, 0.6, 4800, 1.2, 0, 1, 0);
       }
     },
 

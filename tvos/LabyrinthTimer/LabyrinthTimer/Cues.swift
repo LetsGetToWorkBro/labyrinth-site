@@ -124,17 +124,19 @@ final class Cues {
     /// a pair of slightly detuned partials so the tail warbles the way a real
     /// one does instead of sitting dead still.
     private func bell() -> ([Partial], [Burst]) {
-        let f0 = 587.0
+        // A fifth lower than a hand bell and a good deal shorter: a ring bell
+        // is struck brass with somebody's hand near it, not a church tower.
+        let f0 = 392.0
         let shape: [(ratio: Double, gain: Double, decay: Double)] = [
-            (1.00, 1.00, 2.00),
-            (1.19, 0.55, 1.65),
-            (1.51, 0.42, 1.35),
-            (2.00, 0.62, 1.20),
-            (2.51, 0.30, 0.90),
-            (2.99, 0.28, 0.70),
-            (4.13, 0.18, 0.50),
-            (5.42, 0.12, 0.35),
-            (6.79, 0.08, 0.25),
+            (1.00, 1.00, 1.05),
+            (1.19, 0.50, 0.85),
+            (1.51, 0.38, 0.70),
+            (2.00, 0.72, 0.62),
+            (2.51, 0.28, 0.46),
+            (2.99, 0.26, 0.36),
+            (4.13, 0.16, 0.26),
+            (5.42, 0.11, 0.19),
+            (6.79, 0.07, 0.14),
         ]
         var partials = shape.map {
             Partial(frequency: f0 * $0.ratio, gain: $0.gain, decay: $0.decay)
@@ -146,24 +148,24 @@ final class Cues {
                                     gain: entry.gain * 0.6,
                                     decay: entry.decay * 0.85))
         }
-        let strike = [Burst(start: 0, duration: 0.06, decay: 0.012, gain: 0.5,
-                            centre: 3_600, q: 0.9, bodyCentre: 1_200, bodyQ: 1.4, bodyGain: 0.4)]
+        let strike = [Burst(start: 0, duration: 0.05, decay: 0.009, gain: 0.55,
+                            centre: 2_600, q: 0.8, bodyCentre: 900, bodyQ: 1.4, bodyGain: 0.45)]
         return (partials, strike)
     }
 
-    /// The ten-second clapper: three wooden cracks, the sound that tells a
-    /// corner the round is nearly up.
+    /// The ten-second clapper: two pieces of hardwood struck together, three
+    /// times. A hard broadband crack, a short ring from the block itself around
+    /// 2.4 kHz, and a click on top. Almost no tail — wood stops dead.
     private func clapper() -> ([Partial], [Burst]) {
-        let bursts = (0..<3).map { i in
-            Burst(start: Double(i) * 0.22,
-                  duration: 0.22,
-                  decay: 0.022,
-                  gain: 1.95,
-                  centre: 1_900,
-                  q: 1.1,
-                  bodyCentre: 430,
-                  bodyQ: 2.2,
-                  bodyGain: 0.9)
+        var bursts: [Burst] = []
+        for i in 0..<3 {
+            let t = Double(i) * 0.20
+            bursts.append(Burst(start: t, duration: 0.12, decay: 0.0045, gain: 2.2,
+                                centre: 1_150, q: 0.7, bodyCentre: 520, bodyQ: 2.0, bodyGain: 0.55))
+            bursts.append(Burst(start: t, duration: 0.12, decay: 0.0095, gain: 1.5,
+                                centre: 2_400, q: 2.6))
+            bursts.append(Burst(start: t, duration: 0.12, decay: 0.0028, gain: 1.3,
+                                centre: 4_800, q: 1.2))
         }
         return ([], bursts)
     }
@@ -172,10 +174,10 @@ final class Cues {
         switch cue {
         case .bell:
             let (partials, bursts) = bell()
-            return render(partials: partials, bursts: bursts, length: 4.0)
+            return render(partials: partials, bursts: bursts, length: 2.2)
         case .clap:
             let (partials, bursts) = clapper()
-            return render(partials: partials, bursts: bursts, length: 0.9)
+            return render(partials: partials, bursts: bursts, length: 0.75)
         case .tick:
             // Scrolling a value: barely there, just enough to feel mechanical.
             return render(partials: [Partial(frequency: 2_100, gain: 0.13, decay: 0.012),

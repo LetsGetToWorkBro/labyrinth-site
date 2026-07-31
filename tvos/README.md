@@ -97,11 +97,21 @@ music is already playing on the TV rather than cutting it off.
 | **Tick** | Scrolling a setting |
 | **Blip** | Focus landing on a control |
 
-Nothing is shipped as an audio file. The bell is a stack of nine inharmonic
-partials with detuned twins on the low ones for the warble, struck by a short
-noise burst; the clapper is white noise pushed through a resonant band, three
-times. Both are rendered at launch in `Cues.swift`, so retuning them is a code
-change rather than a trip to a sample library.
+Nothing is shipped as an audio file.
+
+The **bell** is a ring bell, not a hand bell: fundamental at 392 Hz, nine
+inharmonic partials with detuned twins on the low four so the tail warbles,
+struck by a short bandpassed noise burst. It is done ringing in about two
+seconds — a bell someone is standing next to.
+
+The **clapper** is two pieces of hardwood struck together, three times at 200 ms
+apart. Each crack is three bands of noise: a hard broadband hit at 1.15 kHz, a
+short ring from the block itself at 2.4 kHz, and a click at 4.8 kHz. It falls
+95% inside 19 ms — wood stops dead, which is what makes it read as wood rather
+than as a hand clap.
+
+Both are rendered at launch in `Cues.swift`, so retuning them is a code change
+rather than a trip to a sample library.
 
 To audition a change without a Mac:
 

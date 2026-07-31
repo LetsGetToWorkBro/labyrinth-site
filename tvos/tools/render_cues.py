@@ -93,25 +93,33 @@ def render(partials, bursts, length):
 
 # ---------------------------------------------------------------- the cues
 def bell():
-    f0 = 587.0
+    # A fifth lower than a hand bell and a good deal shorter: a ring bell is
+    # struck brass with somebody's hand near it, not a church tower.
+    f0 = 392.0
     shape = [
-        (1.00, 1.00, 2.00), (1.19, 0.55, 1.65), (1.51, 0.42, 1.35),
-        (2.00, 0.62, 1.20), (2.51, 0.30, 0.90), (2.99, 0.28, 0.70),
-        (4.13, 0.18, 0.50), (5.42, 0.12, 0.35), (6.79, 0.08, 0.25),
+        (1.00, 1.00, 1.05), (1.19, 0.50, 0.85), (1.51, 0.38, 0.70),
+        (2.00, 0.72, 0.62), (2.51, 0.28, 0.46), (2.99, 0.26, 0.36),
+        (4.13, 0.16, 0.26), (5.42, 0.11, 0.19), (6.79, 0.07, 0.14),
     ]
     partials = [(f0 * r, g, d, 0.0) for r, g, d in shape]
     # Detuned twins on the low partials give the tail its warble.
     partials += [(f0 * r * 1.004, g * 0.6, d * 0.85, 0.0) for r, g, d in shape[:4]]
-    strike = [dict(start=0.0, duration=0.06, decay=0.012, gain=0.5,
-                   centre=3_600, q=0.9, body_centre=1_200, body_q=1.4, body_gain=0.4)]
-    return render(partials, strike, 4.0)
+    strike = [dict(start=0.0, duration=0.05, decay=0.009, gain=0.55,
+                   centre=2_600, q=0.8, body_centre=900, body_q=1.4, body_gain=0.45)]
+    return render(partials, strike, 2.2)
 
 
 def clap():
-    bursts = [dict(start=i * 0.22, duration=0.22, decay=0.022, gain=1.95,
-                   centre=1_900, q=1.1, body_centre=430, body_q=2.2, body_gain=0.9)
-              for i in range(3)]
-    return render([], bursts, 0.9)
+    # Two pieces of hardwood struck together: a hard broadband crack, a short
+    # ring from the block itself around 2.4 kHz, and a click on top.
+    bursts = []
+    for i in range(3):
+        t = i * 0.20
+        bursts.append(dict(start=t, duration=0.12, decay=0.0045, gain=2.2,
+                           centre=1_150, q=0.7, body_centre=520, body_q=2.0, body_gain=0.55))
+        bursts.append(dict(start=t, duration=0.12, decay=0.0095, gain=1.5, centre=2_400, q=2.6))
+        bursts.append(dict(start=t, duration=0.12, decay=0.0028, gain=1.3, centre=4_800, q=1.2))
+    return render([], bursts, 0.75)
 
 
 def tick():
