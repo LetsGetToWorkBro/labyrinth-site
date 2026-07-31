@@ -57,24 +57,21 @@ struct TimerScreen: View {
     // MARK: The clock face
 
     private var face: some View {
-        VStack(spacing: 20) {
-            RoundBadge(round: timer.round, accent: accent)
+        VStack(spacing: 18) {
+            RoundBadge(round: timer.round, status: status, accent: accent, statusColour: statusColour)
+                .animation(.easeInOut(duration: 0.25), value: status)
 
             Text(Clockface.time(timer.displaySeconds))
-                .font(.clock(260))
+                .font(.clock(320))
                 .foregroundStyle(faceColour)
                 .lineLimit(1)
                 .minimumScaleFactor(0.4)
                 .shadow(color: faceColour.opacity(timer.running ? 0.24 : 0.1), radius: 46)
                 .contentTransition(.numericText(countsDown: true))
-                .scaleEffect(pulse ? 1.028 : 1)
+                .scaleEffect(pulse ? 1.022 : 1)
                 .animation(.spring(response: 0.28, dampingFraction: 0.55), value: timer.displaySeconds)
 
             ProgressTrack(progress: timer.progress, accent: accent)
-
-            Text(status)
-                .captionStyle(24, tracking: 8, color: statusColour, weight: .bold)
-                .animation(.easeInOut(duration: 0.25), value: status)
         }
         .frame(width: 1_180)
     }

@@ -130,11 +130,14 @@
   /* ---------- clock face ---------- */
   .facecol {
     width: 1180px;
-    display: flex; flex-direction: column; align-items: center; gap: 20px;
+    display: flex; flex-direction: column; align-items: center; gap: 18px;
   }
 
+  /* The status shares the plate rather than taking a line of its own, which is
+     what lets the digits below be as big as they are. The plate is centred, so
+     it can grow and shrink with the wording without shoving anything about. */
   .badge {
-    display: flex; align-items: center; gap: 18px;
+    display: flex; align-items: center; gap: 22px;
     padding: 16px 34px;
     border-radius: 10px;
     background: color-mix(in srgb, var(--surface) 85%, transparent);
@@ -143,10 +146,16 @@
   }
   .badge .k { font-size: 24px; letter-spacing: 6px; font-weight: 700; color: var(--muted); text-transform: uppercase; }
   .badge .n { font-size: 46px; font-weight: 900; color: var(--accent); font-variant-numeric: tabular-nums; transition: color 600ms ease; }
-  .badge .of { font-size: 24px; letter-spacing: 4px; font-weight: 700; color: var(--faint); text-transform: uppercase; }
+  .badge .rule { width: 1px; height: 34px; background: rgba(255,255,255,0.12); }
+  .badge .st {
+    font-size: 24px; letter-spacing: 6px; font-weight: 700; text-transform: uppercase;
+    color: var(--muted); white-space: nowrap;
+  }
+  .badge .st.live { color: var(--accent); }
+  .badge .rule[hidden], .badge .st[hidden] { display: none; }
 
   .face {
-    font-size: 260px;
+    font-size: 320px;
     font-weight: 900;
     line-height: 0.95;
     letter-spacing: -0.02em;
@@ -155,7 +164,7 @@
     text-shadow: 0 0 46px color-mix(in srgb, var(--face) 20%, transparent);
     transition: color 400ms ease, transform 260ms cubic-bezier(.2,.9,.3,1.2);
   }
-  .face.pulse { transform: scale(1.028); }
+  .face.pulse { transform: scale(1.022); }
 
   .track {
     width: 100%;
@@ -171,12 +180,6 @@
     box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 50%, transparent);
     transition: background 600ms ease;
   }
-
-  .status {
-    font-size: 24px; letter-spacing: 8px; font-weight: 700; text-transform: uppercase;
-    color: var(--muted); min-height: 30px;
-  }
-  .status.live { color: var(--accent); }
 
   /* ---------- the settings strip ---------- */
   /* No labels — the colour is the label. Green is the round, yellow the
@@ -259,10 +262,11 @@
         <div class="badge">
           <span class="k">Round</span>
           <span class="n" id="round-no">1</span>
+          <span class="rule" id="round-rule"></span>
+          <span class="st" id="status">Ready — press start</span>
         </div>
         <div class="face" id="face">05:00</div>
         <div class="track"><i id="track"></i></div>
-        <div class="status" id="status">Ready — press start</div>
       </div>
     </div>
 
@@ -589,8 +593,11 @@
     var total = Math.max(1, phaseLength());
     trackEl.style.width = (Math.max(0, Math.min(1, S.remaining / total)) * 100) + "%";
 
-    statusEl.textContent = status();
+    var text = status();
+    statusEl.textContent = text;
     statusEl.classList.toggle("live", S.running);
+    statusEl.hidden = text === "";
+    document.getElementById("round-rule").hidden = text === "";
 
     roundNo.textContent = S.no;
 

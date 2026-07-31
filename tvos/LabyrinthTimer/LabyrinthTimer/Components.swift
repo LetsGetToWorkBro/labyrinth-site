@@ -44,14 +44,21 @@ struct WallClock: View {
 
 // MARK: - Round badge
 
-/// "ROUND 3" in a gold-ruled plate. It just keeps counting up — the session
-/// ends when somebody decides it has.
+/// "ROUND 3" in a gold-ruled plate, with what the clock is doing alongside it.
+/// The round number just keeps counting up — the session ends when somebody
+/// decides it has.
+///
+/// The status shares the plate rather than taking a line of its own, which is
+/// what lets the digits below be as big as they are. The plate is centred, so
+/// it can grow and shrink with the wording without shoving anything about.
 struct RoundBadge: View {
     var round: Int
+    var status: String
     var accent: Color
+    var statusColour: Color
 
     var body: some View {
-        HStack(spacing: 18) {
+        HStack(spacing: 22) {
             Text("Round")
                 .captionStyle(24, tracking: 6, color: Palette.muted, weight: .bold)
 
@@ -59,6 +66,16 @@ struct RoundBadge: View {
                 .font(.system(size: 46, weight: .black, design: .rounded))
                 .monospacedDigit()
                 .foregroundStyle(accent)
+
+            if !status.isEmpty {
+                Rectangle()
+                    .fill(Color.white.opacity(0.12))
+                    .frame(width: 1, height: 34)
+
+                Text(status)
+                    .captionStyle(24, tracking: 6, color: statusColour, weight: .bold)
+                    .lineLimit(1)
+            }
         }
         .padding(.horizontal, 34)
         .padding(.vertical, 16)
