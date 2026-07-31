@@ -5,20 +5,20 @@ import SwiftUI
 /// Kanji block and wordmark, top left, exactly as they sit on the gym's wall.
 struct Lockup: View {
     var body: some View {
-        HStack(spacing: 24) {
+        HStack(spacing: 28) {
             Image("KanjiMark")
                 .resizable()
                 .renderingMode(.template)
                 .scaledToFit()
                 .foregroundStyle(Palette.bone)
-                .frame(height: 88)
+                .frame(height: 130)
 
             Image("Wordmark")
                 .resizable()
                 .renderingMode(.template)
                 .scaledToFit()
                 .foregroundStyle(Palette.gold)
-                .frame(height: 56)
+                .frame(height: 84)
         }
     }
 }
@@ -109,13 +109,16 @@ struct ProgressTrack: View {
 
 // MARK: - Setting card
 
-/// One adjustable value in the strip along the bottom. Each carries its own
-/// colour — green for the round, yellow for the warning, red for the rest — so
-/// a coach can find the one they want without reading the labels.
+/// One adjustable value in the strip along the bottom.
+///
+/// No label — the colour is the label. Green is the round, yellow the warning,
+/// red the rest, gold the round count, which is what a coach glances at from
+/// the middle of the mat. That leaves the whole container to the number.
 ///
 /// The strip runs left to right, so left/right walks it and up/down changes the
-/// focused value. The stacked chevrons say so.
+/// focused value. The chevrons above and below the number say so.
 struct SettingCard: View {
+    /// Never drawn. Carried so VoiceOver can still name the control.
     var title: String
     var value: String
     var tint: Color
@@ -124,47 +127,49 @@ struct SettingCard: View {
     var atCeiling: Bool
 
     var body: some View {
-        HStack(spacing: 14) {
-            VStack(alignment: .leading, spacing: 0) {
-                Text(title)
-                    .captionStyle(21, tracking: 5, color: tint, weight: .bold)
-                Text(value)
-                    .font(.system(size: 58, weight: .heavy, design: .rounded))
-                    .monospacedDigit()
-                    .foregroundStyle(Palette.bone)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.5)
-            }
+        VStack(spacing: 0) {
+            chevron("chevron.up", dimmed: atCeiling)
 
-            Spacer(minLength: 8)
+            Spacer(minLength: 0)
 
-            VStack(spacing: 0) {
-                chevron("chevron.up", dimmed: atCeiling)
-                chevron("chevron.down", dimmed: atFloor)
-            }
+            Text(value)
+                .font(.system(size: 92, weight: .heavy, design: .rounded))
+                .monospacedDigit()
+                .foregroundStyle(Palette.bone)
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
+
+            Spacer(minLength: 0)
+
+            chevron("chevron.down", dimmed: atFloor)
         }
-        .padding(.horizontal, 26)
-        .padding(.vertical, 18)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity)
+        .frame(height: 224)
         .background(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .fill(tint.opacity(isFocused ? 0.26 : 0.12))
         )
         .overlay(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .stroke(tint.opacity(isFocused ? 1 : 0.42), lineWidth: isFocused ? 3.5 : 1.5)
         )
         .shadow(color: tint.opacity(isFocused ? 0.4 : 0), radius: 28, y: 12)
-        .scaleEffect(isFocused ? 1.05 : 1)
+        .scaleEffect(isFocused ? 1.04 : 1)
         .animation(.spring(response: 0.32, dampingFraction: 0.75), value: isFocused)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(title)
+        .accessibilityValue(value)
     }
 
+    /// Always occupies its space so the number doesn't jump when focus lands.
     private func chevron(_ symbol: String, dimmed: Bool) -> some View {
         Image(systemName: symbol)
-            .font(.system(size: 26, weight: .black))
+            .font(.system(size: 28, weight: .black))
             .foregroundStyle(tint.opacity(dimmed ? 0.18 : 1))
             .opacity(isFocused ? 1 : 0)
-            .frame(width: 26, height: 30)
+            .frame(height: 32)
     }
 }
 

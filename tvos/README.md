@@ -57,17 +57,23 @@ Deployment target is tvOS 17. It runs on Apple TV HD and every Apple TV 4K.
 | Play/Pause | Starts and pauses from anywhere on the screen |
 
 The strip runs left to right, so left and right do the travelling and up and
-down are free to change values. The focused card shows the ▲▼ stepper, and each
-setting carries its own colour so a coach can find the one they want without
-reading the labels:
+down are free to change values. The focused card grows a ▲ above its number and
+a ▼ below.
 
-- **Round** (green) — 0:30 to 30:00. Fifteen-second steps up to five minutes,
+The cards carry no labels — the colour is the label, so the number gets the
+whole container and reads from the far end of the mat. Left to right:
+
+- **Round** — green — 0:30 to 30:00. Fifteen-second steps up to five minutes,
   then minute steps, so a long round doesn't cost forty presses.
-- **Warning** (yellow) — how much time is left in the round when the clock turns
+- **Warning** — yellow — how much time is left in the round when the clock turns
   gold and the double beep fires. Wind it down to `OFF` to skip it.
-- **Rest** (red) — 0 to 10:00. At `OFF` the rounds run back to back.
-- **Rounds** (gold) — `∞`, or a fixed session of up to 30. A fixed session ends
-  on a flourish instead of rolling into another round.
+- **Rest** — red — 0 to 10:00. At `OFF` the rounds run back to back.
+- **Rounds** — neutral, because it counts rather than times — `∞`, or a fixed
+  session of up to 30. A fixed session ends on a flourish instead of rolling
+  into another round.
+
+Each card still names itself to VoiceOver, so nothing is lost to anyone using
+the accessibility layer.
 
 **Start/Pause** is one button — it shows whichever the clock needs next.
 **Reset** zeroes everything out: back to the top of round 1, stopped, with the

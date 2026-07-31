@@ -125,7 +125,9 @@ struct TimerScreen: View {
                 card(.rounds,
                      title: "Rounds",
                      value: timer.isUnlimited ? "∞" : "\(timer.roundCount)",
-                     tint: Palette.gold,
+                     // A count, not a duration — a neutral keeps it from
+                     // competing with the warning's yellow.
+                     tint: Palette.bone,
                      atFloor: timer.roundCount <= RoundTimer.roundCountRange.lowerBound,
                      atCeiling: timer.roundCount >= RoundTimer.roundCountRange.upperBound)
             }

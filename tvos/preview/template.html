@@ -111,9 +111,9 @@
 
   header { display: flex; align-items: flex-start; justify-content: space-between; }
 
-  .lockup { display: flex; align-items: center; gap: 24px; }
-  .lockup .kanji { height: 88px; }
-  .lockup .word  { height: 56px; }
+  .lockup { display: flex; align-items: center; gap: 28px; }
+  .lockup .kanji { height: 130px; }
+  .lockup .word  { height: 84px; }
   .mark { display: block; }
 
   .wallclock { text-align: right; }
@@ -179,17 +179,17 @@
   .status.live { color: var(--accent); }
 
   /* ---------- the settings strip ---------- */
-  /* Each card carries its own colour — green for the round, yellow for the
-     warning, red for the rest — so a coach finds the one they want without
-     reading the labels. The strip runs left to right, so left/right walks it
-     and up/down changes the focused value. */
+  /* No labels — the colour is the label. Green is the round, yellow the
+     warning, red the rest, gold the round count, which is what a coach glances
+     at from the middle of the mat. That leaves the whole container to the
+     number. Left/right walks the strip, up/down changes the focused value. */
   .cards { flex: 1; display: flex; gap: 20px; }
 
   .card {
-    flex: 1; min-width: 0;
-    display: flex; align-items: center; gap: 14px;
-    padding: 18px 26px;
-    border-radius: 20px;
+    flex: 1; min-width: 0; height: 224px;
+    display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+    padding: 12px 20px;
+    border-radius: 24px;
     background: color-mix(in srgb, var(--tint) 12%, transparent);
     border: 1.5px solid color-mix(in srgb, var(--tint) 42%, transparent);
     transition: transform 320ms cubic-bezier(.2,.9,.3,1.2), border-color 200ms, background 200ms, box-shadow 200ms;
@@ -197,21 +197,21 @@
   .card.on {
     background: color-mix(in srgb, var(--tint) 26%, transparent);
     border: 3.5px solid var(--tint);
-    transform: scale(1.05);
+    transform: scale(1.04);
     box-shadow: 0 12px 28px color-mix(in srgb, var(--tint) 40%, transparent);
   }
-  .card .body { flex: 1; min-width: 0; }
-  .card .t { font-size: 21px; letter-spacing: 5px; font-weight: 700; text-transform: uppercase;
-             color: var(--tint); white-space: nowrap; }
-  .card .v { font-size: 58px; font-weight: 800; line-height: 1.12; font-variant-numeric: tabular-nums;
-             color: var(--bone); white-space: nowrap; }
-  .card .step { display: flex; flex-direction: column; opacity: 0; }
-  .card.on .step { opacity: 1; }
-  .card .step span {
-    width: 26px; height: 26px; font-size: 20px; line-height: 26px;
-    text-align: center; color: var(--tint);
+  .card .v {
+    font-size: 92px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums;
+    color: var(--bone); white-space: nowrap;
+    max-width: 100%;
   }
-  .card .step span.off { opacity: 0.18; }
+  /* The chevrons always hold their space so the number never jumps on focus. */
+  .card .step {
+    height: 32px; font-size: 28px; line-height: 32px; color: var(--tint);
+    opacity: 0; user-select: none;
+  }
+  .card.on .step { opacity: 1; }
+  .card.on .step.off { opacity: 0.18; }
 
   /* ---------- transport ---------- */
   footer { display: flex; align-items: center; gap: 56px; }
@@ -312,7 +312,7 @@
   var BUTTONS = ["playPause", "reset"];
   /* Everything focusable, in the order it appears along the bottom. */
   var STRIP = BUTTONS.concat(CARDS);
-  var TINT = { round: "var(--green)", warning: "var(--yellow)", rest: "var(--red)", rounds: "var(--gold)" };
+  var TINT = { round: "var(--green)", warning: "var(--yellow)", rest: "var(--red)", rounds: "var(--bone)" };
   var focus = "playPause";
 
   /* ---------- sound, synthesised the way the app does it ---------- */
@@ -430,8 +430,8 @@
     var el = document.createElement("div");
     el.className = "card"; el.dataset.field = key;
     el.style.setProperty("--tint", TINT[key]);
-    el.innerHTML = '<div class="body"><div class="t">' + LABELS[key] + '</div><div class="v"></div></div>' +
-                   '<div class="step"><span class="up">▲</span><span class="down">▼</span></div>';
+    el.title = LABELS[key];
+    el.innerHTML = '<div class="step up">▲</div><div class="v"></div><div class="step down">▼</div>';
     el.addEventListener("click", function () { focus = key; render(); });
     el.querySelector(".up").addEventListener("click", function (e) { e.stopPropagation(); focus = key; adjust(key, 1); });
     el.querySelector(".down").addEventListener("click", function (e) { e.stopPropagation(); focus = key; adjust(key, -1); });
@@ -492,6 +492,19 @@
   var stage = document.getElementById("stage");
   var lastSecond = null;
 
+  /* The app shrinks an over-wide value with minimumScaleFactor; do the same
+     here so a 30:00 round still fits its container. */
+  var VALUE_SIZE = 92;
+  function fitValue(el, text) {
+    if (el.textContent === text && el.style.fontSize) return;
+    el.textContent = text;
+    el.style.fontSize = VALUE_SIZE + "px";
+    var room = el.parentNode.clientWidth - 40;
+    if (el.scrollWidth > room) {
+      el.style.fontSize = Math.max(VALUE_SIZE * 0.5, VALUE_SIZE * room / el.scrollWidth) + "px";
+    }
+  }
+
   function render() {
     var seconds = displaySeconds();
     stage.style.setProperty("--accent", accent());
@@ -516,8 +529,8 @@
       var el = cards.querySelector('[data-field="' + key + '"]');
       var r = RANGE[key];
       el.classList.toggle("on", focus === key);
-      el.querySelector(".v").textContent =
-        key === "rounds" ? (S.rounds === 0 ? "∞" : String(S.rounds)) : compact(S[key]);
+      fitValue(el.querySelector(".v"),
+          key === "rounds" ? (S.rounds === 0 ? "∞" : String(S.rounds)) : compact(S[key]));
       el.querySelector(".up").classList.toggle("off", S[key] >= r.max);
       el.querySelector(".down").classList.toggle("off", S[key] <= r.min);
     });
