@@ -133,9 +133,8 @@
     display: flex; flex-direction: column; align-items: center; gap: 18px;
   }
 
-  /* The status shares the plate rather than taking a line of its own, which is
-     what lets the digits below be as big as they are. The plate is centred, so
-     it can grow and shrink with the wording without shoving anything about. */
+  /* Just the round number. What the timer is doing is the bar's job, and
+     saying it twice on a wall screen is noise. */
   .badge {
     display: flex; align-items: center; gap: 22px;
     padding: 16px 34px;
@@ -146,13 +145,6 @@
   }
   .badge .k { font-size: 24px; letter-spacing: 6px; font-weight: 700; color: var(--muted); text-transform: uppercase; }
   .badge .n { font-size: 46px; font-weight: 900; color: var(--accent); font-variant-numeric: tabular-nums; transition: color 600ms ease; }
-  .badge .rule { width: 1px; height: 34px; background: rgba(255,255,255,0.12); }
-  .badge .st {
-    font-size: 24px; letter-spacing: 6px; font-weight: 700; text-transform: uppercase;
-    color: var(--muted); white-space: nowrap;
-  }
-  .badge .st.live { color: var(--accent); }
-  .badge .rule[hidden], .badge .st[hidden] { display: none; }
 
   .face {
     font-size: 320px;
@@ -166,19 +158,50 @@
   }
   .face.pulse { transform: scale(1.022); }
 
+  /* The bar under the clock is the only thing on screen that says what the
+     timer is doing, so it says it four ways: colour follows the phase, a bright
+     edge rides the end of the fill while it runs, a notch marks where the
+     warning will fire, and a paused bar dims and breathes so a stopped clock
+     never looks like a dead screen. */
   .track {
+    position: relative;
     width: 100%;
-    height: 14px;
+    height: 18px;
     border-radius: 999px;
     background: rgba(255,255,255,0.07);
-    overflow: hidden;
+    transition: opacity 400ms ease;
   }
   .track > i {
-    display: block; height: 100%; border-radius: 999px;
+    position: absolute; inset: 0 auto 0 0;
+    border-radius: 999px;
     background: linear-gradient(90deg,
-      color-mix(in srgb, var(--accent) 75%, transparent), var(--accent));
-    box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 50%, transparent);
-    transition: background 600ms ease;
+      color-mix(in srgb, var(--accent) 65%, transparent), var(--accent));
+    box-shadow: 0 0 20px color-mix(in srgb, var(--accent) 55%, transparent);
+    transition: background 600ms ease, box-shadow 400ms ease;
+  }
+  /* the live edge */
+  .track > i::after {
+    content: ""; position: absolute; top: 0; right: 0; bottom: 0;
+    width: 6px; border-radius: 999px;
+    background: rgba(255,255,255,0.9);
+    box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 95%, transparent);
+    transition: width 300ms ease, background 300ms ease, box-shadow 300ms ease;
+  }
+  .track > u {
+    position: absolute; top: -6px; width: 3px; height: 30px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--bone) 50%, transparent);
+  }
+  .track > u[hidden] { display: none; }
+
+  .stage-warning .track > i::after { width: 10px; box-shadow: 0 0 22px var(--accent); }
+
+  .stage-paused .track { animation: breathe 3.4s ease-in-out infinite; }
+  .stage-paused .track > i { box-shadow: none; }
+  .stage-paused .track > i::after { background: rgba(255,255,255,0.25); box-shadow: none; }
+  @keyframes breathe { 0%, 100% { opacity: 0.85; } 50% { opacity: 0.45; } }
+  @media (prefers-reduced-motion: reduce) {
+    .stage-paused .track { animation: none; opacity: 0.6; }
   }
 
   /* ---------- the settings strip ---------- */
@@ -262,11 +285,9 @@
         <div class="badge">
           <span class="k">Round</span>
           <span class="n" id="round-no">1</span>
-          <span class="rule" id="round-rule"></span>
-          <span class="st" id="status">Ready — press start</span>
         </div>
         <div class="face" id="face">05:00</div>
-        <div class="track"><i id="track"></i></div>
+        <div class="track"><i id="track"></i><u id="mark" hidden></u></div>
       </div>
     </div>
 
@@ -487,14 +508,11 @@
     if (S.phase === "work") return isWarning() ? "var(--gold-light)" : "var(--bone)";
     return "var(--gold)";
   }
-  function status() {
-    if (!S.running) {
-      if (S.phase === "ready") return "Ready — press start";
-      return "Paused";
-    }
-    if (S.phase === "rest") return "Rest";
-    if (S.phase === "work") return isWarning() ? "Final " + displaySeconds() + " seconds" : "Round in progress";
-    return "";
+  /* Where along the bar the warning will fire, 0..1 from the left, so it can be
+     seen coming. Null during a rest, or with the warning switched off. */
+  function warningMarker() {
+    if (S.phase === "rest" || S.warning <= 0 || S.warning >= S.round) return null;
+    return S.warning / S.round;
   }
 
   /* ---------- strip markup ---------- */
@@ -562,7 +580,7 @@
   /* ---------- render ---------- */
   var faceEl = document.getElementById("face");
   var trackEl = document.getElementById("track");
-  var statusEl = document.getElementById("status");
+  var markEl = document.getElementById("mark");
   var roundNo = document.getElementById("round-no");
   var stage = document.getElementById("stage");
   var lastSecond = null;
@@ -593,11 +611,12 @@
     var total = Math.max(1, phaseLength());
     trackEl.style.width = (Math.max(0, Math.min(1, S.remaining / total)) * 100) + "%";
 
-    var text = status();
-    statusEl.textContent = text;
-    statusEl.classList.toggle("live", S.running);
-    statusEl.hidden = text === "";
-    document.getElementById("round-rule").hidden = text === "";
+    stage.classList.toggle("stage-paused", !S.running);
+    stage.classList.toggle("stage-warning", isWarning() && S.running);
+
+    var mark = warningMarker();
+    markEl.hidden = mark === null || mark <= 0.02 || mark >= 0.97;
+    if (!markEl.hidden) markEl.style.left = "calc(" + (mark * 100) + "% - 1.5px)";
 
     roundNo.textContent = S.no;
 

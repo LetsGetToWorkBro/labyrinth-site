@@ -58,8 +58,7 @@ struct TimerScreen: View {
 
     private var face: some View {
         VStack(spacing: 18) {
-            RoundBadge(round: timer.round, status: status, accent: accent, statusColour: statusColour)
-                .animation(.easeInOut(duration: 0.25), value: status)
+            RoundBadge(round: timer.round, accent: accent)
 
             Text(Clockface.time(timer.displaySeconds))
                 .font(.clock(320))
@@ -71,7 +70,11 @@ struct TimerScreen: View {
                 .scaleEffect(pulse ? 1.022 : 1)
                 .animation(.spring(response: 0.28, dampingFraction: 0.55), value: timer.displaySeconds)
 
-            ProgressTrack(progress: timer.progress, accent: accent)
+            ProgressTrack(progress: timer.progress,
+                          accent: accent,
+                          isRunning: timer.running,
+                          isWarning: timer.isWarning,
+                          marker: timer.warningMarker)
         }
         .frame(width: 1_180)
     }
@@ -227,23 +230,6 @@ struct TimerScreen: View {
         }
     }
 
-    private var statusColour: Color {
-        timer.running ? accent : Palette.muted
-    }
-
-    private var status: String {
-        if !timer.running {
-            switch timer.phase {
-            case .ready: return "Ready — press start"
-            case .work, .rest: return "Paused"
-            }
-        }
-        switch timer.phase {
-        case .rest: return "Rest"
-        case .work: return timer.isWarning ? "Final \(timer.displaySeconds) seconds" : "Round in progress"
-        case .ready: return ""
-        }
-    }
 }
 
 #Preview {

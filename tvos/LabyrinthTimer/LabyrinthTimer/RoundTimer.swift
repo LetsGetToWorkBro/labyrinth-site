@@ -95,6 +95,13 @@ final class RoundTimer: ObservableObject {
         phase == .work && warningLength > 0 && remaining <= TimeInterval(warningLength) + 0.001
     }
 
+    /// Where along the bar the warning will fire, 0...1 from the left, so it can
+    /// be seen coming. Nil during a rest, or with the warning switched off.
+    var warningMarker: Double? {
+        guard phase != .rest, warningLength > 0, warningLength < roundLength else { return nil }
+        return Double(warningLength) / Double(roundLength)
+    }
+
     /// Seconds shown on the face. Rounded up so a fresh 5:00 round reads 5:00,
     /// not 4:59.
     var displaySeconds: Int { max(0, Int(remaining.rounded(.up))) }

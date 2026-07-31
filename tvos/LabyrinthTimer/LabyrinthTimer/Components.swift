@@ -44,18 +44,14 @@ struct WallClock: View {
 
 // MARK: - Round badge
 
-/// "ROUND 3" in a gold-ruled plate, with what the clock is doing alongside it.
-/// The round number just keeps counting up — the session ends when somebody
-/// decides it has.
+/// "ROUND 3" in a gold-ruled plate. It just keeps counting up — the session
+/// ends when somebody decides it has.
 ///
-/// The status shares the plate rather than taking a line of its own, which is
-/// what lets the digits below be as big as they are. The plate is centred, so
-/// it can grow and shrink with the wording without shoving anything about.
+/// No status text alongside it: the bar under the clock says what the timer is
+/// doing, and saying it twice on a wall screen is noise.
 struct RoundBadge: View {
     var round: Int
-    var status: String
     var accent: Color
-    var statusColour: Color
 
     var body: some View {
         HStack(spacing: 22) {
@@ -66,16 +62,6 @@ struct RoundBadge: View {
                 .font(.system(size: 46, weight: .black, design: .rounded))
                 .monospacedDigit()
                 .foregroundStyle(accent)
-
-            if !status.isEmpty {
-                Rectangle()
-                    .fill(Color.white.opacity(0.12))
-                    .frame(width: 1, height: 34)
-
-                Text(status)
-                    .captionStyle(24, tracking: 6, color: statusColour, weight: .bold)
-                    .lineLimit(1)
-            }
         }
         .padding(.horizontal, 34)
         .padding(.vertical, 16)
@@ -92,29 +78,77 @@ struct RoundBadge: View {
 
 // MARK: - Progress track
 
-/// A capsule that drains as the phase runs out.
+/// The bar under the clock, and the only thing on screen that says what the
+/// timer is doing. It carries the state four ways at once:
+///
+/// - **Colour** follows the phase — gold in a round, light gold once the
+///   warning is in, red through the rest.
+/// - **A bright leading edge** rides the end of the fill while the clock runs,
+///   and dims the moment it's paused.
+/// - **A notch** sits where the warning will fire, so you can see it coming
+///   before it arrives.
+/// - **Paused** dims the whole bar and breathes it slowly, so a stopped clock
+///   never looks like a dead screen.
 struct ProgressTrack: View {
     var progress: Double
     var accent: Color
+    var isRunning: Bool
+    var isWarning: Bool
+    /// Where along the bar the warning fires, 0...1 from the left. Nil hides it.
+    var marker: Double?
+
+    @State private var breathe = false
+
+    private let height: CGFloat = 18
 
     var body: some View {
         GeometryReader { geo in
+            let width = geo.size.width
+            let filled = max(0, width * (1 - progress))
+            let cap: CGFloat = isWarning ? 10 : 6
+
             ZStack(alignment: .leading) {
                 Capsule()
                     .fill(Color.white.opacity(0.07))
+
                 Capsule()
                     .fill(
                         LinearGradient(
-                            colors: [accent.opacity(0.75), accent],
+                            colors: [accent.opacity(0.65), accent],
                             startPoint: .leading,
                             endPoint: .trailing
                         )
                     )
-                    .frame(width: max(0, geo.size.width * (1 - progress)))
-                    .shadow(color: accent.opacity(0.5), radius: 18, y: 0)
+                    .frame(width: filled)
+                    .shadow(color: accent.opacity(isRunning ? 0.55 : 0), radius: 20)
+
+                if filled > cap {
+                    Capsule()
+                        .fill(Color.white.opacity(isRunning ? 0.9 : 0.25))
+                        .frame(width: cap)
+                        .offset(x: filled - cap)
+                        .shadow(color: accent.opacity(isRunning ? 0.95 : 0), radius: isWarning ? 22 : 14)
+                }
+
+                // Drawn last and standing proud of the bar so it reads whether
+                // the fill has passed it yet or not.
+                if let marker, marker > 0.02, marker < 0.97 {
+                    Capsule()
+                        .fill(Palette.bone.opacity(0.5))
+                        .frame(width: 3, height: height + 12)
+                        .offset(x: width * marker - 1.5)
+                }
             }
+            .frame(height: height)
         }
-        .frame(height: 14)
+        .frame(height: height)
+        .opacity(isRunning ? 1 : (breathe ? 0.45 : 0.85))
+        // Two separately scoped animations rather than one withAnimation around
+        // the flag: a repeatForever and a state change fighting over the same
+        // property is where SwiftUI gets janky.
+        .animation(.easeInOut(duration: 1.7).repeatForever(autoreverses: true), value: breathe)
+        .animation(.easeInOut(duration: 0.4), value: isRunning)
+        .onAppear { breathe = true }
     }
 }
 

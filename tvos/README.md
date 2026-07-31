@@ -81,6 +81,19 @@ the accessibility layer.
 **Reset** zeroes everything out: back to the top of round 1, stopped, with the
 full round on the face. Press play and the session runs from the start.
 
+### The bar
+
+There is no status text anywhere on the screen. The bar under the clock says
+what the timer is doing, four ways at once:
+
+- **Colour** follows the phase — gold through a round, light gold once the
+  warning is in, red through the rest.
+- **A bright leading edge** rides the end of the fill while the clock runs.
+- **A notch** sits where the warning will fire, so it can be seen coming. It
+  hides during a rest and when the warning is `OFF`.
+- **Paused** dims the whole bar and breathes it slowly, so a stopped clock never
+  looks like a dead screen.
+
 Every setting is remembered between launches. Changing the round length while
 the clock is running takes effect on the next round; when it's parked at the
 top, it updates the face straight away.
