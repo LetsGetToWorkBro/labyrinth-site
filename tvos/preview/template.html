@@ -201,7 +201,7 @@
     box-shadow: 0 12px 28px color-mix(in srgb, var(--tint) 40%, transparent);
   }
   .card .v {
-    font-size: 92px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums;
+    font-size: 104px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums;
     color: var(--bone); white-space: nowrap;
     max-width: 100%;
   }
@@ -259,7 +259,6 @@
         <div class="badge">
           <span class="k">Round</span>
           <span class="n" id="round-no">1</span>
-          <span class="of" id="round-of" hidden></span>
         </div>
         <div class="face" id="face">05:00</div>
         <div class="track"><i id="track"></i></div>
@@ -295,7 +294,7 @@
 
   /* ---------- the same engine the app runs, in miniature ---------- */
   var S = {
-    round: 300, warning: 10, rest: 60, rounds: 0,
+    round: 300, warning: 10, rest: 60,
     phase: "ready", no: 1, remaining: 300, running: false,
     deadline: null, lastCued: Infinity
   };
@@ -304,45 +303,116 @@
     /* Fine steps at the short end, coarse once the rounds get long. */
     round:   { min: 30, max: 1800, step: function (v, d) { return (d > 0 ? v >= 300 : v > 300) ? 60 : 15; } },
     warning: { min: 0,  max: 180,  step: 5  },
-    rest:    { min: 0,  max: 600,  step: 15 },
-    rounds:  { min: 0,  max: 30,   step: 1  }
+    rest:    { min: 0,  max: 600,  step: 15 }
   };
 
-  var CARDS = ["round", "warning", "rest", "rounds"];
+  var CARDS = ["round", "warning", "rest"];
   var BUTTONS = ["playPause", "reset"];
   /* Everything focusable, in the order it appears along the bottom. */
   var STRIP = BUTTONS.concat(CARDS);
-  var TINT = { round: "var(--green)", warning: "var(--yellow)", rest: "var(--red)", rounds: "var(--bone)" };
+  var TINT = { round: "var(--green)", warning: "var(--yellow)", rest: "var(--red)" };
   var focus = "playPause";
 
-  /* ---------- sound, synthesised the way the app does it ---------- */
+  /* ---------- sound, synthesised the way the app does it ----------
+     The bell is a stack of inharmonic partials with a noise strike on the
+     front; the clapper is noise pushed through a resonant band, three times.
+     Same recipe as Cues.swift, spoken in Web Audio. */
   var ctx = null;
   function audio() {
     if (!ctx) { try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; } }
     if (ctx.state === "suspended") ctx.resume();
     return ctx;
   }
-  function voice(freq, at, dur, gain, decay) {
+
+  /* One sine partial: start loud, fall away over `decay` seconds. */
+  function partial(dest, freq, gain, decay, at) {
     var c = audio(); if (!c) return;
-    var t = c.currentTime + at;
     var osc = c.createOscillator(), amp = c.createGain();
     osc.type = "sine"; osc.frequency.value = freq;
-    amp.gain.setValueAtTime(0, t);
-    amp.gain.linearRampToValueAtTime(gain, t + 0.006);
-    amp.gain.exponentialRampToValueAtTime(0.0001, t + dur * (decay || 1));
-    osc.connect(amp); amp.connect(c.destination);
-    osc.start(t); osc.stop(t + dur * (decay || 1) + 0.05);
+    amp.gain.setValueAtTime(0, at);
+    amp.gain.linearRampToValueAtTime(gain, at + 0.003);
+    amp.gain.setTargetAtTime(0, at + 0.003, decay);
+    osc.connect(amp); amp.connect(dest);
+    osc.start(at); osc.stop(at + decay * 5 + 0.05);
   }
-  function horn(f, at, dur, gain) {
-    voice(f, at, dur, gain, 1); voice(f * 1.5, at, dur, gain * 0.42, 1); voice(f * 2, at, dur, gain * 0.24, 1);
+
+  /* Seeded, so the clap sounds identical every time — a cue that shifts
+     between presses is unsettling. */
+  var noiseBuffer = null;
+  function noise() {
+    var c = audio();
+    if (!noiseBuffer) {
+      noiseBuffer = c.createBuffer(1, Math.floor(c.sampleRate), c.sampleRate);
+      var d = noiseBuffer.getChannelData(0), x = 12345;
+      for (var i = 0; i < d.length; i++) { x = (x * 1103515245 + 12345) >>> 0; d[i] = x / 2147483648 - 1; }
+    }
+    return noiseBuffer;
   }
+
+  function crack(dest, at, dur, decay, gain, centre, q, bodyCentre, bodyQ, bodyGain) {
+    var c = audio(); if (!c) return;
+    var src = c.createBufferSource(); src.buffer = noise(); src.loop = true;
+    var env = c.createGain();
+    env.gain.setValueAtTime(gain, at);
+    env.gain.setTargetAtTime(0, at, decay);
+    var band = c.createBiquadFilter();
+    band.type = "bandpass"; band.frequency.value = centre; band.Q.value = q;
+    src.connect(band); band.connect(env); env.connect(dest);
+    if (bodyGain > 0) {
+      var body = c.createBiquadFilter();
+      body.type = "bandpass"; body.frequency.value = bodyCentre; body.Q.value = bodyQ;
+      var trim = c.createGain(); trim.gain.value = bodyGain;
+      src.connect(body); body.connect(trim); trim.connect(env);
+    }
+    src.start(at); src.stop(at + dur + 0.05);
+  }
+
+  function bus(level) {
+    var c = audio(); if (!c) return null;
+    var g = c.createGain(); g.gain.value = level; g.connect(c.destination);
+    return g;
+  }
+
   var CUE = {
-    roundStart: function () { horn(392, 0, 0.95, 0.28); horn(587, 0, 0.95, 0.13); },
-    roundEnd:   function () { for (var i = 0; i < 3; i++) { horn(330, i * 0.28, 0.22, 0.28); horn(494, i * 0.28, 0.22, 0.12); } },
-    warning:    function () { voice(880, 0, 0.11, 0.2, 1); voice(880, 0.17, 0.11, 0.2, 1); },
-    tick:       function () { voice(1240, 0, 0.06, 0.14, 1); },
-    sessionEnd: function () { horn(392, 0, 0.2, 0.24); horn(494, 0.2, 0.2, 0.24); horn(587, 0.4, 0.2, 0.26); horn(784, 0.6, 1.2, 0.28); },
-    click:      function () { voice(1500, 0, 0.025, 0.05, 1); }
+    /* The boxing bell — a round starts and a round ends on the same sound. */
+    bell: function () {
+      var c = audio(); if (!c) return;
+      var out = bus(0.34), t = c.currentTime, f0 = 587;
+      var shape = [[1.00, 1.00, 2.00], [1.19, 0.55, 1.65], [1.51, 0.42, 1.35], [2.00, 0.62, 1.20],
+                   [2.51, 0.30, 0.90], [2.99, 0.28, 0.70], [4.13, 0.18, 0.50], [5.42, 0.12, 0.35],
+                   [6.79, 0.08, 0.25]];
+      shape.forEach(function (p, i) {
+        partial(out, f0 * p[0], p[1], p[2], t);
+        /* A few cents apart on the low partials gives the tail its warble. */
+        if (i < 4) partial(out, f0 * p[0] * 1.004, p[1] * 0.6, p[2] * 0.85, t);
+      });
+      crack(out, t, 0.06, 0.012, 0.5, 3600, 0.9, 1200, 1.4, 0.4);
+    },
+
+    /* The ten-second clapper. */
+    clap: function () {
+      var c = audio(); if (!c) return;
+      var out = bus(0.62), t = c.currentTime;
+      for (var i = 0; i < 3; i++) {
+        crack(out, t + i * 0.22, 0.22, 0.022, 0.95, 1900, 1.1, 430, 2.2, 0.45);
+      }
+    },
+
+    /* Scrolling a value. */
+    tick: function () {
+      var c = audio(); if (!c) return;
+      var out = bus(0.5), t = c.currentTime;
+      partial(out, 2100, 0.13, 0.012, t);
+      partial(out, 3150, 0.06, 0.008, t);
+    },
+
+    /* Focus landing on a control — lower and softer than the scroll tick. */
+    select: function () {
+      var c = audio(); if (!c) return;
+      var out = bus(0.5), t = c.currentTime;
+      partial(out, 880, 0.14, 0.03, t);
+      partial(out, 1320, 0.05, 0.02, t);
+    }
   };
   function cue(name) { if (CUE[name]) CUE[name](); }
 
@@ -367,8 +437,7 @@
     if (sound) cue(sound);
   }
   function start() {
-    if (S.phase === "finished") { clear(); begin("work", S.round, "roundStart"); return; }
-    if (S.phase === "ready") { begin("work", S.round, "roundStart"); return; }
+    if (S.phase === "ready") { begin("work", S.round, "bell"); return; }
     S.deadline = performance.now() + S.remaining * 1000;
     S.running = true; S.lastCued = Infinity;
   }
@@ -383,39 +452,33 @@
     S.running = false; S.deadline = null; S.phase = "ready"; S.no = 1;
     S.remaining = S.round; S.lastCued = Infinity;
   }
-  function reset() { clear(); cue("click"); }
+  function reset() { clear(); cue("select"); }
+  /* The clock hit zero — the bell rings either way, and the only question is
+     whether there is a rest in between. */
   function advance() {
     S.lastCued = Infinity;
     if (S.phase === "work") {
-      if (S.rounds > 0 && S.no >= S.rounds) {
-        S.running = false; S.deadline = null; S.phase = "finished"; S.remaining = 0; cue("sessionEnd");
-      } else if (S.rest > 0) {
-        begin("rest", S.rest, "roundEnd");
-      } else {
-        S.no += 1; begin("work", S.round, "roundEnd");
-      }
+      if (S.rest > 0) { begin("rest", S.rest, "bell"); }
+      else { S.no += 1; begin("work", S.round, "bell"); }
     } else if (S.phase === "rest") {
-      S.no += 1; begin("work", S.round, "roundStart");
+      S.no += 1; begin("work", S.round, "bell");
     } else { pause(); }
   }
 
   /* ---------- chrome ---------- */
   function accent() {
     if (S.phase === "rest") return "var(--red)";
-    if (S.phase === "finished") return "var(--green)";
     if (S.phase === "work" && isWarning()) return "var(--gold-light)";
     return "var(--gold)";
   }
   function faceColour() {
     if (S.phase === "rest") return "var(--red)";
-    if (S.phase === "finished") return "var(--green)";
     if (S.phase === "work") return isWarning() ? "var(--gold-light)" : "var(--bone)";
     return "var(--gold)";
   }
   function status() {
     if (!S.running) {
       if (S.phase === "ready") return "Ready — press start";
-      if (S.phase === "finished") return "Session complete";
       return "Paused";
     }
     if (S.phase === "rest") return "Rest";
@@ -424,7 +487,7 @@
   }
 
   /* ---------- strip markup ---------- */
-  var LABELS = { round: "Round", warning: "Warning", rest: "Rest", rounds: "Rounds" };
+  var LABELS = { round: "Round", warning: "Warning", rest: "Rest" };
   var cards = document.getElementById("cards");
   CARDS.forEach(function (key) {
     var el = document.createElement("div");
@@ -461,15 +524,17 @@
     var step = typeof r.step === "function" ? r.step(S[key], dir) : r.step;
     S[key] = Math.min(r.max, Math.max(r.min, S[key] + dir * step));
     if (key === "round" && !S.running && S.phase === "ready") S.remaining = S.round;
-    cue("click");
+    cue("tick");
     render();
   }
   /* Up and down are spent changing values, so left and right do the travelling. */
   function move(dir) {
-    var i = STRIP.indexOf(focus);
-    if (dir === "left") focus = STRIP[Math.max(0, i - 1)];
-    else if (dir === "right") focus = STRIP[Math.min(STRIP.length - 1, i + 1)];
+    var i = STRIP.indexOf(focus), next = focus;
+    if (dir === "left") next = STRIP[Math.max(0, i - 1)];
+    else if (dir === "right") next = STRIP[Math.min(STRIP.length - 1, i + 1)];
     else if (CARDS.indexOf(focus) >= 0) { adjust(focus, dir === "up" ? 1 : -1); return; }
+    /* Pushing against the end of the strip should be silent. */
+    if (next !== focus) { focus = next; cue("select"); }
     render();
   }
   var KEYS = { ArrowLeft: "left", ArrowRight: "right", ArrowUp: "up", ArrowDown: "down" };
@@ -488,13 +553,12 @@
   var trackEl = document.getElementById("track");
   var statusEl = document.getElementById("status");
   var roundNo = document.getElementById("round-no");
-  var roundOf = document.getElementById("round-of");
   var stage = document.getElementById("stage");
   var lastSecond = null;
 
   /* The app shrinks an over-wide value with minimumScaleFactor; do the same
      here so a 30:00 round still fits its container. */
-  var VALUE_SIZE = 92;
+  var VALUE_SIZE = 104;
   function fitValue(el, text) {
     if (el.textContent === text && el.style.fontSize) return;
     el.textContent = text;
@@ -522,15 +586,12 @@
     statusEl.classList.toggle("live", S.running);
 
     roundNo.textContent = S.no;
-    roundOf.hidden = S.rounds === 0;
-    roundOf.textContent = "of " + S.rounds;
 
     CARDS.forEach(function (key) {
       var el = cards.querySelector('[data-field="' + key + '"]');
       var r = RANGE[key];
       el.classList.toggle("on", focus === key);
-      fitValue(el.querySelector(".v"),
-          key === "rounds" ? (S.rounds === 0 ? "∞" : String(S.rounds)) : compact(S[key]));
+      fitValue(el.querySelector(".v"), compact(S[key]));
       el.querySelector(".up").classList.toggle("off", S[key] >= r.max);
       el.querySelector(".down").classList.toggle("off", S[key] <= r.min);
     });
@@ -555,8 +616,7 @@
         if (second !== S.lastCued) {
           var previous = S.lastCued;
           S.lastCued = second;
-          if (S.phase === "work" && S.warning > 0 && second === S.warning && previous > second) cue("warning");
-          else if (second <= 3 && previous > second) cue("tick");
+          if (S.phase === "work" && S.warning > 0 && second === S.warning && previous > second) cue("clap");
         }
       }
     }

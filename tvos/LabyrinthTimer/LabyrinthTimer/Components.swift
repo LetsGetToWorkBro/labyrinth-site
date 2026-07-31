@@ -44,11 +44,10 @@ struct WallClock: View {
 
 // MARK: - Round badge
 
-/// "ROUND 3" in a gold-ruled plate. The count only appears when the session has
-/// a fixed length — an unlimited session just keeps counting up.
+/// "ROUND 3" in a gold-ruled plate. It just keeps counting up — the session
+/// ends when somebody decides it has.
 struct RoundBadge: View {
     var round: Int
-    var total: Int
     var accent: Color
 
     var body: some View {
@@ -60,11 +59,6 @@ struct RoundBadge: View {
                 .font(.system(size: 46, weight: .black, design: .rounded))
                 .monospacedDigit()
                 .foregroundStyle(accent)
-
-            if total > 0 {
-                Text("of \(total)")
-                    .captionStyle(24, tracking: 4, color: Palette.faint, weight: .bold)
-            }
         }
         .padding(.horizontal, 34)
         .padding(.vertical, 16)
@@ -112,8 +106,8 @@ struct ProgressTrack: View {
 /// One adjustable value in the strip along the bottom.
 ///
 /// No label — the colour is the label. Green is the round, yellow the warning,
-/// red the rest, gold the round count, which is what a coach glances at from
-/// the middle of the mat. That leaves the whole container to the number.
+/// red the rest, which is what a coach glances at from the middle of the mat.
+/// That leaves the whole container to the number.
 ///
 /// The strip runs left to right, so left/right walks it and up/down changes the
 /// focused value. The chevrons above and below the number say so.
@@ -133,7 +127,7 @@ struct SettingCard: View {
             Spacer(minLength: 0)
 
             Text(value)
-                .font(.system(size: 92, weight: .heavy, design: .rounded))
+                .font(.system(size: 104, weight: .heavy, design: .rounded))
                 .monospacedDigit()
                 .foregroundStyle(Palette.bone)
                 .lineLimit(1)

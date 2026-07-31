@@ -2,7 +2,8 @@
 
 A branded round timer for the mats. One screen, no settings page: the clock sits
 dead centre of the TV and everything you can touch is in the strip along the
-bottom — start/pause, reset, and the three colour-coded settings.
+bottom — start/pause, reset, and the three colour-coded settings. It runs round
+after round until somebody stops it.
 
 <p align="center">
   <em>Ink, gold, the roundel turning behind the clock. Same palette as
@@ -68,9 +69,10 @@ whole container and reads from the far end of the mat. Left to right:
 - **Warning** — yellow — how much time is left in the round when the clock turns
   gold and the double beep fires. Wind it down to `OFF` to skip it.
 - **Rest** — red — 0 to 10:00. At `OFF` the rounds run back to back.
-- **Rounds** — neutral, because it counts rather than times — `∞`, or a fixed
-  session of up to 30. A fixed session ends on a flourish instead of rolling
-  into another round.
+
+There is no round count to set. The round number climbs in the badge above the
+clock and the session ends when someone hits pause — which is how it works on
+the mat anyway.
 
 Each card still names itself to VoiceOver, so nothing is lost to anyone using
 the accessibility layer.
@@ -88,16 +90,32 @@ music is already playing on the TV rather than cutting it off.
 
 ### The sounds
 
-Nothing is shipped as an audio file — every cue is a stack of sine partials
-rendered at launch in `Cues.swift`, so they can be retuned in code:
-
 | Cue | When |
 | --- | --- |
-| Long horn | A round starts |
-| Three short blasts | A round ends |
-| Double beep | The warning window opens |
-| Blip | Each of the last three seconds |
-| Rising flourish | A fixed-length session finishes |
+| **Bell** | A round starts, and a round ends — the same bell both times |
+| **Clapper** ×3 | The warning window opens |
+| **Tick** | Scrolling a setting |
+| **Blip** | Focus landing on a control |
+
+Nothing is shipped as an audio file. The bell is a stack of nine inharmonic
+partials with detuned twins on the low ones for the warble, struck by a short
+noise burst; the clapper is white noise pushed through a resonant band, three
+times. Both are rendered at launch in `Cues.swift`, so retuning them is a code
+change rather than a trip to a sample library.
+
+To audition a change without a Mac:
+
+```bash
+python3 tvos/tools/render_cues.py ~/Desktop/cues
+```
+
+That script mirrors `Cues.swift` exactly — same partials, same filter, same
+noise seed — and writes `bell.wav`, `clap.wav`, `tick.wav` and `select.wav`.
+
+**Using recordings instead.** Drop a file named after the cue — `bell.wav`,
+`clap.wav`, `tick.wav`, `select.wav` — into the app target and it is used in
+place of the synthesised version. Any sample rate or channel count; it is
+converted on the way in. Nothing else has to change.
 
 ## The browser preview
 
@@ -116,6 +134,7 @@ scripts after a brand tweak keeps everything in step:
 pip install pillow
 python3 tvos/tools/make_assets.py     # → Assets.xcassets
 python3 tvos/tools/build_preview.py   # → preview/index.html
+python3 tvos/tools/render_cues.py .   # → bell.wav, clap.wav, tick.wav, select.wav
 ```
 
 `make_assets.py` keys the black-on-white artwork to alpha, punches the wordmark

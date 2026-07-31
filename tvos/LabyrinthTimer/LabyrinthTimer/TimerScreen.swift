@@ -9,11 +9,11 @@ struct TimerScreen: View {
 
     enum Field: Hashable {
         case playPause, reset
-        case round, warning, rest, rounds
+        case round, warning, rest
 
         var isCard: Bool {
             switch self {
-            case .round, .warning, .rest, .rounds: return true
+            case .round, .warning, .rest: return true
             case .playPause, .reset: return false
             }
         }
@@ -21,7 +21,7 @@ struct TimerScreen: View {
 
     /// Everything focusable, in the order it appears along the bottom. Left and
     /// right walk this list; up and down change whatever card is focused.
-    private static let strip: [Field] = [.playPause, .reset, .round, .warning, .rest, .rounds]
+    private static let strip: [Field] = [.playPause, .reset, .round, .warning, .rest]
 
     var body: some View {
         ZStack {
@@ -58,7 +58,7 @@ struct TimerScreen: View {
 
     private var face: some View {
         VStack(spacing: 20) {
-            RoundBadge(round: timer.round, total: timer.roundCount, accent: accent)
+            RoundBadge(round: timer.round, accent: accent)
 
             Text(Clockface.time(timer.displaySeconds))
                 .font(.clock(260))
@@ -121,15 +121,6 @@ struct TimerScreen: View {
                      tint: Palette.red,
                      atFloor: timer.restLength <= RoundTimer.restRange.lowerBound,
                      atCeiling: timer.restLength >= RoundTimer.restRange.upperBound)
-
-                card(.rounds,
-                     title: "Rounds",
-                     value: timer.isUnlimited ? "∞" : "\(timer.roundCount)",
-                     // A count, not a duration — a neutral keeps it from
-                     // competing with the warning's yellow.
-                     tint: Palette.bone,
-                     atFloor: timer.roundCount <= RoundTimer.roundCountRange.lowerBound,
-                     atCeiling: timer.roundCount >= RoundTimer.roundCountRange.upperBound)
             }
         }
     }
@@ -176,9 +167,9 @@ struct TimerScreen: View {
     private func move(_ direction: MoveCommandDirection, from origin: Field) {
         switch direction {
         case .left:
-            focus = neighbour(of: origin, by: -1) ?? origin
+            land(on: neighbour(of: origin, by: -1), from: origin)
         case .right:
-            focus = neighbour(of: origin, by: 1) ?? origin
+            land(on: neighbour(of: origin, by: 1), from: origin)
         case .up:
             if origin.isCard { adjust(origin, by: 1) }
         case .down:
@@ -186,6 +177,14 @@ struct TimerScreen: View {
         @unknown default:
             break
         }
+    }
+
+    /// Moves focus and gives it a soft blip, but only when it actually moved —
+    /// pushing against the end of the strip should be silent.
+    private func land(on destination: Field?, from origin: Field) {
+        guard let destination, destination != origin else { return }
+        focus = destination
+        Cues.shared.play(.select)
     }
 
     private func neighbour(of field: Field, by offset: Int) -> Field? {
@@ -203,12 +202,10 @@ struct TimerScreen: View {
             timer.warningLength = stepped(timer.warningLength, direction * RoundTimer.warningStep, RoundTimer.warningRange)
         case .rest:
             timer.restLength = stepped(timer.restLength, direction * RoundTimer.restStep, RoundTimer.restRange)
-        case .rounds:
-            timer.roundCount = stepped(timer.roundCount, direction, RoundTimer.roundCountRange)
         case .playPause, .reset:
             return
         }
-        Cues.shared.play(.click)
+        Cues.shared.play(.tick)
     }
 
     private func stepped(_ value: Int, _ delta: Int, _ range: ClosedRange<Int>) -> Int {
@@ -222,7 +219,6 @@ struct TimerScreen: View {
         case .ready: return Palette.gold
         case .work: return timer.isWarning ? Palette.goldLight : Palette.gold
         case .rest: return Palette.red
-        case .finished: return Palette.green
         }
     }
 
@@ -231,7 +227,6 @@ struct TimerScreen: View {
         case .ready: return Palette.gold
         case .work: return timer.isWarning ? Palette.goldLight : Palette.bone
         case .rest: return Palette.red
-        case .finished: return Palette.green
         }
     }
 
@@ -243,14 +238,13 @@ struct TimerScreen: View {
         if !timer.running {
             switch timer.phase {
             case .ready: return "Ready — press start"
-            case .finished: return "Session complete"
             case .work, .rest: return "Paused"
             }
         }
         switch timer.phase {
         case .rest: return "Rest"
         case .work: return timer.isWarning ? "Final \(timer.displaySeconds) seconds" : "Round in progress"
-        case .ready, .finished: return ""
+        case .ready: return ""
         }
     }
 }

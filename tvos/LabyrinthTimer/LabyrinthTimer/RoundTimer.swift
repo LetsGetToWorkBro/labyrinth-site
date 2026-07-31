@@ -2,8 +2,8 @@ import Combine
 import Foundation
 
 /// The whole timer: a round, an optional warning inside that round, and an
-/// optional rest between rounds. Nothing else — the coaches asked for the
-/// clock, not a settings app.
+/// optional rest between rounds. It runs until someone stops it — nobody on the
+/// mat wants to tell a timer how many rounds they are about to do.
 @MainActor
 final class RoundTimer: ObservableObject {
 
@@ -11,14 +11,13 @@ final class RoundTimer: ObservableObject {
         case ready      // parked at the top of round 1
         case work       // the round is running
         case rest       // between rounds
-        case finished   // the last round of a fixed-length session is done
     }
 
     // MARK: Settings
 
     /// Length of a round, in seconds.
     @Published var roundLength: Int = Defaults.round {
-        didSet { settingChanged(oldValue, roundLength, key: Keys.round, phase: .work) }
+        didSet { settingChanged(oldValue, roundLength, key: Keys.round, appliesTo: .work) }
     }
 
     /// How much time is left in a round when the warning fires. 0 turns it off.
@@ -28,12 +27,7 @@ final class RoundTimer: ObservableObject {
 
     /// Rest between rounds. 0 runs the rounds back to back.
     @Published var restLength: Int = Defaults.rest {
-        didSet { settingChanged(oldValue, restLength, key: Keys.rest, phase: .rest) }
-    }
-
-    /// Rounds in the session. 0 means keep going until someone stops it.
-    @Published var roundCount: Int = Defaults.rounds {
-        didSet { store.set(roundCount, forKey: Keys.rounds) }
+        didSet { settingChanged(oldValue, restLength, key: Keys.rest, appliesTo: .rest) }
     }
 
     // MARK: Live state
@@ -46,17 +40,16 @@ final class RoundTimer: ObservableObject {
     private var deadline: Date?
     private var ticker: Timer?
     /// The last whole second we fired a cue for, so a 30 Hz tick doesn't fire
-    /// the same beep thirty times.
+    /// the same clapper thirty times.
     private var lastCuedSecond: Int = .max
     private let store = UserDefaults.standard
     private let cues: Cues
 
-    // MARK: Steps and limits — what a click of the remote is worth
+    // MARK: Steps and limits — what a press of the remote is worth
 
     static let roundRange = 30...1800
     static let warningRange = 0...180, warningStep = 5
     static let restRange = 0...600, restStep = 15
-    static let roundCountRange = 0...30   // 0 == unlimited
 
     /// Fine steps at the short end where fifteen seconds is a real
     /// difference, coarse once the rounds get long — otherwise dialling in a
@@ -67,12 +60,11 @@ final class RoundTimer: ObservableObject {
     }
 
     private enum Defaults {
-        static let round = 300, warning = 10, rest = 60, rounds = 0
+        static let round = 300, warning = 10, rest = 60
     }
 
     private enum Keys {
-        static let round = "roundLength", warning = "warningLength"
-        static let rest = "restLength", rounds = "roundCount"
+        static let round = "roundLength", warning = "warningLength", rest = "restLength"
     }
 
     init(cues: Cues = .shared) {
@@ -81,7 +73,6 @@ final class RoundTimer: ObservableObject {
             roundLength = clamp(store.integer(forKey: Keys.round), Self.roundRange)
             warningLength = clamp(store.integer(forKey: Keys.warning), Self.warningRange)
             restLength = clamp(store.integer(forKey: Keys.rest), Self.restRange)
-            roundCount = clamp(store.integer(forKey: Keys.rounds), Self.roundCountRange)
         }
         remaining = TimeInterval(roundLength)
     }
@@ -90,10 +81,7 @@ final class RoundTimer: ObservableObject {
 
     /// The length of whatever is on the clock right now.
     var phaseLength: Int {
-        switch phase {
-        case .rest: return restLength
-        case .ready, .work, .finished: return roundLength
-        }
+        phase == .rest ? restLength : roundLength
     }
 
     /// 0 at the start of the phase, 1 when it runs out. Drives the bar.
@@ -107,8 +95,6 @@ final class RoundTimer: ObservableObject {
         phase == .work && warningLength > 0 && remaining <= TimeInterval(warningLength) + 0.001
     }
 
-    var isUnlimited: Bool { roundCount == 0 }
-
     /// Seconds shown on the face. Rounded up so a fresh 5:00 round reads 5:00,
     /// not 4:59.
     var displaySeconds: Int { max(0, Int(remaining.rounded(.up))) }
@@ -121,11 +107,8 @@ final class RoundTimer: ObservableObject {
 
     func start() {
         switch phase {
-        case .finished:
-            clear()
-            begin(phase: .work, seconds: roundLength, cue: .roundStart)
         case .ready:
-            begin(phase: .work, seconds: roundLength, cue: .roundStart)
+            begin(phase: .work, seconds: roundLength, cue: .bell)
         case .work, .rest:
             resume()
         }
@@ -142,11 +125,6 @@ final class RoundTimer: ObservableObject {
     /// Zeroes everything: back to the top of round 1, stopped, with the full
     /// round on the face. Press play and the session starts over.
     func reset() {
-        clear()
-        cues.play(.click)
-    }
-
-    private func clear() {
         running = false
         deadline = nil
         stopTicker()
@@ -154,6 +132,7 @@ final class RoundTimer: ObservableObject {
         round = 1
         remaining = TimeInterval(roundLength)
         lastCuedSecond = .max
+        cues.play(.select)
     }
 
     // MARK: Engine
@@ -203,42 +182,33 @@ final class RoundTimer: ObservableObject {
             return
         }
 
-        // Cues are keyed off the whole second so they fire exactly once.
+        // The clapper is keyed off the whole second so it fires exactly once.
         let second = Int(left.rounded(.up))
         guard second != lastCuedSecond else { return }
         let previous = lastCuedSecond
         lastCuedSecond = second
 
         if phase == .work, warningLength > 0, second == warningLength, previous > second {
-            cues.play(.warning)
-        } else if second <= 3, previous > second {
-            cues.play(.tick)
+            cues.play(.clap)
         }
     }
 
-    /// The clock hit zero — work out what comes next.
+    /// The clock hit zero — the bell rings either way, and the only question is
+    /// whether there's a rest in between.
     private func advance() {
         lastCuedSecond = .max
         switch phase {
         case .work:
-            let isLastRound = !isUnlimited && round >= roundCount
-            if isLastRound {
-                stopTicker()
-                running = false
-                deadline = nil
-                phase = .finished
-                remaining = 0
-                cues.play(.sessionEnd)
-            } else if restLength > 0 {
-                begin(phase: .rest, seconds: restLength, cue: .roundEnd)
+            if restLength > 0 {
+                begin(phase: .rest, seconds: restLength, cue: .bell)
             } else {
                 round += 1
-                begin(phase: .work, seconds: roundLength, cue: .roundEnd)
+                begin(phase: .work, seconds: roundLength, cue: .bell)
             }
         case .rest:
             round += 1
-            begin(phase: .work, seconds: roundLength, cue: .roundStart)
-        case .ready, .finished:
+            begin(phase: .work, seconds: roundLength, cue: .bell)
+        case .ready:
             pause()
         }
     }
@@ -248,7 +218,7 @@ final class RoundTimer: ObservableObject {
     /// A length changed. If the clock is parked, show it immediately; if it is
     /// running, let the current round finish on the old length and pick the new
     /// one up next time round.
-    private func settingChanged(_ old: Int, _ new: Int, key: String, phase target: Phase) {
+    private func settingChanged(_ old: Int, _ new: Int, key: String, appliesTo target: Phase) {
         store.set(new, forKey: key)
         guard old != new else { return }
         if !running && phase == .ready && target == .work {
