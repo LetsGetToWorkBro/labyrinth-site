@@ -920,7 +920,7 @@ def render_hub():
     </div>
     <div class="prog-hero__cta">
       <a data-book-trial href="/#book" class="btn btn--gold">Book a Free Class</a>
-      <a href="/#schedule" class="btn btn--ghost">Full Schedule</a>
+      <a href="/areas/" class="btn btn--ghost">Areas We Serve</a>
     </div>
   </div>
 </header>

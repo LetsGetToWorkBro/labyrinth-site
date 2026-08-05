@@ -30,7 +30,8 @@ const check=(n,c,x='')=>{ if(c){console.log('PASS  '+n);pass++}else{console.log(
 // ── L1: every internal link on every page resolves ──
 const posts = readdirSync(join(ROOT,'blog')).filter(f=>f.endsWith('.html')&&f!=='index.html').map(f=>'/blog/'+f.replace('.html',''))
 const programs = readdirSync(join(ROOT,'programs')).filter(f=>f.endsWith('.html')&&f!=='index.html').map(f=>'/programs/'+f.replace('.html',''))
-const pages = ['/', '/blog/', '/programs/', ...posts, ...programs]
+const areas = readdirSync(join(ROOT,'areas')).filter(f=>f.endsWith('.html')&&f!=='index.html').map(f=>'/areas/'+f.replace('.html',''))
+const pages = ['/', '/blog/', '/programs/', '/areas/', ...posts, ...programs, ...areas]
 const broken = []
 for (const path of pages) {
   const r = await page.goto('http://localhost:4620'+path, { waitUntil:'domcontentloaded' })
@@ -44,7 +45,7 @@ for (const path of pages) {
   }
 }
 check('L1 no broken internal links', broken.length === 0, '\n    ' + broken.slice(0,8).join('\n    '))
-check('L1 all 27 pages served 200', pages.length === 27, 'pages: ' + pages.length)
+check('L1 all 35 pages served 200', pages.length === 35, 'pages: ' + pages.length)
 
 // ── L1b: every program page carries the schema and the canonical it exists for ──
 // A program page whose Service block is missing is still a page, and still
@@ -93,6 +94,33 @@ const heroes = posts.map(p => {
 check('L1e every post has a distinct og:image',
   heroes.every(Boolean) && new Set(heroes).size === heroes.length,
   'reused: ' + heroes.filter((h,i) => heroes.indexOf(h) !== i).join(', '))
+
+// ── L1f: the area pages must not be doorway pages ──
+// Seven near-identical pages differing only by a place name is the thing
+// Google penalises the whole site for. The guard is on shared sentences: the
+// address, the program list and the closing CTA are legitimately common
+// chrome, and almost nothing else should be.
+const areaText = areas.map(p => {
+  const f = readFileSync(join(ROOT, p.slice(1) + '.html'), 'utf8')
+    .replace(/<script[\s\S]*?<\/script>/g, '')
+    .replace(/<(nav|footer|head)\b[\s\S]*?<\/\1>/g, '')
+  return new Set(f.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').toLowerCase()
+    .split(/(?<=[.!?]) /).map(x => x.trim()).filter(x => x.length > 40))
+})
+const allSentences = areaText.flatMap(s => [...s])
+const counts = allSentences.reduce((m, s) => m.set(s, (m.get(s) || 0) + 1), new Map())
+const sharedCount = [...counts.values()].filter(n => n > 1).length
+const uniqueCount = counts.size
+check('L1f area pages are substantially distinct',
+  sharedCount <= 6 && uniqueCount >= 100,
+  `${sharedCount} shared sentences across ${uniqueCount} distinct — cap is 6`)
+
+// No area page may claim a street address of its own. There is one academy.
+const fakeAddress = areas.filter(p => {
+  const f = readFileSync(join(ROOT, p.slice(1) + '.html'), 'utf8')
+  return /"@type":\s*"(LocalBusiness|SportsActivityLocation)"[\s\S]{0,400}"addressLocality":\s*"(?!Fulshear)/.test(f)
+})
+check('L1g no area page invents a location', fakeAddress.length === 0, fakeAddress.join(', '))
 
 // ── L2: no .html blog links survive ──
 await page.goto('http://localhost:4620/blog/', { waitUntil:'domcontentloaded' })
