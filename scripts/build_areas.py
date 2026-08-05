@@ -29,11 +29,19 @@ Katy school. No page here claims a location in the town it is named after, and
 none carries a LocalBusiness block with a fake address — they are Service pages
 with `areaServed` set, provided by the Fulshear business.
 
-Facts checked before writing: Lamar CISD covers Richmond, Rosenberg, Simonton
-and most of Fulshear; FM 359 runs 7.0 miles from Fulshear northwest to I-10 at
-Brookshire, and southeast to Richmond. Distances elsewhere are given as rough
-bands rather than invented minute counts — the neighbourhoods blog post makes
-the same choice deliberately and it is the right one.
+School districts, all four confirmed: Lamar CISD covers Richmond, Rosenberg,
+Simonton and most of Fulshear; Royal ISD covers Brookshire, Pattison and
+Sunnyside in southern Waller County; Cinco Ranch is Katy ISD and Sealy is Sealy
+ISD — those last two confirmed by the academy after the pages were written,
+having been flagged as the two taken on general knowledge rather than checked.
+
+Roads: FM 359 runs 7.0 miles from Fulshear northwest to I-10 at Brookshire, and
+southeast to Richmond.
+
+Distances are deliberately given as rough bands rather than minute counts. Only
+Brookshire's seven miles is a checked figure; the rest are estimates, which is
+exactly why none of them is written as a precise drive time. The neighbourhoods
+blog post makes the same choice and it was right to.
 """
 import json
 import os
