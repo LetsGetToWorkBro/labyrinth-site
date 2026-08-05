@@ -192,8 +192,12 @@
 }
 </script>
 
-<!-- Preload hero image for faster LCP -->
-<link rel="preload" as="image" href="./assets/hero-poster.jpg" fetchpriority="high">
+<!-- Preload hero image for faster LCP. It pointed at hero-poster.jpg, which was
+     the video's poster frame — with the video gone that preloads 138 KB nothing
+     displays and leaves the actual LCP element unhinted. type="image/webp" so a
+     browser without webp support ignores this and takes the jpg from the
+     <picture> instead of fetching both. -->
+<link rel="preload" as="image" href="./assets/hero-team.webp" type="image/webp" fetchpriority="high">
 
 <!-- Fonts — preconnect + async load to avoid render-blocking -->
 <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
@@ -559,12 +563,13 @@ button {
 <!-- ======== HERO ======== -->
 <section class="hero" id="hero">
   <canvas id="hero-maze-canvas"></canvas>
+  <!-- A still, not the loop. The video was busy behind the headline, and it
+       cost 3.2 MB of mp4 (4.9 MB of webm) on a phone to say the same thing the
+       photograph says. This is the image that was already sitting behind it as
+       the autoplay fallback, so the hero looks the way it did whenever autoplay
+       was blocked. assets/hero-video.* are kept for whenever it comes back. -->
   <div class="hero__bg">
-    <video class="hero__video" autoplay muted loop playsinline webkit-playsinline poster="./assets/hero-poster.jpg">
-      <source src="./assets/hero-video.webm" type="video/webm">
-      <source src="./assets/hero-video.mp4" type="video/mp4">
-    </video>
-    <picture class="hero__fallback"><source srcset="./assets/hero-team.webp" type="image/webp"><img src="./assets/hero-team.jpg" alt="Labyrinth BJJ team celebrating with medals and trophies" loading="eager" fetchpriority="high" width="1600" height="900"></picture>
+    <picture class="hero__still"><source srcset="./assets/hero-team.webp" type="image/webp"><img src="./assets/hero-team.jpg" alt="Labyrinth BJJ team celebrating with medals and trophies" loading="eager" fetchpriority="high" width="1600" height="900"></picture>
   </div>
 
   <div class="hero__content">

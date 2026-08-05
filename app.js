@@ -480,56 +480,6 @@
   fetchAthleteStats();
   fetchUpcomingTournaments();
 
-  // ===== HERO VIDEO AUTOPLAY =====
-  (function() {
-    var video = document.querySelector('.hero__video');
-    if (!video) return;
-
-    // Safari requires muted before load
-    video.muted = true;
-    video.defaultMuted = true;
-    video.setAttribute('muted', '');
-    video.setAttribute('playsinline', '');
-    video.setAttribute('webkit-playsinline', '');
-
-    function tryPlay() {
-      var playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise.then(function() {
-          // Playing successfully
-          video.style.opacity = '1';
-        }).catch(function() {
-          // Autoplay blocked — show fallback image
-          video.style.display = 'none';
-          var fallback = video.parentElement.querySelector('.hero__fallback');
-          if (fallback) {
-            fallback.style.position = 'static';
-            fallback.style.zIndex = 'auto';
-          }
-        });
-      }
-    }
-
-    // Try immediately
-    tryPlay();
-
-    // Safari sometimes needs a delay after DOM ready
-    if (video.paused) {
-      setTimeout(tryPlay, 100);
-    }
-
-    // Also try on loadeddata event
-    video.addEventListener('loadeddata', function() {
-      if (video.paused) tryPlay();
-    }, { once: true });
-
-    // Also try on user interaction as last resort
-    document.addEventListener('click', function safariFix() {
-      if (video.paused) tryPlay();
-      document.removeEventListener('click', safariFix);
-    }, { once: true });
-  })();
-
   // ===== NAVIGATION =====
   const nav = document.getElementById('nav');
   const hamburger = document.getElementById('hamburger');
