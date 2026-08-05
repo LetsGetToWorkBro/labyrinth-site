@@ -409,6 +409,43 @@ img { max-width: 100%; height: auto; display: block; }
   border: 1px solid var(--border);
 }
 
+/* A photograph inside the prose, with a caption.
+   It breaks out past the 720px text column to the full 1120px page width,
+   because a group shot at text width is too small to make out a face — and
+   the faces are the whole reason the picture is there. The negative margins
+   are calculated rather than guessed: half the difference between the two
+   widths, clamped so it never pushes past the viewport on a narrow screen. */
+.article-figure {
+  --figure-bleed: min((var(--page-width) - var(--content-width)) / 2, 100%);
+  width: calc(100% + var(--figure-bleed) * 2);
+  margin: var(--space-2xl) calc(var(--figure-bleed) * -1);
+  max-width: 100vw;
+}
+
+.article-figure img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+}
+
+.article-figure figcaption {
+  margin-top: var(--space-md);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+@media (max-width: 1120px) {
+  /* Below the page width there is no room to bleed into — the figure would
+     run under the padding and off the edge. It sits in the column instead. */
+  .article-figure {
+    --figure-bleed: 0px;
+  }
+}
+
 /* Article Body */
 .article-body {
   max-width: var(--content-width);
