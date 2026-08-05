@@ -3,6 +3,7 @@ import { createServer } from 'node:http'
 import { readFileSync, existsSync, readdirSync } from 'node:fs'
 import { extname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { execFileSync } from 'node:child_process'
 
 // The repository itself, wherever it happens to be checked out. This was a
 // hard-coded /workspace path, which made the suite unrunnable from any other
@@ -27,7 +28,9 @@ let pass=0, fail=0
 const check=(n,c,x='')=>{ if(c){console.log('PASS  '+n);pass++}else{console.log('FAIL  '+n+'  '+x);fail++} }
 
 // ── L1: every internal link on every page resolves ──
-const pages = ['/', '/blog/', ...readdirSync(join(ROOT,'blog')).filter(f=>f.endsWith('.html')&&f!=='index.html').map(f=>'/blog/'+f.replace('.html',''))]
+const posts = readdirSync(join(ROOT,'blog')).filter(f=>f.endsWith('.html')&&f!=='index.html').map(f=>'/blog/'+f.replace('.html',''))
+const programs = readdirSync(join(ROOT,'programs')).filter(f=>f.endsWith('.html')&&f!=='index.html').map(f=>'/programs/'+f.replace('.html',''))
+const pages = ['/', '/blog/', '/programs/', ...posts, ...programs]
 const broken = []
 for (const path of pages) {
   const r = await page.goto('http://localhost:4620'+path, { waitUntil:'domcontentloaded' })
@@ -41,7 +44,37 @@ for (const path of pages) {
   }
 }
 check('L1 no broken internal links', broken.length === 0, '\n    ' + broken.slice(0,8).join('\n    '))
-check('L1 all 21 pages served 200', pages.length === 21, 'pages: ' + pages.length)
+check('L1 all 26 pages served 200', pages.length === 26, 'pages: ' + pages.length)
+
+// ── L1b: every program page carries the schema and the canonical it exists for ──
+// A program page whose Service block is missing is still a page, and still
+// looks fine — it has just stopped doing the one job it was built for.
+const schemaFails = []
+for (const path of programs) {
+  await page.goto('http://localhost:4620'+path, { waitUntil:'domcontentloaded' })
+  const blocks = await page.$$eval('script[type="application/ld+json"]', ss => ss.map(s => s.textContent))
+  let types = []
+  for (const b of blocks) { try { types.push(JSON.parse(b)['@type']) } catch { schemaFails.push(path+' unparseable JSON-LD') } }
+  for (const want of ['Service','BreadcrumbList','FAQPage'])
+    if (!types.includes(want)) schemaFails.push(`${path} missing ${want}`)
+  const canon = await page.$eval('link[rel=canonical]', el => el.getAttribute('href')).catch(() => null)
+  if (canon !== 'https://labyrinth.vision' + path) schemaFails.push(`${path} canonical is ${canon}`)
+  const inSitemap = readFileSync(join(ROOT,'sitemap.xml'),'utf8').includes('https://labyrinth.vision'+path)
+  if (!inSitemap) schemaFails.push(`${path} not in sitemap.xml`)
+}
+check('L1b program pages have Service/Breadcrumb/FAQ schema, canonical and sitemap entry',
+  schemaFails.length === 0, '\n    ' + schemaFails.join('\n    '))
+
+// ── L1c: the generator and the committed HTML agree ──
+// programs/*.html is generated. If somebody edits the HTML by hand the next
+// build silently reverts them, so the check is that a rebuild changes nothing.
+const before = programs.concat(['/programs/']).map(p =>
+  readFileSync(join(ROOT, p === '/programs/' ? 'programs/index.html' : p.slice(1)+'.html'), 'utf8'))
+execFileSync('python3', [join(ROOT,'scripts/build_programs.py')], { cwd: ROOT, stdio: 'ignore' })
+const after = programs.concat(['/programs/']).map(p =>
+  readFileSync(join(ROOT, p === '/programs/' ? 'programs/index.html' : p.slice(1)+'.html'), 'utf8'))
+check('L1c programs/ matches scripts/build_programs.py',
+  before.every((b,i) => b === after[i]), 'run: python3 scripts/build_programs.py')
 
 // ── L2: no .html blog links survive ──
 await page.goto('http://localhost:4620/blog/', { waitUntil:'domcontentloaded' })

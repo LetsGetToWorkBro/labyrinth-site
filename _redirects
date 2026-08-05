@@ -12,7 +12,7 @@
 /plans-and-pricing              /#pricing           301
 /schedule                       /#schedule          301
 /contact-us                     /#contact           301
-/summer-camp                    /#programs          301
+/summer-camp                    /programs/          301
 /2nd-annniversary-celebration   /                   301
 /sauna-cold-plunge-dashboard    /                   301
 
@@ -24,9 +24,15 @@
 
 # Common guesses at pages this site does not have, so a mistyped or misremembered
 # URL lands somewhere useful instead of on the 404 page.
+#
+# /programs is no longer one of them. It used to 301 to a fragment of the front
+# page; it is now a real page with a page of its own for each program under it,
+# so the rule is gone and Cloudflare serves programs/index.html directly. A
+# redirect rule here would win over that file, which is why removing it is the
+# whole job. /classes still redirects, because it is a guess rather than a URL
+# we publish.
 /pricing                        /#pricing           301
-/classes                        /#programs          301
-/programs                       /#programs          301
+/classes                        /programs/          301
 /contact                        /#contact           301
 /coaches                        /#coaches           301
 /faq                            /#faq               301

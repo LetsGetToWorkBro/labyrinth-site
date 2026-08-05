@@ -752,6 +752,33 @@ body {
   text-decoration: underline;
 }
 
+/* The way out of the card and onto the program's own page. It reads as a link
+   rather than a second button on purpose: the trial button below it is the
+   action we want, and two gold buttons stacked make neither of them the one to
+   press. Block, so it sits on its own line above the button. */
+.program-card__page-link {
+  display: block;
+  margin-top: var(--space-4);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gold);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--transition-fast);
+}
+
+.program-card__page-link:hover { border-bottom-color: var(--gold); }
+
+.section-subtitle__link {
+  color: var(--gold);
+  text-decoration: none;
+  white-space: nowrap;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--transition-fast);
+}
+
+.section-subtitle__link:hover { border-bottom-color: var(--gold); }
+
 /* Program card trial button (styled button instead of hyperlink) */
 .program-card__trial-btn {
   display: inline-block;

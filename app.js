@@ -18,7 +18,13 @@
    * Falls back silently to the defaults already in the HTML if fetch fails.
    */
   function fetchLiveStats() {
-    if (!SHEET_ID) {
+    // Only the front page carries the numbers this updates. The program pages
+    // load this same file for the nav, the accordions and the booking modal,
+    // and a cross-origin fetch of a spreadsheet none of them displays is a
+    // request they should not be making. applyStats() writes to exactly these
+    // three selectors, so their absence means there is nothing to apply.
+    if (!SHEET_ID ||
+        !document.querySelector('.hero__stat-label, .stat-card__label, [data-target]')) {
       statsReady = Promise.resolve();
       return;
     }
