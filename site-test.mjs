@@ -2,8 +2,12 @@ import { chromium } from 'playwright-core'
 import { createServer } from 'node:http'
 import { readFileSync, existsSync, readdirSync } from 'node:fs'
 import { extname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-const ROOT = '/workspace/labyrinth-site'
+// The repository itself, wherever it happens to be checked out. This was a
+// hard-coded /workspace path, which made the suite unrunnable from any other
+// clone — it served 404 for every page and the failures looked like site bugs.
+const ROOT = fileURLToPath(new URL('.', import.meta.url))
 const TYPES = {'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.svg':'image/svg+xml','.ico':'image/x-icon','.xml':'application/xml','.txt':'text/plain'}
 // Mimic Cloudflare Pages: /foo serves foo.html
 const server = createServer((req,res)=>{
@@ -37,7 +41,7 @@ for (const path of pages) {
   }
 }
 check('L1 no broken internal links', broken.length === 0, '\n    ' + broken.slice(0,8).join('\n    '))
-check('L1 all 20 pages served 200', pages.length === 20, 'pages: ' + pages.length)
+check('L1 all 21 pages served 200', pages.length === 21, 'pages: ' + pages.length)
 
 // ── L2: no .html blog links survive ──
 await page.goto('http://localhost:4620/blog/', { waitUntil:'domcontentloaded' })

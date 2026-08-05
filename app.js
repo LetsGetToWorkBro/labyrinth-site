@@ -697,7 +697,8 @@
       var PROGRAM_LABELS = {
         'kids-3-6': 'Kids 3-6', 'kids-7-12': 'Kids 7-12', 'teens': 'Teens',
         'adult-gi': 'Adult BJJ', 'adult-nogi': 'Adult BJJ',
-        'competition': 'Adult BJJ', 'wrestling': 'Wrestling'
+        'competition': 'Adult BJJ', 'wrestling': 'Wrestling',
+        'strength-conditioning': 'Strength & Conditioning'
       };
       var val = function (n) {
         var el = contactForm.querySelector('[name="' + n + '"]');
