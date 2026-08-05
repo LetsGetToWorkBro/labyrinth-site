@@ -44,7 +44,7 @@ for (const path of pages) {
   }
 }
 check('L1 no broken internal links', broken.length === 0, '\n    ' + broken.slice(0,8).join('\n    '))
-check('L1 all 26 pages served 200', pages.length === 26, 'pages: ' + pages.length)
+check('L1 all 27 pages served 200', pages.length === 27, 'pages: ' + pages.length)
 
 // ── L1b: every program page carries the schema and the canonical it exists for ──
 // A program page whose Service block is missing is still a page, and still
@@ -75,6 +75,24 @@ const after = programs.concat(['/programs/']).map(p =>
   readFileSync(join(ROOT, p === '/programs/' ? 'programs/index.html' : p.slice(1)+'.html'), 'utf8'))
 check('L1c programs/ matches scripts/build_programs.py',
   before.every((b,i) => b === after[i]), 'run: python3 scripts/build_programs.py')
+
+// blog/index.html is generated from the posts. Same guard: a hand-edit that
+// the next build would revert should fail here rather than vanish quietly.
+const idxBefore = readFileSync(join(ROOT,'blog/index.html'),'utf8')
+execFileSync('python3', [join(ROOT,'scripts/build_blog_index.py')], { cwd: ROOT, stdio: 'ignore' })
+check('L1d blog/index.html matches scripts/build_blog_index.py',
+  idxBefore === readFileSync(join(ROOT,'blog/index.html'),'utf8'),
+  'run: python3 scripts/build_blog_index.py')
+
+// Every post needs its own share image — nineteen of them shared one, so a
+// link to any of them looked like a link to all of them.
+const heroes = posts.map(p => {
+  const f = readFileSync(join(ROOT, p.slice(1) + '.html'), 'utf8')
+  return (f.match(/og:image" content="[^"]*\/(assets\/[^"]+)"/) || [])[1]
+})
+check('L1e every post has a distinct og:image',
+  heroes.every(Boolean) && new Set(heroes).size === heroes.length,
+  'reused: ' + heroes.filter((h,i) => heroes.indexOf(h) !== i).join(', '))
 
 // ── L2: no .html blog links survive ──
 await page.goto('http://localhost:4620/blog/', { waitUntil:'domcontentloaded' })

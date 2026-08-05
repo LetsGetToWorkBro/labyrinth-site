@@ -414,6 +414,87 @@ PROGRAMS = [
         ],
     },
     {
+        "slug": "summer-camp-fulshear",
+        "hub_blurb": "Half-day camp, ages 5–15. Four hours of jiu-jitsu and wrestling, $60 a day, drop in for the days you need.",
+        "nav_name": "Summer Camp",
+        "name": "Summer Camp",
+        "h1": "Summer Camp in Fulshear",
+        "title": "Kids Summer Camp in Fulshear, TX (Ages 5–15) | Labyrinth BJJ",
+        "og_title": "Kids Summer Camp in Fulshear, TX — Jiu-Jitsu and Wrestling",
+        "description": "Half-day summer camp in Fulshear, TX for ages 5–15. Jiu-jitsu and wrestling, 12–4 PM, $60 a day. Dates for summer 2027 announced in spring.",
+        "eyebrow": "Ages 5–15 · Summer 2027",
+        "cta_primary": ("Call About 2027 Dates", "tel:2813937983"),
+        "cta_secondary": "See the Camp Day",
+        "image": "kids-gi",
+        "image_alt": "A young student in a white gi at Labyrinth BJJ in Fulshear, TX",
+        "lead": "Four hours a day of actual training — jiu-jitsu, wrestling and a proper break in the middle. $60 a day, book only the days you need. Next running in summer 2027.",
+        "service_desc": "Kids summer camp in Fulshear, TX for ages 5-15. Half-day sessions from 12:00 to 4:00 PM covering Brazilian jiu-jitsu technique, live rounds and wrestling. $60 per day, booked by the day.",
+        "facts": [
+            ("Ages", "5 to 15"),
+            ("Hours", "12:00–4:00 PM"),
+            ("Price", "<em>$60</em> per day"),
+            ("Next", "Summer 2027"),
+        ],
+        "intro": [
+            "Most summer camps are childcare with a theme. A child is dropped off, kept busy, and comes home having done a craft. There is nothing wrong with that, and it is not what this is.",
+            "Camp at Labyrinth is <strong>four hours of training</strong>. Jiu-jitsu technique and live rounds, wrestling and takedowns, and a break in the middle to eat and sit down. The coaches are the same ones who run the regular classes, and the curriculum is the regular curriculum — just condensed into a block long enough to actually get somewhere.",
+            "Children who come to a week of camp typically arrive back in the September classes noticeably ahead of where they left off in May, which is the opposite of what a summer usually does to a young athlete.",
+            "<strong>The next camp runs in summer 2027.</strong> Dates move every year around the Lamar CISD calendar, so they are set and announced in the spring — put your name down and we will tell you first.",
+        ],
+        "groups_title": "How the four hours run",
+        "groups_lead": "Noon to four, three blocks and a break.",
+        "groups": [
+            ("Block one", "Jiu-jitsu",
+             "Technique taught the way it is in a normal class — a position broken into pieces, drilled with a partner, then worked in live rounds from a set start. Beginners and experienced kids are separated for this."),
+            ("The middle", "Lunch and downtime",
+             "Children bring their own lunch. There is a proper sit-down break rather than a rushed twenty minutes, because four hours of grappling without one produces a tired child and a bad afternoon."),
+            ("Block two", "Wrestling",
+             "Stance, motion, level changes and takedowns. It is the part most kids have never done, it is the fastest way to improve a young grappler, and it is the reason the afternoon does not feel like more of the morning."),
+        ],
+        "schedule_title": "Dates and booking",
+        "schedule_note": "Camp runs <strong>12:00 PM to 4:00 PM</strong> at our Fulshear academy and costs <strong>$60 per day</strong>. Book the days you want — there is no minimum and no full-week requirement, which matters when a family holiday sits in the middle of a week. <strong>Dates change every year</strong> around the school calendar and are announced in the spring; call the academy on " + PHONE + " to be told first.",
+        "week": [
+            ("Camp day", [("12:00 PM", "Jiu-jitsu technique and rounds", "gi"),
+                          ("1:30 PM", "Lunch and downtime", ""),
+                          ("2:15 PM", "Wrestling and takedowns", ""),
+                          ("4:00 PM", "Pick-up", "")]),
+        ],
+        "body_title": "What parents ask before booking",
+        "body": [
+            "<strong>They do not need to train here already.</strong> Camp is open to any child in the age range, including one who has never set foot on a mat. Beginners are grouped together for the technical blocks rather than dropped into rounds with kids who have been training for years.",
+            "<strong>Four hours is the right length.</strong> A full-day camp for a nine-year-old doing contact sport is too much, and everybody involved knows it by Wednesday. Noon to four leaves the morning free and gets them home before they are wrecked.",
+            "<strong>Bring lunch, shorts, a t-shirt and a water bottle.</strong> No gi needed — we will lend one for the jiu-jitsu block if your child does not own one. Nails trimmed, no jewellery.",
+            "<strong>It is not a discount on membership and membership is not required.</strong> Camp is priced by the day on its own. If your child ends up wanting to carry on in September, that is a separate conversation and nobody will start it in the car park.",
+        ],
+        "coaches": ["tony", "malik"],
+        "coaches_note": "The same coaches who teach the regular kids classes.",
+        "prices": [
+            ("Per day", "$60", "/day", "Four hours, 12:00–4:00 PM. Book the days you want, no minimum.", True),
+        ],
+        "prices_note": "Camp is billed by the day and is separate from membership — you do not need to be a member to come, and members do not get camp included. Dates for summer 2027 are announced in the spring; ring " + PHONE + " to go on the list.",
+        "faqs": [
+            ("When is summer camp 2027?",
+             "Dates are set in the spring, because they move each year around the Lamar CISD calendar and around the tournament season. Camp runs 12:00 PM to 4:00 PM on the days it runs. Call the academy on " + PHONE + " or ask at the desk to be told as soon as the dates are fixed."),
+            ("What ages is the camp for?",
+             "Five to fifteen. Younger children are grouped separately from teens for the technical blocks, in the same way the regular kids classes are split. Under five, the Little Grapplers class during the year is a better fit than a four-hour camp day."),
+            ("Does my child need to train at Labyrinth already?",
+             "No. Camp is open to any child in the age range, including complete beginners, and a good number of the children who come have never trained anywhere. Beginners work together for the technique blocks rather than being put in with kids who have been on the mats for years."),
+            ("How much does it cost, and do we have to book the whole week?",
+             "$60 per day, and no. Book only the days you want — there is no minimum, no full-week requirement and no package to commit to, which matters when a holiday or another camp sits in the middle of a week."),
+            ("What should my child bring?",
+             "A packed lunch, a water bottle, shorts with no zippers or pockets, and a t-shirt or rashguard. No gi needed — we will lend one for the jiu-jitsu block. Nails trimmed, no jewellery."),
+            ("What actually happens across the four hours?",
+             "Jiu-jitsu first — technique broken down, drilled with a partner, then live rounds from a set position. A proper sit-down lunch break in the middle. Then wrestling: stance, motion, level changes and takedowns. It is training, not supervised free play."),
+        ],
+        "close_title": "Get on the list for 2027",
+        "close_text": "Dates are announced in the spring. Ring the academy or ask at the desk and we will tell you before they go public.",
+        "related_posts": [
+            ("new-to-fulshear-kids-activities", "New to Fulshear? Getting Kids Active"),
+            ("what-age-should-kids-start-jiu-jitsu", "What Age Should Kids Start Jiu-Jitsu?"),
+            ("bjj-vs-wrestling-for-kids", "BJJ vs Wrestling for Kids"),
+        ],
+    },
+    {
         "slug": "youth-wrestling-fulshear",
         "hub_blurb": "Ages 7–17, three sessions a week with a Texas National Team wrestler. Included in any kids membership, no background needed.",
         "nav_name": "Youth Wrestling",
@@ -516,6 +597,15 @@ BADGES = {"gi": ("gi", "Gi"), "nogi": ("nogi", "No-Gi"), "adv": ("adv", "Adv")}
 
 
 # ── Rendering ────────────────────────────────────────────────────────────────
+
+def primary(p):
+    """The page's main button. Defaults to the free-trial modal; a program that
+    is neither free nor currently running says something true instead."""
+    if p.get("cta_primary"):
+        label, href = p["cta_primary"]
+        return '<a href="%s" class="btn btn--gold">%s</a>' % (href, label)
+    return '<a data-book-trial href="/#book" class="btn btn--gold">Book a Free Class</a>'
+
 
 def section(label, title, subtitle="", narrow=False, inner=""):
     return """
@@ -635,8 +725,8 @@ def render(p):
         <h1 class="prog-hero__title">%(h1)s</h1>
         <p class="prog-hero__lead">%(lead)s</p>
         <div class="prog-hero__cta">
-          <a data-book-trial href="/#book" class="btn btn--gold">Book a Free Class</a>
-          <a href="#times" class="btn btn--ghost">See Class Times</a>
+          %(cta1)s
+          <a href="#times" class="btn btn--ghost">%(cta2)s</a>
         </div>
       </div>
       <div class="prog-hero__shot">
@@ -652,7 +742,8 @@ def render(p):
   </div>
 </header>""" % {"nav": NAV, "crumbs": crumbs(p["nav_name"]), "eyebrow": p["eyebrow"],
                 "h1": p["h1"], "lead": p["lead"], "img": p["image"],
-                "alt": p["image_alt"], "facts": facts}
+                "alt": p["image_alt"], "facts": facts,
+                "cta1": primary(p), "cta2": p.get("cta_secondary", "See Class Times")}
 
     parts = [head, hero]
 
@@ -695,11 +786,11 @@ def render(p):
 %s
     <p class="prog-week__note fade-in">%s</p>
     <div class="prog-hero__cta fade-in">
-      <a data-book-trial href="/#book" class="btn btn--gold">Book a Free Class</a>
+      %s
       <a href="/#schedule" class="btn btn--ghost">Full Academy Schedule</a>
     </div>
   </div>
-</section>""" % (p["schedule_title"].upper(), render_week(p["week"]), p["schedule_note"]))
+</section>""" % (p["schedule_title"].upper(), render_week(p["week"]), p["schedule_note"], primary(p)))
 
     # Body prose
     parts.append(section("Detail", p["body_title"].upper(),
@@ -763,11 +854,11 @@ def render(p):
     <h2 class="prog-close__title">%s</h2>
     <p class="prog-close__text">%s</p>
     <div class="prog-hero__cta" style="justify-content:center">
-      <a data-book-trial href="/#book" class="btn btn--gold">Book a Free Class</a>
+      %s
       <a href="tel:2813937983" class="btn btn--ghost">Call %s</a>
     </div>
   </div>
-</div>""" % (p["close_title"].upper(), p["close_text"], PHONE))
+</div>""" % (p["close_title"].upper(), p["close_text"], primary(p), PHONE))
 
     parts.append(TAIL % {"footer": FOOTER})
     return "\n".join(parts)
