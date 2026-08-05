@@ -1080,7 +1080,12 @@
     return { day: dayAbbr, time: time, name: name, type: type };
   }
 
-  // ── EVENT DELEGATION: Intercept ALL gymdesk link clicks ──
+  /* ── EVENT DELEGATION: every booking link on the page ──
+     These used to be href="https://labyrinth.gymdesk.com/signup" and were
+     matched on that. None of them ever navigated there — this handler catches
+     the click and opens the modal — so the markup now says what they do:
+     href="/#book" with data-book-trial, which is also what the blog CTAs use.
+     Matching on the attribute rather than on a hostname keeps the two in step. */
   document.addEventListener('click', function (e) {
     // Check for the kids-trial badge
     var trialBadge = e.target.closest('.type-sched-bar__trial-badge, .sched-trial-badge');
@@ -1091,8 +1096,8 @@
       return;
     }
 
-    // Check for gymdesk links
-    var link = e.target.closest('[href*="gymdesk.com/signup"], .type-sched-bar__book, .sched-book, .sched-book-mobile, .program-card__trial-btn');
+    // Check for booking links
+    var link = e.target.closest('[data-book-trial], .type-sched-bar__book, .sched-book, .sched-book-mobile, .program-card__trial-btn');
     if (!link) return;
 
     // Skip ADV buttons in desktop/mobile schedule tables — they use their own modal first
@@ -1108,8 +1113,7 @@
       return;
     }
 
-    var href = link.getAttribute('href') || '';
-    if (href.indexOf('gymdesk.com') === -1 && !link.classList.contains('type-sched-bar__book') && !link.classList.contains('sched-book') && !link.classList.contains('sched-book-mobile') && !link.classList.contains('program-card__trial-btn')) return;
+    if (!link.hasAttribute('data-book-trial') && !link.classList.contains('type-sched-bar__book') && !link.classList.contains('sched-book') && !link.classList.contains('sched-book-mobile') && !link.classList.contains('program-card__trial-btn')) return;
 
     e.preventDefault();
     e.stopPropagation();
