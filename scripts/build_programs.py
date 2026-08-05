@@ -22,9 +22,8 @@ a nav, a footer and a schema shape cannot drift apart. Edit the content here
 and re-run; do not hand-edit programs/*.html, it will be overwritten.
 
 Every fact below was read off index.html — the timetable, the prices, the coach
-roster, the advanced-class requirement. Where the site did not say something
-(whether wrestling is included in a kids membership, for one) this deliberately
-does not say it either.
+roster, the advanced-class requirement. Where the site does not say something,
+this deliberately does not say it either rather than inventing an answer.
 """
 import os
 import re
@@ -173,13 +172,13 @@ def jsonld(obj):
 PROGRAMS = [
     {
         "slug": "kids-bjj-fulshear",
-        "hub_blurb": "Ages 3–15 in three separated groups, six days a week. Gi and No-Gi, belt progression tracked, trials on Fridays.",
+        "hub_blurb": "Ages 3–15 in three separated groups, six days a week. Gi and No-Gi, belt progression tracked, free trials Friday and Saturday.",
         "nav_name": "Kids BJJ",
         "name": "Kids Brazilian Jiu-Jitsu",
         "h1": "Kids Brazilian Jiu-Jitsu in Fulshear",
         "title": "Kids BJJ Classes in Fulshear, TX (Ages 3–15) | Labyrinth BJJ",
         "og_title": "Kids BJJ Classes in Fulshear, TX — Ages 3 to 15",
-        "description": "Kids Brazilian jiu-jitsu classes in Fulshear, TX for ages 3–6, 7–12 and 12–15. Six days a week at the #1 ranked academy in Texas. First class free, trials on Fridays.",
+        "description": "Kids Brazilian jiu-jitsu classes in Fulshear, TX for ages 3–6, 7–12 and 12–15. Six days a week at the #1 ranked academy in Texas. Free trial classes on Friday afternoons and Saturday mornings.",
         "eyebrow": "Ages 3–15",
         "image": "youth-card",
         "image_alt": "Kids Brazilian jiu-jitsu class at Labyrinth BJJ in Fulshear, TX",
@@ -189,7 +188,7 @@ PROGRAMS = [
             ("Ages", "3 to 15"),
             ("Runs", "Six days a week"),
             ("Membership", "<em>From $239</em>/month"),
-            ("Free trial", "Friday afternoons"),
+            ("Free trial", "Friday or Saturday"),
         ],
         "intro": [
             "Most parents come to us for one of three reasons. Their child is being pushed around at school and they want them to be able to handle it. Their child has energy that no amount of playground time absorbs. Or their child has tried a sport, sat on a bench for a season, and quietly decided they are not sporty.",
@@ -207,7 +206,7 @@ PROGRAMS = [
              "Their own classes, because a thirteen-year-old training with eight-year-olds gets bored and a thirteen-year-old training with adults gets hurt. Teens train Gi and No-Gi and can move into the competition classes when they want to."),
         ],
         "schedule_title": "Kids class times",
-        "schedule_note": "Classes marked <strong>ADV</strong> are the advanced grappling classes: a child needs a grey-white belt or higher, or two or more years of wrestling, to join one. Everything else is open to any child in the age range, including one who has never trained. <strong>Free trials for kids run on Fridays</strong> — book the Friday class that matches your child's age and we will take care of the rest.",
+        "schedule_note": "Classes marked <strong>ADV</strong> are the advanced grappling classes: a child needs a grey-white belt or higher, or two or more years of wrestling, to join one. Everything else is open to any child in the age range, including one who has never trained. <strong>Free trials for kids run on Friday afternoons and Saturday mornings.</strong> Friday is Gi and takes every age from three up; Saturday at 10:00 AM is No-Gi and starts at seven, because there is no 3–6 class on a Saturday to put a younger child in.",
         "week": [
             ("Monday", [("4:45 PM", "Kids BJJ (3–6)", "gi"), ("5:15 PM", "Kids BJJ (7–12)", "gi")]),
             ("Tuesday", [("5:15 PM", "Kids Grappling (7–12)", "nogi adv"), ("5:15 PM", "Teens Grappling (12–15)", "nogi adv")]),
@@ -226,17 +225,17 @@ PROGRAMS = [
         "coaches_note": "Kids classes are led by our black belts, not handed to whoever is free.",
         "prices": [
             ("8 classes", "$239", "/mo", "Eight classes a month, age-appropriate groups, belt progression tracked.", False),
-            ("Unlimited", "$249", "/mo", "Every kids and teens class, including the competition classes.", True),
+            ("Unlimited", "$249", "/mo", "Every kids and teens class, including competition and youth wrestling.", True),
             ("Family plan", "$399", "/mo", "Unlimited for two members, kids and adults, +$80/mo per extra member.", False),
         ],
-        "prices_note": "Month to month. No long-term contract, 30 days notice to cancel. Ask about the six and twelve month paid-in-full discounts.",
+        "prices_note": "Youth wrestling is included in all three at no extra cost, so a kids membership covers both mats. Month to month, no long-term contract, 30 days notice to cancel. Ask about the six and twelve month paid-in-full discounts.",
         "faqs": [
             ("What is the youngest age you take?",
              "Three. Our Little Grapplers class is built for ages 3–6 and runs at 4:45 PM on Mondays, Wednesdays and Fridays. At that age the class is mostly coordination, listening and safe falling, delivered as games — the jiu-jitsu underneath it is real, but a three-year-old experiences it as play."),
             ("Is jiu-jitsu safe for a young child?",
              "It is one of the safest martial arts a child can do, because there is no striking in it at all. BJJ is grappling — leverage, position and control — so children are not being hit, and they are not hitting anyone. Classes are grouped by age, beginners are not put in with advanced kids, and a coach is watching every round. Falling safely is one of the first things we teach, and it is the skill parents tell us shows up outside the gym."),
             ("When can we come and try a class?",
-             "Kids trials run on Friday afternoons: 4:45 PM for ages 3–6, and 5:15 PM for 7–12 and 12–15. It is free, there is no commitment, and nobody will call you afterwards to talk you into anything. Book online or ring the academy on " + PHONE + "."),
+             "Two options. Friday afternoons in the Gi — 4:45 PM for ages 3–6, and 5:15 PM for 7–12 and 12–15. Or Saturday at 10:00 AM in No-Gi, for ages 7 and up. It is free either way, there is no commitment, and nobody will call you afterwards to talk you into anything. Book online or ring the academy on " + PHONE + "."),
             ("Does my child need a gi to start?",
              "No. Come in a t-shirt and shorts or leggings with no zippers, buttons or pockets. We have loaner gis for trial classes. If your child carries on training we will get them fitted properly — but nobody needs to spend money to find out whether their kid likes it."),
             ("Will my child have to compete?",
@@ -245,7 +244,7 @@ PROGRAMS = [
              "The advanced grappling classes — Tuesday and Thursday at 5:15 PM, and Saturday at 12:00 PM — need a grey-white belt or higher, or two or more years of wrestling. They move faster and drill at a higher intensity. Every other class on the timetable is open to a complete beginner."),
         ],
         "close_title": "Book their first class",
-        "close_text": "Free, on a Friday, in whatever they already own. If they like it you will know within about ten minutes, and so will they.",
+        "close_text": "Free, on a Friday afternoon or a Saturday morning, in whatever they already own. If they like it you will know within about ten minutes, and so will they.",
         "related_posts": [
             ("benefits-of-bjj-for-kids", "10 Benefits of BJJ for Kids"),
             ("what-age-should-kids-start-jiu-jitsu", "What Age Should Kids Start Jiu-Jitsu?"),
@@ -416,23 +415,23 @@ PROGRAMS = [
     },
     {
         "slug": "youth-wrestling-fulshear",
-        "hub_blurb": "Ages 7–17, three sessions a week with a Texas National Team wrestler. No wrestling background needed.",
+        "hub_blurb": "Ages 7–17, three sessions a week with a Texas National Team wrestler. Included in any kids membership, no background needed.",
         "nav_name": "Youth Wrestling",
         "name": "Youth Wrestling",
         "h1": "Youth Wrestling in Fulshear",
         "title": "Youth Wrestling Classes in Fulshear, TX (Ages 7–17) | Labyrinth BJJ",
         "og_title": "Youth Wrestling in Fulshear, TX — Ages 7 to 17",
-        "description": "Youth wrestling classes in Fulshear, TX for ages 7–17, coached by a Texas National Team wrestler. Three sessions a week, no wrestling experience needed, first class free.",
+        "description": "Youth wrestling classes in Fulshear, TX for ages 7–17, coached by a Texas National Team wrestler. Three sessions a week, included in every kids and teens membership, no experience needed, first class free.",
         "eyebrow": "Ages 7–17",
         "image": "wrestling-card",
         "image_alt": "Youth wrestling athletes training at Labyrinth BJJ in Fulshear, TX",
-        "lead": "Three sessions a week with a Texas National Team wrestler, for ages 7 to 17. No wrestling background needed, and the first class is free.",
-        "service_desc": "Youth wrestling classes in Fulshear, TX for ages 7-17, coached by Texas National Team wrestler Malik Pickett. Takedowns, top control and conditioning, three sessions a week.",
+        "lead": "Three sessions a week with a Texas National Team wrestler, for ages 7 to 17. Included in every kids and teens membership, no wrestling background needed, and the first class is free.",
+        "service_desc": "Youth wrestling classes in Fulshear, TX for ages 7-17, coached by Texas National Team wrestler Malik Pickett. Takedowns, top control and conditioning, three sessions a week, included in kids and teens memberships.",
         "facts": [
             ("Ages", "7 to 17"),
             ("Runs", "Wed, Thu &amp; Sun"),
             ("Coach", "Malik Pickett, <em>TX National Team</em>"),
-            ("Free trial", "Yes, any session"),
+            ("Cost", "In any kids membership"),
         ],
         "intro": [
             "Wrestling is the oldest thing on this list and the plainest. You take somebody down and you hold them there. There are no belts, no submissions and nothing to hide behind — which is exactly why it does something to children that few other sports manage.",
@@ -465,8 +464,12 @@ PROGRAMS = [
         ],
         "coaches": ["malik"],
         "coaches_note": "",
-        "prices": [],
-        "prices_note": "Wrestling runs alongside our kids and teens programs — call the academy on " + PHONE + " or ask at the desk about adding it, and see the <a href=\"/#pricing\">membership options</a> for what is currently on offer. The first class is free either way.",
+        "prices": [
+            ("8 classes", "$239", "/mo", "Eight classes a month across BJJ and wrestling, in any combination.", False),
+            ("Unlimited", "$249", "/mo", "Every kids and teens class on the timetable, wrestling and BJJ alike.", True),
+            ("Family plan", "$399", "/mo", "Unlimited for two members, kids or adults, +$80/mo per extra member.", False),
+        ],
+        "prices_note": "Wrestling is included in any kids or teens membership at no extra charge — there is no separate wrestling fee and no minimum number of sessions. A child on the 8-class plan can spend all eight on wrestling, all eight on jiu-jitsu, or any mix of the two. Month to month, 30 days notice to cancel, and the first class is free. See all <a href=\"/#pricing\">membership options</a>.",
         "faqs": [
             ("Does my child need wrestling experience to start?",
              "None at all. Most children in the room started with none. The first few weeks are stance, motion, level changes and safe falling — the same place every wrestler begins, taught without a season already in progress."),
@@ -476,6 +479,8 @@ PROGRAMS = [
              "It is club training, which means there is no season and no varsity spot to win. Children train year round, at their own pace. Plenty of our wrestlers also wrestle for their schools and use this as off-season mat time; plenty of others never wrestle competitively at all."),
             ("Does wrestling help with Brazilian jiu-jitsu?",
              "More than almost anything else. The usual weakness in a young jiu-jitsu player is that they are dangerous on the ground and helpless standing up, and most youth matches are decided by who gets on top first. Wrestling addresses exactly that, which is why we run it in a jiu-jitsu academy."),
+            ("Does wrestling cost extra on top of a membership?",
+             "No. Wrestling is included in any kids or teens membership — $239 a month for eight classes or $249 unlimited — with no separate fee and no minimum. Eight classes a month means eight classes, and your child can spend them on wrestling, on jiu-jitsu, or on any mix of the two. The first session is free, the same as everything else here."),
             ("Who teaches the wrestling classes?",
              "Coach Malik Pickett, a Texas National Team wrestler. He brings elite-level takedowns and grappling fundamentals, and he is known here for his energy with the younger kids in particular."),
             ("Is wrestling safe for a seven-year-old?",
@@ -502,7 +507,7 @@ COACHES = {
     "christian": ("Christian Solano", "Instructor", "Brown Belt &middot; 10+ Yrs", "brown", "coach-christian",
                   "Over a decade of training forged into sharp no-gi technique."),
     "jake": ("Jake Maronge", "Instructor", "Brown Belt &middot; 9 Yrs", "brown", "coach-jake",
-             "Nearly a decade on the mat, bringing technical depth and consistency to the gi classes."),
+             "Nearly a decade on the mat. Leads the Wednesday early morning gi class, bringing technical depth and consistency."),
     "malik": ("Malik Pickett", "Wrestling Coach", "TX National Team", "wrestling", "coach-malik",
               "Texas National Team wrestler bringing elite-level takedowns and grappling fundamentals. Known for his energy and dedication to youth development."),
 }

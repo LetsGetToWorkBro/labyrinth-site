@@ -1075,7 +1075,7 @@
     var nameEl = bar.querySelector('.type-sched-bar__name');
     var day = dayEl ? dayEl.textContent.trim() : '';
     var time = timeEl ? timeEl.textContent.trim() : '';
-    var name = nameEl ? nameEl.textContent.replace(/\(.*\)/g,'').replace(/Trials Fri Only/g,'').trim() : '';
+    var name = nameEl ? nameEl.textContent.replace(/\(.*\)/g,'').replace(/Trials Fri & Sat/g,'').trim() : '';
     var type = detectType(bar);
     return { day: day, time: time, name: name, type: type };
   }
@@ -1132,12 +1132,12 @@
 
   // ── EVENT DELEGATION: Intercept ALL gymdesk link clicks ──
   document.addEventListener('click', function (e) {
-    // Check for "Trials Fri Only" badges
+    // Check for the kids-trial badge
     var trialBadge = e.target.closest('.type-sched-bar__trial-badge, .sched-trial-badge');
     if (trialBadge) {
       e.preventDefault();
       e.stopPropagation();
-      LabyrinthBooking.openKidsFriday();
+      LabyrinthBooking.openKidsTrials();
       return;
     }
 
@@ -1196,7 +1196,7 @@
       var prog = programCard.getAttribute('data-program');
       if (prog === 'youth-bjj') {
         // Show Friday kids classes directly
-        LabyrinthBooking.openKidsFriday();
+        LabyrinthBooking.openKidsTrials();
       } else if (prog === 'adult-bjj' || prog === 'competition') {
         LabyrinthBooking.openAdultList();
       } else {

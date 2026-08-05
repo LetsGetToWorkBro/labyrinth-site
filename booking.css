@@ -524,17 +524,17 @@
 
 /* === STATE C: FRIDAY ONLY === */
 
-.booking-friday-info {
+.booking-kidstrial-info {
   text-align: center;
   margin-bottom: 20px;
 }
 
-.booking-friday-info__icon {
+.booking-kidstrial-info__icon {
   font-size: 36px;
   margin-bottom: 8px;
 }
 
-.booking-friday-info p {
+.booking-kidstrial-info p {
   font-size: 14px;
   color: var(--text-muted);
   font-family: var(--font-body);
@@ -542,7 +542,7 @@
   margin: 0 0 12px;
 }
 
-.booking-friday-info__date {
+.booking-kidstrial-info__date {
   display: inline-block;
   padding: 6px 14px;
   background: rgba(200, 162, 76, 0.1);
@@ -554,13 +554,13 @@
   font-family: var(--font-body);
 }
 
-.booking-friday-classes {
+.booking-kidstrial-classes {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.booking-friday-class {
+.booking-kidstrial-class {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -571,24 +571,32 @@
   font-family: var(--font-body);
 }
 
-.booking-friday-class__info {
+.booking-kidstrial-class__info {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.booking-friday-class__name {
+.booking-kidstrial-class__name {
   font-size: 14px;
   font-weight: 600;
   color: var(--text);
 }
 
-.booking-friday-class__time {
+.booking-kidstrial-class__time {
   font-size: 13px;
   color: var(--text-muted);
 }
 
-.booking-friday-class__btn {
+/* The next date this class runs. Per class, not per panel: the list spans a
+   Friday and a Saturday, so one date above the whole list would be wrong for
+   half of it. */
+.booking-kidstrial-class__date {
+  font-size: 12px;
+  color: var(--gold);
+}
+
+.booking-kidstrial-class__btn {
   padding: 8px 16px;
   background: var(--gold);
   color: #0A0A0A;
@@ -602,7 +610,7 @@
   white-space: nowrap;
 }
 
-.booking-friday-class__btn:hover {
+.booking-kidstrial-class__btn:hover {
   background: var(--gold-hover);
 }
 
@@ -669,13 +677,13 @@
     padding: 20px 12px;
   }
 
-  .booking-friday-class {
+  .booking-kidstrial-class {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
   }
 
-  .booking-friday-class__btn {
+  .booking-kidstrial-class__btn {
     width: 100%;
     text-align: center;
   }

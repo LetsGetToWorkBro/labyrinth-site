@@ -18,7 +18,7 @@
  *
  *   LabyrinthBooking.openPicker()                      adult or kids?
  *   LabyrinthBooking.openAdultList()                   straight to adult classes
- *   LabyrinthBooking.openKidsFriday()                  straight to Friday kids
+ *   LabyrinthBooking.openKidsTrials()                  straight to the kids trial classes
  *   LabyrinthBooking.openForm(name, type, day, time)   straight to the form
  *   LabyrinthBooking.close()
  *
@@ -50,10 +50,17 @@
     {name:'Open Mat', type:'', day:'Sun', time:'10:30 AM'}
   ];
 
-  var KIDS_FRIDAY_CLASSES = [
+  /* The classes a child who has never trained here may book into.
+     Friday is the Gi afternoon and covers every age from three up. Saturday
+     morning is No-Gi and starts at seven, because there is no 3\u20136 class on a
+     Saturday to put a younger child in. Everything else on the kids timetable
+     is either a regular class that trial students do not drop into or an
+     advanced one with a belt requirement. */
+  var KIDS_TRIAL_CLASSES = [
     {name:'Kids BJJ (3\u20136)', type:'Gi', day:'Fri', time:'4:45 PM'},
     {name:'Kids BJJ Comp (7\u201312)', type:'Gi', day:'Fri', time:'5:15 PM'},
-    {name:'Teens BJJ Comp (12\u201315)', type:'Gi', day:'Fri', time:'5:15 PM'}
+    {name:'Teens BJJ Comp (12\u201315)', type:'Gi', day:'Fri', time:'5:15 PM'},
+    {name:'Kids Grappling (7\u201312)', type:'No-Gi', day:'Sat', time:'10:00 AM'}
   ];
 
   var DAY_MAP = {Sun:0, Mon:1, Tue:2, Wed:3, Thu:4, Fri:5, Sat:6};
@@ -198,7 +205,7 @@
         if (cat === 'adult') {
           showClassList(ADULT_CLASSES, 'Adult Classes');
         } else {
-          showClassList(KIDS_FRIDAY_CLASSES, 'Kids & Teens (Fridays)');
+          showKidsTrials();
         }
       });
     });
@@ -382,31 +389,33 @@
   }
 
   // ── Render State C: Kids Friday Only ──
-  function showFridayOnly() {
-    var nextFri = getNextDayDate('Fri');
-    var dateStr = formatDate(nextFri);
-
+  function showKidsTrials() {
+    /* Each class carries its own next date now that the list spans two days.
+       It used to print one "Next Friday: ..." line above the whole list, which
+       stops being true the moment a Saturday class is in it. */
     var html = '<div class="booking-content-enter">';
-    html += '<div class="booking-step-header"><h3>Kids Trials \u2014 Fridays Only</h3></div>';
-    html += '<div class="booking-friday-info">';
-    html += '<div class="booking-friday-info__icon">\uD83E\uDD4B</div>';
-    html += '<p>We offer kids trial classes exclusively on Fridays so our coaches can give your child the best introduction experience.</p>';
-    html += '<span class="booking-friday-info__date">Next Friday: ' + dateStr + '</span>';
+    html += '<div class="booking-step-header"><h3>Kids Trials</h3></div>';
+    html += '<div class="booking-kidstrial-info">';
+    html += '<div class="booking-kidstrial-info__icon">\uD83E\uDD4B</div>';
+    html += '<p>Kids trials run on <strong>Friday afternoons</strong> in the Gi, for every age from three up, and on <strong>Saturday morning</strong> in No-Gi for ages seven and above. Pick whichever suits you.</p>';
     html += '</div>';
-    html += '<div class="booking-friday-classes">';
-    KIDS_FRIDAY_CLASSES.forEach(function (cls, i) {
-      html += '<div class="booking-friday-class">';
-      html += '<div class="booking-friday-class__info"><span class="booking-friday-class__name">' + cls.name + '</span><span class="booking-friday-class__time">' + cls.time + ' \u2014 ' + cls.type + '</span></div>';
-      html += '<button class="booking-friday-class__btn" data-fri-idx="' + i + '">Book This Class</button>';
+    html += '<div class="booking-kidstrial-classes">';
+    KIDS_TRIAL_CLASSES.forEach(function (cls, i) {
+      var when = formatDate(getNextDayDate(cls.day));
+      html += '<div class="booking-kidstrial-class">';
+      html += '<div class="booking-kidstrial-class__info"><span class="booking-kidstrial-class__name">' + cls.name + '</span>';
+      html += '<span class="booking-kidstrial-class__time">' + cls.time + ' \u2014 ' + cls.type + '</span>';
+      html += '<span class="booking-kidstrial-class__date">Next: ' + when + '</span></div>';
+      html += '<button class="booking-kidstrial-class__btn" data-kid-idx="' + i + '">Book This Class</button>';
       html += '</div>';
     });
     html += '</div></div>';
     bookingContent.innerHTML = html;
 
-    bookingContent.querySelectorAll('.booking-friday-class__btn').forEach(function (btn) {
+    bookingContent.querySelectorAll('.booking-kidstrial-class__btn').forEach(function (btn) {
       btn.addEventListener('click', function () {
-        var idx = parseInt(btn.getAttribute('data-fri-idx'), 10);
-        var cls = KIDS_FRIDAY_CLASSES[idx];
+        var idx = parseInt(btn.getAttribute('data-kid-idx'), 10);
+        var cls = KIDS_TRIAL_CLASSES[idx];
         showBookingForm(cls.name, cls.type, cls.day, cls.time);
       });
     });
@@ -427,7 +436,7 @@
   window.LabyrinthBooking = {
     openPicker: showClassPicker,
     openAdultList: function () { showClassList(ADULT_CLASSES, 'Adult Classes'); openBookingModal(); },
-    openKidsFriday: showFridayOnly,
+    openKidsTrials: showKidsTrials,
     openForm: function (name, type, day, time) {
       showBookingForm(name, type, day, time);
       openBookingModal();
@@ -436,7 +445,7 @@
     // Read by schedule-check.mjs, which compares what the site offers against
     // the CRM's timetable. Exposed so that check has one place to look.
     adultClasses: ADULT_CLASSES,
-    kidsFridayClasses: KIDS_FRIDAY_CLASSES
+    kidsTrialClasses: KIDS_TRIAL_CLASSES
   };
 
   /**
