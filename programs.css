@@ -369,3 +369,215 @@
   .prog-hero__cta .btn { justify-content: center; }
   .prog-close { padding: var(--space-12) var(--space-5); }
 }
+
+/* ========================================
+   SCHEDULE, PRICING AND COACH PAGES
+   ======================================== */
+
+/* ── /schedule ── */
+.sched-pg__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-5);
+}
+
+.sched-pg__filters {
+  display: flex;
+  gap: var(--space-2);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 4px;
+}
+
+.sched-pg__filter {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: none;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.sched-pg__filter:hover { color: var(--text); }
+
+.sched-pg__filter.is-active {
+  background: var(--gold);
+  color: #0A0A0A;
+}
+
+.sched-pg__ages { color: var(--text-faint); }
+
+/* A day emptied by a filter is hidden outright rather than left as a titled
+   empty card — [hidden] is display:none and .prog-day sets display:block, so
+   the attribute needs the extra weight to win. */
+.prog-day[hidden], .prog-slot[hidden] { display: none !important; }
+
+/* ── /pricing ── */
+.price-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-5);
+  margin-top: var(--space-10);
+}
+
+.price-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-8);
+  display: flex;
+  flex-direction: column;
+}
+
+.price-card--feature { border-color: var(--gold); }
+
+.price-card__name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.0625rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: var(--space-4);
+}
+
+.price-card__amount {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 2.75rem;
+  line-height: 1;
+  color: var(--text);
+  margin-bottom: var(--space-6);
+}
+
+.price-card__amount span {
+  font-size: 0.9375rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.price-card__list {
+  list-style: none;
+  margin: 0 0 var(--space-8);
+  padding: 0;
+  flex: 1;
+}
+
+.price-card__list li {
+  position: relative;
+  padding-left: 24px;
+  margin-bottom: var(--space-3);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.price-card__list li::before {
+  content: "\2713";
+  position: absolute;
+  left: 0;
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.price-card__btn {
+  display: block;
+  text-align: center;
+  padding: 13px 20px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+}
+
+.price-card--feature .price-card__btn {
+  background: var(--gold);
+  color: #0A0A0A;
+  border-color: var(--gold);
+}
+
+.price-card__btn:hover { transform: translateY(-2px); border-color: var(--gold); }
+.price-card--feature .price-card__btn:hover { background: var(--gold-hover); }
+
+.price-extras {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-10);
+}
+
+.price-extra {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+}
+
+.price-extra__name {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.price-extra__amount {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--text);
+}
+
+.price-extra__amount span { font-size: 0.8125rem; font-weight: 400; color: var(--text-muted); }
+.price-extra__note { font-size: 0.875rem; color: var(--text-muted); margin-top: var(--space-2); line-height: 1.55; }
+
+/* ── /coaches ── */
+.prog-coaches {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--space-5);
+  margin-top: var(--space-10);
+}
+
+.coach-card__link {
+  display: inline-block;
+  margin-top: var(--space-4);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--gold);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--transition-fast);
+}
+
+.coach-card__link:hover { border-bottom-color: var(--gold); }
+
+/* The coach portraits are 200x200 headshots. Left as a 4:3 hero they would be
+   blown up four times over, so the frame is square and capped. */
+.coach-hero__shot {
+  aspect-ratio: 1 / 1;
+  max-width: 340px;
+  margin-left: auto;
+  border-radius: 50%;
+}
+
+@media (max-width: 899px) {
+  .coach-hero__shot { margin: 0 auto; max-width: 220px; }
+}
+
+@media (max-width: 560px) {
+  .sched-pg__head { flex-direction: column; align-items: stretch; }
+  .sched-pg__filters { justify-content: space-between; }
+  .sched-pg__filter { flex: 1; padding: 10px 8px; }
+}

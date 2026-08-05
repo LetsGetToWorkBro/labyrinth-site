@@ -31,7 +31,8 @@ const check=(n,c,x='')=>{ if(c){console.log('PASS  '+n);pass++}else{console.log(
 const posts = readdirSync(join(ROOT,'blog')).filter(f=>f.endsWith('.html')&&f!=='index.html').map(f=>'/blog/'+f.replace('.html',''))
 const programs = readdirSync(join(ROOT,'programs')).filter(f=>f.endsWith('.html')&&f!=='index.html').map(f=>'/programs/'+f.replace('.html',''))
 const areas = readdirSync(join(ROOT,'areas')).filter(f=>f.endsWith('.html')&&f!=='index.html').map(f=>'/areas/'+f.replace('.html',''))
-const pages = ['/', '/blog/', '/programs/', '/areas/', ...posts, ...programs, ...areas]
+const coaches = readdirSync(join(ROOT,'coaches')).filter(f=>f.endsWith('.html')&&f!=='index.html').map(f=>'/coaches/'+f.replace('.html',''))
+const pages = ['/', '/blog/', '/programs/', '/areas/', '/coaches/', '/schedule', '/pricing', ...posts, ...programs, ...areas, ...coaches]
 const broken = []
 for (const path of pages) {
   const r = await page.goto('http://localhost:4620'+path, { waitUntil:'domcontentloaded' })
@@ -45,7 +46,7 @@ for (const path of pages) {
   }
 }
 check('L1 no broken internal links', broken.length === 0, '\n    ' + broken.slice(0,8).join('\n    '))
-check('L1 all 35 pages served 200', pages.length === 35, 'pages: ' + pages.length)
+check('L1 all 41 pages served 200', pages.length === 41, 'pages: ' + pages.length)
 
 // ── L1b: every program page carries the schema and the canonical it exists for ──
 // A program page whose Service block is missing is still a page, and still
@@ -121,6 +122,45 @@ const fakeAddress = areas.filter(p => {
   return /"@type":\s*"(LocalBusiness|SportsActivityLocation)"[\s\S]{0,400}"addressLocality":\s*"(?!Fulshear)/.test(f)
 })
 check('L1g no area page invents a location', fakeAddress.length === 0, fakeAddress.join(', '))
+
+// ── L1h: the generated pages match their generator ──
+const genBefore = ['schedule.html','pricing.html','coaches/index.html',
+  ...coaches.map(c=>c.slice(1)+'.html')].map(f=>readFileSync(join(ROOT,f),'utf8'))
+execFileSync('python3', [join(ROOT,'scripts/build_pages.py')], { cwd: ROOT, stdio: 'ignore' })
+const genAfter = ['schedule.html','pricing.html','coaches/index.html',
+  ...coaches.map(c=>c.slice(1)+'.html')].map(f=>readFileSync(join(ROOT,f),'utf8'))
+check('L1h schedule/pricing/coaches match scripts/build_pages.py',
+  genBefore.every((b,i)=>b===genAfter[i]), 'run: python3 scripts/build_pages.py')
+
+// ── L1i: the timetable has one source ──
+// schedule_data.py is canonical for everything generated. booking.js keeps its
+// own copy because the browser needs it, so both of its arrays are compared
+// here — this is the check that would have caught the Friday-only kids trials
+// contradiction, where two copies of the timetable disagreed in public.
+const bookingJs = readFileSync(join(ROOT,'booking.js'),'utf8')
+const DAYFULL = {Mon:'Monday',Tue:'Tuesday',Wed:'Wednesday',Thu:'Thursday',Fri:'Friday',Sat:'Saturday',Sun:'Sunday'}
+const jsArray = name => {
+  const body = bookingJs.match(new RegExp('var ' + name + ' = \\[([\\s\\S]*?)\\];'))[1]
+  return new Set([...body.matchAll(/\{name:'(.*?)', ?type:'(.*?)', ?day:'(.*?)', ?time:'(.*?)'\}/g)]
+    .map(m => [m[1].replace(/\\u2013/g,'\u2013'), m[2], DAYFULL[m[3]], m[4]].join('|')))
+}
+const pyArray = expr => new Set(JSON.parse(execFileSync('python3', ['-c',
+  "import sys; sys.path.insert(0,'scripts'); import json, schedule_data as s; print(json.dumps(" + expr + "))"],
+  { cwd: ROOT }).toString()).map(r => r.join('|')))
+
+const drift = []
+const compare = (label, a, b) => {
+  for (const x of a) if (!b.has(x)) drift.push(label + ' only in booking.js: ' + x)
+  for (const x of b) if (!a.has(x)) drift.push(label + ' only in schedule_data: ' + x)
+}
+compare('adult',
+  jsArray('ADULT_CLASSES'),
+  pyArray("[[n,st,d,t] for d,t,n,a,st,au,f in s.CLASSES if au in ('adult','all')]"))
+compare('kids trials',
+  jsArray('KIDS_TRIAL_CLASSES'),
+  pyArray("[[n+((' ('+a+')') if a else ''),st,d,t] for d,t,n,a,st,au,f in s.CLASSES if 'trial' in f]"))
+check('L1i schedule_data.py and booking.js agree on the timetable',
+  drift.length === 0, '\n    ' + drift.join('\n    '))
 
 // ── L2: no .html blog links survive ──
 await page.goto('http://localhost:4620/blog/', { waitUntil:'domcontentloaded' })

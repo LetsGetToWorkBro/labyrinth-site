@@ -9,8 +9,7 @@
 # of the homepage rather than a page of their own. That is the honest mapping:
 # the content still exists, it just lives further down.
 
-/plans-and-pricing              /#pricing           301
-/schedule                       /#schedule          301
+/plans-and-pricing              /pricing            301
 /contact-us                     /#contact           301
 /summer-camp                    /programs/summer-camp-fulshear   301
 /2nd-annniversary-celebration   /                   301
@@ -31,11 +30,12 @@
 # redirect rule here would win over that file, which is why removing it is the
 # whole job. /classes still redirects, because it is a guess rather than a URL
 # we publish.
-/pricing                        /#pricing           301
 /classes                        /programs/          301
 /contact                        /#contact           301
-/coaches                        /#coaches           301
 /faq                            /#faq               301
+/class-schedule                 /schedule           301
+/plans                          /pricing            301
+/instructors                    /coaches/           301
 /free-trial                     /#contact           301
 /trial                          /#contact           301
 

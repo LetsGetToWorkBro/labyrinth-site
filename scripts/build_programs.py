@@ -27,6 +27,10 @@ this deliberately does not say it either rather than inventing an answer.
 """
 import os
 import re
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import schedule_data  # noqa: E402
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "programs")
@@ -39,22 +43,27 @@ ADDRESS = "6615 West Cross Creek Bend Lane, Suite #400, Fulshear, TX 77441"
 # The nav and footer are lifted from index.html with their links absolutised,
 # because a page one directory down cannot use "#programs" to mean a section of
 # the front page.
+#
+# Asset paths are root-absolute (/style.css, not ../style.css) for the same
+# reason and a stronger one: this chrome is shared by pages at two different
+# depths — /programs/x and /schedule — and "../" is correct for exactly one of
+# them. Root-absolute is correct for both and for anything added later.
 
 NAV_LINKS = [
     ("/programs/", "Programs"),
+    ("/schedule", "Schedule"),
+    ("/pricing", "Pricing"),
+    ("/coaches/", "Coaches"),
+    ("/areas/", "Areas"),
     ("/#competition", "Competition"),
-    ("/#coaches", "Coaches"),
-    ("/#schedule", "Schedule"),
-    ("/#pricing", "Pricing"),
-    ("/#faq", "FAQ"),
-    ("/#contact", "Contact"),
     ("/blog/", "Blog"),
+    ("/#contact", "Contact"),
 ]
 
 NAV = """<nav class="nav" id="nav" role="navigation" aria-label="Main navigation">
   <div class="nav__inner">
     <a href="/" class="nav__logo" aria-label="Labyrinth BJJ home">
-      <img src="../assets/logo-maze-transparent.png" alt="Labyrinth BJJ" class="nav__logo-img" width="36" height="36">
+      <img src="/assets/logo-maze-transparent.png" alt="Labyrinth BJJ" class="nav__logo-img" width="36" height="36">
       <span class="nav__logo-text">LABYRINTH</span>
     </a>
 
@@ -101,14 +110,14 @@ HEAD = """<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#0A0A0A">
-<link rel="icon" type="image/svg+xml" href="../favicon.svg">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
 <link rel="preload" as="style" href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=general-sans@300,400,500,600,700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=general-sans@300,400,500,600,700&display=swap" rel="stylesheet"></noscript>
-<link rel="stylesheet" href="../base.css">
-<link rel="stylesheet" href="../style.css">
-<link rel="stylesheet" href="../programs.css">
-<link rel="stylesheet" href="../booking.css">
+<link rel="stylesheet" href="/base.css">
+<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/programs.css">
+<link rel="stylesheet" href="/booking.css">
 
 <title>%(title)s</title>
 <meta name="description" content="%(description)s">
@@ -128,8 +137,8 @@ HEAD = """<!DOCTYPE html>
 TAIL = """
 %(footer)s
 
-<script src="../app.js"></script>
-<script src="../booking.js"></script>
+<script src="/app.js"></script>
+<script src="/booking.js"></script>
 </body>
 </html>
 """
@@ -207,14 +216,7 @@ PROGRAMS = [
         ],
         "schedule_title": "Kids class times",
         "schedule_note": "Classes marked <strong>ADV</strong> are the advanced grappling classes: a child needs a grey-white belt or higher, or two or more years of wrestling, to join one. Everything else is open to any child in the age range, including one who has never trained. <strong>Free trials for kids run on Friday afternoons and Saturday mornings.</strong> Friday is Gi and takes every age from three up; Saturday at 10:00 AM is No-Gi and starts at seven, because there is no 3–6 class on a Saturday to put a younger child in.",
-        "week": [
-            ("Monday", [("4:45 PM", "Kids BJJ (3–6)", "gi"), ("5:15 PM", "Kids BJJ (7–12)", "gi")]),
-            ("Tuesday", [("5:15 PM", "Kids Grappling (7–12)", "nogi adv"), ("5:15 PM", "Teens Grappling (12–15)", "nogi adv")]),
-            ("Wednesday", [("4:45 PM", "Kids BJJ (3–6)", "gi"), ("5:15 PM", "Kids BJJ (7–12)", "gi")]),
-            ("Thursday", [("5:15 PM", "Kids Grappling (7–12)", "nogi adv"), ("5:15 PM", "Teens Grappling (12–15)", "nogi adv")]),
-            ("Friday", [("4:45 PM", "Kids BJJ (3–6)", "gi"), ("5:15 PM", "Kids BJJ Comp (7–12)", "gi"), ("5:15 PM", "Teens BJJ Comp (12–15)", "gi")]),
-            ("Saturday", [("10:00 AM", "Kids Grappling (7–12)", "nogi"), ("12:00 PM", "Kids Grappling (7–12)", "nogi adv"), ("12:00 PM", "Teens Grappling (12–15)", "nogi adv")]),
-        ],
+        "week": schedule_data.week_for({"Kids BJJ", "Kids Grappling", "Teens Grappling", "Kids BJJ Comp", "Teens BJJ Comp"}),
         "body_title": "What a class actually looks like",
         "body": [
             "Forty-five minutes, and the shape of it barely changes: a warm-up that is mostly movement games, a technique of the day broken into two or three pieces, drilling that technique with a partner, and then positional rounds — live training from a set starting position, which is how a child learns to apply something under mild resistance without it becoming a fight.",
@@ -288,15 +290,7 @@ PROGRAMS = [
         ],
         "schedule_title": "Adult class times",
         "schedule_note": "Trials for adults can be booked into <strong>any class on this timetable</strong> — there is no beginners-only slot you have to wait for, because there is no class here where a first-timer is a problem. Sunday open mat is free rolling: all levels, all affiliations, including visitors from other academies.",
-        "week": [
-            ("Monday", [("6:30 AM", "Adult BJJ", "gi"), ("11:00 AM", "Adult BJJ", "gi"), ("6:30 PM", "Adult BJJ", "gi")]),
-            ("Tuesday", [("6:30 AM", "Adult BJJ", "nogi"), ("6:30 PM", "Adult BJJ", "nogi")]),
-            ("Wednesday", [("6:30 AM", "Adult BJJ", "gi"), ("11:00 AM", "Adult BJJ", "nogi"), ("6:30 PM", "Adult BJJ", "gi")]),
-            ("Thursday", [("6:30 AM", "Adult BJJ", "nogi"), ("6:30 PM", "Adult BJJ", "nogi")]),
-            ("Friday", [("11:00 AM", "Adult BJJ", "gi"), ("6:30 PM", "Adult Competition", "gi")]),
-            ("Saturday", [("9:00 AM", "Adult Competition", "nogi"), ("11:00 AM", "Adult & Teens", "nogi")]),
-            ("Sunday", [("10:30 AM", "Open Mat", "")]),
-        ],
+        "week": schedule_data.week_for({"Adult BJJ", "Adult Comp", "Adult & Teens", "Open Mat"}),
         "body_title": "Your first class, honestly",
         "body": [
             "You will be given a loaner gi if it is a Gi day, shown where to change, and introduced to whoever is nearest. The class starts with a warm-up you can scale down, moves to a technique broken into pieces, and then drilling — you and one partner, taking turns, no resistance. That part is not intimidating and it is most of the class.",
@@ -371,12 +365,8 @@ PROGRAMS = [
         ],
         "schedule_title": "Competition and advanced class times",
         "schedule_note": "Classes marked <strong>ADV</strong> require a grey-white belt or above, or two or more years of wrestling experience. The Friday and Saturday competition classes are open to any member in the right age group. All of these are <strong>included in unlimited memberships</strong> — adult unlimited at $199/month and kids unlimited at $249/month — at no extra charge.",
-        "week": [
-            ("Tuesday", [("5:15 PM", "Kids Grappling (7–12)", "nogi adv"), ("5:15 PM", "Teens Grappling (12–15)", "nogi adv")]),
-            ("Thursday", [("5:15 PM", "Kids Grappling (7–12)", "nogi adv"), ("5:15 PM", "Teens Grappling (12–15)", "nogi adv")]),
-            ("Friday", [("5:15 PM", "Kids BJJ Comp (7–12)", "gi"), ("5:15 PM", "Teens BJJ Comp (12–15)", "gi"), ("6:30 PM", "Adult Competition", "gi")]),
-            ("Saturday", [("9:00 AM", "Adult Competition", "nogi"), ("12:00 PM", "Kids Grappling (7–12)", "nogi adv"), ("12:00 PM", "Teens Grappling (12–15)", "nogi adv")]),
-        ],
+        "week": schedule_data.week_for({"Adult Comp", "Kids BJJ Comp", "Teens BJJ Comp", "Kids Grappling", "Teens Grappling"},
+                                       require={"comp", "adv"}),
         "body_title": "What competition training is, and what it is not",
         "body": [
             "It is not a harder version of the normal class with more sparring bolted on. The technical content is narrower and deeper — a smaller set of positions worked until they are reliable under a stranger's resistance — and a large part of it is the things that only matter with a referee present: rule sets, points, advantages, how to close out a lead, what to do in the last thirty seconds when you are down two.",
@@ -531,11 +521,7 @@ PROGRAMS = [
         ],
         "schedule_title": "Wrestling class times",
         "schedule_note": "All three sessions are open to ages 7 to 17 with no wrestling background required. The Wednesday and Thursday classes run in the evening after the kids BJJ classes have finished; Sunday afternoon is the longest and least rushed of the three. First session is free.",
-        "week": [
-            ("Wednesday", [("7:30 PM", "Youth Wrestling (7–17)", "")]),
-            ("Thursday", [("7:30 PM", "Youth Wrestling (7–17)", "")]),
-            ("Sunday", [("1:00 PM", "Youth Wrestling (7–17)", "")]),
-        ],
+        "week": schedule_data.week_for({"Youth Wrestling"}),
         "body_title": "What it gives a child",
         "body": [
             "<strong>A tolerance for being uncomfortable.</strong> Wrestling practice is hard in a way that is difficult to fake your way through, and children who stick with it develop a working relationship with discomfort that shows up in everything else they do. This is the thing parents report back to us about, far more than any technique.",
@@ -648,7 +634,7 @@ def render_coaches(keys):
         plain = re.sub(r"&\w+;", " ", name).strip()
         out.append("""    <div class="coach-card">
       <div class="coach-card__avatar">
-        <picture><source srcset="../assets/%s.webp" type="image/webp"><img src="../assets/%s.jpg" alt="%s at Labyrinth BJJ in Fulshear, TX" loading="lazy" width="200" height="200"></picture>
+        <picture><source srcset="/assets/%s.webp" type="image/webp"><img src="/assets/%s.jpg" alt="%s at Labyrinth BJJ in Fulshear, TX" loading="lazy" width="200" height="200"></picture>
       </div>
       <div class="coach-card__info">
         <h3 class="coach-card__name">%s</h3>
@@ -731,8 +717,8 @@ def render(p):
       </div>
       <div class="prog-hero__shot">
         <picture>
-          <source srcset="../assets/%(img)s.webp" type="image/webp">
-          <img src="../assets/%(img)s.jpg" alt="%(alt)s" width="800" height="600">
+          <source srcset="/assets/%(img)s.webp" type="image/webp">
+          <img src="/assets/%(img)s.jpg" alt="%(alt)s" width="800" height="600">
         </picture>
       </div>
     </div>
