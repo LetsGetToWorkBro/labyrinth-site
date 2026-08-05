@@ -14,13 +14,19 @@ and it works, while our three black belts had no URL between them.
 The timetable and the prices come from schedule_data, not from here. This file
 decides how they are shown; that one is what they are.
 
-WHAT IS AND IS NOT ON THE COACH PAGES. Everything stated is either on the front
-page already, derivable from the timetable, or true of the belt system
-generally. What is missing — and a BJJ coach page is conspicuously incomplete
-without it — is lineage: who promoted them, and under whom they trained. That
-is the first thing anybody in the sport looks for. The pages are built with a
-place for it; until the academy supplies the names, they say what is verifiable
-rather than guessing at a life story.
+LINEAGE. Who promoted whom is the first thing anybody in the sport looks for,
+and the line here is unusually clean: Matt Leighton of Citadel BJJ in Iowa City
+promoted Anthony Curry, and Anthony promoted Shaun Lawler — the only black belt
+he has awarded in five years of running the academy. Both facts came from the
+academy. It is the strongest thing on these pages and the one a competitor
+cannot copy, so it gets a section of its own rather than a clause in a bio.
+
+WHAT IS STILL NOT HERE. Competition records, promotion dates, and the detail
+behind "extensive coaching and training credentials" — the academy has said the
+credentials are extensive but not what they are, and a page that says
+"extensive" without naming anything reads as padding. Add specifics to
+`credentials` on a coach and they render; leave it out and the page does not
+gesture at them.
 """
 import os
 import re
@@ -433,11 +439,25 @@ COACHES = [
             "He is a <strong>black belt with more than fourteen years on the mats</strong>. In Brazilian jiu-jitsu that is a long apprenticeship by design — the black belt takes most people around a decade of consistent training, which is why the rank means something the equivalent belt in other martial arts often does not.",
         ],
         "teaches_note": "As head instructor he oversees the whole curriculum, and the academy's competition results are cornered by him and the other black belts at events.",
+        "lineage": {
+            "from": "Matt Leighton",
+            "at": "Citadel BJJ",
+            "where": "Iowa City, Iowa",
+            "body": [
+                "Anthony Curry received his black belt from <strong>Matt Leighton of Citadel BJJ in Iowa City</strong>. Leighton co-founded that academy and is a decorated no-gi competitor in his own right.",
+                "Lineage is the first question anybody in jiu-jitsu asks about an instructor, and it is a fair one. There is no central licensing body in this sport — a black belt is awarded by a person, not issued by an institution, which means the rank is only ever as good as the standards of whoever tied it on. Asking who promoted a coach is asking whose judgement is behind the rank.",
+                "It also matters in the other direction, and Labyrinth has an unusually short answer there. <a href=\"/coaches/shaun-lawler\">Shaun Lawler</a> is the only black belt Anthony has promoted in five years of running this academy — one, in five years, out of a room that has produced Pan American champions.",
+            ],
+        },
         "faqs": [
             ("Who is the head instructor at Labyrinth BJJ?",
              "Professor Anthony Curry, who founded the academy in Fulshear in 2021 and still runs it. He is a black belt with over fourteen years of training, and under his instruction Labyrinth has become the #1 ranked academy in Texas and #9 nationally on jits.gg."),
             ("What does “Professor” mean in Brazilian jiu-jitsu?",
              "It is the customary title for a black belt instructor. Coloured-belt instructors are usually addressed as “coach”. It is not an academic title — it is the traditional form of address in a BJJ academy, and the black belt behind it typically represents about a decade of training."),
+            ("Who is Anthony Curry's black belt under?",
+             "Matt Leighton of Citadel BJJ in Iowa City, who co-founded that academy and competes at a high level in no-gi. Lineage matters in Brazilian jiu-jitsu because there is no central licensing body — a black belt is awarded by a person rather than issued by an institution, so asking who promoted a coach is asking whose judgement stands behind the rank."),
+            ("How many black belts has he promoted?",
+             "One, in five years of running the academy: Professor Shaun Lawler. Awarding a black belt is the most consequential thing an instructor does, and Labyrinth has produced Pan American champions, 83 nationally ranked athletes and 267 gold medals against exactly one black belt promotion."),
             ("Does he still teach, or only run the academy?",
              "He teaches. Labyrinth is an owner-operated academy rather than a franchise with a manager, and the head instructor being on the mats is most of the point of training at one."),
         ],
@@ -460,11 +480,24 @@ COACHES = [
             "He is also the coach behind the <a href=\"/blog/strength-and-conditioning-for-kids-fulshear\">all-ages strength and conditioning class</a> that runs on Tuesdays and Thursdays at 4:15 PM — the session where a seven-year-old, a fifteen-year-old and a forty-two-year-old work through the same programme at their own load. It is included in every membership, and it exists because technique stops being the limiting factor in a match sooner than most people expect.",
         ],
         "teaches_note": "He coaches across the timetable and runs the strength and conditioning session twice a week.",
+        "lineage": {
+            "from": "Prof. Anthony Curry",
+            "from_url": "/coaches/anthony-curry",
+            "at": "Labyrinth BJJ",
+            "where": "Fulshear, Texas",
+            "body": [
+                "Shaun Lawler received his black belt from <a href=\"/coaches/anthony-curry\">Professor Anthony Curry</a> — and he is the <strong>only black belt Anthony has ever promoted</strong>, in five years of running the academy.",
+                "That is worth pausing on, because it is the kind of fact that is easy to read past. Awarding a black belt is the most consequential thing an instructor does; it is a permanent statement, made in public, that this person is now qualified to promote others. Plenty of academies hand out several a year. This one has produced Pan American champions, eighty-three nationally ranked athletes and 267 gold medals, and exactly one black belt.",
+                "It also completes a line that runs entirely through people who are still on these mats: <strong>Matt Leighton</strong> of Citadel BJJ in Iowa City promoted Anthony, and Anthony promoted Shaun. Whatever standard Leighton set has been passed down twice without leaving the building.",
+            ],
+        },
         "faqs": [
             ("Who runs the strength and conditioning class?",
              "Professor Shaun Lawler. It runs Tuesday and Thursday at 4:15 PM, it is open to all ages in one session — kids and adults together at their own load — and it is included in every membership at no extra charge."),
             ("How long has Shaun Lawler been training?",
              "More than fifteen years, and he is a black belt. In Brazilian jiu-jitsu the black belt typically takes around a decade of consistent training to reach, so fifteen-plus years puts him well past that point."),
+            ("Who is Shaun Lawler's black belt under?",
+             "Professor Anthony Curry, the founder of Labyrinth — and Shaun is the only black belt Anthony has promoted in five years of running the academy. The line runs Matt Leighton of Citadel BJJ in Iowa City, to Anthony, to Shaun."),
             ("Is he the right coach for a complete beginner?",
              "Yes, and that is worth saying because it is not automatic at his level. The academy's own description of him is that he develops athletes from beginner through to elite competitor, and the beginner half of that is the harder half to do well."),
         ],
@@ -526,6 +559,40 @@ def coach_card(name, role, rank, belt, photo, bio, href=None):
     return '  <div class="coach-card">\n%s\n  </div>' % inner
 
 
+def lineage_html(c):
+    """Who promoted him, given its own section rather than a line in a bio.
+
+    It is the one claim on these pages a competitor cannot write for
+    themselves, and in this sport it is the first thing a reader looks for.
+    Returns empty for a coach with no lineage recorded — the page then simply
+    does not have the section, rather than having an empty one."""
+    ln = c.get("lineage")
+    if not ln:
+        return ""
+    who = ('<a href="%s">%s</a>' % (ln["from_url"], ln["from"])) if ln.get("from_url") else ln["from"]
+    return """
+<section class="prog-section prog-section--surface">
+  <div class="container">
+    <div class="fade-in">
+      <p class="section-label">Lineage</p>
+      <h2 class="section-title section-title--lg">WHO PROMOTED HIM</h2>
+    </div>
+    <div class="lineage">
+      <div class="lineage__card">
+        <div class="lineage__label">Black belt awarded by</div>
+        <div class="lineage__name">%s</div>
+        <div class="lineage__where">%s &middot; %s</div>
+      </div>
+      <div class="prog-prose">
+%s
+      </div>
+    </div>
+  </div>
+</section>
+""" % (who, ln["at"], ln["where"],
+       "\n".join("        <p>%s</p>" % b for b in ln["body"]))
+
+
 def render_coach(c):
     url = "%s/coaches/%s" % (SITE, c["slug"])
     plain = re.sub(r"&\w+;", " ", c["name"]).strip()
@@ -543,10 +610,20 @@ def render_coach(c):
         ["Brazilian Jiu-Jitsu", "Gi and No-Gi grappling", "Competition coaching"],
     }
     if c["rank"] == "Black Belt":
-        person["hasCredential"] = {
+        cred = {
             "@type": "EducationalOccupationalCredential",
             "credentialCategory": "Brazilian Jiu-Jitsu Black Belt",
         }
+        ln = c.get("lineage")
+        if ln:
+            # recognizedBy is the honest field for this: a BJJ black belt is
+            # awarded by a person at an academy, not issued by an institution.
+            awarder = {"@type": "Person", "name": re.sub(r"^Prof\. ", "", ln["from"]),
+                       "affiliation": {"@type": "Organization", "name": ln["at"]}}
+            if ln.get("from_url"):
+                awarder["url"] = SITE + ln["from_url"]
+            cred["recognizedBy"] = awarder
+        person["hasCredential"] = cred
 
     head = HEAD % {
         "title": c["title"], "description": c["description"], "url": url,
@@ -605,6 +682,7 @@ def render_coach(c):
   </div>
 </section>
 
+%(lineage)s
 <section class="prog-section">
   <div class="container">
     <div class="fade-in">
@@ -660,7 +738,7 @@ def render_coach(c):
         "body": "\n".join("      <p>%s</p>" % b for b in c["body"]),
         "teaches": c["teaches_note"],
         "classes": c["classes_html"], "faqs": faq_block(c["faqs"]),
-        "others": others, "phone": PHONE,
+        "others": others, "phone": PHONE, "lineage": lineage_html(c),
     }, TAIL % {"footer": FOOTER}])
 
 
@@ -692,7 +770,7 @@ def render_coach_hub():
   <div class="container">
     <p class="section-label">The staff</p>
     <h1 class="prog-hero__title">Who teaches you</h1>
-    <p class="prog-hero__lead">Three black belts, two brown belts and a Texas National Team wrestler. Labyrinth is owner-operated rather than a franchise with a manager, which means the head instructor is on the mats rather than in an office.</p>
+    <p class="prog-hero__lead">Three black belts, two brown belts and a Texas National Team wrestler. The line runs <a href="/coaches/anthony-curry">Anthony Curry</a>, black belt under Matt Leighton of Citadel BJJ in Iowa City, to <a href="/coaches/shaun-lawler">Shaun Lawler</a> &mdash; the only black belt Anthony has promoted in five years of running the academy.</p>
     <div class="prog-hero__cta">
       <a data-book-trial href="/#book" class="btn btn--gold">Book a Free Class</a>
       <a href="/schedule" class="btn btn--ghost">See Who Teaches When</a>
