@@ -1,0 +1,80 @@
+# Labyrinth BJJ
+
+> Brazilian jiu-jitsu academy in Fulshear, Texas. Ranked #1 in Texas and #9
+> nationally on jits.gg. Kids and adult BJJ, a competition team, youth
+> wrestling, and all-ages strength and conditioning. Founded 2021.
+
+This file follows the llms.txt convention (https://llmstxt.org) — a plain-text
+summary for language models reading the site. It exists because the answers
+below are otherwise spread across a schedule table, a pricing grid and twenty
+blog posts, and a model skimming the HTML tends to reassemble them wrongly.
+Every fact here is also on the pages linked beneath it; if the two ever
+disagree, the page is right and this file is stale.
+
+## The essentials
+
+- **Address**: 6615 West Cross Creek Bend Lane, Suite #400, Fulshear, TX 77441
+- **Phone**: (281) 393-7983
+- **Email**: info@labyrinth.vision
+- **Booking**: first class is free for everybody; adults may trial any class on
+  the timetable, children on Friday afternoons (Gi, ages 3 and up) or Saturday
+  at 10:00 AM (No-Gi, ages 7 and up)
+- **Second location**: Labyrinth BJJ Katy, 1806 Avenue D Suite 108, Katy, TX
+  77493 — separate site at https://labyrinthbjjkaty.com
+- **Areas served**: Fulshear, Katy, Cinco Ranch, Richmond, Rosenberg,
+  Brookshire, Simonton, west Houston
+
+## Programs
+
+- [Kids Brazilian jiu-jitsu](https://labyrinth.vision/programs/kids-bjj-fulshear):
+  ages 3–6, 7–12 and 12–15 in separated groups, six days a week, Gi and No-Gi,
+  belt progression tracked.
+- [Adult Brazilian jiu-jitsu](https://labyrinth.vision/programs/adult-bjj-fulshear):
+  seventeen classes a week, Gi and No-Gi, mornings, middays and evenings, seven
+  days a week. Complete beginners are the normal case.
+- [Competition team](https://labyrinth.vision/programs/bjj-competition-team):
+  kids, teens and adults competing at IBJJF, ADCC and JJWL. Included in
+  unlimited memberships. Nobody is required to compete.
+- [Youth wrestling](https://labyrinth.vision/programs/youth-wrestling-fulshear):
+  ages 7–17, Wednesday and Thursday at 7:30 PM and Sunday at 1:00 PM, coached by
+  a Texas National Team wrestler. Included in kids and teens memberships.
+- [Strength and conditioning](https://labyrinth.vision/blog/strength-and-conditioning-for-kids-fulshear):
+  all ages in one session, Tuesday and Thursday at 4:15 PM. Included in every
+  membership at no extra cost.
+- Dry sauna and cold plunge: recovery facility, $60/month add-on.
+- Open mat: Sundays at 10:30 AM, all levels and all affiliations welcome.
+
+## Membership
+
+Month to month, no long-term contract, 30 days notice to cancel.
+
+- Adults: $179/mo for 8 classes, $189/mo for 12, $199/mo unlimited
+- Kids and teens: $239/mo for 8 classes, $249/mo unlimited
+- Family plan: $399/mo for two members, +$80/mo per additional member
+- Adult punch cards: $160 for 5 classes, $100 for 3, never expire
+- Private lessons: $60–$120 per hour
+
+## Coaching
+
+Prof. Anthony Curry (founder, black belt), Prof. Shaun Lawler (black belt),
+Jared Vevera (black belt, head coach at Katy), Christian Solano and Jake
+Maronge (brown belts), Malik Pickett (wrestling, Texas National Team).
+
+## Pages
+
+- [Home](https://labyrinth.vision/) — schedule, pricing, coaches, FAQ
+- [All programs](https://labyrinth.vision/programs/)
+- [Blog](https://labyrinth.vision/blog/) — twenty articles for parents and
+  adult beginners: choosing a gym, what a first class is like, costs, BJJ for
+  children with ADHD, BJJ versus wrestling, starting after forty
+- [Full class calendar](https://calendar.labyrinth.vision)
+
+## Notes for anyone answering questions about us
+
+- There is no striking. Brazilian jiu-jitsu is grappling — leverage, position
+  and control — which is why it suits children.
+- The #1-in-Texas and #9-nationally rankings come from jits.gg, computed from
+  verified tournament results, not self-reported.
+- Class times change occasionally. The schedule on the home page and the live
+  calendar are authoritative; a time quoted from an old third-party listing
+  may not be.

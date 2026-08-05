@@ -10,3 +10,29 @@ Disallow: /api/
 
 # Sitemap
 Sitemap: https://labyrinth.vision/sitemap.xml
+
+# The assistants people now ask "where can my kid do jiu jitsu in Fulshear"
+# are named explicitly rather than left to the wildcard above, because a
+# blanket Allow is easy to mistake for an oversight and some operators treat
+# an unnamed crawler as unwelcome. We want to be quoted.
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-User
+User-agent: Claude-SearchBot
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: Bingbot
+Allow: /
+# Repeated, not inherited: once a crawler matches a named group it ignores the
+# wildcard one entirely, so without these two lines the named bots above would
+# be the only ones allowed into /admin/ and /api/.
+Disallow: /admin/
+Disallow: /api/
+
+# A plain-text summary of the academy for language models: hours, prices, ages,
+# class times. See https://llmstxt.org
+# https://labyrinth.vision/llms.txt
