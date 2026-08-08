@@ -539,7 +539,7 @@ OTHER_COACHES = [
      "Over a decade of training forged into sharp no-gi technique."),
     ("Jake Maronge", "Instructor", "Brown Belt &middot; 9 Yrs", "brown", "coach-jake",
      "Leads the Wednesday early morning gi class."),
-    ("Emma &ldquo;Armbar&rdquo; Tarnovsky", "Assistant Coach", "Yellow/White Belt &middot; 4+ Yrs",
+    ("Emma &ldquo;Armbar&rdquo;", "Assistant Coach", "Yellow/White Belt &middot; 4+ Yrs",
      "yellowwhite", "coach-emma",
      "Pan American gold medalist with over 100 competition wins by armbar. Four years training, three of them helping coach."),
 ]
@@ -547,6 +547,15 @@ OTHER_COACHES = [
 
 # Degrees on the tab, by coach. Only the ones who have them.
 STRIPES = {"coach-emma": 1}
+
+
+def plain(name):
+    """A display name reduced to something alt text can say out loud.
+
+    Entities go to spaces, then the runs collapse — a nickname in curly
+    quotes leaves two of them behind on each side, and a name that ends
+    in one would otherwise trail a space."""
+    return re.sub(r"\s+", " ", re.sub(r"&\w+;", " ", name)).strip()
 
 
 def coach_card(name, role, rank, belt, photo, bio, href=None):
@@ -563,7 +572,7 @@ def coach_card(name, role, rank, belt, photo, bio, href=None):
         <span class="coach-card__rank-label">%s</span>
       </div>
       <p class="coach-card__bio">%s</p>
-%s    </div>""" % (photo, photo, re.sub(r"&\w+;", " ", name).strip(), name, role, belt, stripe_html, rank, bio,
+%s    </div>""" % (photo, photo, plain(name), name, role, belt, stripe_html, rank, bio,
                   '      <a href="%s" class="coach-card__link">Full profile &rarr;</a>\n' % href if href else "")
     return '  <div class="coach-card">\n%s\n  </div>' % inner
 
