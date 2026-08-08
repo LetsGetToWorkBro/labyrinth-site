@@ -4670,3 +4670,19 @@ body {
 .belt-bar--yellowwhite .belt-bar__tab {
   background: #1C1C1C;
 }
+
+/* Grey/black — the third of the three grey belts, built the same way. The
+   tab would vanish into the belt's own black band, so it is lifted a shade
+   and given a hairline; at 10px tall that is the difference between reading
+   as a tab and reading as a smudge. */
+.belt-bar--greyblack .belt-bar__belt {
+  background: linear-gradient(180deg,
+    #9A9A9A 0%, #9A9A9A 32%,
+    #141414 32%, #141414 68%,
+    #9A9A9A 68%, #9A9A9A 100%);
+  border: 1px solid rgba(255,255,255,0.14);
+}
+.belt-bar--greyblack .belt-bar__tab {
+  background: #2A2A2A;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.18);
+}
