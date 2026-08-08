@@ -542,7 +542,7 @@ OTHER_COACHES = [
     ("Emma &ldquo;Armbar&rdquo;", "Assistant Coach", "Yellow/White Belt &middot; 4+ Yrs",
      "yellowwhite", "coach-emma",
      "Pan American gold medalist with over 100 competition wins by armbar. Four years training, three of them helping coach."),
-    ("Hadley &ldquo;Hurricane&rdquo;", "Assistant Coach", "Grey/Black Belt &middot; 2+ Yrs",
+    ("&ldquo;Hurricane&rdquo; Hadley", "Assistant Coach", "Grey/Black Belt &middot; 2+ Yrs",
      "greyblack", "coach-hadley",
      "ADCC Dallas gold medalist and a repeat JJWL and IBJJF champion in gi and no-gi. Over 100 matches at a 77% win rate."),
 ]
