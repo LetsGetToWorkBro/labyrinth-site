@@ -4655,3 +4655,18 @@ body {
 }
 .schedule-trial-banner--stream a { color: #7fb9d8; text-decoration: underline; }
 .schedule-trial-banner--stream a:hover { color: #a5d2ea; }
+
+/* Yellow/White Belt — the kids rank. The stripe runs through the body of the
+   belt rather than sitting on the tab, so it is a gradient stop rather than a
+   separate element; the tab keeps the degree stripes as it does for the
+   coloured adult belts. */
+.belt-bar--yellowwhite .belt-bar__belt {
+  background: linear-gradient(180deg,
+    #D4A020 0%, #D4A020 32%,
+    #EEEEEE 32%, #EEEEEE 68%,
+    #D4A020 68%, #D4A020 100%);
+  border: 1px solid rgba(255,255,255,0.14);
+}
+.belt-bar--yellowwhite .belt-bar__tab {
+  background: #1C1C1C;
+}

@@ -539,10 +539,19 @@ OTHER_COACHES = [
      "Over a decade of training forged into sharp no-gi technique."),
     ("Jake Maronge", "Instructor", "Brown Belt &middot; 9 Yrs", "brown", "coach-jake",
      "Leads the Wednesday early morning gi class."),
+    ("Emma &ldquo;Armbar&rdquo; Tarnovsky", "Assistant Coach", "Yellow/White Belt &middot; 4+ Yrs",
+     "yellowwhite", "coach-emma",
+     "Pan American gold medalist with over 100 competition wins by armbar. Four years training, three of them helping coach."),
 ]
 
 
+# Degrees on the tab, by coach. Only the ones who have them.
+STRIPES = {"coach-emma": 1}
+
+
 def coach_card(name, role, rank, belt, photo, bio, href=None):
+    stripes = STRIPES.get(photo, 0)
+    stripe_html = ('<span class="belt-bar__stripes">%s</span>' % ("<span></span>" * stripes)) if stripes else ""
     inner = """    <div class="coach-card__avatar">
       <picture><source srcset="/assets/%s.webp" type="image/webp"><img src="/assets/%s.jpg" alt="%s at Labyrinth BJJ in Fulshear, TX" loading="lazy" width="200" height="200"></picture>
     </div>
@@ -550,11 +559,11 @@ def coach_card(name, role, rank, belt, photo, bio, href=None):
       <h3 class="coach-card__name">%s</h3>
       <p class="coach-card__role">%s</p>
       <div class="coach-card__rank">
-        <div class="belt-bar belt-bar--%s"><span class="belt-bar__belt"></span><span class="belt-bar__tab"></span></div>
+        <div class="belt-bar belt-bar--%s"><span class="belt-bar__belt"></span><span class="belt-bar__tab"></span>%s</div>
         <span class="coach-card__rank-label">%s</span>
       </div>
       <p class="coach-card__bio">%s</p>
-%s    </div>""" % (photo, photo, re.sub(r"&\w+;", " ", name).strip(), name, role, belt, rank, bio,
+%s    </div>""" % (photo, photo, re.sub(r"&\w+;", " ", name).strip(), name, role, belt, stripe_html, rank, bio,
                   '      <a href="%s" class="coach-card__link">Full profile &rarr;</a>\n' % href if href else "")
     return '  <div class="coach-card">\n%s\n  </div>' % inner
 
@@ -770,7 +779,7 @@ def render_coach_hub():
   <div class="container">
     <p class="section-label">The staff</p>
     <h1 class="prog-hero__title">Who teaches you</h1>
-    <p class="prog-hero__lead">Three black belts, two brown belts and a Texas National Team wrestler. The line runs <a href="/coaches/anthony-curry">Anthony Curry</a>, black belt under Matt Leighton of Citadel BJJ in Iowa City, to <a href="/coaches/shaun-lawler">Shaun Lawler</a> &mdash; the only black belt Anthony has promoted in five years of running the academy.</p>
+    <p class="prog-hero__lead">Three black belts, two brown belts, a Texas National Team wrestler and a Pan American gold medalist assisting. The line runs <a href="/coaches/anthony-curry">Anthony Curry</a>, black belt under Matt Leighton of Citadel BJJ in Iowa City, to <a href="/coaches/shaun-lawler">Shaun Lawler</a> &mdash; the only black belt Anthony has promoted in five years of running the academy.</p>
     <div class="prog-hero__cta">
       <a data-book-trial href="/#book" class="btn btn--gold">Book a Free Class</a>
       <a href="/schedule" class="btn btn--ghost">See Who Teaches When</a>
