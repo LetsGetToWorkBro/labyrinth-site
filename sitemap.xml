@@ -268,4 +268,13 @@
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
+
+  <!-- Legal. Low priority to rank, but it is the URL an App Store reviewer
+       opens, so it has to be crawlable and reachable rather than orphaned. -->
+  <url>
+    <loc>https://labyrinth.vision/privacy-policy</loc>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
 </urlset>
