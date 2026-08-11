@@ -92,7 +92,7 @@ NAV = """<nav class="nav" id="nav" role="navigation" aria-label="Main navigation
 FOOTER = """<footer class="footer" id="footer">
   <div class="container">
     <div class="footer__bottom">
-      <p>&copy; 2026 Labyrinth BJJ &middot; %(address)s &middot; <a href="tel:2813937983">%(phone)s</a></p>
+      <p>&copy; 2026 Labyrinth BJJ &middot; %(address)s &middot; <a href="tel:2813937983">%(phone)s</a> &middot; <a href="/support">Support</a> &middot; <a href="/privacy-policy">Privacy</a> &middot; <a href="https://cornerman.app" target="_blank" rel="noopener noreferrer">Cornerman</a></p>
       <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
     </div>
   </div>

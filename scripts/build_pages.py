@@ -617,6 +617,145 @@ def lineage_html(c):
        "\n".join("        <p>%s</p>" % b for b in ln["body"]))
 
 
+# ── /support ─────────────────────────────────────────────────────────────────
+
+SUPPORT_FAQS = [
+    ("How do I pause, change or cancel my membership?",
+     "Email <a href=\"mailto:support@labyrinth.vision\">support@labyrinth.vision</a> or call (281) 393-7983 and tell us what you need. Holds for travel, injury and deployment are routine and we would rather you paused than quit. We will confirm anything that changes what you pay in writing before it takes effect."),
+    ("Something looks wrong on my bill.",
+     "Send us the date and the amount and we will look it up the same day. Billing runs through our membership system rather than the front desk, so an email with the detail in it gets sorted faster than a conversation on the mat."),
+    ("My child left something at the academy.",
+     "Ask at the desk first — most things are behind it within the hour. If you have already gone home, email us a description and which class they were in and we will check the lost property box before it is cleared."),
+    ("How do I update my email, phone number or card?",
+     "You can change all three yourself in your membership account. If you cannot get in, email <a href=\"mailto:support@labyrinth.vision\">support@labyrinth.vision</a> from the address we have on file and we will fix it from our side."),
+    ("I need help with the Cornerman timer.",
+     "Cornerman has its own support page at <a href=\"https://cornerman.app/support\" target=\"_blank\" rel=\"noopener noreferrer\">cornerman.app/support</a>, which is the fastest route. Anything it does not answer can come to <a href=\"mailto:support@labyrinth.vision\">support@labyrinth.vision</a> and reaches the same people."),
+    ("I run a gym and want Cornerman showing our name.",
+     "That is what the paid tier does — your logo and colours on unlimited screens for one price. Everything about it is at <a href=\"https://cornerman.app\" target=\"_blank\" rel=\"noopener noreferrer\">cornerman.app</a>. You do not need to be a Labyrinth member and you do not need to be in Texas."),
+    ("Who do I talk to about a concern involving a coach or another member?",
+     "Anthony Curry, directly. Email <a href=\"mailto:support@labyrinth.vision\">support@labyrinth.vision</a> with the word PRIVATE in the subject line and it goes to him rather than the general queue. Anything involving a child is handled the same day."),
+]
+
+
+def render_support():
+    url = SITE + "/support"
+
+    routes = [
+        ("Membership, billing and bookings",
+         "Holds, cancellations, a charge that looks wrong, a class you cannot book. Email is faster than the desk for anything with a date or an amount in it.",
+         "mailto:support@labyrinth.vision"),
+        ("At the academy",
+         "Timetable, what to bring, lost property, coming back after an injury, or a question about which class your child belongs in.",
+         "/schedule"),
+        ("Cornerman, the round timer",
+         "The free Apple TV app and the browser timer. Its own support page answers most of it; anything left comes to the same inbox.",
+         "https://cornerman.app/support"),
+    ]
+    cards = "\n".join(
+        '      <a href="%s"%s class="prog-sibling"><div class="prog-sibling__title">%s</div>'
+        '<div class="prog-sibling__desc">%s</div></a>'
+        % (href, ' target="_blank" rel="noopener noreferrer"' if href.startswith("http") else "", title, desc)
+        for title, desc, href in routes)
+
+    head = HEAD % {
+        "title": "Support — Labyrinth BJJ &amp; Cornerman",
+        "description": "Help with a Labyrinth BJJ membership, billing or bookings, and support for the Cornerman round timer. Email support@labyrinth.vision or call (281) 393-7983.",
+        "url": url,
+        "og_title": "Support — Labyrinth BJJ",
+        "image": SITE + "/assets/og-image.jpg",
+        "schema": "\n".join([
+            jsonld(crumb_schema([("Support", "/support")])),
+            jsonld(faq_schema(SUPPORT_FAQS)),
+            jsonld({"@context": "https://schema.org", "@type": "ContactPage",
+                    "name": "Support — Labyrinth BJJ", "url": url,
+                    "mainEntity": {
+                        "@type": "Organization", "name": "Labyrinth BJJ", "url": SITE,
+                        "email": "support@labyrinth.vision",
+                        "contactPoint": [{
+                            "@type": "ContactPoint", "contactType": "customer support",
+                            "email": "support@labyrinth.vision", "telephone": "+1-281-393-7983",
+                            "areaServed": "US", "availableLanguage": "English",
+                        }],
+                    }}),
+        ]),
+    }
+
+    return "\n".join([head, NAV, crumbs([("Support", "/support")]), """
+<header class="prog-hero">
+  <div class="container">
+    <p class="section-label">Help</p>
+    <h1 class="prog-hero__title">Support</h1>
+    <p class="prog-hero__lead">Everything Labyrinth, on one page &mdash; the academy in Fulshear and the Cornerman timer that came out of it. One address reaches both: <a href="mailto:support@labyrinth.vision">support@labyrinth.vision</a>.</p>
+    <div class="prog-hero__cta">
+      <a href="mailto:support@labyrinth.vision" class="btn btn--gold">Email Support</a>
+      <a href="tel:2813937983" class="btn btn--ghost">Call (281) 393-7983</a>
+    </div>
+    <div class="prog-facts">
+      <div class="prog-fact"><div class="prog-fact__label">Email</div><div class="prog-fact__value">support@<wbr>labyrinth.vision</div></div>
+      <div class="prog-fact"><div class="prog-fact__label">Phone</div><div class="prog-fact__value">(281) 393-7983</div></div>
+      <div class="prog-fact"><div class="prog-fact__label">We answer within</div><div class="prog-fact__value"><em>1</em> business day</div></div>
+      <div class="prog-fact"><div class="prog-fact__label">Urgent</div><div class="prog-fact__value">Call, don&rsquo;t email</div></div>
+    </div>
+  </div>
+</header>
+
+<section class="prog-section">
+  <div class="container">
+    <div class="fade-in">
+      <p class="section-label">Where to start</p>
+      <h2 class="section-title section-title--lg">WHAT DO YOU NEED?</h2>
+    </div>
+    <div class="prog-siblings stagger">
+%(cards)s
+    </div>
+  </div>
+</section>
+
+<section class="prog-section prog-section--surface">
+  <div class="container">
+    <div class="fade-in">
+      <p class="section-label">In person</p>
+      <h2 class="section-title section-title--lg">COME AND ASK</h2>
+    </div>
+    <div class="prog-prose fade-in">
+      <p>The desk is staffed through every class. If you are already coming in, asking there is almost always quicker than writing to us &mdash; most things people email about get settled in a minute at the front of the mat.</p>
+      <p><strong>6615 West Cross Creek Bend Lane, Suite #400, Fulshear, TX 77441.</strong> Monday to Friday 6:30 AM to 9:00 PM, Saturday 9:00 AM to 2:00 PM, Sunday 10:30 AM to 2:00 PM. The <a href="/schedule">full timetable</a> shows which classes are running when you plan to arrive.</p>
+      <p>Anything time-critical &mdash; you are outside with a locked door, a child has not been collected, somebody is hurt &mdash; call. Email is checked through the day but it is not a pager.</p>
+    </div>
+  </div>
+</section>
+
+<section class="prog-section">
+  <div class="container">
+    <div class="fade-in">
+      <p class="section-label">The app</p>
+      <h2 class="section-title section-title--lg">CORNERMAN</h2>
+    </div>
+    <div class="prog-prose fade-in">
+      <p>Cornerman is the round timer we built for our own wall and then put on the App Store. It runs free in a browser on any screen you already own &mdash; a smart TV, a Fire Stick, an old laptop &mdash; and there is a free dedicated app for Apple TV. It works offline once loaded, needs no account, and collects nothing.</p>
+      <p>Support, setup and the paid branding tier all live on its own site: <a href="https://cornerman.app" target="_blank" rel="noopener noreferrer">cornerman.app</a>. Its <a href="https://cornerman.app/support" target="_blank" rel="noopener noreferrer">support page</a> is the fastest route for anything app-specific, and its <a href="https://cornerman.app/privacy" target="_blank" rel="noopener noreferrer">privacy policy</a> covers what it does and does not store.</p>
+    </div>
+    <div class="prog-siblings stagger">
+      <a href="https://cornerman.app" target="_blank" rel="noopener noreferrer" class="prog-sibling"><div class="prog-sibling__title">cornerman.app</div><div class="prog-sibling__desc">The timer, the Apple TV app, and gym branding</div></a>
+      <a href="/privacy-policy" class="prog-sibling"><div class="prog-sibling__title">Privacy policy</div><div class="prog-sibling__desc">What this site and our membership records hold</div></a>
+    </div>
+  </div>
+</section>
+
+<section class="faq">
+  <div class="container container--narrow">
+    <div class="fade-in">
+      <p class="section-label">Common ones</p>
+      <h2 class="section-title section-title--lg">QUESTIONS WE GET</h2>
+    </div>
+    <div class="faq__list stagger">
+%(faqs)s
+    </div>
+  </div>
+</section>""" % {"cards": cards, "faqs": faq_block(SUPPORT_FAQS)},
+        TAIL % {"footer": FOOTER}])
+
+
 def render_coach(c):
     url = "%s/coaches/%s" % (SITE, c["slug"])
     plain = re.sub(r"&\w+;", " ", c["name"]).strip()
@@ -848,6 +987,9 @@ def main():
     with open(os.path.join(ROOT, "pricing.html"), "w", encoding="utf-8") as fh:
         fh.write(render_pricing())
     print("wrote pricing.html")
+    with open(os.path.join(ROOT, "support.html"), "w", encoding="utf-8") as fh:
+        fh.write(render_support())
+    print("wrote support.html")
 
     out = os.path.join(ROOT, "coaches")
     if not os.path.isdir(out):

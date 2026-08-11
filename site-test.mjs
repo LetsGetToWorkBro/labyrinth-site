@@ -32,7 +32,8 @@ const posts = readdirSync(join(ROOT,'blog')).filter(f=>f.endsWith('.html')&&f!==
 const programs = readdirSync(join(ROOT,'programs')).filter(f=>f.endsWith('.html')&&f!=='index.html').map(f=>'/programs/'+f.replace('.html',''))
 const areas = readdirSync(join(ROOT,'areas')).filter(f=>f.endsWith('.html')&&f!=='index.html').map(f=>'/areas/'+f.replace('.html',''))
 const coaches = readdirSync(join(ROOT,'coaches')).filter(f=>f.endsWith('.html')&&f!=='index.html').map(f=>'/coaches/'+f.replace('.html',''))
-const pages = ['/', '/blog/', '/programs/', '/areas/', '/coaches/', '/schedule', '/pricing', ...posts, ...programs, ...areas, ...coaches]
+const pages = ['/', '/blog/', '/programs/', '/areas/', '/coaches/', '/schedule', '/pricing',
+  '/support', '/privacy-policy', ...posts, ...programs, ...areas, ...coaches]
 const broken = []
 for (const path of pages) {
   const r = await page.goto('http://localhost:4620'+path, { waitUntil:'domcontentloaded' })
@@ -46,7 +47,7 @@ for (const path of pages) {
   }
 }
 check('L1 no broken internal links', broken.length === 0, '\n    ' + broken.slice(0,8).join('\n    '))
-check('L1 all 41 pages served 200', pages.length === 41, 'pages: ' + pages.length)
+check('L1 all 43 pages served 200', pages.length === 43, 'pages: ' + pages.length)
 
 // ── L1b: every program page carries the schema and the canonical it exists for ──
 // A program page whose Service block is missing is still a page, and still
@@ -124,12 +125,12 @@ const fakeAddress = areas.filter(p => {
 check('L1g no area page invents a location', fakeAddress.length === 0, fakeAddress.join(', '))
 
 // ── L1h: the generated pages match their generator ──
-const genBefore = ['schedule.html','pricing.html','coaches/index.html',
+const genBefore = ['schedule.html','pricing.html','support.html','coaches/index.html',
   ...coaches.map(c=>c.slice(1)+'.html')].map(f=>readFileSync(join(ROOT,f),'utf8'))
 execFileSync('python3', [join(ROOT,'scripts/build_pages.py')], { cwd: ROOT, stdio: 'ignore' })
-const genAfter = ['schedule.html','pricing.html','coaches/index.html',
+const genAfter = ['schedule.html','pricing.html','support.html','coaches/index.html',
   ...coaches.map(c=>c.slice(1)+'.html')].map(f=>readFileSync(join(ROOT,f),'utf8'))
-check('L1h schedule/pricing/coaches match scripts/build_pages.py',
+check('L1h schedule/pricing/support/coaches match scripts/build_pages.py',
   genBefore.every((b,i)=>b===genAfter[i]), 'run: python3 scripts/build_pages.py')
 
 // ── L1i: the timetable has one source ──
