@@ -251,6 +251,67 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
     results.map(r => r.note).join(' | '))
 }
 
+// ── L1m: nothing in the sitemap is marked noindex ──
+// A sitemap says "please index these" and a robots meta says "do not index
+// this". Submitting both for one URL is an error Search Console reports, and
+// it is easy to do by adding a legal page to the sitemap for tidiness.
+{
+  const sm = readFileSync(join(ROOT,'sitemap.xml'),'utf8')
+  const locs = [...sm.matchAll(/<loc>(.*?)<\/loc>/g)].map(m=>m[1])
+  const conflicts = []
+  for (const f of [...readdirSync(ROOT).filter(x=>x.endsWith('.html')),
+                   ...readdirSync(join(ROOT,'review')).map(x=>'review/'+x)]) {
+    let html; try { html = readFileSync(join(ROOT,f),'utf8') } catch { continue }
+    if (!/name="robots"[^>]*noindex/.test(html)) continue
+    const canon = html.match(/rel="canonical" href="([^"]*)"/)
+    if (canon && locs.includes(canon[1])) conflicts.push(f)
+  }
+  check('L1m no noindex page is listed in sitemap.xml', conflicts.length === 0, conflicts.join(', '))
+}
+
+// ── L1n: the booking dialog is usable without a mouse ──
+// The front page ships its own overlay in the markup, so anything applied only
+// where the overlay is built missed the page most people book from.
+{
+  await page.goto('http://localhost:4620/', { waitUntil:'networkidle' })
+  await page.evaluate(() => window.LabyrinthBooking.openPicker())
+  await page.waitForTimeout(400)
+  const d = await page.evaluate(() => {
+    const ov = document.getElementById('bookingOverlay')
+    return { role: ov?.getAttribute('role'), modal: ov?.getAttribute('aria-modal'),
+             named: !!(ov?.getAttribute('aria-label') || ov?.getAttribute('aria-labelledby')),
+             focusInside: ov?.contains(document.activeElement) }
+  })
+  check('L1n booking dialog announces itself and takes focus',
+    d.role === 'dialog' && d.modal === 'true' && d.named && d.focusInside, JSON.stringify(d))
+
+  // Tab must not walk out of an open dialog.
+  await page.keyboard.press('Shift+Tab')
+  const stillIn = await page.evaluate(() =>
+    document.getElementById('bookingOverlay').contains(document.activeElement))
+  check('L1n tab stays inside the open dialog', stillIn)
+
+  await page.keyboard.press('Escape')
+  await page.waitForTimeout(250)
+  const closed = await page.evaluate(() =>
+    !document.getElementById('bookingOverlay').classList.contains('open'))
+  check('L1n escape closes it', closed)
+}
+
+// ── L1o: every page offers a way past the nav ──
+{
+  const missing = []
+  for (const path of ['/', '/schedule', '/coaches/', '/programs/', '/areas/', '/blog/',
+                      '/support', '/blog/benefits-of-bjj-for-kids']) {
+    await page.goto('http://localhost:4620'+path, { waitUntil:'domcontentloaded' })
+    const ok = await page.evaluate(() => !!document.querySelector('.skip-link')
+      && document.querySelectorAll('main').length === 1)
+    if (!ok) missing.push(path)
+  }
+  check('L1o skip link and a single main landmark on every page type',
+    missing.length === 0, missing.join(', '))
+}
+
 // ── L2: no .html blog links survive ──
 await page.goto('http://localhost:4620/blog/', { waitUntil:'domcontentloaded' })
 const dotHtml = await page.$$eval('a[href]', as => as.map(a=>a.getAttribute('href')).filter(h=>h && /[a-z0-9-]+\.html/.test(h)))

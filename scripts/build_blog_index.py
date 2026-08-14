@@ -111,7 +111,7 @@ HEAD = """<!DOCTYPE html>
 <link rel="stylesheet" href="blog.css">
 <link rel="stylesheet" href="../booking.css">
 
-<title>Blog | Labyrinth BJJ: Kids &amp; Adult BJJ in Fulshear, TX</title>
+<title>Blog: Kids &amp; Adult BJJ in Fulshear, TX | Labyrinth BJJ</title>
 <meta name="description" content="%(description)s">
 <link rel="canonical" href="https://labyrinth.vision/blog/">
 <meta property="og:title" content="Blog | Labyrinth BJJ">
@@ -126,6 +126,7 @@ HEAD = """<!DOCTYPE html>
 %(schema)s
 </head>
 <body>
+<a href="#main" class="skip-link">Skip to main content</a>
 
 <!-- Navigation -->
 <nav class="blog-nav">
@@ -141,9 +142,13 @@ HEAD = """<!DOCTYPE html>
     </div>
   </div>
 </nav>
+
+<main id="main">
 """
 
 FOOT = """
+</main>
+
   <!-- Footer -->
   <footer class="blog-footer">
     <div class="blog-footer__inner">

@@ -60,7 +60,8 @@ NAV_LINKS = [
     ("/#contact", "Contact"),
 ]
 
-NAV = """<nav class="nav" id="nav" role="navigation" aria-label="Main navigation">
+NAV = """<a href="#main" class="skip-link">Skip to main content</a>
+<nav class="nav" id="nav" role="navigation" aria-label="Main navigation">
   <div class="nav__inner">
     <a href="/" class="nav__logo" aria-label="Labyrinth BJJ home">
       <img src="/assets/logo-maze-transparent.png" alt="Labyrinth BJJ" class="nav__logo-img" width="36" height="36">
@@ -83,7 +84,10 @@ NAV = """<nav class="nav" id="nav" role="navigation" aria-label="Main navigation
 <div class="nav__mobile" id="mobileNav" role="navigation" aria-label="Mobile navigation">
 %(mobile)s
   <a data-book-trial href="/#book" class="nav__cta">Try a Free Class</a>
-</div>""" % {
+</div>
+
+<main id="main">
+""" % {
     "links": "\n".join('      <a href="%s" class="nav__link">%s</a>' % (h, t) for h, t in NAV_LINKS),
     "mobile": "\n".join('  <a href="%s">%s</a>' % (h, t) for h, t in NAV_LINKS),
     "phone": PHONE,
@@ -134,7 +138,8 @@ HEAD = """<!DOCTYPE html>
 <body>
 """
 
-TAIL = """
+TAIL = """</main>
+
 %(footer)s
 
 <script src="/app.js"></script>
@@ -333,7 +338,7 @@ PROGRAMS = [
         "nav_name": "Competition Team",
         "name": "BJJ Competition Team",
         "h1": "The Labyrinth Competition Team",
-        "title": "BJJ Competition Team in Fulshear, TX: IBJJF, ADCC & JJWL | Labyrinth BJJ",
+        "title": "Competition Team: IBJJF, ADCC & JJWL | Labyrinth BJJ Fulshear",
         "og_title": "BJJ Competition Team: #1 Ranked Academy in Texas",
         "description": "BJJ competition training in Fulshear, TX for kids, teens and adults. IBJJF, ADCC and JJWL. #1 ranked academy in Texas, #9 nationally.",
         "eyebrow": "#1 in Texas · #9 nationally",
@@ -490,7 +495,7 @@ PROGRAMS = [
         "nav_name": "Youth Wrestling",
         "name": "Youth Wrestling",
         "h1": "Youth Wrestling in Fulshear",
-        "title": "Youth Wrestling Classes in Fulshear, TX (Ages 7–17) | Labyrinth BJJ",
+        "title": "Youth Wrestling in Fulshear, TX (Ages 7–17) | Labyrinth BJJ",
         "og_title": "Youth Wrestling in Fulshear, TX: Ages 7 to 17",
         "description": "Youth wrestling in Fulshear, TX for ages 7–17, coached by a Texas National Team wrestler. Three sessions a week, no experience needed.",
         "eyebrow": "Ages 7–17",
@@ -878,7 +883,7 @@ def render_hub():
     }
 
     head = HEAD % {
-        "title": "Programs at Labyrinth BJJ: Fulshear, TX | Kids & Adult BJJ, Wrestling",
+        "title": "Programs: Kids & Adult BJJ, Wrestling | Labyrinth BJJ Fulshear",
         "description": "Every program at Labyrinth BJJ, Fulshear TX: kids BJJ ages 3–15, adult Gi and No-Gi, competition team, wrestling and strength classes.",
         "url": url,
         "og_title": "Programs at Labyrinth BJJ: Fulshear, TX",

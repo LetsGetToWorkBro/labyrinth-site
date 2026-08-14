@@ -660,7 +660,7 @@ def render_support():
         for title, desc, href in routes)
 
     head = HEAD % {
-        "title": "Support: Labyrinth BJJ &amp; Cornerman",
+        "title": "Support | Labyrinth BJJ &amp; Cornerman",
         "description": "Help with a Labyrinth BJJ membership, billing or bookings, and support for the Cornerman round timer. Email support@labyrinth.vision or call (281) 393-7983.",
         "url": url,
         "og_title": "Support: Labyrinth BJJ",
@@ -915,8 +915,8 @@ def render_coach_hub():
     cards += [coach_card(n, r, rk, b, p, bio) for n, r, rk, b, p, bio in OTHER_COACHES]
 
     head = HEAD % {
-        "title": "Our Coaches: Black Belt Instructors in Fulshear, TX | Labyrinth BJJ",
-        "description": "The instructors at Labyrinth BJJ in Fulshear, TX: three black belts, two brown belts, a Texas National Team wrestler and three coaches of the kids classes. Meet the people who teach the classes.",
+        "title": "Our Coaches: Black Belt Instructors in Fulshear | Labyrinth BJJ",
+        "description": "The instructors at Labyrinth BJJ in Fulshear, TX: three black belts, two brown belts, a Texas National Team wrestler and three coaches of the kids classes.",
         "url": url, "og_title": "The Coaches at Labyrinth BJJ, Fulshear TX",
         "image": SITE + "/assets/og-image.jpg",
         "schema": "\n".join([

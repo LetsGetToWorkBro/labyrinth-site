@@ -131,12 +131,45 @@
   var DAY_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   var MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-  function getNextDayDate(dayAbbr) {
+  /* How long before a class we will still offer it today. Enough to read the
+     email, find the place and arrive the ten minutes early we ask for. */
+  var SAME_DAY_CUTOFF_MINS = 90;
+
+  /* Now, on the academy's clock rather than the visitor's.
+
+     Every decision below is about Fulshear's day and Fulshear's hour. Somebody
+     browsing from California at 3pm is already past a 4:45 class here, and
+     somebody in Tokyo is a day ahead outright. */
+  function centralNow() {
+    var parsed = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }));
+    return isNaN(parsed) ? new Date() : parsed;
+  }
+
+  function minutesOfDay(timeStr) {
+    var m = /^(\d{1,2}):(\d{2})\s*([AP])M$/i.exec(String(timeStr || '').trim());
+    if (!m) return null;
+    var h = parseInt(m[1], 10) % 12;
+    if (/p/i.test(m[3])) h += 12;
+    return h * 60 + parseInt(m[2], 10);
+  }
+
+  /* The next date this class runs.
+
+     It used to send every same-day booking a week out: "always next week for
+     same day". Somebody looking at the timetable on a Friday afternoon and
+     picking Friday 4:45 was booked for the Friday after, which is not what
+     they asked for and loses the academy the trial they were ready to attend.
+     Today counts when there is still time to get here. */
+  function getNextDayDate(dayAbbr, timeStr) {
     var target = DAY_MAP[dayAbbr];
     if (target === undefined) return new Date();
-    var now = new Date();
+    var now = centralNow();
     var diff = (target - now.getDay() + 7) % 7;
-    if (diff === 0) diff = 7; // always next week for same day
+    if (diff === 0) {
+      var starts = minutesOfDay(timeStr);
+      var nowMins = now.getHours() * 60 + now.getMinutes();
+      if (starts === null || starts - nowMins < SAME_DAY_CUTOFF_MINS) diff = 7;
+    }
     var next = new Date(now);
     next.setDate(now.getDate() + diff);
     return next;
@@ -176,20 +209,59 @@
 
   // ── Booking overlay / modal references ──
   var bookingOverlay = document.getElementById('bookingOverlay');
+
+  /* A dialog has to say it is one. Without the role and the label a screen
+     reader announces nothing when this opens, and without aria-modal it goes
+     on reading the page underneath as though the modal were not there.
+     Set here rather than where the overlay is built, because the front page
+     ships one in its markup and ensureOverlay() returns early for it: the
+     page most people book from was the one page that missed them. */
+  if (bookingOverlay) {
+    bookingOverlay.setAttribute('role', 'dialog');
+    bookingOverlay.setAttribute('aria-modal', 'true');
+    if (!bookingOverlay.getAttribute('aria-label'))
+      bookingOverlay.setAttribute('aria-label', 'Book a free class');
+  }
   var bookingContent = document.getElementById('bookingContent');
   var bookingCloseBtn = document.getElementById('bookingClose');
 
   // Store last form data for retry
   var lastBookingData = null;
 
+  var FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])';
+  var returnFocusTo = null;
+
+  function focusablesInModal() {
+    return [].slice.call(bookingOverlay.querySelectorAll(FOCUSABLE))
+      .filter(function (el) { return el.offsetParent !== null; });
+  }
+
   function openBookingModal() {
+    /* Where the keyboard was, so it can be put back. Opening a dialog and
+       leaving focus on the page behind it means a keyboard user tabs through
+       the whole site before reaching the form they just asked for. */
+    returnFocusTo = document.activeElement;
     bookingOverlay.classList.add('open');
     document.body.style.overflow = 'hidden';
+    /* Next frame, not this one. The overlay fades in, so at the moment the
+       class goes on it is still visibility:hidden and the browser refuses to
+       focus anything inside it. */
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        if (!bookingOverlay.classList.contains('open')) return;
+        var items = focusablesInModal();
+        // [1] skips the close button: the first useful control is the point.
+        var first = items[1] || items[0];
+        if (first) first.focus();
+      });
+    });
   }
 
   function closeBookingModal() {
     bookingOverlay.classList.remove('open');
     document.body.style.overflow = '';
+    if (returnFocusTo && document.contains(returnFocusTo)) returnFocusTo.focus();
+    returnFocusTo = null;
     // The front page also wants its mobile nav shut. Said as an event, because
     // this file is loaded on pages that have no mobile nav at all.
     document.dispatchEvent(new CustomEvent('labyrinth:booking-closed'));
@@ -202,9 +274,17 @@
     });
   }
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && bookingOverlay && bookingOverlay.classList.contains('open')) {
-      closeBookingModal();
-    }
+    if (!bookingOverlay || !bookingOverlay.classList.contains('open')) return;
+    if (e.key === 'Escape') { closeBookingModal(); return; }
+    // Keep Tab inside the dialog. aria-modal hides the rest of the page from a
+    // screen reader but does nothing to stop the Tab key walking out of it.
+    if (e.key !== 'Tab') return;
+    var items = focusablesInModal();
+    if (!items.length) return;
+    var first = items[0], last = items[items.length - 1];
+    if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    else if (!bookingOverlay.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
   });
 
   var lastBookingData = null;
@@ -310,7 +390,7 @@
 
   // ── Render State B: Booking Form ──
   function showBookingForm(className, classType, dayAbbr, timeStr) {
-    var nextDate = getNextDayDate(dayAbbr);
+    var nextDate = getNextDayDate(dayAbbr, timeStr);
     var dateStr = formatDate(nextDate);
     var dayFull = dayAbbrToFull(dayAbbr);
 
@@ -467,7 +547,7 @@
     html += '</div>';
     html += '<div class="booking-kidstrial-classes">';
     KIDS_TRIAL_CLASSES.forEach(function (cls, i) {
-      var when = formatDate(getNextDayDate(cls.day));
+      var when = formatDate(getNextDayDate(cls.day, cls.time));
       html += '<div class="booking-kidstrial-class">';
       html += '<div class="booking-kidstrial-class__info"><span class="booking-kidstrial-class__name">' + cls.name + '</span>';
       html += '<span class="booking-kidstrial-class__time">' + cls.time + ', ' + cls.type + '</span>';

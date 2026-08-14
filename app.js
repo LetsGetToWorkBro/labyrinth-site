@@ -979,7 +979,6 @@
   // Retired 28 July 2026. Bookings now go to the CRM via sendToCrm(); this is
   // kept only so the Apps Script can be re-pointed if anything needs rolling
   // back. Nothing reads it.
-  var LEGACY_GAS_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwybO9_NBFjSYmpDWVjM0TloiyQl5-oI7UZxgAHDILYHjhez8RUp7ncOgwKLoEHa6kj/exec';
 
   // The class tables and date helpers moved to booking.js with the modal.
   // schedule-check.mjs reads them from there.
