@@ -539,7 +539,7 @@ OTHER_COACHES = [
      "Over a decade of training forged into sharp no-gi technique."),
     ("Jake Maronge", "Instructor", "Brown Belt &middot; 9 Yrs", "brown", "coach-jake",
      "Leads the Wednesday early morning gi class."),
-    ("Jess Mosizek", "Kids Coach", "Blue Belt &middot; 2+ Yrs", "blue", "coach-jess",
+    ("Jess Mosizek", "Kids Coach", "Blue Belt &middot; 3+ Yrs", "blue", "coach-jess",
      "A seasoned competitor in JJWL and IBJJF tournaments. She helps coach both kids classes, ages 3 to 6 and 7 to 12, and brings 20 years of experience teaching children."),
     ("Emma &ldquo;Armbar&rdquo;", "Assistant Coach", "Yellow/White Belt &middot; 4+ Yrs",
      "yellowwhite", "coach-emma",
