@@ -981,6 +981,10 @@ body {
 }
 
 /* Individual schedule bar */
+/* min-width:0 is load-bearing. This row is a grid item, so its automatic
+   minimum is its max-content width, and the Book button does not shrink —
+   the row therefore refused to go below about 297px and pushed the whole
+   page sideways on a 320px screen. */
 .type-sched-bar {
   display: flex;
   align-items: center;
@@ -988,6 +992,7 @@ body {
   padding: 10px 0;
   border-bottom: 1px solid var(--border);
   font-size: 14px;
+  min-width: 0;
 }
 .type-sched-bar:last-child {
   border-bottom: none;
@@ -1084,6 +1089,26 @@ body {
   background: rgba(231, 76, 60, 0.15);
   color: var(--red);
   flex-shrink: 0;
+}
+
+/* Below this the day, time, button and class name cannot share one line
+   without truncating the name to a couple of characters, and the name is the
+   part carrying the information. Day, time and button keep the first line;
+   the name takes the second in full. */
+@media (max-width: 420px) {
+  .type-sched-bar { flex-wrap: wrap; row-gap: 2px; }
+  .type-sched-bar__day  { order: 1; }
+  .type-sched-bar__time { order: 2; }
+  .type-sched-bar__book,
+  .type-sched-bar__trial-badge,
+  .type-sched-bar__badge-adv { order: 3; margin-left: auto; }
+  .type-sched-bar__name {
+    order: 4;
+    flex: 1 0 100%;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
 }
 
 /* ===== COMPETITION / STATS SECTION ===== */
@@ -2665,10 +2690,15 @@ body {
   margin-bottom: var(--space-4);
 }
 
+/* Same automatic-minimum trap as the schedule row: a grid item will not go
+   below its content's intrinsic width, and an <input> asserts a default one
+   of its own regardless of its container. Without both of these the contact
+   form ran ~286px wide and scrolled the page sideways at 320. */
 .form-group {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+  min-width: 0;
 }
 
 .form-group--full {
@@ -2685,6 +2715,8 @@ body {
 .form-group input,
 .form-group select,
 .form-group textarea {
+  width: 100%;
+  min-width: 0;
   background: var(--bg);
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
