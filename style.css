@@ -3148,7 +3148,12 @@ body {
   .coach-card:not(.coach-card--featured) {
     grid-column: span 1;
   }
-  .coach-card:not(.coach-card--featured):last-child {
+  /* A last card with no partner looks better centred than left-aligned in a
+     half-empty row. It only has no partner when the roster is even: the head
+     coach takes a full row here, so the rest pair off and the odd one out is
+     the last of an even total. Without the parity guard this fires on every
+     roster and strands the last two coaches on separate rows each. */
+  .coach-card:not(.coach-card--featured):last-child:nth-child(even) {
     grid-column: 1 / -1;
     max-width: 280px;
     margin: 0 auto;

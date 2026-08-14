@@ -297,9 +297,24 @@
 /* ===== COACH ROW ===== */
 .prog-coaches {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--space-5);
   margin-top: var(--space-10);
+}
+
+/* style.css spans every non-featured coach card across two columns, which is
+   right for the front page's six-column grid and wrong here — with auto-fit
+   it silently halved this grid to two cards a row. Three across divides the
+   roster evenly and keeps the pairs that belong together on one row. */
+.prog-coaches .coach-card {
+  grid-column: auto;
+}
+
+/* Three across or one. A two-column step would put the ninth coach alone on
+   a row of her own, away from the eighth, and the last two on this roster are
+   the pair that most belongs side by side. */
+@media (max-width: 720px) {
+  .prog-coaches { grid-template-columns: 1fr; }
 }
 
 /* ===== CLOSING CTA ===== */
@@ -544,12 +559,7 @@
 .price-extra__note { font-size: 0.875rem; color: var(--text-muted); margin-top: var(--space-2); line-height: 1.55; }
 
 /* ── /coaches ── */
-.prog-coaches {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: var(--space-5);
-  margin-top: var(--space-10);
-}
+/* .prog-coaches is defined once, higher up, with its column counts. */
 
 .coach-card__link {
   display: inline-block;
