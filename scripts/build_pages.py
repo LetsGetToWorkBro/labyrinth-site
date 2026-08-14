@@ -539,6 +539,8 @@ OTHER_COACHES = [
      "Over a decade of training forged into sharp no-gi technique."),
     ("Jake Maronge", "Instructor", "Brown Belt &middot; 9 Yrs", "brown", "coach-jake",
      "Leads the Wednesday early morning gi class."),
+    ("Jess Mosizek", "Kids Coach", "Blue Belt &middot; 2+ Yrs", "blue", "coach-jess",
+     "Coaches both kids classes, the 3&ndash;6s and the 7&ndash;12s. Twenty years teaching children, and competes in JJWL and IBJJF."),
     ("Emma &ldquo;Armbar&rdquo;", "Assistant Coach", "Yellow/White Belt &middot; 4+ Yrs",
      "yellowwhite", "coach-emma",
      "Pan American gold medalist with over 100 competition wins by armbar. Four years training, three of them helping coach."),
@@ -549,7 +551,7 @@ OTHER_COACHES = [
 
 
 # Degrees on the tab, by coach. Only the ones who have them.
-STRIPES = {"coach-emma": 1, "coach-hadley": 4}
+STRIPES = {"coach-jess": 2, "coach-emma": 1, "coach-hadley": 4}
 
 
 def plain(name):
@@ -879,7 +881,7 @@ def render_coach(c):
     </div>
     <div class="prog-siblings stagger">
 %(others)s
-      <a href="/coaches/" class="prog-sibling"><div class="prog-sibling__title">All eight coaches</div><div class="prog-sibling__desc">Three black belts, two brown belts, a national-team wrestler and two competing youth assistants</div></a>
+      <a href="/coaches/" class="prog-sibling"><div class="prog-sibling__title">All nine coaches</div><div class="prog-sibling__desc">Three black belts, two brown belts, a national-team wrestler and three coaches of the kids classes</div></a>
     </div>
   </div>
 </section>
@@ -914,7 +916,7 @@ def render_coach_hub():
 
     head = HEAD % {
         "title": "Our Coaches — Black Belt Instructors in Fulshear, TX | Labyrinth BJJ",
-        "description": "The instructors at Labyrinth BJJ in Fulshear, TX: three black belts, two brown belts, a Texas National Team wrestler and two competing youth assistants. Meet the people who teach the classes.",
+        "description": "The instructors at Labyrinth BJJ in Fulshear, TX: three black belts, two brown belts, a Texas National Team wrestler and three coaches of the kids classes. Meet the people who teach the classes.",
         "url": url, "og_title": "The Coaches at Labyrinth BJJ, Fulshear TX",
         "image": SITE + "/assets/og-image.jpg",
         "schema": "\n".join([
@@ -933,7 +935,7 @@ def render_coach_hub():
   <div class="container">
     <p class="section-label">The staff</p>
     <h1 class="prog-hero__title">Who teaches you</h1>
-    <p class="prog-hero__lead">Three black belts, two brown belts, a Texas National Team wrestler, and two youth assistants who still compete. The line runs <a href="/coaches/anthony-curry">Anthony Curry</a>, black belt under Matt Leighton of Citadel BJJ in Iowa City, to <a href="/coaches/shaun-lawler">Shaun Lawler</a> &mdash; the only black belt Anthony has promoted in five years of running the academy.</p>
+    <p class="prog-hero__lead">Three black belts, two brown belts, a Texas National Team wrestler, and three coaches on the kids classes who all still compete themselves. The line runs <a href="/coaches/anthony-curry">Anthony Curry</a>, black belt under Matt Leighton of Citadel BJJ in Iowa City, to <a href="/coaches/shaun-lawler">Shaun Lawler</a> &mdash; the only black belt Anthony has promoted in five years of running the academy.</p>
     <div class="prog-hero__cta">
       <a data-book-trial href="/#book" class="btn btn--gold">Book a Free Class</a>
       <a href="/schedule" class="btn btn--ghost">See Who Teaches When</a>

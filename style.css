@@ -4671,6 +4671,17 @@ body {
   background: #1C1C1C;
 }
 
+/* Blue — the first adult colour, so it is built like the black and brown
+   bars above rather than the kids' banded ones: solid body, black tab, and
+   the degrees sit on the tab. */
+.belt-bar--blue .belt-bar__belt {
+  background: linear-gradient(90deg, #12468F 0%, #2A6BC7 100%);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+.belt-bar--blue .belt-bar__tab {
+  background: #1a1a1a;
+}
+
 /* Grey/black — the third of the three grey belts, built the same way. The
    tab would vanish into the belt's own black band, so it is lifted a shade
    and given a hairline; at 10px tall that is the difference between reading
