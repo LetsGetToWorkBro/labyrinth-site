@@ -192,6 +192,60 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
     /program: data\.crmProgram/.test(js) && !/program: data\.className/.test(js))
 }
 
+// ── L1k: booking from a schedule row files it under the right programme ──
+// The picker lists were only ever one way in. Most people book from the
+// timetable itself, and app.js reads the class name off the page there. It
+// used to strip the age range first, so "Kids BJJ (3-6)" arrived as "Kids
+// BJJ", matched nothing, and every schedule booking became Adult BJJ.
+//
+// This clicks the real button and reads the real request. Recomputing the
+// mapping inside the test would pass with the bug still in app.js, because the
+// bug is in how the name is read off the page, not in the mapping.
+{
+  const wanted = [
+    { match: /Kids BJJ/i, ages: '(3\u20136)', expect: 'Kids 3-6' },
+    { match: /Kids BJJ Comp/i, ages: '(7\u201312)', expect: 'Kids 7-12' },
+    { match: /Teens BJJ Comp/i, ages: '(12\u201315)', expect: 'Teens' },
+  ]
+  const results = []
+  for (const w of wanted) {
+    await page.goto('http://localhost:4620/', { waitUntil:'domcontentloaded' })
+    let sent = null
+    await page.route('**/functions/v1/book-trial', route => {
+      sent = JSON.parse(route.request().postData() || '{}')
+      return route.fulfill({ status:200, contentType:'application/json', body:'{"ok":true}' })
+    })
+    await page.waitForTimeout(200)
+    const opened = await page.evaluate(({ src, ages }) => {
+      document.querySelectorAll('.type-card').forEach(c => c.click())
+      const bar = [...document.querySelectorAll('.type-sched-bar')].find(b => {
+        const n = b.querySelector('.type-sched-bar__name')
+        const a = b.querySelector('.type-sched-bar__ages')
+        return n && a && new RegExp(src, 'i').test(n.textContent) && a.textContent.trim() === ages
+          && b.querySelector('.type-sched-bar__book')
+      })
+      if (!bar) return false
+      bar.querySelector('.type-sched-bar__book').click()
+      return true
+    }, { src: w.match.source, ages: w.ages })
+    if (opened && await page.locator('#bookingName').count()) {
+      await page.fill('#bookingName', 'Site Test')
+      await page.fill('#bookingEmail', 'test@example.com')
+      await page.fill('#bookingPhone', '2813937983')
+      await page.click('#bookingSubmitBtn')
+      await page.waitForTimeout(500)
+    }
+    await page.unroute('**/functions/v1/book-trial')
+    results.push({ want: w.expect, got: sent?.program ?? '(no request)', note: sent?.note ?? '' })
+  }
+  check('L1k booking a kids or teens class off the schedule sends its own programme',
+    results.every(r => r.got === r.want),
+    results.map(r => `${r.want} -> ${r.got}`).join('; '))
+  check('L1k the note keeps the age range the class is identified by',
+    results.every(r => /\(\d+\u2013\d+\)/.test(r.note)),
+    results.map(r => r.note).join(' | '))
+}
+
 // ── L2: no .html blog links survive ──
 await page.goto('http://localhost:4620/blog/', { waitUntil:'domcontentloaded' })
 const dotHtml = await page.$$eval('a[href]', as => as.map(a=>a.getAttribute('href')).filter(h=>h && /[a-z0-9-]+\.html/.test(h)))

@@ -1038,13 +1038,31 @@
   // the CRM call. Are in booking.js, which the blog loads too.
 
   // ── Extract context from schedule drawer bar ──
+  /* The class name as written on the schedule, age range included.
+     It used to be stripped with .replace(/\(.*\)/g,''), which turned
+     "Kids BJJ (3-6)" into "Kids BJJ". That is the one detail that says which
+     programme the class belongs to, and without it every booking made from a
+     schedule row was filed, and confirmed by email, as Adult BJJ. The badges
+     that live inside the same element still come out. */
+  function classNameFrom(nameEl) {
+    if (!nameEl) return '';
+    var clone = nameEl.cloneNode(true);
+    var badges = clone.querySelectorAll('.type-sched-bar__trial-badge, .sched-trial-badge, .type-sched-bar__badge-adv, .sched-badge-adv');
+    for (var i = 0; i < badges.length; i++) badges[i].parentNode.removeChild(badges[i]);
+    var agesEl = clone.querySelector('.type-sched-bar__ages, .sched-cell__ages, .schedule-day__ages');
+    var ages = agesEl ? agesEl.textContent.trim() : '';
+    if (agesEl) agesEl.parentNode.removeChild(agesEl);
+    var base = clone.textContent.replace(/Trials Fri & Sat/g, '').replace(/\s+/g, ' ').trim();
+    return ages ? base + ' ' + ages : base;
+  }
+
   function extractFromSchedBar(bar) {
     var dayEl = bar.querySelector('.type-sched-bar__day');
     var timeEl = bar.querySelector('.type-sched-bar__time');
     var nameEl = bar.querySelector('.type-sched-bar__name');
     var day = dayEl ? dayEl.textContent.trim() : '';
     var time = timeEl ? timeEl.textContent.trim() : '';
-    var name = nameEl ? nameEl.textContent.replace(/\(.*\)/g,'').replace(/Trials Fri & Sat/g,'').trim() : '';
+    var name = classNameFrom(nameEl);
     var type = detectType(bar);
     return { day: day, time: time, name: name, type: type };
   }
@@ -1052,7 +1070,7 @@
   // ── Extract context from schedule table cell ──
   function extractFromSchedCell(cell) {
     var nameEl = cell.querySelector('.sched-cell__name');
-    var name = nameEl ? nameEl.textContent.replace(/\(.*\)/g,'').trim() : '';
+    var name = classNameFrom(nameEl);
     var type = detectType(cell);
     // Get time from the row's first cell
     var tr = cell.closest('tr');
@@ -1094,7 +1112,7 @@
     var timeEl = classEl.querySelector('.schedule-day__time');
     var nameEl = classEl.querySelector('.schedule-day__name');
     var time = timeEl ? timeEl.textContent.trim() : '';
-    var name = nameEl ? nameEl.textContent.replace(/\(.*\)/g,'').trim() : '';
+    var name = classNameFrom(nameEl);
     var type = detectType(classEl);
     return { day: dayAbbr, time: time, name: name, type: type };
   }

@@ -74,10 +74,48 @@
      `crm` has to fail loudly here instead. */
   var CRM_PROGRAMS = ['Adult BJJ', 'Kids 3-6', 'Kids 7-12', 'Teens', 'Wrestling', 'Womens'];
 
-  function crmProgramFor(name) {
+  /**
+   * Which of the CRM's programmes a class belongs to.
+   *
+   * Not a lookup by name alone. The schedule carries far more classes than are
+   * bookable as trials, and app.js reads the name off the page, so this has to
+   * cope with anything printed on the timetable rather than only the entries
+   * above. Day and time come along because Friday 5:15 PM is two different
+   * classes and the name is what separates them.
+   */
+  function crmProgramFor(name, day, time) {
+    var norm = function (v) {
+      return String(v || '').toLowerCase().replace(/[\s\u2013\u2014_-]+/g, ' ').trim();
+    };
     var all = ADULT_CLASSES.concat(KIDS_TRIAL_CLASSES);
-    for (var i = 0; i < all.length; i++) {
-      if (all[i].name === name && CRM_PROGRAMS.indexOf(all[i].crm) !== -1) return all[i].crm;
+    var i;
+    for (i = 0; i < all.length; i++) {
+      if (norm(all[i].name) === norm(name)
+        && (!day || all[i].day === day) && (!time || all[i].time === time)) return all[i].crm;
+    }
+    for (i = 0; i < all.length; i++) {
+      if (norm(all[i].name) === norm(name)) return all[i].crm;
+    }
+    return programFromName(name);
+  }
+
+  /**
+   * The fallback, for a class that is on the timetable but not bookable here.
+   *
+   * The age range is the whole point of it: "Kids BJJ" on its own could be the
+   * 3-6 class or the 7-12 one. app.js used to strip the range before this ever
+   * saw the name, which is how a four-year-old's Friday trial was filed as an
+   * adult class.
+   */
+  function programFromName(name) {
+    var n = String(name || '').toLowerCase();
+    if (/wom[ae]n/.test(n)) return 'Womens';
+    if (/wrestl/.test(n)) return 'Wrestling';
+    if (/teen/.test(n) && !/adult/.test(n)) return 'Teens';
+    if (/kid|youth|grappl|tiny/.test(n)) {
+      var ages = n.match(/(\d{1,2})\s*[\u2013\u2014-]\s*(\d{1,2})/);
+      if (ages && parseInt(ages[2], 10) <= 6) return 'Kids 3-6';
+      return 'Kids 7-12';
     }
     return 'Adult BJJ';
   }
@@ -294,7 +332,7 @@
     // Store class info for submission
     var classInfo = {
       className: className + (typeLabel ? ', ' + typeLabel : ''),
-      crmProgram: crmProgramFor(className),
+      crmProgram: crmProgramFor(className, dayAbbr, timeStr),
       classDay: dayFull,
       classTime: timeStr,
       classDate: dateStr
@@ -465,7 +503,10 @@
     // Read by schedule-check.mjs, which compares what the site offers against
     // the CRM's timetable. Exposed so that check has one place to look.
     adultClasses: ADULT_CLASSES,
-    kidsTrialClasses: KIDS_TRIAL_CLASSES
+    kidsTrialClasses: KIDS_TRIAL_CLASSES,
+    // Exposed so a test can walk every row on the schedule and check where it
+    // would be filed, without submitting a booking for each one.
+    programFor: crmProgramFor
   };
 
   /**
