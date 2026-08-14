@@ -1,7 +1,7 @@
 # Cloudflare Pages redirects.
 #
 # These are URLs from the academy's previous website. They are still in Google's
-# index, still on old flyers, and still being crawled — Search Console reports
+# index, still on old flyers, and still being crawled: Search Console reports
 # eight of them returning 404. A 404 throws away whatever standing the URL had;
 # a 301 hands it to the page that replaced it.
 #
@@ -41,6 +41,6 @@
 
 # Cloudflare Pages already serves /blog/<slug> for /blog/<slug>.html via a 308.
 # Those .html URLs are in Google's index from the old sitemap, so they are named
-# explicitly as 301s — a permanent redirect is what tells Google to move the
+# explicitly as 301s. A permanent redirect is what tells Google to move the
 # indexing to the new URL, which a 308 does not do as clearly.
 /blog/:slug.html                /blog/:slug         301

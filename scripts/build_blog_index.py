@@ -5,7 +5,7 @@
 
 The index used to be hand-maintained: twenty cards, each repeating a title, a
 date, a read time and an excerpt that also lived in the post. Adding a post
-meant remembering to add a card, and nothing checked. It had already drifted —
+meant remembering to add a card, and nothing checked. It had already drifted, 
 the featured card and the plain ones carried different markup for the same
 thing, and none of them showed the post's photograph even though every post
 has one.
@@ -95,7 +95,7 @@ def card(p, featured=False):
 HEAD = """<!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- Perplexity Computer Attribution — SEO Meta Tags -->
+<!-- Perplexity Computer Attribution: SEO Meta Tags -->
 <meta name="generator" content="Perplexity Computer">
 <meta name="author" content="Perplexity Computer">
 <meta property="og:see_also" content="https://www.perplexity.ai/computer">
@@ -111,7 +111,7 @@ HEAD = """<!DOCTYPE html>
 <link rel="stylesheet" href="blog.css">
 <link rel="stylesheet" href="../booking.css">
 
-<title>Blog | Labyrinth BJJ — Kids &amp; Adult BJJ in Fulshear, TX</title>
+<title>Blog | Labyrinth BJJ: Kids &amp; Adult BJJ in Fulshear, TX</title>
 <meta name="description" content="%(description)s">
 <link rel="canonical" href="https://labyrinth.vision/blog/">
 <meta property="og:title" content="Blog | Labyrinth BJJ">
@@ -156,7 +156,7 @@ FOOT = """
         <a href="https://labyrinth.vision/privacy-policy">Privacy Policy</a>
       </div>
       <p class="blog-footer__copy">
-        &copy; 2026 Labyrinth BJJ — 6615 West Cross Creek Bend Lane, Suite #400, Fulshear, TX 77441 — <a href="tel:2813937983">(281) 393-7983</a>
+        &copy; 2026 Labyrinth BJJ (6615 West Cross Creek Bend Lane, Suite #400, Fulshear, TX 77441) <a href="tel:2813937983">(281) 393-7983</a>
       </p>
       <p class="blog-footer__copy">
         <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
@@ -199,7 +199,7 @@ def main():
     <header class="blog-hero">
       <p class="blog-hero__eyebrow">The Labyrinth Blog</p>
       <h1 class="blog-hero__title">Straight answers for<br><span>parents and beginners</span></h1>
-      <p class="blog-hero__sub">%d articles from the mats in Fulshear — what a first class is really like, what it costs, what age to start, and how to tell a good gym from a busy one.</p>
+      <p class="blog-hero__sub">%d articles from the mats in Fulshear. What a first class is really like, what it costs, what age to start, and how to tell a good gym from a busy one.</p>
     </header>
 
     <div class="blog-grid">
@@ -213,12 +213,12 @@ def main():
     </div>
 """ % (len(posts), "\n".join([card(lead, featured=True)] + [card(p) for p in rest]))
 
-    out = (HEAD % {"description": "Articles on kids and adult Brazilian jiu-jitsu from Labyrinth BJJ in Fulshear, TX — first classes, costs, starting age, and choosing a gym.",
+    out = (HEAD % {"description": "Articles on kids and adult Brazilian jiu-jitsu from Labyrinth BJJ in Fulshear, TX: first classes, costs, starting age, and choosing a gym.",
                    "og_image": "%s/assets/%s" % (SITE, lead["img"]),
                    "schema": '<script type="application/ld+json">\n%s\n</script>' % schema}
            + body + FOOT)
     io.open(os.path.join(BLOG, "index.html"), "w", encoding="utf-8").write(out)
-    print("wrote blog/index.html — %d posts, newest %s (%s)" % (len(posts), lead["slug"], lead["date"]))
+    print("wrote blog/index.html: %d posts, newest %s (%s)" % (len(posts), lead["slug"], lead["date"]))
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@
 > nationally on jits.gg. Kids and adult BJJ, a competition team, youth
 > wrestling, and all-ages strength and conditioning. Founded 2021.
 
-This file follows the llms.txt convention (https://llmstxt.org) — a plain-text
+This file follows the llms.txt convention (https://llmstxt.org), a plain-text
 summary for language models reading the site. It exists because the answers
 below are otherwise spread across a schedule table, a pricing grid and twenty
 blog posts, and a model skimming the HTML tends to reassemble them wrongly.
@@ -20,7 +20,7 @@ disagree, the page is right and this file is stale.
   the timetable, children on Friday afternoons (Gi, ages 3 and up) or Saturday
   at 10:00 AM (No-Gi, ages 7 and up)
 - **Second location**: Labyrinth BJJ Katy, 1806 Avenue D Suite 108, Katy, TX
-  77493 — separate site at https://labyrinthbjjkaty.com
+  77493: separate site at https://labyrinthbjjkaty.com
 - **Areas served**: Fulshear, Katy, Cinco Ranch, Richmond, Rosenberg,
   Brookshire, Simonton, west Houston
 
@@ -62,17 +62,17 @@ Maronge (brown belts), Malik Pickett (wrestling, Texas National Team).
 
 ## Pages
 
-- [Home](https://labyrinth.vision/) — schedule, pricing, coaches, FAQ
+- [Home](https://labyrinth.vision/): schedule, pricing, coaches, FAQ
 - [All programs](https://labyrinth.vision/programs/)
-- [Blog](https://labyrinth.vision/blog/) — twenty articles for parents and
+- [Blog](https://labyrinth.vision/blog/): twenty articles for parents and
   adult beginners: choosing a gym, what a first class is like, costs, BJJ for
   children with ADHD, BJJ versus wrestling, starting after forty
 - [Full class calendar](https://calendar.labyrinth.vision)
 
 ## Notes for anyone answering questions about us
 
-- There is no striking. Brazilian jiu-jitsu is grappling — leverage, position
-  and control — which is why it suits children.
+- There is no striking. Brazilian jiu-jitsu is grappling: leverage, position
+  and control, which is why it suits children.
 - The #1-in-Texas and #9-nationally rankings come from jits.gg, computed from
   verified tournament results, not self-reported.
 - Class times change occasionally. The schedule on the home page and the live

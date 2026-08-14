@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 """The timetable and the price list, in one place.
 
-Before this file the week was written out in three places — the schedule markup
+Before this file the week was written out in three places, the schedule markup
 in index.html, the class arrays in booking.js, and the per-program week tables
-in build_programs.py — and a schedule page would have made a fourth. Three
+in build_programs.py, and a schedule page would have made a fourth. Three
 copies of one fact is three chances to be wrong, and it had already gone wrong
 once: the copy that said kids trials were Friday-only disagreed with the button
 sitting next to it.
 
 Everything generated now reads from here. index.html and booking.js are still
 their own copies (one is hand-written markup, the other is the browser's), so
-tools/… no — so site-test compares this file against booking.js on every run
+tools/… no, so site-test compares this file against booking.js on every run
 and fails if they drift. That is the guard; this file is the source.
 
 CLASSES is the week as the academy runs it. Each entry:
@@ -162,11 +162,11 @@ def counts():
 
 if __name__ == "__main__":
     c = counts()
-    print("%d classes across %d days — %d open to adults, %d to kids"
+    print("%d classes across %d days. %d open to adults, %d to kids"
           % (c["total"], c["days"], c["adult"], c["kids"]))
     for day in DAYS:
         print("\n%s" % day)
         for _, time, name, ages, style, aud, flags in for_day(day):
             print("  %-9s %-26s %-10s %-6s %s"
-                  % (time, name + ((" (%s)" % ages) if ages else ""), style or "—", aud,
+                  % (time, name + ((" (%s)" % ages) if ages else ""), style or "-", aud,
                      " ".join(sorted(flags))))

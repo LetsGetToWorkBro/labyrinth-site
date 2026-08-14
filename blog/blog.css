@@ -1,5 +1,5 @@
 /* ============================================================
-   LABYRINTH BJJ — BLOG STYLESHEET (Standalone)
+   LABYRINTH BJJ, BLOG STYLESHEET (Standalone)
    Design tokens reproduced from main site.
    ============================================================ */
 
@@ -208,7 +208,7 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 /* Left-aligned, not centred. A centred masthead over a left-aligned grid of
-   cards is the thing that made this page read as a template — nothing lined
+   cards is the thing that made this page read as a template, nothing lined
    up with anything below it. */
 .blog-hero__eyebrow {
   font-family: var(--font-body);
@@ -266,7 +266,7 @@ img { max-width: 100%; height: auto; display: block; }
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
 }
 
-/* The photograph. Decorative here — the same image is the post's hero and its
+/* The photograph. Decorative here. The same image is the post's hero and its
    alt text belongs there, so this one is empty-alt and out of the tab order;
    the title beneath is the real link. */
 .blog-card__media {
@@ -430,7 +430,7 @@ img { max-width: 100%; height: auto; display: block; }
 
 @media (max-width: 720px) {
   .blog-grid { grid-template-columns: 1fr; gap: var(--space-lg); }
-  /* The featured card stops being featured — at one column there is nothing
+  /* The featured card stops being featured, at one column there is nothing
      to stand out from, and a 340px-tall photograph above a heading just
      pushes the second post off the screen. */
   .blog-card--featured { grid-template-columns: 1fr; }
@@ -529,7 +529,7 @@ img { max-width: 100%; height: auto; display: block; }
 
 /* A photograph inside the prose, with a caption.
    It breaks out past the 720px text column to the full 1120px page width,
-   because a group shot at text width is too small to make out a face — and
+   because a group shot at text width is too small to make out a face, and
    the faces are the whole reason the picture is there. The negative margins
    are calculated rather than guessed: half the difference between the two
    widths, clamped so it never pushes past the viewport on a narrow screen. */
@@ -557,7 +557,7 @@ img { max-width: 100%; height: auto; display: block; }
 }
 
 @media (max-width: 1120px) {
-  /* Below the page width there is no room to bleed into — the figure would
+  /* Below the page width there is no room to bleed into. The figure would
      run under the padding and off the edge. It sits in the column instead. */
   .article-figure {
     --figure-bleed: 0px;
@@ -842,7 +842,7 @@ img { max-width: 100%; height: auto; display: block; }
   }
 
   /* The Free Trial button used to be display:none here, which took the only
-     persistent booking control off every blog page on every phone — twenty
+     persistent booking control off every blog page on every phone. Twenty
      pages where the thing we want pressed did not exist. It is kept and made
      to fit instead: the room comes from the logo and the back-link below. */
   .blog-nav__cta {
@@ -889,7 +889,7 @@ img { max-width: 100%; height: auto; display: block; }
 
 @media (max-width: 480px) {
   /* Below 480 the wordmark goes and the mark carries the brand, which buys
-     back roughly ninety pixels — enough for the CTA to stay. "Blog" also goes:
+     back roughly ninety pixels. Enough for the CTA to stay. "Blog" also goes:
      it is the page you are on, so it is the least useful thing in the row. */
   .blog-nav__link--active {
     display: none;

@@ -2,7 +2,7 @@
  * The booking modal opens where the visitor already is.
  *
  * The flow lived in app.js, which only the front page loads, so the blog's
- * "Book a Free Trial →" pointed at labyrinth.vision/#contact — somebody who had
+ * "Book a Free Trial →" pointed at labyrinth.vision/#contact: somebody who had
  * read to the end of an article and decided to come in was sent back to the
  * front page to find the booking button themselves. Moving it into booking.js
  * fixed that, and also put the front page's own booking behind a refactor, so
@@ -82,7 +82,7 @@ const heading = (page) => page.evaluate(() =>
   (document.querySelector('#bookingContent h3') || {}).textContent || '')
 
 // ── A blog post ──────────────────────────────────────────────────────────────
-console.log('\nA blog post — the thing that was broken:')
+console.log('\nA blog post, the thing that was broken:')
 {
   const { page, ctx, errors } = await open('/blog/is-bjj-good-for-adhd-kids.html')
   check('the page loads clean', errors, [])

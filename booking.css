@@ -4,7 +4,7 @@
  * Lifted out of style.css so the blog can use it. A reader who reaches the end
  * of "Is BJJ Good for Kids with ADHD?" and decides to come in should be able to
  * book from where they are, rather than being thrown back to the front page to
- * start again — which is what "Book a Free Trial →" used to do.
+ * start again, which is what "Book a Free Trial →" used to do.
  *
  * Loaded by index.html and by every blog post, alongside booking.js.
  */

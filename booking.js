@@ -1,5 +1,5 @@
 /**
- * The free-trial booking modal — the site's one booking flow, in one file.
+ * The free-trial booking modal, the site's one booking flow, in one file.
  *
  * It used to live inside app.js, which only the front page loads. So the blog's
  * "Book a Free Trial →" could not open it and pointed at labyrinth.vision/#contact
@@ -9,7 +9,7 @@
  * front of it.
  *
  * Now index.html and all eighteen blog posts load this same file, so there is
- * still exactly one booking form, one class list and one CRM call — the
+ * still exactly one booking form, one class list and one CRM call. The
  * timetable does not get to disagree with itself.
  *
  * What is NOT in here is how the front page works out which class you clicked:
@@ -152,11 +152,11 @@
   /**
    * The academy's classes are in Fulshear, whoever is booking them.
    *
-   * The popup hands over a date and time as words — "Monday, August 3, 2026"
+   * The popup hands over a date and time as words: "Monday, August 3, 2026"
    * and "6:30 PM". Sent as-is, a server is free to read 6:30 as UTC, and a
    * visitor browsing from another state would stamp their own zone on it.
    * Neither is what the class is. So the wall-clock reading is kept exactly as
-   * written and Central's offset FOR THAT DATE is attached — not a constant,
+   * written and Central's offset FOR THAT DATE is attached, not a constant,
    * because the academy runs through both CST and CDT.
    */
   function toCentralISO(dateStr, timeStr) {
@@ -170,7 +170,7 @@
       }).formatToParts(probe).find(function (x) { return x.type === 'timeZoneName'; }).value;
       var m = /GMT([+-]\d{1,2})/.exec(label);
       if (m) offset = parseInt(m[1], 10);
-    } catch (e) { /* very old browser — CST is the safer default */ }
+    } catch (e) { /* very old browser. CST is the safer default */ }
     var pad = function (n) { return String(n).padStart(2, '0'); };
     return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate())
       + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':00'
@@ -323,8 +323,8 @@
 
     /*
      * This used to fire at a Google Apps Script by assigning to an Image src
-     * and then show success 800ms later regardless — the old comment read
-     * "Silent fail — user still sees success". A broken script was therefore
+     * and then show success 800ms later regardless. The old comment read
+     * "Silent fail, user still sees success". A broken script was therefore
      * invisible: the visitor was told they were booked and nobody was.
      *
      * It now posts to the CRM and reads the reply. showBookingError() already
@@ -337,7 +337,7 @@
       phone: data.phone,
       program: data.className,
       // They picked a real class off the schedule, so the lead arrives already
-      // at "Trial Booked" with the right time — and the confirmation email
+      // at "Trial Booked" with the right time, and the confirmation email
       // names that class instead of promising to be in touch.
       trialAt: toCentralISO(data.classDate, data.classTime),
       note: data.classDay + ' ' + data.classTime + ' \u2014 booked from the website'
@@ -426,8 +426,8 @@
   /**
    * The CRM endpoint, for anything on the site that captures a lead.
    *
-   * The contact form on the front page uses it too — it is the same Leads
-   * board — so it is exposed separately from the booking modal rather than
+   * The contact form on the front page uses it too. It is the same Leads
+   * board, so it is exposed separately from the booking modal rather than
    * being reachable only through it.
    */
   window.LabyrinthCrm = { send: sendToCrm, toCentralISO: toCentralISO };
@@ -463,8 +463,8 @@
     showClassPicker();
   });
 
-  // Someone arriving at labyrinth.vision/#book — from an old blog link, an
-  // email, or anywhere else — should land with the picker already open.
+  // Someone arriving at labyrinth.vision/#book, from an old blog link, an
+  // email, or anywhere else. Should land with the picker already open.
   if (window.location.hash === '#book') {
     showClassPicker();
   }

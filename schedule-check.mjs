@@ -1,7 +1,7 @@
 /**
  * Does this website still agree with the CRM about the timetable?
  *
- * The schedule is written into this site in four places — the desktop table,
+ * The schedule is written into this site in four places, the desktop table,
  * the mobile day cards, the Gi/No-Gi drawers on the programme cards, and
  * ADULT_CLASSES in booking.js, which is what the booking popup offers. Keeping four
  * copies in step by hand is how a class ends up advertised on the website months
@@ -12,13 +12,13 @@
  *
  *   node schedule-check.mjs
  *
- * Exits non-zero on drift, so it can gate a deploy — but it is deliberately NOT
+ * Exits non-zero on drift, so it can gate a deploy, but it is deliberately NOT
  * wired into the Cloudflare build by default. A failing check should tell
  * somebody to update the page, not stop the site from deploying at all.
  *
  * WHAT IT DOES NOT CATCH, stated plainly so nobody trusts it further than it
  * deserves: it compares distinct START TIMES per day, not individual classes.
- * Tuesday runs two classes at 5:15 PM — kids and teens — and this sees one
+ * Tuesday runs two classes at 5:15 PM (kids and teens) and this sees one
  * slot. So removing one of a pair sharing a time would pass. It catches a
  * whole slot appearing or vanishing, which is the failure that actually sends
  * somebody to a closed room; it is not a full reconciliation.
@@ -52,13 +52,18 @@ if (!classes?.length) {
 const crm = {}
 for (const c of classes) (crm[c.dayName] ??= new Set()).add(c.startLabel)
 
+/** A cell with no class in it holds nothing but a dash. It has to be the whole
+ *  cell: a real class carries a dash inside its age range ("Kids BJJ (3-6)"),
+ *  and a loose match swallows every one of them. */
+const EMPTY_CELL = /^(?:&ndash;|[-–])?$/
+
 /** day -> Set of times, as published in the desktop table. */
 const table = {}
 const rowRe = /<!-- (\d{1,2}:\d{2} [AP]M) -->\s*<tr[^>]*>([\s\S]*?)<\/tr>/g
 for (const m of html.matchAll(rowRe)) {
   const cells = [...m[2].matchAll(/<td[^>]*>([\s\S]*?)<\/td>/g)].map(x => x[1]).slice(1)
   cells.forEach((cell, i) => {
-    if (!cell.replace(/<[^>]+>/g, '').includes('—')) (table[DAYS[i + 1] ?? 'Sun'] ??= new Set()).add(m[1])
+    if (!EMPTY_CELL.test(cell.replace(/<[^>]+>/g, '').trim())) (table[DAYS[i + 1] ?? 'Sun'] ??= new Set()).add(m[1])
   })
 }
 // The table's columns run Mon..Sun, so the index maths above lands Sunday last.
@@ -112,6 +117,6 @@ for (const day of ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'
   else console.log(`  ${day} ok`)
 }
 
-console.log(problems ? `\n${problems} problem(s) — update the page, or the CRM, whichever is wrong.`
+console.log(problems ? `\n${problems} problem(s): update the page, or the CRM, whichever is wrong.`
                      : '\nThe site and the CRM agree.')
 process.exit(problems ? 1 : 0)

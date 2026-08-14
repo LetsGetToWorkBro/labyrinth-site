@@ -1,5 +1,5 @@
 /* ========================================
-   LABYRINTH BJJ — Design Tokens & Styles
+   LABYRINTH BJJ: Design Tokens & Styles
    ======================================== */
 
 :root {
@@ -982,8 +982,8 @@ body {
 
 /* Individual schedule bar */
 /* min-width:0 is load-bearing. This row is a grid item, so its automatic
-   minimum is its max-content width, and the Book button does not shrink —
-   the row therefore refused to go below about 297px and pushed the whole
+   minimum is its max-content width, and the Book button does not shrink. 
+   The row therefore refused to go below about 297px and pushed the whole
    page sideways on a 320px screen. */
 .type-sched-bar {
   display: flex;
@@ -2151,7 +2151,7 @@ body {
   text-align: center;
 }
 
-/* Schedule day cards — visible at all viewports */
+/* Schedule day cards: visible at all viewports */
 .schedule-cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -2473,7 +2473,7 @@ body {
   border-color: var(--gold) !important;
 }
 
-/* Family plan — premium elevated card */
+/* Family plan: premium elevated card */
 .pricing-card--family {
   position: relative;
   margin-top: 14px;
@@ -2834,7 +2834,7 @@ body {
   object-fit: cover;
 }
 
-/* Featured coach card (Tony & Shaun — consistent layout) */
+/* Featured coach card (Tony & Shaun: consistent layout) */
 .coach-card--featured {
   grid-column: span 2;
   display: flex;
@@ -3209,7 +3209,7 @@ body {
 /* Nav only. The desktop nav carries 12 links, a phone number and a CTA;
    measured across 1181-1920px it needs about 1260px to fit, which is well
    before the tablet layout breakpoint. Kept as its own query so raising it
-   does not drag the grid, pricing and coach layouts up with it — which is
+   does not drag the grid, pricing and coach layouts up with it, which is
    exactly what happened when it was changed in place. */
 @media (max-width: 1260px) {
   :root {
@@ -3680,7 +3680,7 @@ body {
 
 
 /* ======================================
-   SEO AUDIT OPTIMIZATIONS — March 2026
+   SEO AUDIT OPTIMIZATIONS: March 2026
    ====================================== */
 
 /* Hero: H1 now wraps both SEO text + visual ranking in one element */
@@ -3731,7 +3731,7 @@ body {
   opacity: .7;
 }
 
-/* Hide phone on small nav — it's in the mobile bottom bar instead */
+/* Hide phone on small nav. It's in the mobile bottom bar instead */
 @media (max-width: 1100px) {
   .nav__phone {
     display: none;
@@ -4141,7 +4141,7 @@ body {
   opacity: 1;
 }
 
-/* Reduced motion — disable all visual enhancements */
+/* Reduced motion. Disable all visual enhancements */
 @media (prefers-reduced-motion: reduce) {
   #hero-maze-canvas,
   #particle-canvas,
@@ -4670,7 +4670,7 @@ body {
 /* ── Strength & Conditioning ─────────────────────────────────────────────────
    A fourth category on the schedule, alongside Adults, Kids & Teens and
    Wrestling. It is all-ages, so it deliberately does not borrow the adult or
-   kids colour — it needs to read as its own thing at a glance. */
+   kids colour. It needs to read as its own thing at a glance. */
 .sched-type--sc {
   background: rgba(90, 160, 200, 0.16);
   color: #7fb9d8;
@@ -4693,7 +4693,7 @@ body {
 .schedule-trial-banner--stream a { color: #7fb9d8; text-decoration: underline; }
 .schedule-trial-banner--stream a:hover { color: #a5d2ea; }
 
-/* Yellow/White Belt — the kids rank. The stripe runs through the body of the
+/* Yellow/White Belt. The kids rank. The stripe runs through the body of the
    belt rather than sitting on the tab, so it is a gradient stop rather than a
    separate element; the tab keeps the degree stripes as it does for the
    coloured adult belts. */
@@ -4708,7 +4708,7 @@ body {
   background: #1C1C1C;
 }
 
-/* Blue — the first adult colour, so it is built like the black and brown
+/* Blue. The first adult colour, so it is built like the black and brown
    bars above rather than the kids' banded ones: solid body, black tab, and
    the degrees sit on the tab. */
 .belt-bar--blue .belt-bar__belt {
@@ -4719,7 +4719,7 @@ body {
   background: #1a1a1a;
 }
 
-/* Grey/black — the third of the three grey belts, built the same way. The
+/* Grey/black: the third of the three grey belts, built the same way. The
    tab would vanish into the belt's own black band, so it is lifted a shade
    and given a hairline; at 10px tall that is the difference between reading
    as a tab and reading as a smudge. */

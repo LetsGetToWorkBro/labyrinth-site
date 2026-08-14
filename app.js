@@ -1,5 +1,5 @@
 /* ========================================
-   LABYRINTH BJJ — Application JavaScript
+   LABYRINTH BJJ. Application JavaScript
    ======================================== */
 
 (function () {
@@ -39,7 +39,7 @@
         if (stats) applyStats(stats);
       })
       .catch(function () {
-        // Silent fail — hardcoded defaults remain
+        // Silent fail. Hardcoded defaults remain
       });
   }
 
@@ -105,7 +105,7 @@
       if (subValue) subValue.textContent = Math.round(s.submissionRate) + '%';
     }
 
-    // ── Hero title (h1) — update ranking text dynamically while preserving SEO H1 spans ──
+    // ── Hero title (h1): update ranking text dynamically while preserving SEO H1 spans ──
     var heroVisual = document.querySelector('.hero__h1-visual');
     if (heroVisual) {
       var natRank = s.nationalRank || 9;
@@ -130,7 +130,7 @@
         '+ wins. IBJJF Pan Am, ADCC, and JJWL champions \u2014 built from the ground up in Fulshear.';
     }
 
-    // ── Hero stat: "In Texas" — update state rank ──
+    // ── Hero stat: "In Texas". Update state rank ──
     updateByLabel('In Texas', s.stateRank || 1, 'heroStats');
   }
 
@@ -151,7 +151,7 @@
         athletes.forEach(function (a) { applyAthleteStats(a); });
       })
       .catch(function () {
-        // Silent fail — hardcoded defaults remain
+        // Silent fail. Hardcoded defaults remain
       });
   }
 
@@ -580,7 +580,7 @@
     requestAnimationFrame(update);
   }
 
-  // Observe counters — wait for live stats before animating so we count to the right numbers
+  // Observe counters. Wait for live stats before animating so we count to the right numbers
   function animateAllCounters(container) {
     var counters = container.querySelectorAll('[data-target]');
     counters.forEach(function (counter) {
@@ -640,7 +640,7 @@
       e.preventDefault();
 
       /*
-       * This used to hide the form and show "thanks" — and do nothing else.
+       * This used to hide the form and show "thanks", and do nothing else.
        * There was no endpoint. Every enquiry made through it was discarded, and
        * the person was told it had worked. It now goes to the CRM, and the
        * success message is shown only if the CRM says it saved.
@@ -1015,8 +1015,8 @@
     return '';
   }
 
-  // The booking modal's own screens — the picker, the class list, the form,
-  // the CRM call — are in booking.js, which the blog loads too.
+  // The booking modal's own screens. The picker, the class list, the form,
+  // the CRM call. Are in booking.js, which the blog loads too.
 
   // ── Extract context from schedule drawer bar ──
   function extractFromSchedBar(bar) {
@@ -1082,8 +1082,8 @@
 
   /* ── EVENT DELEGATION: every booking link on the page ──
      These used to be href="https://labyrinth.gymdesk.com/signup" and were
-     matched on that. None of them ever navigated there — this handler catches
-     the click and opens the modal — so the markup now says what they do:
+     matched on that. None of them ever navigated there. This handler catches
+     the click and opens the modal, so the markup now says what they do:
      href="/#book" with data-book-trial, which is also what the blog CTAs use.
      Matching on the attribute rather than on a hostname keeps the two in step. */
   document.addEventListener('click', function (e) {
@@ -1100,7 +1100,7 @@
     var link = e.target.closest('[data-book-trial], .type-sched-bar__book, .sched-book, .sched-book-mobile, .program-card__trial-btn');
     if (!link) return;
 
-    // Skip ADV buttons in desktop/mobile schedule tables — they use their own modal first
+    // Skip ADV buttons in desktop/mobile schedule tables. They use their own modal first
     if (link.classList.contains('sched-book--adv')) return;
 
     // Catch ADV book buttons in mobile drawers (type-sched-bar with badge-adv sibling)
@@ -1232,7 +1232,7 @@
               y: cy + Math.sin(a) * r
             });
           }
-          // Create openings — remove one segment per ring
+          // Create openings: remove one segment per ring
           var openSeg = (i * 3) % sides;
           for (var s = 0; s < sides; s++) {
             if (s === openSeg) continue;
@@ -1433,7 +1433,7 @@
       });
     })();
 
-    // ── 4. Section Reveal — Staggered Parallax Upgrade ──
+    // ── 4. Section Reveal, Staggered Parallax Upgrade ──
     (function initStaggerParallax() {
       var staggerEls = document.querySelectorAll('.stagger');
       staggerEls.forEach(function (el) {

@@ -2,7 +2,7 @@
  * The nav must fit at every desktop width.
  *
  * It carries 12 links, a phone number and a CTA. The gap used to be
- * clamp(12px, 1.5vw, 32px) — scaled to the VIEWPORT — while .nav__inner stayed
+ * clamp(12px, 1.5vw, 32px) (scaled to the VIEWPORT) while .nav__inner stayed
  * capped at 1200px, so a wider monitor pushed the links further past the box:
  * 82px over at 1280, 176px at 1728. On a MacBook that reads as the nav bar
  * running off the page.
@@ -44,6 +44,6 @@ for(let w=1261; w<=1920; w+=20){
   if(!worst || r.slack<worst.slack) worst={w,...r}
   if(r.slack<0) console.log(`  ${w}px  OVERFLOW by ${-r.slack}px  (avail ${r.avail}, used ${r.used})`)
 }
-console.log(`\ntightest point: ${worst.w}px — ${worst.slack>=0?'fits with '+worst.slack+'px spare':'OVERFLOWS by '+(-worst.slack)+'px'}`)
+console.log(`\ntightest point: ${worst.w}px. ${worst.slack>=0?'fits with '+worst.slack+'px spare':'OVERFLOWS by '+(-worst.slack)+'px'}`)
 await browser.close(); server.close()
 process.exit(worst.slack >= 0 ? 0 : 1)

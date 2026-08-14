@@ -4,7 +4,7 @@
     python3 scripts/build_pages.py
 
 Why. Three competitors' schedule pages outrank our home page for "jiu jitsu
-class schedule Fulshear" — gbfulshear.com/class-schedule, liberatusjiujitsu.com
+class schedule Fulshear": gbfulshear.com/class-schedule, liberatusjiujitsu.com
 /class-schedule and teamlegacydojo.com/schedule. Liberatus has a page for their
 6 AM class alone. Ours was a redirect to a fragment, and a fragment cannot rank.
 Same for pricing. Same for the coaches: Gracie Barra Fulshear leads with
@@ -16,13 +16,13 @@ decides how they are shown; that one is what they are.
 
 LINEAGE. Who promoted whom is the first thing anybody in the sport looks for,
 and the line here is unusually clean: Matt Leighton of Citadel BJJ in Iowa City
-promoted Anthony Curry, and Anthony promoted Shaun Lawler — the only black belt
+promoted Anthony Curry, and Anthony promoted Shaun Lawler: the only black belt
 he has awarded in five years of running the academy. Both facts came from the
 academy. It is the strongest thing on these pages and the one a competitor
 cannot copy, so it gets a section of its own rather than a clause in a bio.
 
 WHAT IS STILL NOT HERE. Competition records, promotion dates, and the detail
-behind "extensive coaching and training credentials" — the academy has said the
+behind "extensive coaching and training credentials". The academy has said the
 credentials are extensive but not what they are, and a page that says
 "extensive" without naming anything reads as padding. Add specifics to
 `credentials` on a coach and they render; leave it out and the page does not
@@ -91,17 +91,17 @@ def faq_schema(faqs):
 
 SCHEDULE_FAQS = [
     ("Can I just turn up to a class?",
-     "For a first class, book it — it takes a minute and it means a coach is expecting you and has a loaner gi ready. Adults can book into any class on this timetable. Kids trials run Friday afternoons in the Gi for ages 3 and up, or Saturday at 10:00 AM in No-Gi for ages 7 and up."),
+     "For a first class, book it. It takes a minute and it means a coach is expecting you and has a loaner gi ready. Adults can book into any class on this timetable. Kids trials run Friday afternoons in the Gi for ages 3 and up, or Saturday at 10:00 AM in No-Gi for ages 7 and up."),
     ("What does ADV mean on the timetable?",
      "Advanced. Those classes need a grey-white belt or higher, or two or more years of wrestling. They move faster and drill at a higher intensity. Every class without that marker is open to a complete beginner, including somebody who has never trained anywhere."),
     ("What is the difference between the Gi and No-Gi classes?",
-     "Gi is the traditional uniform, and the jacket and trousers become part of the game — grips, collar chokes, sweeps off the sleeve. No-Gi is a rashguard and shorts: faster, more wrestling-like, nothing to hold on to. Most people here train both, and the same membership covers both."),
+     "Gi is the traditional uniform, and the jacket and trousers become part of the game: grips, collar chokes, sweeps off the sleeve. No-Gi is a rashguard and shorts: faster, more wrestling-like, nothing to hold on to. Most people here train both, and the same membership covers both."),
     ("Do you run early morning classes?",
-     "Yes — 6:30 AM, Monday through Thursday. Gi on Monday and Wednesday, No-Gi on Tuesday and Thursday. It is the class people are most sceptical about and the one they end up building the week around."),
+     "Yes: 6:30 AM, Monday through Thursday. Gi on Monday and Wednesday, No-Gi on Tuesday and Thursday. It is the class people are most sceptical about and the one they end up building the week around."),
     ("Does the timetable change in school holidays?",
-     "Occasionally, and the live calendar is the place to check — calendar.labyrinth.vision carries any changes, closures and tournament weekends. This page is the standing weekly timetable."),
+     "Occasionally, and the live calendar is the place to check. Calendar.labyrinth.vision carries any changes, closures and tournament weekends. This page is the standing weekly timetable."),
     ("Is open mat only for members?",
-     "No. Sunday open mat at 10:30 AM is free rolling for all levels and all affiliations — visitors from other academies are welcome, and so is anybody who wants to see the room before committing to anything."),
+     "No. Sunday open mat at 10:30 AM is free rolling for all levels and all affiliations. Visitors from other academies are welcome, and so is anybody who wants to see the room before committing to anything."),
 ]
 
 
@@ -131,10 +131,10 @@ def render_schedule():
                     % (day, "\n".join(rows)))
 
     head = HEAD % {
-        "title": "Class Schedule — Fulshear, TX | Labyrinth BJJ",
-        "description": "The full weekly BJJ class schedule in Fulshear, TX. %d classes, seven days a week — kids from 4:45 PM, adults from 6:30 AM. Gi, No-Gi, wrestling." % c["total"],
+        "title": "Class Schedule: Fulshear, TX | Labyrinth BJJ",
+        "description": "The full weekly BJJ class schedule in Fulshear, TX. %d classes, seven days a week: kids from 4:45 PM, adults from 6:30 AM. Gi, No-Gi, wrestling." % c["total"],
         "url": url,
-        "og_title": "Class Schedule — Labyrinth BJJ, Fulshear TX",
+        "og_title": "Class Schedule: Labyrinth BJJ, Fulshear TX",
         "image": SITE + "/assets/og-image.jpg",
         "schema": "\n".join([jsonld(crumb_schema([("Schedule", "/schedule")])),
                              jsonld(faq_schema(SCHEDULE_FAQS)),
@@ -182,7 +182,7 @@ def render_schedule():
   <div class="prog-week stagger" id="schedGrid">
 %(days)s
   </div>
-    <p class="prog-week__note fade-in"><strong>Adv</strong> classes need a grey-white belt or higher, or two or more years of wrestling — everything else is open to a complete beginner. <strong>Comp</strong> classes are the competition sessions, included in unlimited memberships and open to any member in the age group; nobody is required to enter a tournament. Term-time changes, closures and tournament weekends go on the <a href="https://calendar.labyrinth.vision" target="_blank" rel="noopener noreferrer">live calendar</a>.</p>
+    <p class="prog-week__note fade-in"><strong>Adv</strong> classes need a grey-white belt or higher, or two or more years of wrestling. Everything else is open to a complete beginner. <strong>Comp</strong> classes are the competition sessions, included in unlimited memberships and open to any member in the age group; nobody is required to enter a tournament. Term-time changes, closures and tournament weekends go on the <a href="https://calendar.labyrinth.vision" target="_blank" rel="noopener noreferrer">live calendar</a>.</p>
   </div>
 </section>
 
@@ -293,7 +293,7 @@ def render_pricing():
         for name, amount, per, feats, _ in P[group]:
             offers.append({
                 "@type": "Offer",
-                "name": "%s — %s" % ({"adult": "Adult", "kids": "Kids & Teens",
+                "name": "%s: %s" % ({"adult": "Adult", "kids": "Kids & Teens",
                                       "family": "Family"}[group], name),
                 "price": amount.lstrip("$"),
                 "priceCurrency": "USD",
@@ -303,10 +303,10 @@ def render_pricing():
             })
 
     head = HEAD % {
-        "title": "Membership Prices — Fulshear, TX | Labyrinth BJJ",
+        "title": "Membership Prices: Fulshear, TX | Labyrinth BJJ",
         "description": "What jiu-jitsu costs in Fulshear, TX. Adults from $179/mo, kids from $239/mo, family plan $399/mo. Month to month, no contract, first class free.",
         "url": url,
-        "og_title": "Membership Prices — Labyrinth BJJ, Fulshear TX",
+        "og_title": "Membership Prices: Labyrinth BJJ, Fulshear TX",
         "image": SITE + "/assets/og-image.jpg",
         "schema": "\n".join([
             jsonld(crumb_schema([("Pricing", "/pricing")])),
@@ -345,7 +345,7 @@ def render_pricing():
   <div class="container">
     <p class="section-label">Membership</p>
     <h1 class="prog-hero__title">What It Costs</h1>
-    <p class="prog-hero__lead">Every price we charge is on this page. Adults from $179 a month, kids from $239, a family plan at $399 — month to month, no contract, no joining fee, and the first class is free whatever you decide afterwards.</p>
+    <p class="prog-hero__lead">Every price we charge is on this page. Adults from $179 a month, kids from $239, a family plan at $399: month to month, no contract, no joining fee, and the first class is free whatever you decide afterwards.</p>
     <div class="prog-hero__cta">
       <a data-book-trial href="/#book" class="btn btn--gold">Book a Free Class</a>
       <a href="/schedule" class="btn btn--ghost">See the Timetable</a>
@@ -382,8 +382,8 @@ def render_pricing():
     </div>
     <div class="prog-prose fade-in">
       <p>A membership here covers the whole timetable your plan applies to. There is no separate competition team fee, no charge for youth wrestling on top of a kids membership, and no add-on for the all-ages strength and conditioning class. The one genuine extra is the sauna and cold plunge at $60 a month, and you can have a membership without it.</p>
-      <p>Unlimited is worth it at three sessions a week and not before. If you are training twice, the 8-class plan is the honest recommendation and we will say so at the desk — you can move up any month you like, and people regularly do once the habit sticks.</p>
-      <p>What is not on this page: a hard sell. The first class is free, nobody will ring you afterwards, and if you decide a gym closer to home suits your week better we would rather you trained there than paid us and stopped in March. <a href="/blog/how-much-does-bjj-cost-fulshear">The full breakdown of what jiu-jitsu costs in Fulshear</a> — including the questions worth asking any gym before you sign — is on the blog.</p>
+      <p>Unlimited is worth it at three sessions a week and not before. If you are training twice, the 8-class plan is the honest recommendation and we will say so at the desk. You can move up any month you like, and people regularly do once the habit sticks.</p>
+      <p>What is not on this page: a hard sell. The first class is free, nobody will ring you afterwards, and if you decide a gym closer to home suits your week better we would rather you trained there than paid us and stopped in March. <a href="/blog/how-much-does-bjj-cost-fulshear">The full breakdown of what jiu-jitsu costs in Fulshear</a> (including the questions worth asking any gym before you sign) is on the blog.</p>
     </div>
   </div>
 </section>
@@ -403,7 +403,7 @@ def render_pricing():
 <div class="container">
   <div class="prog-close fade-in">
     <h2 class="prog-close__title">TRY IT BEFORE YOU PAY</h2>
-    <p class="prog-close__text">The first class is free for everybody — adults into any class on the timetable, kids on a Friday afternoon or Saturday morning. Decide about money afterwards.</p>
+    <p class="prog-close__text">The first class is free for everybody: adults into any class on the timetable, kids on a Friday afternoon or Saturday morning. Decide about money afterwards.</p>
     <div class="prog-hero__cta" style="justify-content:center">
       <a data-book-trial href="/#book" class="btn btn--gold">Book a Free Class</a>
       <a href="tel:2813937983" class="btn btn--ghost">Call %(phone)s</a>
@@ -430,13 +430,13 @@ COACHES = [
         "years": "14+ years",
         "belt": "black",
         "photo": "coach-tony",
-        "title": "Prof. Anthony Curry — Head Instructor &amp; Owner | Labyrinth BJJ",
+        "title": "Prof. Anthony Curry, Head Instructor &amp; Owner | Labyrinth BJJ",
         "description": "Anthony Curry, founder and head instructor of Labyrinth BJJ in Fulshear, TX. Black belt, 14+ years, and the coach who built the #1 ranked academy in Texas.",
-        "lead": "Founder and head instructor. He opened Labyrinth in 2021 and built it into the top-ranked academy in Texas — a ranking computed from match results rather than claimed.",
+        "lead": "Founder and head instructor. He opened Labyrinth in 2021 and built it into the top-ranked academy in Texas, a ranking computed from match results rather than claimed.",
         "body": [
             "Anthony Curry started Labyrinth Brazilian Jiu-Jitsu in Fulshear in 2021. Five years later the academy sits <strong>#1 in Texas and #9 nationally</strong> on jits.gg, which aggregates verified tournament results and ranks academies on what their athletes actually do rather than on what the academy says about itself. Eighty-three Labyrinth athletes are individually ranked on it.",
             "That is the short version and it undersells the part that matters to somebody walking in for the first time. An academy does not get to #1 in a state this size on one or two exceptional athletes; it gets there on a room where a lot of ordinary students improve steadily, and building that room is a coaching problem rather than a talent-spotting one.",
-            "He is a <strong>black belt with more than fourteen years on the mats</strong>. In Brazilian jiu-jitsu that is a long apprenticeship by design — the black belt takes most people around a decade of consistent training, which is why the rank means something the equivalent belt in other martial arts often does not.",
+            "He is a <strong>black belt with more than fourteen years on the mats</strong>. In Brazilian jiu-jitsu that is a long apprenticeship by design. The black belt takes most people around a decade of consistent training, which is why the rank means something the equivalent belt in other martial arts often does not.",
         ],
         "teaches_note": "As head instructor he oversees the whole curriculum, and the academy's competition results are cornered by him and the other black belts at events.",
         "lineage": {
@@ -445,17 +445,17 @@ COACHES = [
             "where": "Iowa City, Iowa",
             "body": [
                 "Anthony Curry received his black belt from <strong>Matt Leighton of Citadel BJJ in Iowa City</strong>. Leighton co-founded that academy and is a decorated no-gi competitor in his own right.",
-                "Lineage is the first question anybody in jiu-jitsu asks about an instructor, and it is a fair one. There is no central licensing body in this sport — a black belt is awarded by a person, not issued by an institution, which means the rank is only ever as good as the standards of whoever tied it on. Asking who promoted a coach is asking whose judgement is behind the rank.",
-                "It also matters in the other direction, and Labyrinth has an unusually short answer there. <a href=\"/coaches/shaun-lawler\">Shaun Lawler</a> is the only black belt Anthony has promoted in five years of running this academy — one, in five years, out of a room that has produced Pan American champions.",
+                "Lineage is the first question anybody in jiu-jitsu asks about an instructor, and it is a fair one. There is no central licensing body in this sport. A black belt is awarded by a person, not issued by an institution, which means the rank is only ever as good as the standards of whoever tied it on. Asking who promoted a coach is asking whose judgement is behind the rank.",
+                "It also matters in the other direction, and Labyrinth has an unusually short answer there. <a href=\"/coaches/shaun-lawler\">Shaun Lawler</a> is the only black belt Anthony has promoted in five years of running this academy, one, in five years, out of a room that has produced Pan American champions.",
             ],
         },
         "faqs": [
             ("Who is the head instructor at Labyrinth BJJ?",
              "Professor Anthony Curry, who founded the academy in Fulshear in 2021 and still runs it. He is a black belt with over fourteen years of training, and under his instruction Labyrinth has become the #1 ranked academy in Texas and #9 nationally on jits.gg."),
             ("What does “Professor” mean in Brazilian jiu-jitsu?",
-             "It is the customary title for a black belt instructor. Coloured-belt instructors are usually addressed as “coach”. It is not an academic title — it is the traditional form of address in a BJJ academy, and the black belt behind it typically represents about a decade of training."),
+             "It is the customary title for a black belt instructor. Coloured-belt instructors are usually addressed as “coach”. It is not an academic title. It is the traditional form of address in a BJJ academy, and the black belt behind it typically represents about a decade of training."),
             ("Who is Anthony Curry's black belt under?",
-             "Matt Leighton of Citadel BJJ in Iowa City, who co-founded that academy and competes at a high level in no-gi. Lineage matters in Brazilian jiu-jitsu because there is no central licensing body — a black belt is awarded by a person rather than issued by an institution, so asking who promoted a coach is asking whose judgement stands behind the rank."),
+             "Matt Leighton of Citadel BJJ in Iowa City, who co-founded that academy and competes at a high level in no-gi. Lineage matters in Brazilian jiu-jitsu because there is no central licensing body. A black belt is awarded by a person rather than issued by an institution, so asking who promoted a coach is asking whose judgement stands behind the rank."),
             ("How many black belts has he promoted?",
              "One, in five years of running the academy: Professor Shaun Lawler. Awarding a black belt is the most consequential thing an instructor does, and Labyrinth has produced Pan American champions, 83 nationally ranked athletes and 267 gold medals against exactly one black belt promotion."),
             ("Does he still teach, or only run the academy?",
@@ -471,13 +471,13 @@ COACHES = [
         "years": "15+ years",
         "belt": "black",
         "photo": "coach-shaun",
-        "title": "Prof. Shaun Lawler — Black Belt Professor | Labyrinth BJJ Fulshear",
+        "title": "Prof. Shaun Lawler, Black Belt Professor | Labyrinth BJJ Fulshear",
         "description": "Shaun Lawler, black belt professor at Labyrinth BJJ in Fulshear, TX. 15+ years on the mats, and the coach who leads the all-ages strength and conditioning class.",
         "lead": "Black belt, fifteen years and counting, and the coach most likely to be the reason a beginner is still training a year later. He also leads the all-ages strength and conditioning class.",
         "body": [
-            "Shaun Lawler brings deep competition experience and a technical precision that shows up in how he breaks a position down — the kind of teaching where a movement you have failed at for a month suddenly has three pieces instead of one.",
+            "Shaun Lawler brings deep competition experience and a technical precision that shows up in how he breaks a position down: the kind of teaching where a movement you have failed at for a month suddenly has three pieces instead of one.",
             "What the academy says about him is that he <strong>develops athletes at every level from beginner to elite competitor</strong>, and that range is rarer than it sounds. Plenty of high-level black belts are excellent with people who are already good. Being genuinely useful to somebody in their first month, and to somebody preparing for the IBJJF Pan Ams, is a different skill.",
-            "He is also the coach behind the <a href=\"/blog/strength-and-conditioning-for-kids-fulshear\">all-ages strength and conditioning class</a> that runs on Tuesdays and Thursdays at 4:15 PM — the session where a seven-year-old, a fifteen-year-old and a forty-two-year-old work through the same programme at their own load. It is included in every membership, and it exists because technique stops being the limiting factor in a match sooner than most people expect.",
+            "He is also the coach behind the <a href=\"/blog/strength-and-conditioning-for-kids-fulshear\">all-ages strength and conditioning class</a> that runs on Tuesdays and Thursdays at 4:15 PM: the session where a seven-year-old, a fifteen-year-old and a forty-two-year-old work through the same programme at their own load. It is included in every membership, and it exists because technique stops being the limiting factor in a match sooner than most people expect.",
         ],
         "teaches_note": "He coaches across the timetable and runs the strength and conditioning session twice a week.",
         "lineage": {
@@ -486,18 +486,18 @@ COACHES = [
             "at": "Labyrinth BJJ",
             "where": "Fulshear, Texas",
             "body": [
-                "Shaun Lawler received his black belt from <a href=\"/coaches/anthony-curry\">Professor Anthony Curry</a> — and he is the <strong>only black belt Anthony has ever promoted</strong>, in five years of running the academy.",
+                "Shaun Lawler received his black belt from <a href=\"/coaches/anthony-curry\">Professor Anthony Curry</a>, and he is the <strong>only black belt Anthony has ever promoted</strong>, in five years of running the academy.",
                 "That is worth pausing on, because it is the kind of fact that is easy to read past. Awarding a black belt is the most consequential thing an instructor does; it is a permanent statement, made in public, that this person is now qualified to promote others. Plenty of academies hand out several a year. This one has produced Pan American champions, eighty-three nationally ranked athletes and 267 gold medals, and exactly one black belt.",
                 "It also completes a line that runs entirely through people who are still on these mats: <strong>Matt Leighton</strong> of Citadel BJJ in Iowa City promoted Anthony, and Anthony promoted Shaun. Whatever standard Leighton set has been passed down twice without leaving the building.",
             ],
         },
         "faqs": [
             ("Who runs the strength and conditioning class?",
-             "Professor Shaun Lawler. It runs Tuesday and Thursday at 4:15 PM, it is open to all ages in one session — kids and adults together at their own load — and it is included in every membership at no extra charge."),
+             "Professor Shaun Lawler. It runs Tuesday and Thursday at 4:15 PM, it is open to all ages in one session (kids and adults together at their own load) and it is included in every membership at no extra charge."),
             ("How long has Shaun Lawler been training?",
              "More than fifteen years, and he is a black belt. In Brazilian jiu-jitsu the black belt typically takes around a decade of consistent training to reach, so fifteen-plus years puts him well past that point."),
             ("Who is Shaun Lawler's black belt under?",
-             "Professor Anthony Curry, the founder of Labyrinth — and Shaun is the only black belt Anthony has promoted in five years of running the academy. The line runs Matt Leighton of Citadel BJJ in Iowa City, to Anthony, to Shaun."),
+             "Professor Anthony Curry, the founder of Labyrinth, and Shaun is the only black belt Anthony has promoted in five years of running the academy. The line runs Matt Leighton of Citadel BJJ in Iowa City, to Anthony, to Shaun."),
             ("Is he the right coach for a complete beginner?",
              "Yes, and that is worth saying because it is not automatic at his level. The academy's own description of him is that he develops athletes from beginner through to elite competitor, and the beginner half of that is the harder half to do well."),
         ],
@@ -511,20 +511,20 @@ COACHES = [
         "years": "",
         "belt": "wrestling",
         "photo": "coach-malik",
-        "title": "Coach Malik Pickett — Youth Wrestling | Labyrinth BJJ Fulshear",
+        "title": "Coach Malik Pickett: Youth Wrestling | Labyrinth BJJ Fulshear",
         "description": "Malik Pickett, youth wrestling coach at Labyrinth BJJ in Fulshear, TX. Texas National Team wrestler teaching takedowns to ages 7–17, three sessions a week.",
-        "lead": "A Texas National Team wrestler coaching the youth wrestling programme — the fastest available upgrade to a young grappler's game, and the part of the room where the noise comes from.",
+        "lead": "A Texas National Team wrestler coaching the youth wrestling programme: the fastest available upgrade to a young grappler's game, and the part of the room where the noise comes from.",
         "body": [
             "Malik Pickett wrestles for the Texas National Team, and he coaches our <a href=\"/programs/youth-wrestling-fulshear\">youth wrestling</a> classes for ages 7 to 17. He is known here for his energy and for how much attention he gives the younger end of the room, which is not where most elite wrestlers want to spend their evenings.",
             "The reason a jiu-jitsu academy employs a wrestling coach at all is straightforward. The usual weakness in a young grappler is that they are dangerous on the ground and lost standing up, and most youth matches are decided by who gets on top first. Wrestling addresses exactly that gap, and it is the single fastest improvement available to a child who already trains BJJ.",
-            "It works the other way too. Children who come to Labyrinth for wrestling — including school wrestlers looking for off-season mat time, and children who have never wrestled at all — are not required to do jiu-jitsu, and plenty do not. Wrestling is included in any kids or teens membership rather than charged as an extra.",
+            "It works the other way too. Children who come to Labyrinth for wrestling (including school wrestlers looking for off-season mat time, and children who have never wrestled at all) are not required to do jiu-jitsu, and plenty do not. Wrestling is included in any kids or teens membership rather than charged as an extra.",
         ],
         "teaches_note": "Wrestling runs three times a week and is included in every kids and teens membership.",
         "faqs": [
             ("Who coaches wrestling at Labyrinth BJJ?",
              "Coach Malik Pickett, a Texas National Team wrestler. He runs the youth wrestling programme for ages 7 to 17 on Wednesday and Thursday evenings at 7:30 PM and Sunday afternoons at 1:00 PM."),
             ("Does my child need wrestling experience to train with him?",
-             "None. Most of the children in the room started with none. The first weeks are stance, motion, level changes and safe falling — the same place every wrestler begins, taught without a season already in progress."),
+             "None. Most of the children in the room started with none. The first weeks are stance, motion, level changes and safe falling. The same place every wrestler begins, taught without a season already in progress."),
             ("Does my child have to do jiu-jitsu as well?",
              "No. Wrestling is included in any kids or teens membership and children are welcome to do only that. Plenty of our wrestlers also wrestle for their schools and use these sessions as off-season mat time."),
         ],
@@ -533,7 +533,7 @@ COACHES = [
 
 # The other three, listed on the hub without pages of their own.
 OTHER_COACHES = [
-    ("Jared Vevera", "Head Coach &mdash; Katy", "Black Belt &middot; 14+ Yrs", "black", "coach-jared",
+    ("Jared Vevera", "Head Coach: Katy", "Black Belt &middot; 14+ Yrs", "black", "coach-jared",
      "Head coach of the Katy academy and an instructor at Fulshear."),
     ("Christian Solano", "Instructor", "Brown Belt &middot; 10+ Yrs", "brown", "coach-christian",
      "Over a decade of training forged into sharp no-gi technique."),
@@ -557,7 +557,7 @@ STRIPES = {"coach-jess": 2, "coach-emma": 1, "coach-hadley": 4}
 def plain(name):
     """A display name reduced to something alt text can say out loud.
 
-    Entities go to spaces, then the runs collapse — a nickname in curly
+    Entities go to spaces, then the runs collapse. A nickname in curly
     quotes leaves two of them behind on each side, and a name that ends
     in one would otherwise trail a space."""
     return re.sub(r"\s+", " ", re.sub(r"&\w+;", " ", name)).strip()
@@ -590,7 +590,7 @@ def lineage_html(c):
 
     It is the one claim on these pages a competitor cannot write for
     themselves, and in this sport it is the first thing a reader looks for.
-    Returns empty for a coach with no lineage recorded — the page then simply
+    Returns empty for a coach with no lineage recorded. The page then simply
     does not have the section, rather than having an empty one."""
     ln = c.get("lineage")
     if not ln:
@@ -627,13 +627,13 @@ SUPPORT_FAQS = [
     ("Something looks wrong on my bill.",
      "Send us the date and the amount and we will look it up the same day. Billing runs through our membership system rather than the front desk, so an email with the detail in it gets sorted faster than a conversation on the mat."),
     ("My child left something at the academy.",
-     "Ask at the desk first — most things are behind it within the hour. If you have already gone home, email us a description and which class they were in and we will check the lost property box before it is cleared."),
+     "Ask at the desk first. Most things are behind it within the hour. If you have already gone home, email us a description and which class they were in and we will check the lost property box before it is cleared."),
     ("How do I update my email, phone number or card?",
      "You can change all three yourself in your membership account. If you cannot get in, email <a href=\"mailto:support@labyrinth.vision\">support@labyrinth.vision</a> from the address we have on file and we will fix it from our side."),
     ("I need help with the Cornerman timer.",
      "Cornerman has its own support page at <a href=\"https://cornerman.app/support\" target=\"_blank\" rel=\"noopener noreferrer\">cornerman.app/support</a>, which is the fastest route. Anything it does not answer can come to <a href=\"mailto:support@labyrinth.vision\">support@labyrinth.vision</a> and reaches the same people."),
     ("I run a gym and want Cornerman showing our name.",
-     "That is what the paid tier does — your logo and colours on unlimited screens for one price. Everything about it is at <a href=\"https://cornerman.app\" target=\"_blank\" rel=\"noopener noreferrer\">cornerman.app</a>. You do not need to be a Labyrinth member and you do not need to be in Texas."),
+     "That is what the paid tier does: your logo and colours on unlimited screens for one price. Everything about it is at <a href=\"https://cornerman.app\" target=\"_blank\" rel=\"noopener noreferrer\">cornerman.app</a>. You do not need to be a Labyrinth member and you do not need to be in Texas."),
     ("Who do I talk to about a concern involving a coach or another member?",
      "Anthony Curry, directly. Email <a href=\"mailto:support@labyrinth.vision\">support@labyrinth.vision</a> with the word PRIVATE in the subject line and it goes to him rather than the general queue. Anything involving a child is handled the same day."),
 ]
@@ -660,16 +660,16 @@ def render_support():
         for title, desc, href in routes)
 
     head = HEAD % {
-        "title": "Support — Labyrinth BJJ &amp; Cornerman",
+        "title": "Support: Labyrinth BJJ &amp; Cornerman",
         "description": "Help with a Labyrinth BJJ membership, billing or bookings, and support for the Cornerman round timer. Email support@labyrinth.vision or call (281) 393-7983.",
         "url": url,
-        "og_title": "Support — Labyrinth BJJ",
+        "og_title": "Support: Labyrinth BJJ",
         "image": SITE + "/assets/og-image.jpg",
         "schema": "\n".join([
             jsonld(crumb_schema([("Support", "/support")])),
             jsonld(faq_schema(SUPPORT_FAQS)),
             jsonld({"@context": "https://schema.org", "@type": "ContactPage",
-                    "name": "Support — Labyrinth BJJ", "url": url,
+                    "name": "Support: Labyrinth BJJ", "url": url,
                     "mainEntity": {
                         "@type": "Organization", "name": "Labyrinth BJJ", "url": SITE,
                         "email": "support@labyrinth.vision",
@@ -687,7 +687,7 @@ def render_support():
   <div class="container">
     <p class="section-label">Help</p>
     <h1 class="prog-hero__title">Support</h1>
-    <p class="prog-hero__lead">Everything Labyrinth, on one page &mdash; the academy in Fulshear and the Cornerman timer that came out of it. One address reaches both: <a href="mailto:support@labyrinth.vision">support@labyrinth.vision</a>.</p>
+    <p class="prog-hero__lead">Everything Labyrinth, on one page: the academy in Fulshear and the Cornerman timer that came out of it. One address reaches both: <a href="mailto:support@labyrinth.vision">support@labyrinth.vision</a>.</p>
     <div class="prog-hero__cta">
       <a href="mailto:support@labyrinth.vision" class="btn btn--gold">Email Support</a>
       <a href="tel:2813937983" class="btn btn--ghost">Call (281) 393-7983</a>
@@ -720,9 +720,9 @@ def render_support():
       <h2 class="section-title section-title--lg">COME AND ASK</h2>
     </div>
     <div class="prog-prose fade-in">
-      <p>The desk is staffed through every class. If you are already coming in, asking there is almost always quicker than writing to us &mdash; most things people email about get settled in a minute at the front of the mat.</p>
+      <p>The desk is staffed through every class. If you are already coming in, asking there is almost always quicker than writing to us. Most things people email about get settled in a minute at the front of the mat.</p>
       <p><strong>6615 West Cross Creek Bend Lane, Suite #400, Fulshear, TX 77441.</strong> Monday to Friday 6:30 AM to 9:00 PM, Saturday 9:00 AM to 2:00 PM, Sunday 10:30 AM to 2:00 PM. The <a href="/schedule">full timetable</a> shows which classes are running when you plan to arrive.</p>
-      <p>Anything time-critical &mdash; you are outside with a locked door, a child has not been collected, somebody is hurt &mdash; call. Email is checked through the day but it is not a pager.</p>
+      <p>Anything time-critical (you are outside with a locked door, a child has not been collected, somebody is hurt) call. Email is checked through the day but it is not a pager.</p>
     </div>
   </div>
 </section>
@@ -734,7 +734,7 @@ def render_support():
       <h2 class="section-title section-title--lg">CORNERMAN</h2>
     </div>
     <div class="prog-prose fade-in">
-      <p>Cornerman is the round timer we built for our own wall and then put on the App Store. It runs free in a browser on any screen you already own &mdash; a smart TV, a Fire Stick, an old laptop &mdash; and there is a free dedicated app for Apple TV. It works offline once loaded, needs no account, and collects nothing.</p>
+      <p>Cornerman is the round timer we built for our own wall and then put on the App Store. It runs free in a browser on any screen you already own (a smart TV, a Fire Stick, an old laptop) and there is a free dedicated app for Apple TV. It works offline once loaded, needs no account, and collects nothing.</p>
       <p>Support, setup and the paid branding tier all live on its own site: <a href="https://cornerman.app" target="_blank" rel="noopener noreferrer">cornerman.app</a>. Its <a href="https://cornerman.app/support" target="_blank" rel="noopener noreferrer">support page</a> is the fastest route for anything app-specific, and its <a href="https://cornerman.app/privacy" target="_blank" rel="noopener noreferrer">privacy policy</a> covers what it does and does not store.</p>
     </div>
     <div class="prog-siblings stagger">
@@ -792,7 +792,7 @@ def render_coach(c):
 
     head = HEAD % {
         "title": c["title"], "description": c["description"], "url": url,
-        "og_title": "%s — %s | Labyrinth BJJ" % (c["short"], re.sub(r"&\w+;", "&", c["role"])),
+        "og_title": "%s: %s | Labyrinth BJJ" % (c["short"], re.sub(r"&\w+;", "&", c["role"])),
         "image": "%s/assets/%s.jpg" % (SITE, c["photo"]),
         "schema": "\n".join([jsonld(person),
                              jsonld(crumb_schema([("Coaches", "/coaches/"), (c["short"], "/coaches/" + c["slug"])])),
@@ -889,7 +889,7 @@ def render_coach(c):
 <div class="container">
   <div class="prog-close fade-in">
     <h2 class="prog-close__title">COME AND TRAIN</h2>
-    <p class="prog-close__text">The first class is free — adults into any class on the timetable, kids on a Friday afternoon or a Saturday morning. Turn up in a t-shirt and shorts; we will lend you the rest.</p>
+    <p class="prog-close__text">The first class is free: adults into any class on the timetable, kids on a Friday afternoon or a Saturday morning. Turn up in a t-shirt and shorts; we will lend you the rest.</p>
     <div class="prog-hero__cta" style="justify-content:center">
       <a data-book-trial href="/#book" class="btn btn--gold">Book a Free Class</a>
       <a href="tel:2813937983" class="btn btn--ghost">Call %(phone)s</a>
@@ -915,7 +915,7 @@ def render_coach_hub():
     cards += [coach_card(n, r, rk, b, p, bio) for n, r, rk, b, p, bio in OTHER_COACHES]
 
     head = HEAD % {
-        "title": "Our Coaches — Black Belt Instructors in Fulshear, TX | Labyrinth BJJ",
+        "title": "Our Coaches: Black Belt Instructors in Fulshear, TX | Labyrinth BJJ",
         "description": "The instructors at Labyrinth BJJ in Fulshear, TX: three black belts, two brown belts, a Texas National Team wrestler and three coaches of the kids classes. Meet the people who teach the classes.",
         "url": url, "og_title": "The Coaches at Labyrinth BJJ, Fulshear TX",
         "image": SITE + "/assets/og-image.jpg",
@@ -935,7 +935,7 @@ def render_coach_hub():
   <div class="container">
     <p class="section-label">The staff</p>
     <h1 class="prog-hero__title">Who teaches you</h1>
-    <p class="prog-hero__lead">Three black belts, two brown belts, a Texas National Team wrestler, and three coaches on the kids classes who all still compete themselves. The line runs <a href="/coaches/anthony-curry">Anthony Curry</a>, black belt under Matt Leighton of Citadel BJJ in Iowa City, to <a href="/coaches/shaun-lawler">Shaun Lawler</a> &mdash; the only black belt Anthony has promoted in five years of running the academy.</p>
+    <p class="prog-hero__lead">Three black belts, two brown belts, a Texas National Team wrestler, and three coaches on the kids classes who all still compete themselves. The line runs <a href="/coaches/anthony-curry">Anthony Curry</a>, black belt under Matt Leighton of Citadel BJJ in Iowa City, to <a href="/coaches/shaun-lawler">Shaun Lawler</a>. The only black belt Anthony has promoted in five years of running the academy.</p>
     <div class="prog-hero__cta">
       <a data-book-trial href="/#book" class="btn btn--gold">Book a Free Class</a>
       <a href="/schedule" class="btn btn--ghost">See Who Teaches When</a>
@@ -954,7 +954,7 @@ def render_coach_hub():
 <div class="container">
   <div class="prog-close fade-in">
     <h2 class="prog-close__title">MEET THEM ON THE MAT</h2>
-    <p class="prog-close__text">A coaching staff reads the same on every gym website. The only way to know whether a room suits you is to stand in it — so the first class is free and there is no pressure afterwards.</p>
+    <p class="prog-close__text">A coaching staff reads the same on every gym website. The only way to know whether a room suits you is to stand in it, so the first class is free and there is no pressure afterwards.</p>
     <div class="prog-hero__cta" style="justify-content:center">
       <a data-book-trial href="/#book" class="btn btn--gold">Book a Free Class</a>
       <a href="tel:2813937983" class="btn btn--ghost">Call %s</a>

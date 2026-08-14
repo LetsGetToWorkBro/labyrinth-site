@@ -1,4 +1,4 @@
-# Labyrinth BJJ — robots.txt
+# Labyrinth BJJ. Robots.txt
 # https://labyrinth.vision
 
 User-agent: *

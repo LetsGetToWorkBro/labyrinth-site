@@ -7,7 +7,7 @@ import { execFileSync } from 'node:child_process'
 
 // The repository itself, wherever it happens to be checked out. This was a
 // hard-coded /workspace path, which made the suite unrunnable from any other
-// clone — it served 404 for every page and the failures looked like site bugs.
+// clone: it served 404 for every page and the failures looked like site bugs.
 const ROOT = fileURLToPath(new URL('.', import.meta.url))
 const TYPES = {'.html':'text/html','.js':'text/javascript','.css':'text/css','.json':'application/json','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.svg':'image/svg+xml','.ico':'image/x-icon','.xml':'application/xml','.txt':'text/plain'}
 // Mimic Cloudflare Pages: /foo serves foo.html
@@ -51,7 +51,7 @@ check('L1 all 43 pages served 200', pages.length === 43, 'pages: ' + pages.lengt
 
 // ── L1b: every program page carries the schema and the canonical it exists for ──
 // A program page whose Service block is missing is still a page, and still
-// looks fine — it has just stopped doing the one job it was built for.
+// looks fine. It has just stopped doing the one job it was built for.
 const schemaFails = []
 for (const path of programs) {
   await page.goto('http://localhost:4620'+path, { waitUntil:'domcontentloaded' })
@@ -87,7 +87,7 @@ check('L1d blog/index.html matches scripts/build_blog_index.py',
   idxBefore === readFileSync(join(ROOT,'blog/index.html'),'utf8'),
   'run: python3 scripts/build_blog_index.py')
 
-// Every post needs its own share image — nineteen of them shared one, so a
+// Every post needs its own share image: nineteen of them shared one, so a
 // link to any of them looked like a link to all of them.
 const heroes = posts.map(p => {
   const f = readFileSync(join(ROOT, p.slice(1) + '.html'), 'utf8')
@@ -115,7 +115,7 @@ const sharedCount = [...counts.values()].filter(n => n > 1).length
 const uniqueCount = counts.size
 check('L1f area pages are substantially distinct',
   sharedCount <= 6 && uniqueCount >= 100,
-  `${sharedCount} shared sentences across ${uniqueCount} distinct — cap is 6`)
+  `${sharedCount} shared sentences across ${uniqueCount} distinct. Cap is 6`)
 
 // No area page may claim a street address of its own. There is one academy.
 const fakeAddress = areas.filter(p => {
@@ -136,7 +136,7 @@ check('L1h schedule/pricing/support/coaches match scripts/build_pages.py',
 // ── L1i: the timetable has one source ──
 // schedule_data.py is canonical for everything generated. booking.js keeps its
 // own copy because the browser needs it, so both of its arrays are compared
-// here — this is the check that would have caught the Friday-only kids trials
+// here. This is the check that would have caught the Friday-only kids trials
 // contradiction, where two copies of the timetable disagreed in public.
 const bookingJs = readFileSync(join(ROOT,'booking.js'),'utf8')
 const DAYFULL = {Mon:'Monday',Tue:'Tuesday',Wed:'Wednesday',Thu:'Thursday',Fri:'Friday',Sat:'Saturday',Sun:'Sunday'}
@@ -180,7 +180,7 @@ const ctas = await page.$$('.article-cta__btn, .blog-cta__btn')
 check('L4 exactly one in-article CTA', ctas.length === 1, 'found ' + ctas.length)
 // It used to point at the front page's #contact section, which meant a reader
 // who had decided to come in was sent back to the front page to find the
-// booking button. It now opens the booking modal on the post itself — and keeps
+// booking button. It now opens the booking modal on the post itself, and keeps
 // an href to /#book so it still reaches a booking form with JavaScript off.
 // booking.test.mjs drives the modal itself; this only guards the markup.
 check('L4 CTA opens the booking modal', await cta.getAttribute('data-book-trial') !== null)

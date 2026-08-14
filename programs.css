@@ -1,10 +1,10 @@
 /* ========================================
-   LABYRINTH BJJ — PROGRAM PAGES
+   LABYRINTH BJJ: PROGRAM PAGES
    ========================================
 
    Loaded only by the pages under /programs/, on top of style.css. Everything
-   these pages share with the front page — the nav, buttons, section headings,
-   coach cards, the FAQ accordion — comes from style.css and is not repeated
+   these pages share with the front page, the nav, buttons, section headings,
+   coach cards, the FAQ accordion. Comes from style.css and is not repeated
    here. What is here is the handful of blocks that only a program page has:
    its header, its fact strip, its own slice of the timetable, and the price
    row at the bottom.
@@ -303,7 +303,7 @@
 }
 
 /* style.css spans every non-featured coach card across two columns, which is
-   right for the front page's six-column grid and wrong here — with auto-fit
+   right for the front page's six-column grid and wrong here, with auto-fit
    it silently halved this grid to two cards a row. Three across divides the
    roster evenly and keeps the pairs that belong together on one row. */
 .prog-coaches .coach-card {
@@ -430,7 +430,7 @@
 .sched-pg__ages { color: var(--text-faint); }
 
 /* A day emptied by a filter is hidden outright rather than left as a titled
-   empty card — [hidden] is display:none and .prog-day sets display:block, so
+   empty card. [hidden] is display:none and .prog-day sets display:block, so
    the attribute needs the extra weight to win. */
 .prog-day[hidden], .prog-slot[hidden] { display: none !important; }
 

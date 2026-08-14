@@ -2,8 +2,8 @@
 """
 Generate blog posts from the site's own template.
 
-Written as a script rather than twelve hand-copied files so the shell — head,
-schema, nav, breadcrumbs, author card, CTA, footer — is identical everywhere and
+Written as a script rather than twelve hand-copied files so the shell: head,
+schema, nav, breadcrumbs, author card, CTA, footer. Is identical everywhere and
 cannot drift. Every URL it emits is extensionless, which is the form Cloudflare
 Pages actually serves; the .html form 308-redirects and Google files it as
 "Page with redirect" and indexes nothing.
@@ -146,7 +146,7 @@ def page(slug, title, description, og_description, subtitle, read, hero, hero_al
     <div class="article-cta">
       <div class="article-cta__box">
         <h3 class="article-cta__title">Come and Try a Class</h3>
-        <p class="article-cta__text">Your first class at Labyrinth BJJ is free — no experience needed, nothing to pay, and no commitment. We'll lend you everything you need.</p>
+        <p class="article-cta__text">Your first class at Labyrinth BJJ is free. No experience needed, nothing to pay, and no commitment. We'll lend you everything you need.</p>
         <a data-book-trial href="https://labyrinth.vision/#book" class="article-cta__btn">Book a Free Trial →</a>
       </div>
     </div>
