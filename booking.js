@@ -52,9 +52,9 @@
     {name:'Adult Comp', type:'Gi', day:'Fri', time:'6:30 PM', crm:'Adult BJJ'},
     {name:'Adult Comp', type:'No-Gi', day:'Sat', time:'9:00 AM', crm:'Adult BJJ'},
     {name:'Adult & Teens', type:'No-Gi', day:'Sat', time:'11:00 AM', crm:'Adult BJJ'},
-    {name:'Strength & Conditioning', type:'', day:'Tue', time:'4:15 PM', crm:'Adult BJJ'},
-    {name:'Strength & Conditioning', type:'', day:'Thu', time:'4:15 PM', crm:'Adult BJJ'},
-    {name:'Open Mat', type:'', day:'Sun', time:'10:30 AM', crm:'Adult BJJ'}
+    {name:'Strength & Conditioning', type:'', day:'Tue', time:'4:15 PM', crm:'Strength & Conditioning'},
+    {name:'Strength & Conditioning', type:'', day:'Thu', time:'4:15 PM', crm:'Strength & Conditioning'},
+    {name:'Open Mat', type:'', day:'Sun', time:'10:30 AM', crm:'Open Mat'}
   ];
   /* The classes a child who has never trained here may book into.
      Friday is the Gi afternoon and covers every age from three up. Saturday
@@ -69,10 +69,18 @@
     {name:'Kids Grappling (7\u201312)', type:'No-Gi', day:'Sat', time:'10:00 AM', crm:'Kids 7-12'}
   ];
 
-  /* The six the booking endpoint will accept. Anything else is discarded there
+  /* What the booking endpoint will accept. Anything else is discarded there
      and replaced with the default, silently, so a class added above without a
-     `crm` has to fail loudly here instead. */
+     `crm` has to fail loudly here instead.
+
+     The last two are PENDING: the endpoint's own list does not carry them yet,
+     so until PROGRAMS in supabase/functions/_shared/trial-emails.ts gains them
+     these two classes still arrive as Adult BJJ. Sending them now is harmless
+     (the endpoint substitutes exactly what it substitutes today) and means the
+     site needs no second change once that deploy happens. The real class is in
+     the note either way. */
   var CRM_PROGRAMS = ['Adult BJJ', 'Kids 3-6', 'Kids 7-12', 'Teens', 'Wrestling', 'Womens'];
+  var CRM_PROGRAMS_PENDING = ['Strength & Conditioning', 'Open Mat'];
 
   /**
    * Which of the CRM's programmes a class belongs to.

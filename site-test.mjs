@@ -172,7 +172,12 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
 // email as one. A class added without a valid `crm` fails here instead.
 {
   const js = readFileSync(join(ROOT, 'booking.js'), 'utf8')
-  const ALLOWED = ['Adult BJJ', 'Kids 3-6', 'Kids 7-12', 'Teens', 'Wrestling', 'Womens']
+  // The six the endpoint accepts today, plus the two it will accept once
+  // PROGRAMS in _shared/trial-emails.ts is extended. Sending a pending one
+  // degrades to exactly today's behaviour rather than breaking.
+  const LIVE = ['Adult BJJ', 'Kids 3-6', 'Kids 7-12', 'Teens', 'Wrestling', 'Womens']
+  const PENDING = ['Strength & Conditioning', 'Open Mat']
+  const ALLOWED = LIVE.concat(PENDING)
   const entries = [...js.matchAll(/\{name:'(.*?)',[^}]*?crm:'(.*?)'\}/g)]
   const missing = [...js.matchAll(/\{name:'(.*?)', ?type:.*?\}/g)]
     .filter(m => !/crm:/.test(m[0])).map(m => m[1])
