@@ -127,7 +127,7 @@
       var goldText = s.goldMedals ? s.goldMedals : '267';
       var winsText = s.totalWins ? s.totalWins : (s.totalMatches ? s.totalMatches : '890');
       heroSub.textContent = goldText + ' gold medals. ' + winsText +
-        '+ wins. IBJJF Pan Am, ADCC, and JJWL champions \u2014 built from the ground up in Fulshear.';
+        '+ wins. IBJJF Pan Am, ADCC, and JJWL champions, built from the ground up in Fulshear.';
     }
 
     // ── Hero stat: "In Texas". Update state rank ──
@@ -650,10 +650,22 @@
       if (btn) { btn.disabled = true; btn.textContent = 'Sending\u2026'; }
 
       // The <select> holds slugs; the Leads board is read by people.
+      /* These are the CRM's six programmes, not free text. The booking endpoint
+         accepts only its own list and silently substitutes the default for
+         anything else, so 'Strength & Conditioning' was being filed, and
+         emailed, as Adult BJJ. Until the endpoint learns that programme the
+         honest label is the one the class actually sits under, and the slug
+         itself goes in the note so the enquiry is not misread at the desk. */
       var PROGRAM_LABELS = {
         'kids-3-6': 'Kids 3-6', 'kids-7-12': 'Kids 7-12', 'teens': 'Teens',
         'adult-gi': 'Adult BJJ', 'adult-nogi': 'Adult BJJ',
         'competition': 'Adult BJJ', 'wrestling': 'Wrestling',
+        'strength-conditioning': 'Adult BJJ'
+      };
+      var PROGRAM_ASKED = {
+        'kids-3-6': 'Kids 3-6', 'kids-7-12': 'Kids 7-12', 'teens': 'Teens',
+        'adult-gi': 'Adult Gi', 'adult-nogi': 'Adult No-Gi',
+        'competition': 'Competition team', 'wrestling': 'Wrestling',
         'strength-conditioning': 'Strength & Conditioning'
       };
       var val = function (n) {
@@ -666,7 +678,14 @@
         email: val('email'),
         phone: val('phone'),
         program: PROGRAM_LABELS[val('program')] || '',
-        note: val('message')
+        note: (function () {
+          // Only worth saying when the two differ, which happens exactly where
+          // the CRM has no matching programme and the label had to be widened.
+          var slug = val('program'), asked = PROGRAM_ASKED[slug];
+          var parts = (asked && asked !== PROGRAM_LABELS[slug]) ? ['Asked about ' + asked] : [];
+          if (val('message')) parts.push(val('message'));
+          return parts.join(', ');
+        })()
       }).then(function (ok) {
         if (btn) { btn.disabled = false; btn.textContent = original; }
         if (ok) {
@@ -675,7 +694,7 @@
         } else {
           // Telling somebody they are booked when nothing was recorded is
           // worse than telling them to call.
-          alert('Sorry \u2014 we could not send that. Please call the academy on (281) 393-7983 and we will book you in.');
+          alert('Sorry, we could not send that. Please call the academy on (281) 393-7983 and we will book you in.');
         }
       });
     });
@@ -1725,7 +1744,7 @@
     { name: 'Jay G.', text: 'I cannot say enough positive things about Labyrinth BJJ and the owner Tony, who himself leads the classes. My daughter 11, son 14 and I, 45 years young, started training here at the beginning of 2023. From the moment you step in, you feel the passion.', time: '2 years ago' },
     { name: 'Justin McAnally', text: 'Incredible gym with an incredible culture. If you are an adult looking to get started this is the place to go. The coaches and more advanced folks are all extremely helpful. This is also the absolute best place if you have kids looking to train.', time: '2 years ago' },
     { name: 'Israel', text: 'Our daughters started training at Labyrinth Jiu-jitsu about a year ago. We wanted to boost their confidence and get them active. They\'ve come a long way in a year. We\'re so happy with their progress.', time: '2 years ago' },
-    { name: 'Hashir Azam', text: 'Absolutely great experience at Labyrinth! The vibes were awesome from the moment I walked in. Tony was a fantastic instructor \u2014 super knowledgeable and welcoming. The mats and facility were clean and well-maintained.', time: '8 months ago' },
+    { name: 'Hashir Azam', text: 'Absolutely great experience at Labyrinth! The vibes were awesome from the moment I walked in. Tony was a fantastic instructor, super knowledgeable and welcoming. The mats and facility were clean and well-maintained.', time: '8 months ago' },
     { name: 'Jesse Lea', text: 'This place is the real deal. The team at Labyrinth places value on learning the art of jiu jitsu correctly allowing children and adults to take pride in their technique. It is a great place for beginners and skilled practitioners alike.', time: '2 years ago' },
     { name: 'Armand S.', text: 'We\'ve had an outstanding experience at Labyrinth, where our kids 7 and 4, transitioned from Taekwondo. The instructors, led by Professor Tony, are not only highly skilled but also excel in engaging children of all ages.', time: 'a year ago' },
     { name: 'Jared Vevera', text: 'The training and culture at Labyrinth Brazilian Jiu Jitsu is top notch. I received a warm welcome my first day at the gym and that community has only grown stronger since I\'ve been here.', time: '10 months ago' },

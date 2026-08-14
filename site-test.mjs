@@ -142,7 +142,9 @@ const bookingJs = readFileSync(join(ROOT,'booking.js'),'utf8')
 const DAYFULL = {Mon:'Monday',Tue:'Tuesday',Wed:'Wednesday',Thu:'Thursday',Fri:'Friday',Sat:'Saturday',Sun:'Sunday'}
 const jsArray = name => {
   const body = bookingJs.match(new RegExp('var ' + name + ' = \\[([\\s\\S]*?)\\];'))[1]
-  return new Set([...body.matchAll(/\{name:'(.*?)', ?type:'(.*?)', ?day:'(.*?)', ?time:'(.*?)'\}/g)]
+  // `crm:` follows `time:` on every entry now, so the closing brace is no
+  // longer straight after the time and the old anchor swallowed it whole.
+  return new Set([...body.matchAll(/\{name:'(.*?)', ?type:'(.*?)', ?day:'(.*?)', ?time:'(.*?)'[,}]/g)]
     .map(m => [m[1].replace(/\\u2013/g,'\u2013'), m[2], DAYFULL[m[3]], m[4]].join('|')))
 }
 const pyArray = expr => new Set(JSON.parse(execFileSync('python3', ['-c',
@@ -162,6 +164,33 @@ compare('kids trials',
   pyArray("[[n+((' ('+a+')') if a else ''),st,d,t] for d,t,n,a,st,au,f in s.CLASSES if 'trial' in f]"))
 check('L1i schedule_data.py and booking.js agree on the timetable',
   drift.length === 0, '\n    ' + drift.join('\n    '))
+
+// ── L1j: every bookable class maps to a programme the CRM will accept ──
+// The booking endpoint validates `program` against its own six values and
+// replaces anything else with the default, without saying so. That is why
+// every trial, kids included, arrived as "Adult BJJ" and was confirmed by
+// email as one. A class added without a valid `crm` fails here instead.
+{
+  const js = readFileSync(join(ROOT, 'booking.js'), 'utf8')
+  const ALLOWED = ['Adult BJJ', 'Kids 3-6', 'Kids 7-12', 'Teens', 'Wrestling', 'Womens']
+  const entries = [...js.matchAll(/\{name:'(.*?)',[^}]*?crm:'(.*?)'\}/g)]
+  const missing = [...js.matchAll(/\{name:'(.*?)', ?type:.*?\}/g)]
+    .filter(m => !/crm:/.test(m[0])).map(m => m[1])
+  const wrong = entries.filter(m => !ALLOWED.includes(m[2])).map(m => `${m[1]} -> ${m[2]}`)
+  check('L1j every bookable class carries a CRM programme the endpoint accepts',
+    entries.length > 0 && missing.length === 0 && wrong.length === 0,
+    [...missing.map(m => 'no crm: ' + m), ...wrong].join('; '))
+
+  // The kids classes must not be filed as adult ones, which is the bug a
+  // reader of the confirmation email actually saw.
+  const kidsBlock = js.slice(js.indexOf('KIDS_TRIAL_CLASSES = ['))
+  const kids = [...kidsBlock.slice(0, kidsBlock.indexOf('];')).matchAll(/crm:'(.*?)'/g)].map(m => m[1])
+  check('L1j kids trial classes are not filed as Adult BJJ',
+    kids.length === 4 && kids.every(k => k !== 'Adult BJJ'), kids.join(', '))
+
+  check('L1j the booking payload sends the CRM programme, not the display name',
+    /program: data\.crmProgram/.test(js) && !/program: data\.className/.test(js))
+}
 
 // ── L2: no .html blog links survive ──
 await page.goto('http://localhost:4620/blog/', { waitUntil:'domcontentloaded' })

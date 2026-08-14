@@ -30,26 +30,32 @@
   'use strict';
 
   // Schedule data for class picker
+  /* `crm` is the programme the CRM files the lead under, and it is not the
+     same string as `name`. The booking endpoint takes the programme from a
+     public form, so it accepts only its own six values and quietly defaults
+     anything else to "Adult BJJ" — which is why every trial booked here, kids
+     included, arrived labelled Adult BJJ and went out in a confirmation email
+     saying so. The display name is what the visitor reads; `crm` is what the
+     pipeline is told. Both travel: the exact class goes in the note. */
   var ADULT_CLASSES = [
-    {name:'Adult BJJ', type:'Gi', day:'Mon', time:'6:30 AM'},
-    {name:'Adult BJJ', type:'Gi', day:'Mon', time:'11:00 AM'},
-    {name:'Adult BJJ', type:'Gi', day:'Mon', time:'6:30 PM'},
-    {name:'Adult BJJ', type:'No-Gi', day:'Tue', time:'6:30 AM'},
-    {name:'Adult BJJ', type:'No-Gi', day:'Tue', time:'6:30 PM'},
-    {name:'Adult BJJ', type:'Gi', day:'Wed', time:'6:30 AM'},
-    {name:'Adult BJJ', type:'No-Gi', day:'Wed', time:'11:00 AM'},
-    {name:'Adult BJJ', type:'Gi', day:'Wed', time:'6:30 PM'},
-    {name:'Adult BJJ', type:'No-Gi', day:'Thu', time:'6:30 AM'},
-    {name:'Adult BJJ', type:'No-Gi', day:'Thu', time:'6:30 PM'},
-    {name:'Adult BJJ', type:'Gi', day:'Fri', time:'11:00 AM'},
-    {name:'Adult Comp', type:'Gi', day:'Fri', time:'6:30 PM'},
-    {name:'Adult Comp', type:'No-Gi', day:'Sat', time:'9:00 AM'},
-    {name:'Adult & Teens', type:'No-Gi', day:'Sat', time:'11:00 AM'},
-    {name:'Strength & Conditioning', type:'', day:'Tue', time:'4:15 PM'},
-    {name:'Strength & Conditioning', type:'', day:'Thu', time:'4:15 PM'},
-    {name:'Open Mat', type:'', day:'Sun', time:'10:30 AM'}
+    {name:'Adult BJJ', type:'Gi', day:'Mon', time:'6:30 AM', crm:'Adult BJJ'},
+    {name:'Adult BJJ', type:'Gi', day:'Mon', time:'11:00 AM', crm:'Adult BJJ'},
+    {name:'Adult BJJ', type:'Gi', day:'Mon', time:'6:30 PM', crm:'Adult BJJ'},
+    {name:'Adult BJJ', type:'No-Gi', day:'Tue', time:'6:30 AM', crm:'Adult BJJ'},
+    {name:'Adult BJJ', type:'No-Gi', day:'Tue', time:'6:30 PM', crm:'Adult BJJ'},
+    {name:'Adult BJJ', type:'Gi', day:'Wed', time:'6:30 AM', crm:'Adult BJJ'},
+    {name:'Adult BJJ', type:'No-Gi', day:'Wed', time:'11:00 AM', crm:'Adult BJJ'},
+    {name:'Adult BJJ', type:'Gi', day:'Wed', time:'6:30 PM', crm:'Adult BJJ'},
+    {name:'Adult BJJ', type:'No-Gi', day:'Thu', time:'6:30 AM', crm:'Adult BJJ'},
+    {name:'Adult BJJ', type:'No-Gi', day:'Thu', time:'6:30 PM', crm:'Adult BJJ'},
+    {name:'Adult BJJ', type:'Gi', day:'Fri', time:'11:00 AM', crm:'Adult BJJ'},
+    {name:'Adult Comp', type:'Gi', day:'Fri', time:'6:30 PM', crm:'Adult BJJ'},
+    {name:'Adult Comp', type:'No-Gi', day:'Sat', time:'9:00 AM', crm:'Adult BJJ'},
+    {name:'Adult & Teens', type:'No-Gi', day:'Sat', time:'11:00 AM', crm:'Adult BJJ'},
+    {name:'Strength & Conditioning', type:'', day:'Tue', time:'4:15 PM', crm:'Adult BJJ'},
+    {name:'Strength & Conditioning', type:'', day:'Thu', time:'4:15 PM', crm:'Adult BJJ'},
+    {name:'Open Mat', type:'', day:'Sun', time:'10:30 AM', crm:'Adult BJJ'}
   ];
-
   /* The classes a child who has never trained here may book into.
      Friday is the Gi afternoon and covers every age from three up. Saturday
      morning is No-Gi and starts at seven, because there is no 3\u20136 class on a
@@ -57,12 +63,24 @@
      is either a regular class that trial students do not drop into or an
      advanced one with a belt requirement. */
   var KIDS_TRIAL_CLASSES = [
-    {name:'Kids BJJ (3\u20136)', type:'Gi', day:'Fri', time:'4:45 PM'},
-    {name:'Kids BJJ Comp (7\u201312)', type:'Gi', day:'Fri', time:'5:15 PM'},
-    {name:'Teens BJJ Comp (12\u201315)', type:'Gi', day:'Fri', time:'5:15 PM'},
-    {name:'Kids Grappling (7\u201312)', type:'No-Gi', day:'Sat', time:'10:00 AM'}
+    {name:'Kids BJJ (3\u20136)', type:'Gi', day:'Fri', time:'4:45 PM', crm:'Kids 3-6'},
+    {name:'Kids BJJ Comp (7\u201312)', type:'Gi', day:'Fri', time:'5:15 PM', crm:'Kids 7-12'},
+    {name:'Teens BJJ Comp (12\u201315)', type:'Gi', day:'Fri', time:'5:15 PM', crm:'Teens'},
+    {name:'Kids Grappling (7\u201312)', type:'No-Gi', day:'Sat', time:'10:00 AM', crm:'Kids 7-12'}
   ];
 
+  /* The six the booking endpoint will accept. Anything else is discarded there
+     and replaced with the default, silently, so a class added above without a
+     `crm` has to fail loudly here instead. */
+  var CRM_PROGRAMS = ['Adult BJJ', 'Kids 3-6', 'Kids 7-12', 'Teens', 'Wrestling', 'Womens'];
+
+  function crmProgramFor(name) {
+    var all = ADULT_CLASSES.concat(KIDS_TRIAL_CLASSES);
+    for (var i = 0; i < all.length; i++) {
+      if (all[i].name === name && CRM_PROGRAMS.indexOf(all[i].crm) !== -1) return all[i].crm;
+    }
+    return 'Adult BJJ';
+  }
   var DAY_MAP = {Sun:0, Mon:1, Tue:2, Wed:3, Thu:4, Fri:5, Sat:6};
   var DAY_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   var MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -223,7 +241,7 @@
       html += '<div class="booking-class-row" data-idx="' + i + '">';
       html += '<span class="booking-class-row__day">' + cls.day + '</span>';
       html += '<span class="booking-class-row__time">' + cls.time + '</span>';
-      html += '<span class="booking-class-row__name">' + cls.name + (cls.type ? ' \u2014 ' + cls.type : '') + '</span>';
+      html += '<span class="booking-class-row__name">' + cls.name + (cls.type ? ', ' + cls.type : '') + '</span>';
       html += '<span class="booking-class-row__arrow">\u2192</span>';
       html += '</div>';
     });
@@ -275,7 +293,8 @@
 
     // Store class info for submission
     var classInfo = {
-      className: className + (typeLabel ? ' \u2014 ' + typeLabel : ''),
+      className: className + (typeLabel ? ', ' + typeLabel : ''),
+      crmProgram: crmProgramFor(className),
       classDay: dayFull,
       classTime: timeStr,
       classDate: dateStr
@@ -304,6 +323,7 @@
         email: emailVal,
         phone: phoneVal,
         className: classInfo.className,
+        crmProgram: classInfo.crmProgram,
         classDay: classInfo.classDay,
         classTime: classInfo.classTime,
         classDate: classInfo.classDate
@@ -335,12 +355,12 @@
       name: data.name,
       email: data.email,
       phone: data.phone,
-      program: data.className,
+      program: data.crmProgram,
       // They picked a real class off the schedule, so the lead arrives already
       // at "Trial Booked" with the right time, and the confirmation email
       // names that class instead of promising to be in touch.
       trialAt: toCentralISO(data.classDate, data.classTime),
-      note: data.classDay + ' ' + data.classTime + ' \u2014 booked from the website'
+      note: data.className + ', ' + data.classDay + ' ' + data.classTime + ', booked from the website'
     }).then(function (ok) {
       if (ok) {
         showBookingSuccess(data);
@@ -404,7 +424,7 @@
       var when = formatDate(getNextDayDate(cls.day));
       html += '<div class="booking-kidstrial-class">';
       html += '<div class="booking-kidstrial-class__info"><span class="booking-kidstrial-class__name">' + cls.name + '</span>';
-      html += '<span class="booking-kidstrial-class__time">' + cls.time + ' \u2014 ' + cls.type + '</span>';
+      html += '<span class="booking-kidstrial-class__time">' + cls.time + ', ' + cls.type + '</span>';
       html += '<span class="booking-kidstrial-class__date">Next: ' + when + '</span></div>';
       html += '<button class="booking-kidstrial-class__btn" data-kid-idx="' + i + '">Book This Class</button>';
       html += '</div>';
