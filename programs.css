@@ -646,17 +646,27 @@
    there, and they are all that lives here. Everything is namespaced so
    nothing outside /ennova can pick it up by accident. */
 
-/* The front page's hero photograph is a dark room; this one is a bright,
-   crowded group shot, and under the standard scrim the subtitle sat on top
-   of faces and was hard to read on a phone. Same gradient, wound up. */
-.ennova-hero .hero__bg::after {
-  background: linear-gradient(
-    to bottom,
-    rgba(10,10,10,0.86) 0%,
-    rgba(10,10,10,0.78) 40%,
-    rgba(10,10,10,0.88) 70%,
-    rgba(10,10,10,0.97) 100%
-  );
+/* The headline is two fixed phrases, and both of them have to stay whole: the
+   offer is "$0 enrollment" and "50% off month one", not "$0" and "ENROLLMENT.
+   50% OFF MONTH" and "ONE.". At the shared 40px phone size the second phrase
+   is 438px wide with 294px to put it in, so it broke into three lines and
+   orphaned "$0" on a line by itself.
+
+   Two changes buy the room. The hero pads twice over, once on .hero and again
+   on .hero__content, which costs 96px of a 390px screen; on a phone this page
+   takes the inner one back. And the size is set from the width of the longer
+   phrase rather than inherited, so the pair always lands on exactly two lines.
+   Measured, not guessed: 24px at 320, 30px at 390, up to the full 80px. */
+.ennova-hero .hero__h1-visual {
+  font-size: clamp(24px, 7.6vw, 80px);
+  white-space: nowrap;
+}
+
+/* The gold half onto its own line. The span is already gold from style.css. */
+.ennova-hero .hero__h1-visual span { display: block; }
+
+@media (max-width: 560px) {
+  .ennova-hero .hero__content { padding-left: 0; padding-right: 0; }
 }
 
 /* The front page gives every card image the same 800x600 attributes, so its
