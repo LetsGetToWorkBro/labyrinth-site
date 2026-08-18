@@ -33,21 +33,21 @@ const programs = readdirSync(join(ROOT,'programs')).filter(f=>f.endsWith('.html'
 const areas = readdirSync(join(ROOT,'areas')).filter(f=>f.endsWith('.html')&&f!=='index.html').map(f=>'/areas/'+f.replace('.html',''))
 const coaches = readdirSync(join(ROOT,'coaches')).filter(f=>f.endsWith('.html')&&f!=='index.html').map(f=>'/coaches/'+f.replace('.html',''))
 const pages = ['/', '/blog/', '/programs/', '/areas/', '/coaches/', '/schedule', '/pricing',
-  '/support', '/privacy-policy', ...posts, ...programs, ...areas, ...coaches]
+  '/support', '/privacy-policy', '/ennova', ...posts, ...programs, ...areas, ...coaches]
 const broken = []
 for (const path of pages) {
   const r = await page.goto('http://localhost:4620'+path, { waitUntil:'domcontentloaded' })
   if (r.status() !== 200) { broken.push(path + ' -> ' + r.status()); continue }
   const hrefs = await page.$$eval('a[href]', as => as.map(a => a.getAttribute('href')))
   for (const h of hrefs) {
-    if (!h || h.startsWith('http') || h.startsWith('#') || h.startsWith('mailto:') || h.startsWith('tel:')) continue
+    if (!h || h.startsWith('http') || h.startsWith('#') || h.startsWith('mailto:') || h.startsWith('tel:') || h.startsWith('sms:')) continue
     const url = new URL(h, 'http://localhost:4620' + path)
     const res = await page.request.get(url.href)
     if (res.status() !== 200) broken.push(`${path}  ->  ${h}  (${res.status()})`)
   }
 }
 check('L1 no broken internal links', broken.length === 0, '\n    ' + broken.slice(0,8).join('\n    '))
-check('L1 all 43 pages served 200', pages.length === 43, 'pages: ' + pages.length)
+check('L1 all 44 pages served 200', pages.length === 44, 'pages: ' + pages.length)
 
 // ── L1b: every program page carries the schema and the canonical it exists for ──
 // A program page whose Service block is missing is still a page, and still
@@ -125,12 +125,12 @@ const fakeAddress = areas.filter(p => {
 check('L1g no area page invents a location', fakeAddress.length === 0, fakeAddress.join(', '))
 
 // ── L1h: the generated pages match their generator ──
-const genBefore = ['schedule.html','pricing.html','support.html','coaches/index.html',
+const genBefore = ['schedule.html','pricing.html','support.html','ennova.html','coaches/index.html',
   ...coaches.map(c=>c.slice(1)+'.html')].map(f=>readFileSync(join(ROOT,f),'utf8'))
 execFileSync('python3', [join(ROOT,'scripts/build_pages.py')], { cwd: ROOT, stdio: 'ignore' })
-const genAfter = ['schedule.html','pricing.html','support.html','coaches/index.html',
+const genAfter = ['schedule.html','pricing.html','support.html','ennova.html','coaches/index.html',
   ...coaches.map(c=>c.slice(1)+'.html')].map(f=>readFileSync(join(ROOT,f),'utf8'))
-check('L1h schedule/pricing/support/coaches match scripts/build_pages.py',
+check('L1h schedule/pricing/support/ennova/coaches match scripts/build_pages.py',
   genBefore.every((b,i)=>b===genAfter[i]), 'run: python3 scripts/build_pages.py')
 
 // ── L1i: the timetable has one source ──
@@ -310,6 +310,55 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   }
   check('L1o skip link and a single main landmark on every page type',
     missing.length === 0, missing.join(', '))
+}
+
+// ── L1p: the Ennova offer stays a resident offer ──
+// It is a rate for one apartment complex, not a public promotion. If it ranks,
+// "exclusively for Ennova residents" stops meaning anything, so it is noindex,
+// absent from the sitemap, and nothing on the public site links to it. The
+// residency gate is the other half: the form must refuse to send without it.
+{
+  const html = readFileSync(join(ROOT,'ennova.html'),'utf8')
+  check('L1p the offer page is noindex', /name="robots"[^>]*noindex/.test(html))
+  check('L1p the offer page is not in the sitemap',
+    !readFileSync(join(ROOT,'sitemap.xml'),'utf8').includes('labyrinth.vision/ennova'))
+
+  const linkers = []
+  for (const f of [...readdirSync(ROOT).filter(x=>x.endsWith('.html')),
+                   ...readdirSync(join(ROOT,'blog')).map(x=>'blog/'+x),
+                   ...readdirSync(join(ROOT,'programs')).map(x=>'programs/'+x),
+                   ...readdirSync(join(ROOT,'areas')).map(x=>'areas/'+x),
+                   ...readdirSync(join(ROOT,'coaches')).map(x=>'coaches/'+x)]) {
+    if (f === 'ennova.html' || !f.endsWith('.html')) continue
+    if (/href="[^"]*\/ennova"/.test(readFileSync(join(ROOT,f),'utf8'))) linkers.push(f)
+  }
+  check('L1p nothing on the public site links to it', linkers.length === 0, linkers.join(', '))
+
+  await page.goto('http://localhost:4620/ennova', { waitUntil:'networkidle' })
+  let posted = null
+  await page.route('**/functions/v1/book-trial', route => {
+    posted = JSON.parse(route.request().postData() || '{}')
+    return route.fulfill({ status:200, contentType:'application/json', body:'{"ok":true}' })
+  })
+  const fill = async () => {
+    await page.fill('#ennovaName','Site Test'); await page.fill('#ennovaPhone','2813937983')
+    await page.fill('#ennovaEmail','test@example.com')
+  }
+  // no unit, no confirmation: must not reach the CRM
+  await fill(); await page.click('#ennovaSubmit'); await page.waitForTimeout(300)
+  check('L1p the form will not send without proof of residency', posted === null,
+    JSON.stringify(posted))
+
+  await page.fill('#ennovaUnit','B-214')
+  await page.check('#ennovaResident')
+  await page.selectOption('#ennovaProgram','kids-3-6')
+  await page.click('#ennovaSubmit'); await page.waitForTimeout(500)
+  check('L1p a complete claim reaches the CRM under the right programme',
+    posted?.program === 'Kids 3-6', JSON.stringify(posted?.program))
+  check('L1p the note names the offer and the unit for the desk',
+    /ENNOVA RESIDENT OFFER/.test(posted?.note || '') && /B-214/.test(posted?.note || ''),
+    posted?.note)
+  await page.unroute('**/functions/v1/book-trial')
 }
 
 // ── L2: no .html blog links survive ──

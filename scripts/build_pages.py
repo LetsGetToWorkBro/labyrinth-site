@@ -758,6 +758,236 @@ def render_support():
         TAIL % {"footer": FOOTER}])
 
 
+# ── /ennova ──────────────────────────────────────────────────────────────────
+#
+# A resident offer for one apartment complex, not a public promotion. Two things
+# follow from that and both are deliberate:
+#
+#   • noindex, and absent from the sitemap. "Exclusively for Ennova residents"
+#     stops meaning anything the moment the page ranks for "labyrinth bjj
+#     discount" and turns up on a coupon aggregator. The people it is for
+#     arrive by text, by QR code off the card, or by being handed the link.
+#   • nothing on the public site links here, for the same reason.
+#
+# Everything on the page comes off the printed card. No distance or drive time
+# is claimed, because nobody has measured one.
+
+ENNOVA_FAQS = [
+    ("Who can claim this?",
+     "Anybody who currently lives at Ennova Fulshear. It is a neighbour rate rather than a public promotion, so it is one offer per household and it applies to new students only. If you have trained with us before, ring us anyway and we will sort something out."),
+    ("What counts as proof of residency?",
+     "A lease, a utility bill, a parcel label, a resident portal screenshot, or the card itself if one was posted to you. A photo on your phone at the front desk is fine. We are checking that you live there, not building a file: we look, we tick you off, and we do not keep a copy."),
+    ("What exactly do I save?",
+     "The enrollment fee comes off entirely and your first month is half price. After that you are on the ordinary month-to-month rate with no contract, and you can stop whenever you like."),
+    ("Do I have to decide on the day?",
+     "No. Your first class is free whether or not you take the offer, and it is free for anybody, neighbour or not. Come and train first. The rate is there when you are ready."),
+    ("Can my child use it and can I use it too?",
+     "It is one offer per household, so it applies once. In practice that usually means putting it against whichever membership is the larger one. Ask at the desk and we will apply it wherever it saves you the most."),
+    ("How long is it open?",
+     "There is no end date advertised on the card and we are not going to invent one here. If that changes, this page changes with it."),
+]
+
+ENNOVA_PROGRAMS = [
+    ("Kids &amp; Teens, ages 3 to 15", "kids"),
+    ("Youth wrestling", "wrestling"),
+    ("Adults, Gi and No-Gi", "adult"),
+    ("Beginner classes daily", "adult"),
+    ("Strength &amp; conditioning, all ages", "adult"),
+    ("Sauna and cold plunge", "adult"),
+]
+
+
+def render_ennova():
+    url = SITE + "/ennova"
+    head = HEAD % {
+        "title": "Ennova Resident Offer | Labyrinth BJJ Fulshear",
+        "description": "A neighbour rate for Ennova Fulshear residents: no enrollment fee and half off your first month at Labyrinth BJJ.",
+        "url": url,
+        "og_title": "Ennova Resident Offer | Labyrinth BJJ",
+        "image": SITE + "/assets/og-image.jpg",
+        "schema": "",
+    }
+    # HEAD has no robots slot and adding one would mean touching every caller,
+    # so it goes in here. This is the only page that wants it.
+    head = head.replace('<link rel="canonical"',
+                        '<meta name="robots" content="noindex, follow">\n<link rel="canonical"', 1)
+
+    included = "\n".join(
+        '      <li>%s</li>' % name for name, _ in ENNOVA_PROGRAMS)
+
+    return "\n".join([head, NAV, """
+<header class="prog-hero ennova-hero">
+  <div class="container">
+    <p class="section-label">Neighborly rate</p>
+    <h1 class="prog-hero__title">$0 Enrollment</h1>
+    <p class="prog-hero__lead"><strong>Plus 50%% off your first month</strong>, for people who live at Ennova Fulshear. Our head instructor lives there too, which is the whole reason this exists.</p>
+    <div class="prog-hero__cta">
+      <a href="sms:+12813937983?&amp;body=ENNOVA" class="btn btn--gold">Text ENNOVA to 281-393-7983</a>
+      <a href="#claim" class="btn btn--ghost">Claim it here</a>
+    </div>
+    <div class="prog-facts">
+      <div class="prog-fact"><div class="prog-fact__label">Enrollment fee</div><div class="prog-fact__value"><em>$0</em></div></div>
+      <div class="prog-fact"><div class="prog-fact__label">First month</div><div class="prog-fact__value"><em>50%%</em> off</div></div>
+      <div class="prog-fact"><div class="prog-fact__label">Contract</div><div class="prog-fact__value">None</div></div>
+      <div class="prog-fact"><div class="prog-fact__label">First class</div><div class="prog-fact__value">Free anyway</div></div>
+    </div>
+  </div>
+</header>
+
+<section class="prog-section prog-section--surface">
+  <div class="container">
+    <div class="ennova-gate fade-in">
+      <h2 class="ennova-gate__title">You need to live at Ennova Fulshear</h2>
+      <p>This is a neighbour rate, so it is only for current residents. Bring anything that shows you live there: a lease, a utility bill, a parcel label, the resident portal on your phone, or the card if one was posted to you. A photo on your phone at the desk is enough.</p>
+      <p class="ennova-gate__note">We are checking that you live there, not building a file. We look, we tick you off the list, and we do not keep a copy.</p>
+    </div>
+  </div>
+</section>
+
+<section class="prog-section">
+  <div class="container">
+    <div class="coach-note fade-in">
+      <div class="coach-note__shot">
+        <picture><source srcset="/assets/coach-tony.webp" type="image/webp"><img src="/assets/coach-tony.jpg" alt="Prof. Anthony Curry, Head Instructor and Owner at Labyrinth BJJ" width="200" height="200" loading="lazy"></picture>
+      </div>
+      <div class="coach-note__body">
+        <p class="ennova-badge">#9 in the nation &middot; #1 in Texas</p>
+        <h2 class="coach-note__title">&ldquo;I live at Ennova too. Come and train with your neighbours.&rdquo;</h2>
+        <p class="coach-note__who"><strong>Prof. Anthony Curry</strong>, Head Instructor &amp; Owner. Black belt, 14+ years.</p>
+        <p>The academy is at 6615 W Cross Creek Bend Ln, Suite 400. If you have driven past it, that is us.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="prog-section prog-section--surface">
+  <div class="container">
+    <div class="fade-in">
+      <p class="section-label">What the membership covers</p>
+      <h2 class="section-title section-title--lg">EVERYTHING, NOT A TIER</h2>
+    </div>
+    <div class="prog-prose fade-in">
+      <ul class="ennova-list">
+%(included)s
+      </ul>
+      <p>The <a href="/schedule">full timetable</a> runs seven days a week, and <a href="/pricing">every price we charge</a> is published. The offer comes off whichever membership suits you.</p>
+    </div>
+  </div>
+</section>
+
+<section class="prog-section" id="claim">
+  <div class="container container--narrow">
+    <div class="fade-in">
+      <p class="section-label">Two minutes</p>
+      <h2 class="section-title section-title--lg">CLAIM THE NEIGHBOUR RATE</h2>
+      <p class="prog-hero__lead">Or text <strong>ENNOVA</strong> to <a href="tel:2813937983">281-393-7983</a> if that is easier. Either way we will reply with class times that suit you.</p>
+    </div>
+    <form class="ennova-form" id="ennovaForm" novalidate>
+      <div class="ennova-form__row">
+        <label class="ennova-field"><span>Your name</span>
+          <input type="text" name="name" id="ennovaName" autocomplete="name" required></label>
+        <label class="ennova-field"><span>Phone</span>
+          <input type="tel" name="phone" id="ennovaPhone" autocomplete="tel" required></label>
+      </div>
+      <div class="ennova-form__row">
+        <label class="ennova-field"><span>Email</span>
+          <input type="email" name="email" id="ennovaEmail" autocomplete="email" required></label>
+        <label class="ennova-field"><span>Your Ennova building or unit</span>
+          <input type="text" name="unit" id="ennovaUnit" autocomplete="off" required></label>
+      </div>
+      <label class="ennova-field"><span>Who is it for?</span>
+        <select name="program" id="ennovaProgram">
+          <option value="kids-3-6">Child, ages 3 to 6</option>
+          <option value="kids-7-12">Child, ages 7 to 12</option>
+          <option value="teens">Teenager, 13 to 15</option>
+          <option value="adult" selected>Myself, adult classes</option>
+          <option value="wrestling">Youth wrestling</option>
+        </select></label>
+      <label class="ennova-check">
+        <input type="checkbox" name="resident" id="ennovaResident" required>
+        <span>I currently live at Ennova Fulshear and can show proof at the desk.</span>
+      </label>
+      <button type="submit" class="btn btn--gold ennova-form__submit" id="ennovaSubmit">Claim the offer</button>
+      <p class="ennova-form__error" id="ennovaError" role="alert" hidden></p>
+      <p class="ennova-form__ok" id="ennovaOk" role="status" hidden>Got it. We will be in touch shortly on the number you gave. Bring proof of residency to your first visit and we will apply the rate there.</p>
+    </form>
+    <p class="ennova-fine">Show this page, the card, or proof of Ennova residency. New students only. Month to month, no contracts. One offer per household.</p>
+  </div>
+</section>
+
+<section class="faq">
+  <div class="container container--narrow">
+    <div class="fade-in">
+      <p class="section-label">Before you ask</p>
+      <h2 class="section-title section-title--lg">THE SMALL PRINT, IN PLAIN WORDS</h2>
+    </div>
+    <div class="faq__list stagger">
+%(faqs)s
+    </div>
+  </div>
+</section>
+
+<script>
+(function () {
+  var form = document.getElementById('ennovaForm');
+  if (!form) return;
+  /* booking.js defines LabyrinthCrm and is loaded after this block, so it does
+     not exist yet. Look it up when the form is submitted, not when the handler
+     is attached, or the button silently does nothing. */
+  var CRM = { 'kids-3-6': 'Kids 3-6', 'kids-7-12': 'Kids 7-12', 'teens': 'Teens',
+              'adult': 'Adult BJJ', 'wrestling': 'Wrestling' };
+  var ASKED = { 'kids-3-6': 'child 3-6', 'kids-7-12': 'child 7-12', 'teens': 'teenager',
+                'adult': 'adult classes', 'wrestling': 'youth wrestling' };
+  var btn = document.getElementById('ennovaSubmit');
+  var err = document.getElementById('ennovaError');
+  var ok = document.getElementById('ennovaOk');
+  var v = function (id) { return (document.getElementById(id).value || '').trim(); };
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    err.hidden = true;
+    var resident = document.getElementById('ennovaResident').checked;
+    if (!v('ennovaName') || !v('ennovaPhone') || v('ennovaEmail').indexOf('@') === -1
+        || !v('ennovaUnit') || !resident) {
+      err.textContent = 'Please fill in every box, including your Ennova unit, and confirm you live there.';
+      err.hidden = false;
+      return;
+    }
+    var crm = window.LabyrinthCrm;
+    if (!crm || !crm.send) {
+      err.textContent = 'Something did not load properly. Please call us on 281-393-7983 and we will apply it over the phone.';
+      err.hidden = false;
+      return;
+    }
+    var slug = document.getElementById('ennovaProgram').value;
+    btn.disabled = true;
+    var original = btn.textContent;
+    btn.textContent = 'Sending...';
+    /* The note is what the front desk reads. It has to say which offer this is
+       and which unit to check, because the programme field can only hold one of
+       the CRM's own six values and none of them mean "Ennova". */
+    crm.send({
+      name: v('ennovaName'), email: v('ennovaEmail'), phone: v('ennovaPhone'),
+      program: CRM[slug] || 'Adult BJJ',
+      note: 'ENNOVA RESIDENT OFFER ($0 enrollment + 50%% first month). Unit: '
+        + v('ennovaUnit') + '. Interested in ' + (ASKED[slug] || slug)
+        + '. Confirmed current resident on the form; check proof at the desk.'
+    }).then(function (sent) {
+      btn.disabled = false;
+      btn.textContent = original;
+      if (sent) { form.querySelectorAll('.ennova-field, .ennova-check, .ennova-form__submit')
+        .forEach(function (el) { el.style.display = 'none'; }); ok.hidden = false; }
+      else {
+        err.textContent = 'That did not send. Please call us on 281-393-7983 and we will apply it over the phone.';
+        err.hidden = false;
+      }
+    });
+  });
+})();
+</script>""" % {"included": included, "faqs": faq_block(ENNOVA_FAQS)},
+        TAIL % {"footer": FOOTER}])
+
+
 def render_coach(c):
     url = "%s/coaches/%s" % (SITE, c["slug"])
     plain = re.sub(r"&\w+;", " ", c["name"]).strip()
@@ -992,6 +1222,9 @@ def main():
     with open(os.path.join(ROOT, "support.html"), "w", encoding="utf-8") as fh:
         fh.write(render_support())
     print("wrote support.html")
+    with open(os.path.join(ROOT, "ennova.html"), "w", encoding="utf-8") as fh:
+        fh.write(render_ennova())
+    print("wrote ennova.html")
 
     out = os.path.join(ROOT, "coaches")
     if not os.path.isdir(out):
