@@ -21,10 +21,15 @@
     // Only the front page carries the numbers this updates. The program pages
     // load this same file for the nav, the accordions and the booking modal,
     // and a cross-origin fetch of a spreadsheet none of them displays is a
-    // request they should not be making. applyStats() writes to exactly these
-    // three selectors, so their absence means there is nothing to apply.
-    if (!SHEET_ID ||
-        !document.querySelector('.hero__stat-label, .stat-card__label, [data-target]')) {
+    // request they should not be making.
+    //
+    // This used to sniff for .hero__stat-label, on the reasoning that only the
+    // page with live numbers would have a hero stat row. That stopped being
+    // true the moment a second page used the hero component: /ennova has a
+    // stat row of its own ($0, 50%, None, Free), so it passed the check, made
+    // the cross-origin request, and had its headline overwritten with the
+    // front page's ranking copy. A page now has to say it wants this.
+    if (!SHEET_ID || !document.querySelector('[data-live-stats]')) {
       statsReady = Promise.resolve();
       return;
     }
@@ -105,29 +110,30 @@
       if (subValue) subValue.textContent = Math.round(s.submissionRate) + '%';
     }
 
-    // ── Hero title (h1): update ranking text dynamically while preserving SEO H1 spans ──
-    var heroVisual = document.querySelector('.hero__h1-visual');
-    if (heroVisual) {
+    // ── Hero title and subtitle ──
+    // Both of these replace whatever copy is in the HTML, so they are scoped to
+    // the hero that opted in. Every other hero on the site is selling something
+    // other than the ranking and has to keep the words it shipped with.
+    var liveHero = document.querySelector('.hero[data-live-stats]');
+    if (liveHero) {
       var natRank = s.nationalRank || 9;
       var stRank  = s.stateRank || 1;
-      heroVisual.innerHTML = 'RANKED #' + natRank + ' IN THE NATION. <span>#' + stRank + ' IN TEXAS.</span>';
-    } else {
-      // Fallback for old markup
-      var heroTitle = document.querySelector('.hero__title');
-      if (heroTitle) {
-        var natRank = s.nationalRank || 9;
-        var stRank  = s.stateRank || 1;
-        heroTitle.innerHTML = 'RANKED #' + natRank + ' IN THE NATION. <span>#' + stRank + ' IN TEXAS.</span>';
+      // .hero__h1-visual keeps the SEO span above it intact; .hero__title is
+      // the older markup, where the whole heading is the ranking.
+      var heroHeading = liveHero.querySelector('.hero__h1-visual') ||
+                        liveHero.querySelector('.hero__title');
+      if (heroHeading) {
+        heroHeading.innerHTML = 'RANKED #' + natRank + ' IN THE NATION. <span>#' +
+          stRank + ' IN TEXAS.</span>';
       }
-    }
 
-    // ── Hero subtitle text ──
-    var heroSub = document.querySelector('.hero__subtitle');
-    if (heroSub) {
-      var goldText = s.goldMedals ? s.goldMedals : '267';
-      var winsText = s.totalWins ? s.totalWins : (s.totalMatches ? s.totalMatches : '890');
-      heroSub.textContent = goldText + ' gold medals. ' + winsText +
-        '+ wins. IBJJF Pan Am, ADCC, and JJWL champions, built from the ground up in Fulshear.';
+      var heroSub = liveHero.querySelector('.hero__subtitle');
+      if (heroSub) {
+        var goldText = s.goldMedals ? s.goldMedals : '267';
+        var winsText = s.totalWins ? s.totalWins : (s.totalMatches ? s.totalMatches : '890');
+        heroSub.textContent = goldText + ' gold medals. ' + winsText +
+          '+ wins. IBJJF Pan Am, ADCC, and JJWL champions, built from the ground up in Fulshear.';
+      }
     }
 
     // ── Hero stat: "In Texas". Update state rank ──

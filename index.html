@@ -563,7 +563,10 @@ button {
 
 <!-- ======== HERO ======== -->
 <main id="main">
-<section class="hero" id="hero">
+<!-- data-live-stats: this hero's headline, subtitle and stat row are rewritten
+     from the Google Sheet by app.js. It is an opt-in because the hero component
+     is shared now, and without it applyStats() overwrote /ennova's headline. -->
+<section class="hero" id="hero" data-live-stats>
   <canvas id="hero-maze-canvas"></canvas>
   <!-- A still, not the loop. The video was busy behind the headline, and it
        cost 3.2 MB of mp4 (4.9 MB of webm) on a phone to say the same thing the

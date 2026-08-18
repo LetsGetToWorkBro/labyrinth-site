@@ -361,6 +361,43 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   await page.unroute('**/functions/v1/book-trial')
 }
 
+// ── L1q: only the front page's hero is rewritten from the spreadsheet ──
+// app.js pulls the ranking and medal counts from a Google Sheet and writes them
+// straight into .hero__h1-visual and .hero__subtitle. That was safe while the
+// front page was the only page with a hero. /ennova now uses the same hero
+// component, and the script replaced its headline with "RANKED #9 IN THE
+// NATION" and its subtitle with the medal count, live on the page a printed
+// card sends people to. A page has to carry data-live-stats to be rewritten.
+{
+  // Serve a fixed sheet so the test does not depend on the network or on what
+  // the real spreadsheet happens to say today.
+  await page.route('**/spreadsheets/**', route => route.fulfill({
+    status: 200, contentType: 'text/csv',
+    body: 'Metric,Value\nNational Rank,3\nState Rank,2\nGold Medals,999\nTotal Wins,888\n'
+  }))
+
+  await page.goto('http://localhost:4620/ennova', { waitUntil: 'networkidle' })
+  await page.waitForTimeout(600)
+  const offer = await page.evaluate(() => ({
+    h1: document.querySelector('.hero__h1-visual')?.textContent || '',
+    sub: document.querySelector('.hero__subtitle')?.textContent || ''
+  }))
+  check('L1q the offer page keeps its own headline',
+    offer.h1.includes('$0 ENROLLMENT') && !/RANKED #/.test(offer.h1), offer.h1)
+  check('L1q the offer page keeps its own subtitle',
+    offer.sub.includes('Ennova') && !/gold medals/.test(offer.sub), offer.sub)
+
+  // The other half: the front page must still be rewritten, or this guard has
+  // been "passed" by breaking the feature it is protecting.
+  await page.goto('http://localhost:4620/', { waitUntil: 'networkidle' })
+  await page.waitForTimeout(600)
+  const home = await page.evaluate(() =>
+    document.querySelector('.hero__h1-visual')?.textContent || '')
+  check('L1q the front page still takes its ranking from the sheet',
+    home.includes('RANKED #3') && home.includes('#2 IN TEXAS'), home)
+  await page.unroute('**/spreadsheets/**')
+}
+
 // ── L2: no .html blog links survive ──
 await page.goto('http://localhost:4620/blog/', { waitUntil:'domcontentloaded' })
 const dotHtml = await page.$$eval('a[href]', as => as.map(a=>a.getAttribute('href')).filter(h=>h && /[a-z0-9-]+\.html/.test(h)))
