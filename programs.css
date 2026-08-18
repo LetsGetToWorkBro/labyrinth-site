@@ -377,9 +377,6 @@
   .prog-hero__grid { grid-template-columns: 1fr; gap: var(--space-8); }
   /* Photograph first: it says what the class is faster than the heading does. */
   .prog-hero__shot { order: -1; }
-  /* Except on the offer page, where the heading is the offer. "$0 Enrollment"
-     is the fastest thing on the page and no photograph beats it. */
-  .ennova-hero .prog-hero__shot { order: 0; }
 }
 
 @media (max-width: 560px) {
@@ -644,164 +641,181 @@
 }
 
 /* ===== ENNOVA RESIDENT OFFER (/ennova) ===== */
-/* One campaign page. Everything else here is shared, so these are namespaced
-   and nothing outside /ennova can pick them up by accident. */
-/* Every other generated page clears the fixed nav through .prog-crumbs. This
-   one has no breadcrumb (it is a campaign page, not part of the tree), so it
-   has to buy that space itself or the nav sits on top of the eyebrow. */
-.ennova-hero { padding-top: calc(var(--nav-height) + var(--space-10)); }
-.ennova-hero .prog-hero__title { color: var(--gold); }
+/* The page is built out of the landing page's own components: .hero,
+   .programs__grid, .trial, .faq. Only three things on it have no equivalent
+   there, and they are all that lives here. Everything is namespaced so
+   nothing outside /ennova can pick it up by accident. */
 
-.ennova-badge {
-  display: inline-block;
-  font-size: 0.6875rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--gold);
-  border: 1px solid rgba(200,162,76,0.45);
-  border-radius: 999px;
-  padding: 5px 12px;
-  margin-bottom: var(--space-4);
+/* The front page's hero photograph is a dark room; this one is a bright,
+   crowded group shot, and under the standard scrim the subtitle sat on top
+   of faces and was hard to read on a phone. Same gradient, wound up. */
+.ennova-hero .hero__bg::after {
+  background: linear-gradient(
+    to bottom,
+    rgba(10,10,10,0.86) 0%,
+    rgba(10,10,10,0.78) 40%,
+    rgba(10,10,10,0.88) 70%,
+    rgba(10,10,10,0.97) 100%
+  );
 }
 
-/* The eligibility panel is the one thing on the page that must not be skimmed
-   past, so it is the only block with a gold edge. */
-.ennova-gate {
-  border: 1px solid rgba(200,162,76,0.45);
-  border-left: 3px solid var(--gold);
-  border-radius: var(--radius-md);
-  background: var(--surface-elevated, var(--surface));
-  padding: var(--space-7);
-  max-width: 70ch;
-}
-.ennova-gate__title {
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 1.375rem;
-  margin-bottom: var(--space-4);
-}
-.ennova-gate p { color: var(--text-muted); line-height: 1.7; margin-bottom: var(--space-4); }
-.ennova-gate p:last-child { margin-bottom: 0; }
-.ennova-gate__note { font-size: 0.9375rem; color: var(--text-faint); }
+/* The front page gives every card image the same 800x600 attributes, so its
+   cards line up despite .program-card__image's aspect-ratio never getting a
+   say: a width/height pair on the <img> is a presentational hint that still
+   counts as a real height. These five photographs are their own shapes, one
+   of them portrait, so the ratio has to be allowed to decide. Scoped here
+   rather than fixed in style.css, which would restyle the front page. */
+.ennova-programs .program-card__image { height: auto; }
 
-.coach-note { display: flex; gap: var(--space-8); align-items: flex-start; }
-.coach-note__shot { flex: 0 0 140px; }
-.coach-note__shot img {
-  width: 140px; height: 140px; border-radius: 50%;
-  object-fit: cover; border: 2px solid var(--gold); display: block;
-}
-.coach-note__title {
-  font-family: var(--font-display);
-  font-weight: 600; font-size: clamp(1.25rem, 2.4vw, 1.75rem);
-  line-height: 1.3; margin-bottom: var(--space-3);
-}
-.coach-note__who { color: var(--text-muted); margin-bottom: var(--space-4); }
-.coach-note__body p { color: var(--text-muted); line-height: 1.7; }
-
-.ennova-list { list-style: none; margin: 0 0 var(--space-6); padding: 0; }
-.ennova-list li {
-  position: relative; padding-left: 26px;
-  margin-bottom: var(--space-3); color: var(--text-muted); line-height: 1.6;
-}
-.ennova-list li::before {
-  content: ""; position: absolute; left: 4px; top: 8px;
-  width: 8px; height: 8px; border-radius: 50%; background: var(--gold);
-}
-
-.ennova-form { margin-top: var(--space-8); }
-.ennova-form__row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
-.ennova-field { display: block; margin-bottom: var(--space-4); min-width: 0; }
-.ennova-field > span {
-  display: block; font-size: 0.8125rem; color: var(--text-muted);
-  margin-bottom: var(--space-2);
-}
-.ennova-field input, .ennova-field select {
-  width: 100%; min-width: 0;
-  background: var(--bg); color: var(--text);
-  border: 1px solid var(--border-strong); border-radius: var(--radius-sm);
-  padding: 12px 14px; font-size: 15px; min-height: 48px;
-}
-.ennova-field input:focus, .ennova-field select:focus {
-  outline: none; border-color: var(--gold);
-}
-.ennova-check {
-  display: flex; gap: 10px; align-items: flex-start;
-  margin: var(--space-2) 0 var(--space-6);
-  color: var(--text-muted); font-size: 0.9375rem; line-height: 1.5;
-}
-.ennova-check input { margin-top: 3px; width: 18px; height: 18px; flex: 0 0 auto; }
-.ennova-form__submit { width: 100%; }
-.ennova-form__error { margin-top: var(--space-4); color: var(--red-hover, #E74C3C); }
-.ennova-form__ok { margin-top: var(--space-4); color: var(--gold); line-height: 1.6; }
-.ennova-fine {
-  margin-top: var(--space-6);
-  font-size: 0.8125rem; color: var(--text-faint); line-height: 1.6;
-}
-
-@media (max-width: 640px) {
-  .ennova-form__row { grid-template-columns: 1fr; }
-  .coach-note { flex-direction: column; gap: var(--space-5); }
-  .coach-note__shot { flex: 0 0 auto; }
-  .ennova-gate { padding: var(--space-5); }
-}
-
-/* The four things somebody is choosing between, each with a photograph of the
-   room it happens in. auto-fit rather than a fixed four, so it does not leave
-   a hole if one is ever dropped. */
-.ennova-cards {
+/* Three numbered steps for proving you live there. Same card treatment as
+   .program-card so the section does not read as a different website. */
+.ennova-proof {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--space-5);
-  margin-top: var(--space-10);
+  margin-top: var(--space-12);
 }
-.ennova-card {
-  margin: 0;
+
+.ennova-proof__item {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  overflow: hidden;
-}
-.ennova-card picture { display: block; }
-.ennova-card img {
-  width: 100%;
-  /* height:auto is load-bearing. The width and height attributes on the <img>
-     are a presentational hint that still counts as a real height, so
-     aspect-ratio never gets to decide anything and each photograph keeps its
-     own shape: the portrait ones rendered three times taller than the others
-     and the captions came out at four different heights. */
-  height: auto;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-  display: block;
-}
-.ennova-card figcaption {
-  padding: var(--space-5);
-  font-size: 0.9375rem;
-  line-height: 1.6;
-  color: var(--text-muted);
-}
-.ennova-card figcaption strong {
-  display: block;
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 1.0625rem;
-  color: var(--text);
-  margin-bottom: var(--space-2);
+  padding: var(--space-7);
+  transition: transform var(--transition-fast), border-color var(--transition-fast);
 }
 
-.ennova-band__shot { margin: 0; }
-.ennova-band__shot picture { display: block; }
-.ennova-band__shot img {
-  width: 100%;
-  max-height: 460px;
-  object-fit: cover;
-  border-radius: var(--radius-lg);
+.ennova-proof__item:hover {
+  transform: translateY(-5px);
+  border-color: rgba(200, 162, 76, 0.3);
+}
+
+.ennova-proof__item > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(200, 162, 76, 0.35);
+  background: rgba(200, 162, 76, 0.08);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.0625rem;
+  color: var(--gold);
+  margin-bottom: var(--space-5);
+}
+
+.ennova-proof__item p {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--text-muted);
+}
+
+/* Anthony saying he lives there is the single most persuasive line on the
+   page, so it gets the room a pull quote gets and nothing else competes. */
+.ennova-quote {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: var(--space-10);
+  align-items: center;
+  background: var(--surface);
   border: 1px solid var(--border);
+  border-left: 3px solid var(--gold);
+  border-radius: var(--radius-lg);
+  padding: var(--space-10);
+}
+
+.ennova-quote__shot picture { display: block; }
+
+.ennova-quote__shot img {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--gold);
   display: block;
 }
-.ennova-band__shot figcaption {
-  margin-top: var(--space-4);
-  font-size: 0.875rem;
+
+.ennova-quote__body .hero__badge { margin-bottom: var(--space-5); }
+
+.ennova-quote__text {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(22px, 3vw, 34px);
+  line-height: 1.25;
+  color: var(--text);
+  margin: 0 0 var(--space-6);
+}
+
+.ennova-quote__who {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: var(--space-4);
+}
+
+.ennova-quote__who strong {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.ennova-quote__who span {
+  font-size: 13px;
+  color: var(--gold);
+  letter-spacing: 0.04em;
+}
+
+.ennova-quote__where {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+/* The claim form reuses .trial-form wholesale; these are the few bits the
+   front page's contact form does not have. */
+.ennova-check {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: var(--space-2) 0 var(--space-6);
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.ennova-check input {
+  margin-top: 3px;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  accent-color: var(--gold);
+}
+
+.trial-form__submit { width: 100%; }
+
+.ennova-form__error { margin-top: var(--space-4); color: var(--red-hover, #E74C3C); }
+.ennova-form__ok { margin-top: var(--space-4); color: var(--gold); line-height: 1.6; }
+
+.ennova-fine {
+  margin-top: var(--space-6);
+  font-size: 13px;
   color: var(--text-faint);
-  text-align: center;
+  line-height: 1.6;
+}
+
+@media (max-width: 899px) {
+  .ennova-proof { grid-template-columns: 1fr; gap: var(--space-4); }
+  .ennova-quote {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    padding: var(--space-7);
+    text-align: center;
+    justify-items: center;
+  }
+  .ennova-quote__who { align-items: center; }
+}
+
+@media (max-width: 560px) {
+  .ennova-quote__shot img { width: 140px; height: 140px; }
 }
