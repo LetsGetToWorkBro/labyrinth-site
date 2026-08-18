@@ -4,25 +4,13 @@
   X-Frame-Options: SAMEORIGIN
   Referrer-Policy: strict-origin-when-cross-origin
 
-# The stylesheets and scripts are not fingerprinted: the HTML asks for
-# /style.css, and that URL is the same before and after a deploy. Cloudflare
-# Pages defaults them to max-age=14400, while HTML is max-age=0,
-# must-revalidate. So for four hours after any CSS change, a returning visitor
-# gets the new markup styled by the old stylesheet. That is what put an
-# unstyled /ennova on a phone while the same URL was correct everywhere else.
+# Cache-Control is deliberately not set here. Cloudflare Pages serves the CSS
+# and JS with max-age=14400 and the HTML with max-age=0, must-revalidate, so a
+# returning visitor can get new markup and a four-hour-old stylesheet. That is
+# how /ennova reached a phone unstyled while the same URL was correct
+# everywhere else.
 #
-# must-revalidate costs a conditional request per file, answered with a 304 of
-# a few hundred bytes. The edge still caches; only the browser has to ask. On a
-# site that ships several times a day that is the right side of the trade.
-/style.css
-  Cache-Control: public, max-age=0, must-revalidate
-/base.css
-  Cache-Control: public, max-age=0, must-revalidate
-/programs.css
-  Cache-Control: public, max-age=0, must-revalidate
-/booking.css
-  Cache-Control: public, max-age=0, must-revalidate
-/app.js
-  Cache-Control: public, max-age=0, must-revalidate
-/booking.js
-  Cache-Control: public, max-age=0, must-revalidate
+# Overriding it from this file does not work. Pages applies the rules above to
+# /style.css and ignores a Cache-Control alongside them, which was checked
+# against production rather than assumed. The fix is scripts/stamp_assets.py,
+# which puts a content hash in the URL so a changed file is a changed URL.

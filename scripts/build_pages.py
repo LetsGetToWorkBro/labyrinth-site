@@ -36,6 +36,12 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import schedule_data  # noqa: E402
 from build_programs import NAV, FOOTER, HEAD, TAIL, PHONE, SITE, jsonld  # noqa: E402
 
+# Every page this file writes goes through stamp() so the shared CSS and JS are
+# requested with a content hash. Without it a returning visitor gets new markup
+# and a four-hour-old stylesheet; scripts/stamp_assets.py explains why.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from stamp_assets import stamp
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 PROVIDER = {
@@ -1321,16 +1327,16 @@ def coach_classes_html(c):
 
 def main():
     with open(os.path.join(ROOT, "schedule.html"), "w", encoding="utf-8") as fh:
-        fh.write(render_schedule())
+        fh.write(stamp(render_schedule()))
     print("wrote schedule.html")
     with open(os.path.join(ROOT, "pricing.html"), "w", encoding="utf-8") as fh:
-        fh.write(render_pricing())
+        fh.write(stamp(render_pricing()))
     print("wrote pricing.html")
     with open(os.path.join(ROOT, "support.html"), "w", encoding="utf-8") as fh:
-        fh.write(render_support())
+        fh.write(stamp(render_support()))
     print("wrote support.html")
     with open(os.path.join(ROOT, "ennova.html"), "w", encoding="utf-8") as fh:
-        fh.write(render_ennova())
+        fh.write(stamp(render_ennova()))
     print("wrote ennova.html")
 
     out = os.path.join(ROOT, "coaches")
@@ -1339,10 +1345,10 @@ def main():
     for c in COACHES:
         c["classes_html"] = coach_classes_html(c)
         with open(os.path.join(out, c["slug"] + ".html"), "w", encoding="utf-8") as fh:
-            fh.write(render_coach(c))
+            fh.write(stamp(render_coach(c)))
         print("wrote coaches/%s.html" % c["slug"])
     with open(os.path.join(out, "index.html"), "w", encoding="utf-8") as fh:
-        fh.write(render_coach_hub())
+        fh.write(stamp(render_coach_hub()))
     print("wrote coaches/index.html")
 
 

@@ -50,6 +50,12 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from build_programs import NAV, FOOTER, HEAD, TAIL, PHONE, SITE, jsonld  # noqa: E402
 
+# Every page this file writes goes through stamp() so the shared CSS and JS are
+# requested with a content hash. Without it a returning visitor gets new markup
+# and a four-hour-old stylesheet; scripts/stamp_assets.py explains why.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from stamp_assets import stamp
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "areas")
 ADDRESS_HTML = "6615 West Cross Creek Bend Lane, Suite&nbsp;#400, Fulshear, TX 77441"
@@ -483,11 +489,11 @@ def main():
     for a in AREAS:
         html = render(a)
         with open(os.path.join(OUT, a["slug"] + ".html"), "w", encoding="utf-8") as fh:
-            fh.write(html)
+            fh.write(stamp(html))
         words = len(re.sub(r"<[^>]+>", " ", re.sub(r"<script.*?</script>", "", html, flags=re.S)).split())
         print("wrote areas/%-24s %s  ~%d words" % (a["slug"] + ".html", a["place"].ljust(12), words))
     with open(os.path.join(OUT, "index.html"), "w", encoding="utf-8") as fh:
-        fh.write(render_hub())
+        fh.write(stamp(render_hub()))
     print("wrote areas/index.html")
 
 

@@ -398,6 +398,31 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   await page.unroute('**/spreadsheets/**')
 }
 
+// ── L1r: every page asks for the stylesheet it was built against ──
+// Cloudflare Pages serves CSS with max-age=14400 and HTML with max-age=0,
+// so for four hours after a CSS change a returning visitor gets new markup
+// and the old stylesheet. Setting Cache-Control in _headers does not work:
+// Pages applies the other headers in that file and overrides this one. The
+// fix is a content hash in the URL, and this check is what keeps it honest,
+// because a stale stamp is invisible until it reaches somebody's phone.
+{
+  const stamped = execFileSync('python3', [join(ROOT,'scripts/stamp_assets.py')],
+    { cwd: ROOT, encoding: 'utf8' })
+  check('L1r asset stamps are up to date',
+    /stamped 0 file\(s\)/.test(stamped),
+    'run: python3 scripts/stamp_assets.py\n' + stamped.trim())
+
+  // The stamp is worthless if the page stops naming the file. Check the shape
+  // on one generated page and one hand-maintained one.
+  for (const f of ['ennova.html', 'index.html']) {
+    const html = readFileSync(join(ROOT, f), 'utf8')
+    const refs = html.match(/(?:href|src)="[^"]*\/(?:style|base|programs|booking)\.css[^"]*"/g) || []
+    check(`L1r ${f} versions every stylesheet it loads`,
+      refs.length > 0 && refs.every(r => /\?v=[0-9a-f]{8}"/.test(r)),
+      refs.filter(r => !/\?v=/.test(r)).join(', ') || `found ${refs.length}`)
+  }
+}
+
 // ── L2: no .html blog links survive ──
 await page.goto('http://localhost:4620/blog/', { waitUntil:'domcontentloaded' })
 const dotHtml = await page.$$eval('a[href]', as => as.map(a=>a.getAttribute('href')).filter(h=>h && /[a-z0-9-]+\.html/.test(h)))

@@ -26,6 +26,12 @@ import re
 import sys
 from datetime import datetime
 
+# Every page this file writes goes through stamp() so the shared CSS and JS are
+# requested with a content hash. Without it a returning visitor gets new markup
+# and a four-hour-old stylesheet; scripts/stamp_assets.py explains why.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from stamp_assets import stamp
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BLOG = os.path.join(ROOT, "blog")
 SITE = "https://labyrinth.vision"
@@ -222,7 +228,7 @@ def main():
                    "og_image": "%s/assets/%s" % (SITE, lead["img"]),
                    "schema": '<script type="application/ld+json">\n%s\n</script>' % schema}
            + body + FOOT)
-    io.open(os.path.join(BLOG, "index.html"), "w", encoding="utf-8").write(out)
+    io.open(os.path.join(BLOG, "index.html"), "w", encoding="utf-8").write(stamp(out))
     print("wrote blog/index.html: %d posts, newest %s (%s)" % (len(posts), lead["slug"], lead["date"]))
 
 

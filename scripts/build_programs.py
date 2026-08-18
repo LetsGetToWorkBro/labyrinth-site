@@ -32,6 +32,12 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import schedule_data  # noqa: E402
 
+# Every page this file writes goes through stamp() so the shared CSS and JS are
+# requested with a content hash. Without it a returning visitor gets new markup
+# and a four-hour-old stylesheet; scripts/stamp_assets.py explains why.
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from stamp_assets import stamp
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "programs")
 SITE = "https://labyrinth.vision"
@@ -947,12 +953,12 @@ def main():
         path = os.path.join(OUT, p["slug"] + ".html")
         html = render(p)
         with open(path, "w", encoding="utf-8") as fh:
-            fh.write(html)
+            fh.write(stamp(html))
         words = len(re.sub(r"<[^>]+>", " ", html).split())
         print("wrote programs/%-30s %6d bytes  ~%d words" % (p["slug"] + ".html", len(html), words))
     path = os.path.join(OUT, "index.html")
     with open(path, "w", encoding="utf-8") as fh:
-        fh.write(render_hub())
+        fh.write(stamp(render_hub()))
     print("wrote programs/index.html")
 
 
