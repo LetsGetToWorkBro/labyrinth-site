@@ -377,6 +377,9 @@
   .prog-hero__grid { grid-template-columns: 1fr; gap: var(--space-8); }
   /* Photograph first: it says what the class is faster than the heading does. */
   .prog-hero__shot { order: -1; }
+  /* Except on the offer page, where the heading is the offer. "$0 Enrollment"
+     is the fastest thing on the page and no photograph beats it. */
+  .ennova-hero .prog-hero__shot { order: 0; }
 }
 
 @media (max-width: 560px) {
@@ -740,4 +743,65 @@
   .coach-note { flex-direction: column; gap: var(--space-5); }
   .coach-note__shot { flex: 0 0 auto; }
   .ennova-gate { padding: var(--space-5); }
+}
+
+/* The four things somebody is choosing between, each with a photograph of the
+   room it happens in. auto-fit rather than a fixed four, so it does not leave
+   a hole if one is ever dropped. */
+.ennova-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: var(--space-5);
+  margin-top: var(--space-10);
+}
+.ennova-card {
+  margin: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+.ennova-card picture { display: block; }
+.ennova-card img {
+  width: 100%;
+  /* height:auto is load-bearing. The width and height attributes on the <img>
+     are a presentational hint that still counts as a real height, so
+     aspect-ratio never gets to decide anything and each photograph keeps its
+     own shape: the portrait ones rendered three times taller than the others
+     and the captions came out at four different heights. */
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+}
+.ennova-card figcaption {
+  padding: var(--space-5);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+.ennova-card figcaption strong {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.0625rem;
+  color: var(--text);
+  margin-bottom: var(--space-2);
+}
+
+.ennova-band__shot { margin: 0; }
+.ennova-band__shot picture { display: block; }
+.ennova-band__shot img {
+  width: 100%;
+  max-height: 460px;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  display: block;
+}
+.ennova-band__shot figcaption {
+  margin-top: var(--space-4);
+  font-size: 0.875rem;
+  color: var(--text-faint);
+  text-align: center;
 }
