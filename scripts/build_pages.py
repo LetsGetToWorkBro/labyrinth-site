@@ -774,13 +774,13 @@ def render_support():
 
 ENNOVA_FAQS = [
     ("Who can claim this?",
-     "Anybody who currently lives at Ennova Fulshear. It is a neighbour rate rather than a public promotion, so it is one offer per household and it applies to new students only. If you have trained with us before, ring us anyway and we will sort something out."),
+     "Anybody who currently lives at Ennova Fulshear. It is a neighbor rate rather than a public promotion, so it is one offer per household and it applies to new students only. If you have trained with us before, call us anyway and we will sort something out."),
     ("What counts as proof of residency?",
-     "A lease, a utility bill, a parcel label, a resident portal screenshot, or the card itself if one was posted to you. A photo on your phone at the front desk is fine. We are checking that you live there, not building a file: we look, we tick you off, and we do not keep a copy."),
+     "A lease, a utility bill, a package label, a resident portal screenshot, or the card itself if one was mailed to you. A photo on your phone at the front desk is fine. We are checking that you live there, not building a file: we look, we check you off the list, and we do not keep a copy."),
     ("What exactly do I save?",
      "The enrollment fee comes off entirely and your first month is half price. After that you are on the ordinary month-to-month rate with no contract, and you can stop whenever you like."),
     ("Do I have to decide on the day?",
-     "No. Your first class is free whether or not you take the offer, and it is free for anybody, neighbour or not. Come and train first. The rate is there when you are ready."),
+     "No. Your first class is free whether or not you take the offer, and it is free for anybody, neighbor or not. Come and train first. The rate is there when you are ready."),
     ("Can my child use it and can I use it too?",
      "It is one offer per household, so it applies once. In practice that usually means putting it against whichever membership is the larger one. Ask at the desk and we will apply it wherever it saves you the most."),
     ("How long is it open?",
@@ -793,7 +793,7 @@ def render_ennova():
     url = SITE + "/ennova"
     head = HEAD % {
         "title": "Ennova Resident Offer | Labyrinth BJJ Fulshear",
-        "description": "A neighbour rate for Ennova Fulshear residents: no enrollment fee and half off your first month at Labyrinth BJJ.",
+        "description": "A neighbor rate for Ennova Fulshear residents: no enrollment fee and half off your first month at Labyrinth BJJ.",
         "url": url,
         "og_title": "Ennova Resident Offer | Labyrinth BJJ",
         "image": SITE + "/assets/og-image.jpg",
@@ -851,13 +851,13 @@ def render_ennova():
     <div class="fade-in">
       <p class="section-label">Who it is for</p>
       <h2 class="section-title section-title--lg">YOU HAVE TO LIVE AT ENNOVA</h2>
-      <p class="section-subtitle">A neighbour rate, not a public promotion. Current residents only, one offer per household, new students.</p>
+      <p class="section-subtitle">A neighbor rate, not a public promotion. Current residents only, one offer per household, new students.</p>
     </div>
 
     <div class="ennova-proof stagger">
-      <div class="ennova-proof__item"><span>1</span><p>A lease, a utility bill, a parcel label or the resident portal on your phone. The card counts too, if one was posted to you.</p></div>
+      <div class="ennova-proof__item"><span>1</span><p>A lease, a utility bill, a package label or the resident portal on your phone. The card counts too, if one was mailed to you.</p></div>
       <div class="ennova-proof__item"><span>2</span><p>Show it at the desk on your first visit. A photo on your phone is enough, and it takes about ten seconds.</p></div>
-      <div class="ennova-proof__item"><span>3</span><p>We are checking that you live there, not building a file. We look, we tick you off, and we do not keep a copy.</p></div>
+      <div class="ennova-proof__item"><span>3</span><p>We are checking that you live there, not building a file. We look, we check you off the list, and we do not keep a copy.</p></div>
     </div>
   </div>
 </section>
@@ -873,7 +873,7 @@ def render_ennova():
           <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0l1.76 4.58L14 5.24l-3.82 3.18L11.36 14 7 11.08 2.64 14l1.18-5.58L0 5.24l5.24-.66z"/></svg>
           #9 in the nation &middot; #1 in Texas
         </div>
-        <blockquote class="ennova-quote__text">&ldquo;I live at Ennova too. Come and train with your neighbours.&rdquo;</blockquote>
+        <blockquote class="ennova-quote__text">&ldquo;I live at Ennova too. Come train with your neighbors.&rdquo;</blockquote>
         <p class="ennova-quote__who"><strong>Prof. Anthony Curry</strong><span>Head Instructor &amp; Owner &middot; Black belt, 14+ years</span></p>
         <p class="ennova-quote__where">The academy is at 6615 W Cross Creek Bend Ln, Suite 400. If you have driven past it, that is us.</p>
       </div>
@@ -886,7 +886,7 @@ def render_ennova():
     <div class="fade-in">
       <p class="section-label">What the membership covers</p>
       <h2 class="section-title section-title--lg">EVERYTHING, NOT A TIER</h2>
-      <p class="section-subtitle">One membership, the whole timetable. The offer comes off whichever one suits you. <a href="/pricing" class="section-subtitle__link">See every price &rarr;</a></p>
+      <p class="section-subtitle">One membership, the whole schedule. The offer comes off whichever one suits you. <a href="/pricing" class="section-subtitle__link">See every price &rarr;</a></p>
     </div>
 
     <div class="programs__grid stagger">
@@ -942,7 +942,7 @@ def render_ennova():
   <div class="container">
     <div class="fade-in">
       <p class="section-label">Two minutes</p>
-      <h2 class="section-title section-title--lg">CLAIM THE NEIGHBOUR RATE</h2>
+      <h2 class="section-title section-title--lg">CLAIM THE NEIGHBOR RATE</h2>
     </div>
 
     <div class="trial__layout">
@@ -964,7 +964,7 @@ def render_ennova():
         </ul>
 
         <div class="trial-form">
-          <h3 class="trial-form__title">Claim Your Neighbour Rate</h3>
+          <h3 class="trial-form__title">Claim Your Neighbor Rate</h3>
           <form id="ennovaForm" novalidate>
             <div class="form-row">
               <div class="form-group">

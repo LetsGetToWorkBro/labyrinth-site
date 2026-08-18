@@ -39,6 +39,13 @@
 /free-trial                     /#contact           301
 /trial                          /#contact           301
 
+# labyrinth.vision/ennova is printed on the resident card. The QR code carries
+# the exact URL, but anybody typing it off the card is reading a proper noun and
+# will reasonably capitalise it. Path matching here is case sensitive, so /Ennova
+# would 404 on the one page whose whole audience arrives from print.
+/Ennova                         /ennova             301
+/ENNOVA                         /ennova             301
+
 # Cloudflare Pages already serves /blog/<slug> for /blog/<slug>.html via a 308.
 # Those .html URLs are in Google's index from the old sitemap, so they are named
 # explicitly as 301s. A permanent redirect is what tells Google to move the
