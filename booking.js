@@ -411,6 +411,11 @@
     html += '<div class="booking-form__group"><label class="booking-form__label" for="bookingName">Full Name</label><input class="booking-form__input" type="text" id="bookingName" name="name" placeholder="Your full name" required autocomplete="name"></div>';
     html += '<div class="booking-form__group"><label class="booking-form__label" for="bookingEmail">Email</label><input class="booking-form__input" type="email" id="bookingEmail" name="email" placeholder="you@email.com" required autocomplete="email"></div>';
     html += '<div class="booking-form__group"><label class="booking-form__label" for="bookingPhone">Phone</label><input class="booking-form__input" type="tel" id="bookingPhone" name="phone" placeholder="(281) 555-0000" required autocomplete="tel"></div>';
+    // Booking now sends a confirmation text as well as the email, so the form
+    // has to say so before the number is handed over. A person who is told
+    // what a message is for does not report it as spam, and the carriers treat
+    // an unannounced text to a form-filled number as exactly that.
+    html += '<p class="booking-form__consent">We will email and text you to confirm this booking. Reply STOP to any message to opt out.</p>';
     html += '<button type="submit" class="booking-submit-btn" id="bookingSubmitBtn">Confirm Booking</button>';
     html += '</form>';
     html += '</div>';

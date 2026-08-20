@@ -294,6 +294,16 @@
   gap: 5px;
 }
 
+/* Says what the phone number will be used for, immediately above the button
+   that hands it over. Quiet, but not hidden: an opt-out somebody has to hunt
+   for is the thing a carrier counts against the number that sent it. */
+.booking-form__consent {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-faint, #8A8A8A);
+  margin: -2px 0 2px;
+}
+
 .booking-form__label {
   font-size: 13px;
   font-weight: 500;
