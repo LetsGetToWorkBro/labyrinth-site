@@ -677,6 +677,133 @@
    rather than fixed in style.css, which would restyle the front page. */
 .ennova-programs .program-card__image { height: auto; }
 
+/* ===== TEAM LEGACY MERGER (/legacy/) ===== */
+
+/* Two crests, side by side, which is the whole story in one picture.
+   Both marks are black artwork on transparency: the Labyrinth one is inverted
+   to white in the nav, but the Team Legacy crest carries real brand colour in
+   its ring and its lettering, and inverting that turns the blue orange. So
+   neither is inverted here and both sit on the same light disc instead, which
+   is how a crest is shown on a dark page anyway. */
+.legacy-marks {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(var(--space-5), 5vw, var(--space-10));
+  margin-top: var(--space-12);
+}
+
+.legacy-mark { text-align: center; }
+
+.legacy-mark img {
+  width: clamp(104px, 15vw, 168px);
+  height: clamp(104px, 15vw, 168px);
+  border-radius: 50%;
+  background: #F4F1EA;
+  padding: clamp(12px, 1.6vw, 20px);
+  object-fit: contain;
+  border: 1px solid var(--border);
+  display: block;
+}
+
+.legacy-mark__label {
+  margin-top: var(--space-4);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  max-width: 15ch;
+  margin-inline: auto;
+  line-height: 1.4;
+}
+
+.legacy-marks__join {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 700;
+  color: var(--gold);
+  line-height: 1;
+  padding-bottom: var(--space-8);
+}
+
+/* Scott gets the pull-quote treatment: he is the reason a Team Legacy parent
+   is reading this at all. The wordmark stands in for a portrait, because we
+   do not have one of him and a stock face would be worse than none. */
+.legacy-coach {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: clamp(var(--space-6), 4vw, var(--space-10));
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--gold);
+  border-radius: var(--radius-lg);
+  padding: clamp(var(--space-6), 4vw, var(--space-10));
+}
+
+.legacy-coach__shot picture { display: block; }
+
+.legacy-coach__shot img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.legacy-coach__body .section-title { margin-bottom: var(--space-5); }
+.legacy-coach__body .section-title span { color: var(--gold); }
+
+.legacy-coach__pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+}
+
+/* .hero__badge is a block-level pill in the hero; here several sit in a row. */
+.legacy-coach__pills .hero__badge { margin-bottom: 0; }
+
+.legacy-coach__text {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text-muted);
+  margin-bottom: var(--space-4);
+}
+.legacy-coach__text:last-child { margin-bottom: 0; }
+.legacy-coach__text strong { color: var(--text); }
+
+.legacy-transfer-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+}
+
+/* The transfer form is a .trial section with no second column, so the form
+   should not stretch to the full width of a desktop container. */
+.legacy-transfer .trial-form { margin-top: var(--space-8); }
+.legacy-transfer__hint {
+  margin-top: var(--space-2);
+  font-size: 12px;
+  color: var(--text-faint);
+}
+.form-group__hint {
+  font-weight: 400;
+  color: var(--text-faint);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+@media (max-width: 860px) {
+  .legacy-coach { grid-template-columns: 1fr; text-align: left; }
+  .legacy-coach__shot { max-width: 320px; }
+}
+
+@media (max-width: 560px) {
+  .legacy-marks { gap: var(--space-4); }
+  .legacy-mark__label { font-size: 12px; }
+  .legacy-transfer-cta .btn { width: 100%; justify-content: center; }
+}
+
 /* Three numbered steps for proving you live there. Same card treatment as
    .program-card so the section does not read as a different website. */
 .ennova-proof {

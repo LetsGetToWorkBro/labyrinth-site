@@ -1101,6 +1101,400 @@ def render_ennova():
         TAIL % {"footer": FOOTER}])
 
 
+def render_legacy():
+    """The Team Legacy merger announcement, at /legacy/.
+
+    Supplied as a standalone page in its own fonts and its own stylesheet. It
+    is rebuilt here on the front page's components for two reasons: it now sits
+    inside the site rather than beside it, so it gets the real nav, the real
+    footer and the booking modal; and a second stylesheet defining a second set
+    of buttons is the thing that makes a site look like two sites.
+
+    The timetable that was on the supplied page is deliberately not reproduced.
+    It was there because the page had no navigation, and a hand-copied copy of
+    the week is a second source of truth that drifts the first time a class
+    moves. The page links to /schedule, which is generated from schedule_data
+    and checked against the CRM by schedule-check.mjs.
+    """
+    url = SITE + "/legacy/"
+    head = HEAD % {
+        "title": "Team Legacy has merged with Labyrinth BJJ | Fulshear, TX",
+        "description": "Team Legacy Martial Arts and Labyrinth BJJ are now one team. "
+                       "Grandmaster Scott Jones coaches full time at Labyrinth. "
+                       "First class free, seven days a week in Fulshear.",
+        "url": url,
+        "og_title": "Two Schools. One Team.",
+        "image": SITE + "/assets/legacy-medals.jpg",
+        "schema": "\n".join([
+            jsonld(crumb_schema([("Team Legacy", "/legacy/")])),
+            jsonld({"@context": "https://schema.org", "@type": "WebPage",
+                    "name": "Team Legacy has merged with Labyrinth BJJ",
+                    "url": url, "about": PROVIDER}),
+        ]),
+    }
+
+    return "\n".join([head, NAV, """
+<section class="hero legacy-hero">
+  <div class="hero__bg">
+    <picture class="hero__still"><source srcset="/assets/hero-team.webp" type="image/webp"><img src="/assets/hero-team.jpg" alt="The Labyrinth BJJ team in Fulshear, Texas, with their medals and trophy" loading="eager" fetchpriority="high" width="1600" height="900"></picture>
+  </div>
+
+  <div class="hero__content">
+    <div class="hero__badge">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0l1.76 4.58L14 5.24l-3.82 3.18L11.36 14 7 11.08 2.64 14l1.18-5.58L0 5.24l5.24-.66z"/></svg>
+      It&rsquo;s official &middot; Fulshear, TX
+    </div>
+
+    <h1 class="hero__title"><span class="hero__h1-seo">Team Legacy Martial Arts has merged with Labyrinth BJJ</span> <span class="hero__h1-visual">TWO SCHOOLS. <span>ONE TEAM.</span></span></h1>
+
+    <p class="hero__subtitle">Team Legacy Martial Arts has merged with Labyrinth BJJ. Thirty-plus students, a 7th Dan Grandmaster, and two head coaches on one mat. Come and see what that looks like.</p>
+
+    <div class="hero__ctas">
+      <a data-book-trial href="/#book" class="btn btn--gold">Try a free class</a>
+      <a href="tel:2813937983" class="btn btn--ghost">Call the school &middot; 281-393-7983</a>
+    </div>
+
+    <div class="hero__stats stagger">
+      <div class="hero__stat">
+        <div class="hero__stat-value">#9</div>
+        <div class="hero__stat-label">In the nation</div>
+      </div>
+      <div class="hero__stat">
+        <div class="hero__stat-value">#1</div>
+        <div class="hero__stat-label">In Texas</div>
+      </div>
+      <div class="hero__stat">
+        <div class="hero__stat-value">30+</div>
+        <div class="hero__stat-label">Students joining</div>
+      </div>
+      <div class="hero__stat">
+        <div class="hero__stat-value">7th</div>
+        <div class="hero__stat-label">Dan Grandmaster</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="programs">
+  <div class="container">
+    <div class="fade-in">
+      <p class="section-label">What happened</p>
+      <h2 class="section-title section-title--lg">ONE ROOM FROM NOW ON</h2>
+      <p class="section-subtitle">Two schools in Fulshear became one. The Team Legacy name is retiring; the students, the coach and the standards are not.</p>
+    </div>
+
+    <div class="legacy-marks fade-in">
+      <div class="legacy-mark">
+        <img src="/assets/team-legacy-crest.png" alt="The Team Legacy Martial Arts crest: Taekwondo and Jiu-Jitsu" width="480" height="480" loading="lazy">
+        <p class="legacy-mark__label">Team Legacy Martial Arts</p>
+      </div>
+      <div class="legacy-marks__join" aria-hidden="true">+</div>
+      <div class="legacy-mark legacy-mark--ours">
+        <picture><source srcset="/assets/logo-maze-480.webp" type="image/webp"><img src="/assets/logo-maze-480.png" alt="The Labyrinth Brazilian Jiu-Jitsu maze mark" width="480" height="480" loading="lazy"></picture>
+        <p class="legacy-mark__label">Labyrinth Brazilian Jiu-Jitsu</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="coaches">
+  <div class="container">
+    <div class="legacy-coach fade-in">
+      <div class="legacy-coach__shot">
+        <picture><source srcset="/assets/team-legacy-wordmark.webp" type="image/webp"><img src="/assets/team-legacy-wordmark.png" alt="The Team Legacy BJJ and Taekwondo wordmark" width="900" height="727" loading="lazy"></picture>
+      </div>
+      <div class="legacy-coach__body">
+        <p class="section-label">Your coach is still your coach</p>
+        <h2 class="section-title">Grandmaster <span>Scott Jones</span></h2>
+        <div class="legacy-coach__pills">
+          <span class="hero__badge">7th Dan Black Belt</span>
+          <span class="hero__badge">30+ Years Coaching</span>
+          <span class="hero__badge">Full Time at Labyrinth</span>
+        </div>
+        <p class="legacy-coach__text"><strong>This is not a coach changing jobs.</strong> A head coach merged his entire school into ours and brought his whole room with him. That does not happen in this sport.</p>
+        <p class="legacy-coach__text">Scott built Team Legacy from nothing. He has trained at Labyrinth since the day we opened, and he was the first student ever to tap our head coach in a live roll. Thirty years of teaching children and adults: more mat-teaching experience than anyone else on our staff.</p>
+        <p class="legacy-coach__text"><strong>If your child has been learning from Coach Scott, they still will be.</strong></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="programs ennova-programs">
+  <div class="container">
+    <div class="fade-in">
+      <p class="section-label">What comes with him</p>
+      <h2 class="section-title section-title--lg">THE WHOLE ROOM</h2>
+      <p class="section-subtitle">Not a sign on a door. The students, the competition record and the way the classes are run all came across together.</p>
+    </div>
+
+    <div class="programs__grid stagger">
+      <div class="program-card program-card--half">
+        <picture><source srcset="/assets/legacy-medals.webp" type="image/webp"><img src="/assets/legacy-medals.jpg" alt="Team Legacy Martial Arts students with their competition medals" class="program-card__image" loading="lazy" width="1200" height="900"></picture>
+        <div class="program-card__body">
+          <p class="program-card__tag">Thirty-plus students</p>
+          <h3 class="program-card__title">His Room, Not Just His Name</h3>
+          <p class="program-card__desc">The families who trained at Team Legacy are training here now, in the same age groups, with the same coach at the front.</p>
+        </div>
+      </div>
+
+      <div class="program-card program-card--half">
+        <picture><source srcset="/assets/legacy-class.webp" type="image/webp"><img src="/assets/legacy-class.jpg" alt="A Team Legacy Martial Arts class in session" class="program-card__image" loading="lazy" width="1200" height="670"></picture>
+        <div class="program-card__body">
+          <p class="program-card__tag">Thirty years of it</p>
+          <h3 class="program-card__title">How The Class Is Run</h3>
+          <p class="program-card__desc">Small groups, separated by age, with a coach watching every pair. That is how Scott has always taught, and nothing about it changes here.</p>
+        </div>
+      </div>
+
+      <div class="program-card program-card--third">
+        <picture><source srcset="/assets/legacy-kick.webp" type="image/webp"><img src="/assets/legacy-kick.jpg" alt="A Team Legacy Taekwondo student mid-kick" class="program-card__image" loading="lazy" width="900" height="1350"></picture>
+        <div class="program-card__body">
+          <p class="program-card__tag">Taekwondo</p>
+          <h3 class="program-card__title">The Striking Side</h3>
+          <p class="program-card__desc">Scott&rsquo;s Taekwondo rank is a 7th Dan. Ask him at the desk what that means for your child&rsquo;s belt.</p>
+        </div>
+      </div>
+
+      <div class="program-card program-card--third">
+        <picture><source srcset="/assets/youth-card.webp" type="image/webp"><img src="/assets/youth-card.jpg" alt="Kids Brazilian jiu-jitsu class at Labyrinth BJJ in Fulshear, TX" class="program-card__image" loading="lazy" width="800" height="533"></picture>
+        <div class="program-card__body">
+          <p class="program-card__tag">Ages 3&ndash;15</p>
+          <h3 class="program-card__title">Kids &amp; Teens</h3>
+          <p class="program-card__desc">Three age groups, six days a week, taught by black belts who have coached children to Pan American titles.</p>
+        </div>
+      </div>
+
+      <div class="program-card program-card--third">
+        <picture><source srcset="/assets/adult-gi.webp" type="image/webp"><img src="/assets/adult-gi.jpg" alt="Adult Brazilian jiu-jitsu class at Labyrinth BJJ in Fulshear, TX" class="program-card__image" loading="lazy" width="720" height="720"></picture>
+        <div class="program-card__body">
+          <p class="program-card__tag">Gi &amp; No-Gi</p>
+          <h3 class="program-card__title">Adults</h3>
+          <p class="program-card__desc">From 6:30 AM to the evening, seven days a week, with beginner classes daily. <a href="/schedule" class="program-card__page-link">See the full timetable</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="trial" id="transfer">
+  <div class="container">
+    <div class="fade-in">
+      <p class="section-label">Currently enrolled at Team Legacy?</p>
+      <h2 class="section-title section-title--lg">MOVE YOUR MEMBERSHIP OVER</h2>
+    </div>
+
+    <div class="trial__layout">
+      <div class="trial__content fade-in">
+        <p>Your spot does not transfer automatically. We need you signed up at Labyrinth so we can put your child in the right class. It takes two minutes, and we cancel your Team Legacy billing the same day so <strong>you are never charged twice.</strong></p>
+
+        <h3>What happens next</h3>
+        <ul>
+          <li>Fill in the transfer form and we move your billing across</li>
+          <li>Your Team Legacy payment is cancelled the same day</li>
+          <li>We place your child in the age group they should be in</li>
+        </ul>
+
+        <h3>Still being finalised</h3>
+        <ul>
+          <li>What happens with your child&rsquo;s rank</li>
+          <li>Exactly which classes they train, and when</li>
+          <li>Call us and we will walk your family through it</li>
+        </ul>
+
+        <div class="legacy-transfer-cta">
+          <a href="/legacy/transfer" class="btn btn--gold">Transfer my membership</a>
+          <a href="tel:2813937983" class="btn btn--ghost">Or call 281-393-7983</a>
+        </div>
+      </div>
+
+      <div class="trial__image fade-in">
+        <picture><source srcset="/assets/legacy-medals.webp" type="image/webp"><img src="/assets/legacy-medals.jpg" alt="Team Legacy Martial Arts students with their competition medals" width="1200" height="900" loading="lazy"></picture>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="programs">
+  <div class="container">
+    <div class="fade-in">
+      <p class="section-label">Where to find us</p>
+      <h2 class="section-title section-title--lg">STILL IN FULSHEAR</h2>
+    </div>
+
+    <div class="ennova-proof stagger">
+      <div class="ennova-proof__item"><span>1</span><p><strong>6615 W Cross Creek Bend Ln, Suite 400</strong><br>Fulshear, TX 77441</p></div>
+      <div class="ennova-proof__item"><span>2</span><p><strong>Phone and text</strong><br><a href="tel:2813937983">281-393-7983</a></p></div>
+      <div class="ennova-proof__item"><span>3</span><p><strong>Ages 3 and up</strong><br>Month to month, no long-term contracts. The first class is free.</p></div>
+    </div>
+  </div>
+</section>""",
+        TAIL % {"footer": FOOTER}])
+
+
+def render_legacy_transfer():
+    """The membership transfer form, at /legacy/transfer.
+
+    noindex: it is a billing page for people who are already enrolled at
+    another school, not something anybody should reach from a search.
+    """
+    url = SITE + "/legacy/transfer"
+    head = HEAD % {
+        "title": "Transfer Your Membership | Labyrinth BJJ",
+        "description": "Team Legacy members: move your membership to Labyrinth BJJ. Takes two minutes.",
+        "url": url,
+        "og_title": "Transfer Your Membership | Labyrinth BJJ",
+        "image": SITE + "/assets/og-image.jpg",
+        "schema": "",
+    }
+    head = head.replace('<link rel="canonical"',
+                        '<meta name="robots" content="noindex, follow">\n<link rel="canonical"', 1)
+
+    return "\n".join([head, NAV, """
+<section class="trial legacy-transfer">
+  <div class="container container--narrow">
+    <div class="fade-in">
+      <p class="section-label">Team Legacy members</p>
+      <h1 class="section-title section-title--lg">TRANSFER YOUR MEMBERSHIP</h1>
+      <p class="section-subtitle">Two minutes. Coach Scott is now full time at Labyrinth: fill this in and your billing moves over. We cancel your Team Legacy payment the same day so you are never charged twice.</p>
+    </div>
+
+    <div class="trial-form fade-in">
+      <form id="transferForm" novalidate>
+        <div class="form-row">
+          <div class="form-group form-group--full">
+            <label for="tfStudent">Student name <span class="form-group__hint">add all students on one line</span></label>
+            <input type="text" id="tfStudent" name="student" placeholder="Jordan Smith, Riley Smith" autocomplete="name" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="tfPhone">Phone</label>
+            <input type="tel" id="tfPhone" name="phone" placeholder="(281) 555-0134" autocomplete="tel" required>
+          </div>
+          <div class="form-group">
+            <label for="tfEmail">Email</label>
+            <input type="email" id="tfEmail" name="email" placeholder="you@email.com" autocomplete="email" required>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group form-group--full">
+            <label for="tfProgram">Who is transferring?</label>
+            <select id="tfProgram" name="program">
+              <option value="kids-3-6">Child, ages 3 to 6</option>
+              <option value="kids-7-12" selected>Child, ages 7 to 12</option>
+              <option value="teens">Teenager, 13 to 15</option>
+              <option value="adult">An adult</option>
+              <option value="family">More than one, mixed ages</option>
+            </select>
+          </div>
+        </div>
+
+        <label class="ennova-check">
+          <input type="checkbox" id="tfWaiver" required>
+          <span>I have read and agree to the <a href="https://crm.labyrinth.vision/waiver" target="_blank" rel="noopener">Labyrinth BJJ liability waiver and membership terms</a>.</span>
+        </label>
+        <label class="ennova-check">
+          <input type="checkbox" id="tfAuth" required>
+          <span>I authorize Labyrinth BJJ to charge this card for my monthly membership, replacing my Team Legacy billing.</span>
+        </label>
+
+        <div class="form-row">
+          <div class="form-group form-group--full">
+            <label for="tfSig">Signature <span class="form-group__hint">type your full name</span></label>
+            <input type="text" id="tfSig" name="signature" placeholder="Your full name" autocomplete="off" required>
+            <p class="legacy-transfer__hint">Typing your name here counts as your electronic signature.</p>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn--gold trial-form__submit" id="tfSubmit">Continue to payment</button>
+        <p class="ennova-form__error" id="tfError" role="alert" hidden></p>
+      </form>
+      <p class="ennova-fine">Next screen is Stripe, where you will enter your card. Nothing is charged until you confirm. Questions? Text or call <a href="tel:2813937983">281-393-7983</a>.</p>
+    </div>
+  </div>
+</section>
+
+<script>
+(function () {
+  var form = document.getElementById('transferForm');
+  if (!form) return;
+
+  /* The Stripe Payment Link for the Legacy membership rate. Until this is a
+     real link the page refuses to hand anybody off: sending a parent to
+     buy.stripe.com/REPLACE_ME reads as a declined card, not as an unfinished
+     page. Create it in Stripe, paste it here, rebuild. */
+  var STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/REPLACE_ME';
+  var STRIPE_READY = /^https:\\/\\/buy\\.stripe\\.com\\/[A-Za-z0-9]+$/.test(STRIPE_PAYMENT_LINK);
+
+  var btn = document.getElementById('tfSubmit');
+  var err = document.getElementById('tfError');
+  var v = function (id) { return (document.getElementById(id).value || '').trim(); };
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    err.hidden = true;
+
+    var student = v('tfStudent'), phone = v('tfPhone'), email = v('tfEmail'), sig = v('tfSig');
+    var waiver = document.getElementById('tfWaiver').checked;
+    var auth = document.getElementById('tfAuth').checked;
+    if (!student || !phone || !sig || email.indexOf('@') === -1 || !waiver || !auth) {
+      err.textContent = 'Please complete every field above, including both boxes.';
+      err.hidden = false;
+      return;
+    }
+
+    /* The signature and the two authorisations are the part of this form worth
+       keeping, so they go to the CRM before anybody is sent to a card screen.
+       A failure here never blocks the handoff: the record is worth having, and
+       it is not worth losing the membership over. */
+    /* The endpoint only accepts its own six programme names, and an
+       unrecognised one silently becomes Adult BJJ. Sending that for a
+       seven-year-old is the exact mislabelling the schedule booking used to
+       do, so the form asks rather than assuming. "Mixed ages" has no single
+       right answer, so it goes in under the kids programme and says so in the
+       note, which is what the desk actually reads. */
+    var CRM = { 'kids-3-6': 'Kids 3-6', 'kids-7-12': 'Kids 7-12', 'teens': 'Teens',
+                'adult': 'Adult BJJ', 'family': 'Kids 7-12' };
+    var slug = document.getElementById('tfProgram').value;
+    var asked = document.getElementById('tfProgram')
+      .options[document.getElementById('tfProgram').selectedIndex].text;
+
+    var crm = window.LabyrinthCrm;
+    var recorded = (crm && crm.send) ? crm.send({
+      name: student, email: email, phone: phone,
+      program: CRM[slug] || 'Kids 7-12',
+      note: 'TEAM LEGACY TRANSFER (' + asked + '). Students: ' + student
+        + '. Waiver accepted and billing authorised on the form, signed "' + sig
+        + '" at ' + new Date().toISOString()
+        + '. Cancel their Team Legacy billing today so they are not charged twice.'
+    }).catch(function () { return false; }) : Promise.resolve(false);
+
+    btn.disabled = true;
+    btn.textContent = 'One moment...';
+
+    recorded.then(function () {
+      btn.disabled = false;
+      btn.textContent = 'Continue to payment';
+      if (!STRIPE_READY) {
+        err.textContent = 'Card payment is not switched on yet. Please text or call '
+          + '281-393-7983 and we will move your billing over on the phone. '
+          + 'Everything you typed has been sent to us already.';
+        err.hidden = false;
+        return;
+      }
+      var u = new URL(STRIPE_PAYMENT_LINK);
+      u.searchParams.set('prefilled_email', email);
+      u.searchParams.set('client_reference_id',
+        student.replace(/[^A-Za-z0-9]+/g, '-').slice(0, 180) || 'legacy');
+      window.location.href = u.toString();
+    });
+  });
+})();
+</script>""",
+        TAIL % {"footer": FOOTER}])
+
+
 def render_coach(c):
     url = "%s/coaches/%s" % (SITE, c["slug"])
     plain = re.sub(r"&\w+;", " ", c["name"]).strip()
@@ -1338,6 +1732,16 @@ def main():
     with open(os.path.join(ROOT, "ennova.html"), "w", encoding="utf-8") as fh:
         fh.write(stamp(render_ennova()))
     print("wrote ennova.html")
+
+    legacy = os.path.join(ROOT, "legacy")
+    if not os.path.isdir(legacy):
+        os.makedirs(legacy)
+    with open(os.path.join(legacy, "index.html"), "w", encoding="utf-8") as fh:
+        fh.write(stamp(render_legacy()))
+    print("wrote legacy/index.html")
+    with open(os.path.join(legacy, "transfer.html"), "w", encoding="utf-8") as fh:
+        fh.write(stamp(render_legacy_transfer()))
+    print("wrote legacy/transfer.html")
 
     out = os.path.join(ROOT, "coaches")
     if not os.path.isdir(out):

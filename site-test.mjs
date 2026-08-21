@@ -126,12 +126,13 @@ const fakeAddress = areas.filter(p => {
 check('L1g no area page invents a location', fakeAddress.length === 0, fakeAddress.join(', '))
 
 // ── L1h: the generated pages match their generator ──
-const genBefore = ['schedule.html','pricing.html','support.html','ennova.html','coaches/index.html',
-  ...coaches.map(c=>c.slice(1)+'.html')].map(f=>readFileSync(join(ROOT,f),'utf8'))
+const generated = ['schedule.html','pricing.html','support.html','ennova.html',
+  'legacy/index.html','legacy/transfer.html','coaches/index.html',
+  ...coaches.map(c=>c.slice(1)+'.html')]
+const genBefore = generated.map(f=>readFileSync(join(ROOT,f),'utf8'))
 execFileSync('python3', [join(ROOT,'scripts/build_pages.py')], { cwd: ROOT, stdio: 'ignore' })
-const genAfter = ['schedule.html','pricing.html','support.html','ennova.html','coaches/index.html',
-  ...coaches.map(c=>c.slice(1)+'.html')].map(f=>readFileSync(join(ROOT,f),'utf8'))
-check('L1h schedule/pricing/support/ennova/coaches match scripts/build_pages.py',
+const genAfter = generated.map(f=>readFileSync(join(ROOT,f),'utf8'))
+check('L1h schedule/pricing/support/ennova/legacy/coaches match scripts/build_pages.py',
   genBefore.every((b,i)=>b===genAfter[i]), 'run: python3 scripts/build_pages.py')
 
 // ── L1i: the timetable has one source ──
@@ -450,13 +451,19 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
         (document.documentElement.innerHTML.match(/buy\.stripe\.com\/[A-Za-z0-9_]+/) || [''])[0]
           .replace(/^/, 'https://')))
 
-  await page.fill('#student', 'Site Test')
-  await page.fill('#phone', '2813937983')
-  await page.fill('#email', 'site-test@example.com')
-  await page.check('#waiver')
-  await page.check('#auth')
-  await page.fill('#sig', 'Site Test')
-  await page.click('#go')
+  let posted = null
+  await page.route('**/functions/v1/book-trial', route => {
+    posted = JSON.parse(route.request().postData() || '{}')
+    return route.fulfill({ status:200, contentType:'application/json', body:'{"ok":true}' })
+  })
+  await page.fill('#tfStudent', 'Site Test')
+  await page.fill('#tfPhone', '2813937983')
+  await page.fill('#tfEmail', 'site-test@example.com')
+  await page.selectOption('#tfProgram', 'kids-3-6')
+  await page.check('#tfWaiver')
+  await page.check('#tfAuth')
+  await page.fill('#tfSig', 'Site Test')
+  await page.click('#tfSubmit')
   await page.waitForTimeout(600)
   const landed = page.url()
 
@@ -469,7 +476,21 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
     check('L1s an unconfigured payment link never sends anybody to Stripe',
       !/REPLACE_ME/.test(landed) && landed.includes('/legacy/transfer'), landed)
     check('L1s and it says so instead of failing silently',
-      await page.isVisible('#err'))
+      await page.isVisible('#tfError'))
+  }
+
+  // The signature and both authorisations are the part of this form worth
+  // keeping, and the supplied version threw all three away. They must reach
+  // the CRM before anybody is sent to a card screen, under the right
+  // programme rather than defaulting a seven-year-old into Adult BJJ.
+  {
+    check('L1s the signed transfer reaches the CRM',
+      posted !== null && /TEAM LEGACY TRANSFER/.test(posted?.note || ''), JSON.stringify(posted?.note))
+    check('L1s under the programme the family picked',
+      posted?.program === 'Kids 3-6', JSON.stringify(posted?.program))
+    check('L1s and the note carries the signature',
+      /signed "Site Test"/.test(posted?.note || ''), posted?.note)
+    await page.unroute('**/functions/v1/book-trial')
   }
 }
 
