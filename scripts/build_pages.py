@@ -1349,8 +1349,15 @@ def render_legacy():
 def render_legacy_transfer():
     """The membership transfer form, at /legacy/transfer.
 
-    noindex: it is a billing page for people who are already enrolled at
-    another school, not something anybody should reach from a search.
+    Writes MEMBERS, not leads: a Team Legacy family that signs here already
+    trains, so they belong on the roster from the moment they sign. The
+    member-transfer edge function does that, then hands off to Stripe Checkout
+    in `setup` mode, which stores the card and charges nothing. Every rate here
+    is negotiated, so the price is set afterwards by a person, against a member
+    who already exists and a card already on file.
+
+    noindex: it is a billing page for people who are already enrolled
+    somewhere else, not something anybody should reach from a search.
     """
     url = SITE + "/legacy/transfer"
     head = HEAD % {
@@ -1370,15 +1377,15 @@ def render_legacy_transfer():
     <div class="fade-in">
       <p class="section-label">Team Legacy members</p>
       <h1 class="section-title section-title--lg">TRANSFER YOUR MEMBERSHIP</h1>
-      <p class="section-subtitle">Two minutes. Coach Scott is now full time at Labyrinth: fill this in and your billing moves over. We cancel your Team Legacy payment the same day so you are never charged twice.</p>
+      <p class="section-subtitle">Two minutes. Coach Scott is now full time at Labyrinth: fill this in and we will move you across. We cancel your Team Legacy payment the same day so you are never charged twice.</p>
     </div>
 
-    <div class="trial-form fade-in">
+    <div class="trial-form fade-in" id="tfPanel">
       <form id="transferForm" novalidate>
         <div class="form-row">
           <div class="form-group form-group--full">
-            <label for="tfStudent">Student name <span class="form-group__hint">add all students on one line</span></label>
-            <input type="text" id="tfStudent" name="student" placeholder="Jordan Smith, Riley Smith" autocomplete="name" required>
+            <label for="tfStudent">Student name <span class="form-group__hint">add all students on one line, separated by commas</span></label>
+            <input type="text" id="tfStudent" name="students" placeholder="Jordan Smith, Riley Smith" autocomplete="off" required>
           </div>
         </div>
         <div class="form-row">
@@ -1391,7 +1398,6 @@ def render_legacy_transfer():
             <input type="email" id="tfEmail" name="email" placeholder="you@email.com" autocomplete="email" required>
           </div>
         </div>
-
         <div class="form-row">
           <div class="form-group form-group--full">
             <label for="tfProgram">Who is transferring?</label>
@@ -1409,23 +1415,40 @@ def render_legacy_transfer():
           <input type="checkbox" id="tfWaiver" required>
           <span>I have read and agree to the <a href="https://crm.labyrinth.vision/waiver" target="_blank" rel="noopener">Labyrinth BJJ liability waiver and membership terms</a>.</span>
         </label>
+
+        <!-- Storing a card to charge later is only lawful on terms that say
+             what will be charged, when, how the amount is arrived at, and how
+             to stop it. Every rate here is negotiated, so "how the amount is
+             determined" is the sentence doing the real work. -->
         <label class="ennova-check">
           <input type="checkbox" id="tfAuth" required>
-          <span>I authorize Labyrinth BJJ to charge this card for my monthly membership, replacing my Team Legacy billing.</span>
+          <span>I authorize Labyrinth BJJ to store this card and charge it for my monthly membership, replacing my Team Legacy billing. <strong>Nothing is charged today.</strong> The rate is the one we agree for the plan we choose together, and Labyrinth will confirm it with me before the first charge. It then repeats monthly on the same date. Membership is month to month and I can cancel at any time by telling the academy.</span>
         </label>
 
         <div class="form-row">
           <div class="form-group form-group--full">
             <label for="tfSig">Signature <span class="form-group__hint">type your full name</span></label>
             <input type="text" id="tfSig" name="signature" placeholder="Your full name" autocomplete="off" required>
-            <p class="legacy-transfer__hint">Typing your name here counts as your electronic signature.</p>
+            <p class="legacy-transfer__hint">Typing your name here counts as your electronic signature, and we keep a copy of what you agreed to.</p>
           </div>
         </div>
 
-        <button type="submit" class="btn btn--gold trial-form__submit" id="tfSubmit">Continue to payment</button>
+        <!-- Hidden from people, filled in by robots. -->
+        <div class="legacy-transfer__trap" aria-hidden="true">
+          <label for="tfCompany">Company</label>
+          <input type="text" id="tfCompany" name="company" tabindex="-1" autocomplete="off">
+        </div>
+
+        <button type="submit" class="btn btn--gold trial-form__submit" id="tfSubmit">Continue to card details</button>
         <p class="ennova-form__error" id="tfError" role="alert" hidden></p>
       </form>
-      <p class="ennova-fine">Next screen is Stripe, where you will enter your card. Nothing is charged until you confirm. Questions? Text or call <a href="tel:2813937983">281-393-7983</a>.</p>
+      <p class="ennova-fine">The next screen is Stripe, where you enter your card. <strong>No payment is taken there.</strong> The card is stored so we can start your membership once we have agreed your rate. Questions? Text or call <a href="tel:2813937983">281-393-7983</a>.</p>
+    </div>
+
+    <div class="trial-form fade-in" id="tfDone" hidden>
+      <h2 class="trial-form__title">You are on the roster.</h2>
+      <p class="legacy-transfer__done">Your card is saved and nothing has been charged. We will confirm your rate with you and start the membership from there. If anything looks wrong, text or call <a href="tel:2813937983">281-393-7983</a>.</p>
+      <a data-book-trial href="/#book" class="btn btn--gold trial-form__submit">See the class times</a>
     </div>
   </div>
 </section>
@@ -1433,77 +1456,63 @@ def render_legacy_transfer():
 <script>
 (function () {
   var form = document.getElementById('transferForm');
+  var panel = document.getElementById('tfPanel');
+  var done = document.getElementById('tfDone');
   if (!form) return;
 
-  /* The Stripe Payment Link for the Legacy membership rate. Until this is a
-     real link the page refuses to hand anybody off: sending a parent to
-     buy.stripe.com/REPLACE_ME reads as a declined card, not as an unfinished
-     page. Create it in Stripe, paste it here, rebuild. */
-  var STRIPE_PAYMENT_LINK = 'https://buy.stripe.com/REPLACE_ME';
-  var STRIPE_READY = /^https:\\/\\/buy\\.stripe\\.com\\/[A-Za-z0-9]+$/.test(STRIPE_PAYMENT_LINK);
+  /* Stripe sends them back here with ?done=1 after the card is stored. Nothing
+     is charged at that point, so the wording has to say so rather than
+     congratulate somebody on a payment they have not made. */
+  var q = new URLSearchParams(location.search);
+  if (q.get('done')) { panel.hidden = true; done.hidden = false; }
 
+  var ENDPOINT = 'https://jctufxvmuvobaggxcwfn.supabase.co/functions/v1/member-transfer';
   var btn = document.getElementById('tfSubmit');
   var err = document.getElementById('tfError');
   var v = function (id) { return (document.getElementById(id).value || '').trim(); };
+
+  var show = function (message) {
+    err.textContent = message;
+    err.hidden = false;
+    btn.disabled = false;
+    btn.textContent = 'Continue to card details';
+  };
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     err.hidden = true;
 
-    var student = v('tfStudent'), phone = v('tfPhone'), email = v('tfEmail'), sig = v('tfSig');
-    var waiver = document.getElementById('tfWaiver').checked;
-    var auth = document.getElementById('tfAuth').checked;
-    if (!student || !phone || !sig || email.indexOf('@') === -1 || !waiver || !auth) {
-      err.textContent = 'Please complete every field above, including both boxes.';
-      err.hidden = false;
+    var students = v('tfStudent'), phone = v('tfPhone'), email = v('tfEmail'), sig = v('tfSig');
+    if (!students || !phone || !sig || email.indexOf('@') === -1
+        || !document.getElementById('tfWaiver').checked
+        || !document.getElementById('tfAuth').checked) {
+      show('Please complete every field above, including both agreements.');
       return;
     }
-
-    /* The signature and the two authorisations are the part of this form worth
-       keeping, so they go to the CRM before anybody is sent to a card screen.
-       A failure here never blocks the handoff: the record is worth having, and
-       it is not worth losing the membership over. */
-    /* The endpoint only accepts its own six programme names, and an
-       unrecognised one silently becomes Adult BJJ. Sending that for a
-       seven-year-old is the exact mislabelling the schedule booking used to
-       do, so the form asks rather than assuming. "Mixed ages" has no single
-       right answer, so it goes in under the kids programme and says so in the
-       note, which is what the desk actually reads. */
-    var CRM = { 'kids-3-6': 'Kids 3-6', 'kids-7-12': 'Kids 7-12', 'teens': 'Teens',
-                'adult': 'Adult BJJ', 'family': 'Kids 7-12' };
-    var slug = document.getElementById('tfProgram').value;
-    var asked = document.getElementById('tfProgram')
-      .options[document.getElementById('tfProgram').selectedIndex].text;
-
-    var crm = window.LabyrinthCrm;
-    var recorded = (crm && crm.send) ? crm.send({
-      name: student, email: email, phone: phone,
-      program: CRM[slug] || 'Kids 7-12',
-      note: 'TEAM LEGACY TRANSFER (' + asked + '). Students: ' + student
-        + '. Waiver accepted and billing authorised on the form, signed "' + sig
-        + '" at ' + new Date().toISOString()
-        + '. Cancel their Team Legacy billing today so they are not charged twice.'
-    }).catch(function () { return false; }) : Promise.resolve(false);
 
     btn.disabled = true;
     btn.textContent = 'One moment...';
 
-    recorded.then(function () {
-      btn.disabled = false;
-      btn.textContent = 'Continue to payment';
-      if (!STRIPE_READY) {
-        err.textContent = 'Card payment is not switched on yet. Please text or call '
-          + '281-393-7983 and we will move your billing over on the phone. '
-          + 'Everything you typed has been sent to us already.';
-        err.hidden = false;
-        return;
-      }
-      var u = new URL(STRIPE_PAYMENT_LINK);
-      u.searchParams.set('prefilled_email', email);
-      u.searchParams.set('client_reference_id',
-        student.replace(/[^A-Za-z0-9]+/g, '-').slice(0, 180) || 'legacy');
-      window.location.href = u.toString();
-    });
+    fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        students: students, phone: phone, email: email, signature: sig,
+        program: document.getElementById('tfProgram').value,
+        waiver_accepted: true, billing_authorized: true,
+        company: v('tfCompany')
+      })
+    }).then(function (r) { return r.json().catch(function () { return {}; }); })
+      .then(function (data) {
+        /* Recorded but no card page: they ARE on the roster, so the message
+           must not read as a failure that lost their details. */
+        if (data && data.url) { window.location.href = data.url; return; }
+        show((data && data.error)
+          || 'That did not go through. Please text or call 281-393-7983 and we will move you across.');
+      })
+      .catch(function () {
+        show('That did not go through. Please text or call 281-393-7983 and we will move you across.');
+      });
   });
 })();
 </script>""",

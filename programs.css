@@ -839,6 +839,31 @@
   font-size: 12px;
   color: var(--text-faint);
 }
+
+.legacy-transfer__done {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text-muted);
+  margin-bottom: var(--space-6);
+}
+
+/* The honeypot. Off-screen rather than display:none, because a bot that reads
+   the stylesheet skips anything hidden outright, and left focusable only to
+   whatever is filling every input it finds: tabindex="-1" and aria-hidden keep
+   it away from anybody using a keyboard or a screen reader. */
+.legacy-transfer__trap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* The billing authorisation is a paragraph, not a label. It has to be
+   readable, so it gets its own measure rather than the single line the other
+   consent boxes use. */
+.legacy-transfer .ennova-check span { line-height: 1.6; }
+.legacy-transfer .ennova-check strong { color: var(--text); }
 .form-group__hint {
   font-weight: 400;
   color: var(--text-faint);

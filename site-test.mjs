@@ -425,12 +425,17 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   }
 }
 
-// ── L1s: the Team Legacy pages ──
+// ── L1s: the Team Legacy transfer ──
 // The announcement is public and indexable; the transfer form is a billing
-// page for people who are already enrolled somewhere else, so it is noindex
-// and stays out of the sitemap. The third check is the one that matters most:
-// the form must never hand a parent off to a placeholder Stripe URL, because
-// a dead checkout reads as "my card was declined", not "this page is unfinished".
+// page for people already enrolled somewhere else, so it is noindex and stays
+// out of the sitemap.
+//
+// The form itself is the part that matters. A transferring family is a MEMBER
+// from the moment they sign, so it creates roster rows rather than a lead, and
+// it hands off to Stripe in setup mode: the card is stored and NOTHING is
+// charged, because every rate here is negotiated and gets set afterwards by a
+// person. The signature and both agreements are the legal basis for storing
+// that card, so none of them may be optional and all of them must be sent.
 {
   const announce = readFileSync(join(ROOT,'legacy/index.html'),'utf8')
   const transfer = readFileSync(join(ROOT,'legacy/transfer.html'),'utf8')
@@ -445,53 +450,65 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   check('L1s the transfer form is not in the sitemap',
     !locs.some(u => u.includes('/legacy/transfer')), locs.filter(u => u.includes('legacy')).join(', '))
 
-  await page.goto('http://localhost:4620/legacy/transfer', { waitUntil:'networkidle' })
-  const configured = await page.evaluate(() => window.STRIPE_READY
-    ?? /^https:\/\/buy\.stripe\.com\/[A-Za-z0-9]+$/.test(
-        (document.documentElement.innerHTML.match(/buy\.stripe\.com\/[A-Za-z0-9_]+/) || [''])[0]
-          .replace(/^/, 'https://')))
+  // Storing a card to charge later is only lawful on terms that say what is
+  // charged, when, how the amount is arrived at, and how to stop it. Every
+  // rate here is different, so "how the amount is determined" is the sentence
+  // doing the real work, and losing it in an edit would be invisible.
+  for (const [what, re] of [
+    ['nothing is charged today', /Nothing is charged today/i],
+    ['how the rate is decided', /rate is the one we agree/i],
+    ['when it recurs', /repeats monthly/i],
+    ['how to cancel', /cancel at any time/i],
+  ]) {
+    check(`L1s the billing consent states ${what}`, re.test(transfer))
+  }
 
   let posted = null
-  await page.route('**/functions/v1/book-trial', route => {
+  await page.route('**/functions/v1/member-transfer', route => {
     posted = JSON.parse(route.request().postData() || '{}')
-    return route.fulfill({ status:200, contentType:'application/json', body:'{"ok":true}' })
+    return route.fulfill({
+      status: 200, contentType: 'application/json',
+      body: JSON.stringify({ ok: true, recorded: true, url: 'http://localhost:4620/pricing' }),
+    })
   })
+
+  // Neither agreement ticked: nothing may leave the page.
+  await page.goto('http://localhost:4620/legacy/transfer', { waitUntil:'networkidle' })
   await page.fill('#tfStudent', 'Site Test')
   await page.fill('#tfPhone', '2813937983')
   await page.fill('#tfEmail', 'site-test@example.com')
+  await page.fill('#tfSig', 'Site Test')
+  await page.click('#tfSubmit')
+  await page.waitForTimeout(300)
+  check('L1s no card step without the waiver and the billing authority',
+    posted === null, JSON.stringify(posted))
+
+  // Complete, and it goes.
   await page.selectOption('#tfProgram', 'kids-3-6')
   await page.check('#tfWaiver')
   await page.check('#tfAuth')
-  await page.fill('#tfSig', 'Site Test')
   await page.click('#tfSubmit')
-  await page.waitForTimeout(600)
-  const landed = page.url()
+  await page.waitForTimeout(800)
 
-  if (configured) {
-    check('L1s a complete transfer reaches a real Stripe link',
-      /^https:\/\/buy\.stripe\.com\/[A-Za-z0-9]+/.test(landed)
-      && landed.includes('prefilled_email') && landed.includes('client_reference_id'), landed)
-  } else {
-    // Unconfigured is a legitimate state; silently bouncing to REPLACE_ME is not.
-    check('L1s an unconfigured payment link never sends anybody to Stripe',
-      !/REPLACE_ME/.test(landed) && landed.includes('/legacy/transfer'), landed)
-    check('L1s and it says so instead of failing silently',
-      await page.isVisible('#tfError'))
-  }
+  check('L1s a complete transfer is sent to member-transfer',
+    posted !== null && posted.students === 'Site Test', JSON.stringify(posted))
+  check('L1s with the programme the family picked',
+    posted?.program === 'kids-3-6', JSON.stringify(posted?.program))
+  check('L1s and the signature and both agreements',
+    posted?.signature === 'Site Test'
+    && posted?.waiver_accepted === true && posted?.billing_authorized === true,
+    JSON.stringify(posted))
+  check('L1s then hands off to the Stripe URL it was given',
+    page.url() === 'http://localhost:4620/pricing', page.url())
 
-  // The signature and both authorisations are the part of this form worth
-  // keeping, and the supplied version threw all three away. They must reach
-  // the CRM before anybody is sent to a card screen, under the right
-  // programme rather than defaulting a seven-year-old into Adult BJJ.
-  {
-    check('L1s the signed transfer reaches the CRM',
-      posted !== null && /TEAM LEGACY TRANSFER/.test(posted?.note || ''), JSON.stringify(posted?.note))
-    check('L1s under the programme the family picked',
-      posted?.program === 'Kids 3-6', JSON.stringify(posted?.program))
-    check('L1s and the note carries the signature',
-      /signed "Site Test"/.test(posted?.note || ''), posted?.note)
-    await page.unroute('**/functions/v1/book-trial')
-  }
+  // Stripe returns them with ?done=1. Nothing was charged, so the page has to
+  // say that rather than thank them for a payment they have not made.
+  await page.goto('http://localhost:4620/legacy/transfer?done=1', { waitUntil:'networkidle' })
+  check('L1s coming back from Stripe shows the confirmation, not the form',
+    await page.isVisible('#tfDone') && !(await page.isVisible('#tfPanel')))
+  check('L1s and says nothing has been charged',
+    /nothing has been charged/i.test(await page.textContent('#tfDone')))
+  await page.unroute('**/functions/v1/member-transfer')
 }
 
 // ── L2: no .html blog links survive ──
