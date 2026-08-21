@@ -1318,10 +1318,28 @@ def render_legacy():
       <h2 class="section-title section-title--lg">STILL IN FULSHEAR</h2>
     </div>
 
-    <div class="ennova-proof stagger">
-      <div class="ennova-proof__item"><span>1</span><p><strong>6615 W Cross Creek Bend Ln, Suite 400</strong><br>Fulshear, TX 77441</p></div>
-      <div class="ennova-proof__item"><span>2</span><p><strong>Phone and text</strong><br><a href="tel:2813937983">281-393-7983</a></p></div>
-      <div class="ennova-proof__item"><span>3</span><p><strong>Ages 3 and up</strong><br>Month to month, no long-term contracts. The first class is free.</p></div>
+    <!-- These are facts, not steps. They were in .ennova-proof, which numbers
+         its items 1-2-3 because proving you live somewhere happens in an
+         order; an address and a phone number do not, and the numerals read as
+         instructions nobody can follow. .prog-facts is the label-and-value
+         strip the programme pages already use for exactly this. -->
+    <div class="prog-facts legacy-facts stagger">
+      <div class="prog-fact">
+        <div class="prog-fact__label">Address</div>
+        <div class="prog-fact__value">6615 W Cross Creek Bend Ln, Suite 400<br>Fulshear, TX 77441</div>
+      </div>
+      <div class="prog-fact">
+        <div class="prog-fact__label">Phone and text</div>
+        <div class="prog-fact__value"><a href="tel:2813937983">281-393-7983</a></div>
+      </div>
+      <div class="prog-fact">
+        <div class="prog-fact__label">Ages</div>
+        <div class="prog-fact__value">3 and up<br>Kids, teens and adults</div>
+      </div>
+      <div class="prog-fact">
+        <div class="prog-fact__label">Memberships</div>
+        <div class="prog-fact__value">Month to month<br><em>First class free</em></div>
+      </div>
     </div>
   </div>
 </section>""",

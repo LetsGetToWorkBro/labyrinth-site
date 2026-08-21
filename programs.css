@@ -140,6 +140,21 @@
   color: var(--gold);
 }
 
+/* A phone number in a fact strip is the one value anybody taps. It inherits
+   the display face and weight from the value above; it just needs to look
+   like something you can press. */
+.prog-fact__value a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(200, 162, 76, 0.4);
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.prog-fact__value a:hover {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+
 /* ===== PROSE ===== */
 .prog-prose { max-width: 68ch; }
 .prog-prose p { margin-bottom: var(--space-5); line-height: 1.75; color: var(--text-muted); }
@@ -685,6 +700,13 @@
    its ring and its lettering, and inverting that turns the blue orange. So
    neither is inverted here and both sit on the same light disc instead, which
    is how a crest is shown on a dark page anyway. */
+/* .prog-facts fits two columns at 390px, which is right for "Seven days" or
+   "6:30 AM" but not for a street address: it broke the building number away
+   from the street and ran to five lines. One column on a phone. */
+@media (max-width: 560px) {
+  .legacy-facts { grid-template-columns: 1fr; }
+}
+
 /* Three stats, not the front page's four: the head count came off. */
 .legacy-hero .hero__stats { grid-template-columns: repeat(3, 1fr); }
 
