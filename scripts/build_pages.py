@@ -1201,7 +1201,8 @@ def render_legacy():
   <div class="container">
     <div class="legacy-coach fade-in">
       <div class="legacy-coach__shot">
-        <picture><source srcset="/assets/team-legacy-wordmark.webp" type="image/webp"><img src="/assets/team-legacy-wordmark.png" alt="The Team Legacy BJJ and Taekwondo wordmark" width="900" height="727" loading="lazy"></picture>
+        <picture><source srcset="/assets/coach-scott.webp" type="image/webp"><img src="/assets/coach-scott.png" alt="Grandmaster Scott Jones of Team Legacy Martial Arts, now coaching full time at Labyrinth BJJ" width="560" height="560" loading="lazy"></picture>
+        <picture class="legacy-coach__mark"><source srcset="/assets/team-legacy-wordmark.webp" type="image/webp"><img src="/assets/team-legacy-wordmark.png" alt="The Team Legacy BJJ and Taekwondo wordmark" width="900" height="727" loading="lazy"></picture>
       </div>
       <div class="legacy-coach__body">
         <p class="section-label">Your coach is still your coach</p>

@@ -749,6 +749,23 @@
   display: block;
 }
 
+/* The portrait arrived already cut to a circle with its own thin ring, so it
+   gets no border here: a second one drawn outside the first reads as a mistake.
+   It is capped rather than filling the column, because a head shot blown up to
+   420px on a wide screen stops being a portrait and starts being a poster. */
+.legacy-coach__shot > picture:first-child img {
+  max-width: 320px;
+  margin-inline: auto;
+}
+
+/* His school's mark under his face, which is the pairing the section is about.
+   Held well back: it is a caption, not a second logo lockup. */
+.legacy-coach__mark {
+  margin: var(--space-6) auto 0;
+  max-width: 210px;
+  opacity: 0.75;
+}
+
 .legacy-coach__body .section-title { margin-bottom: var(--space-5); }
 .legacy-coach__body .section-title span { color: var(--gold); }
 
