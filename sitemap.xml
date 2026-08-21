@@ -279,4 +279,15 @@
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
+
+  <!-- The Team Legacy merger. Worth indexing: people will search for the school
+       by its old name for a long time, and this is the page that answers them.
+       /legacy/transfer is deliberately noindex and is therefore not listed, the
+       same rule the privacy policy follows. -->
+  <url>
+    <loc>https://labyrinth.vision/legacy/</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>

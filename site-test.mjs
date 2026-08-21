@@ -33,7 +33,8 @@ const programs = readdirSync(join(ROOT,'programs')).filter(f=>f.endsWith('.html'
 const areas = readdirSync(join(ROOT,'areas')).filter(f=>f.endsWith('.html')&&f!=='index.html').map(f=>'/areas/'+f.replace('.html',''))
 const coaches = readdirSync(join(ROOT,'coaches')).filter(f=>f.endsWith('.html')&&f!=='index.html').map(f=>'/coaches/'+f.replace('.html',''))
 const pages = ['/', '/blog/', '/programs/', '/areas/', '/coaches/', '/schedule', '/pricing',
-  '/support', '/privacy-policy', '/ennova', ...posts, ...programs, ...areas, ...coaches]
+  '/support', '/privacy-policy', '/ennova', '/legacy/', '/legacy/transfer',
+  ...posts, ...programs, ...areas, ...coaches]
 const broken = []
 for (const path of pages) {
   const r = await page.goto('http://localhost:4620'+path, { waitUntil:'domcontentloaded' })
@@ -47,7 +48,7 @@ for (const path of pages) {
   }
 }
 check('L1 no broken internal links', broken.length === 0, '\n    ' + broken.slice(0,8).join('\n    '))
-check('L1 all 44 pages served 200', pages.length === 44, 'pages: ' + pages.length)
+check('L1 all 46 pages served 200', pages.length === 46, 'pages: ' + pages.length)
 
 // ── L1b: every program page carries the schema and the canonical it exists for ──
 // A program page whose Service block is missing is still a page, and still
@@ -420,6 +421,55 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
     check(`L1r ${f} versions every stylesheet it loads`,
       refs.length > 0 && refs.every(r => /\?v=[0-9a-f]{8}"/.test(r)),
       refs.filter(r => !/\?v=/.test(r)).join(', ') || `found ${refs.length}`)
+  }
+}
+
+// ── L1s: the Team Legacy pages ──
+// The announcement is public and indexable; the transfer form is a billing
+// page for people who are already enrolled somewhere else, so it is noindex
+// and stays out of the sitemap. The third check is the one that matters most:
+// the form must never hand a parent off to a placeholder Stripe URL, because
+// a dead checkout reads as "my card was declined", not "this page is unfinished".
+{
+  const announce = readFileSync(join(ROOT,'legacy/index.html'),'utf8')
+  const transfer = readFileSync(join(ROOT,'legacy/transfer.html'),'utf8')
+
+  // It shipped pointing at /legacy, which is the announcement itself.
+  check('L1s the announcement links to the transfer form',
+    /href="\/legacy\/transfer"/.test(announce))
+  check('L1s the transfer form is noindex',
+    /name="robots"[^>]*noindex/.test(transfer))
+  const locs = [...readFileSync(join(ROOT,'sitemap.xml'),'utf8')
+    .matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1])
+  check('L1s the transfer form is not in the sitemap',
+    !locs.some(u => u.includes('/legacy/transfer')), locs.filter(u => u.includes('legacy')).join(', '))
+
+  await page.goto('http://localhost:4620/legacy/transfer', { waitUntil:'networkidle' })
+  const configured = await page.evaluate(() => window.STRIPE_READY
+    ?? /^https:\/\/buy\.stripe\.com\/[A-Za-z0-9]+$/.test(
+        (document.documentElement.innerHTML.match(/buy\.stripe\.com\/[A-Za-z0-9_]+/) || [''])[0]
+          .replace(/^/, 'https://')))
+
+  await page.fill('#student', 'Site Test')
+  await page.fill('#phone', '2813937983')
+  await page.fill('#email', 'site-test@example.com')
+  await page.check('#waiver')
+  await page.check('#auth')
+  await page.fill('#sig', 'Site Test')
+  await page.click('#go')
+  await page.waitForTimeout(600)
+  const landed = page.url()
+
+  if (configured) {
+    check('L1s a complete transfer reaches a real Stripe link',
+      /^https:\/\/buy\.stripe\.com\/[A-Za-z0-9]+/.test(landed)
+      && landed.includes('prefilled_email') && landed.includes('client_reference_id'), landed)
+  } else {
+    // Unconfigured is a legitimate state; silently bouncing to REPLACE_ME is not.
+    check('L1s an unconfigured payment link never sends anybody to Stripe',
+      !/REPLACE_ME/.test(landed) && landed.includes('/legacy/transfer'), landed)
+    check('L1s and it says so instead of failing silently',
+      await page.isVisible('#err'))
   }
 }
 
