@@ -16,7 +16,7 @@
 <noscript><link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=general-sans@300,400,500,600,700&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="/base.css?v=04502d32">
 <link rel="stylesheet" href="/style.css?v=00841c2d">
-<link rel="stylesheet" href="/programs.css?v=dd44e2d8">
+<link rel="stylesheet" href="/programs.css?v=7ba07b54">
 <link rel="stylesheet" href="/booking.css?v=722a3d96">
 
 <title>Ennova Resident Offer | Labyrinth BJJ Fulshear</title>
@@ -98,8 +98,9 @@
     <p class="hero__subtitle">For people who live at Ennova Fulshear. Our head instructor lives there too, which is the whole reason this exists.</p>
 
     <div class="hero__ctas">
-      <a href="sms:+12813937983?&amp;body=ENNOVA" class="btn btn--gold">Text ENNOVA to 281-393-7983</a>
-      <a href="#claim" class="btn btn--ghost">Claim it here &rarr;</a>
+      <a data-book-trial href="/#book" class="btn btn--gold">Book a Free Class</a>
+      <a href="#claim" class="btn btn--ghost">Claim the offer &rarr;</a>
+      <a href="sms:+12813937983?&amp;body=ENNOVA" class="btn btn--ghost">Text ENNOVA to 281-393-7983</a>
     </div>
 
     <div class="hero__stats stagger">
@@ -186,7 +187,10 @@
       </div>
 
       <div class="program-card program-card--third">
-        <picture><source srcset="/assets/wrestling-card.webp" type="image/webp"><img src="/assets/wrestling-card.jpg" alt="Youth wrestling athletes training at Labyrinth BJJ in Fulshear, TX" class="program-card__image" loading="lazy" width="528" height="820"></picture>
+        <!-- A 16:10 recut of the portrait, framed on his face. The card CSS
+             crops every image to 16:10, and the centre of a 528x820 portrait
+             is the torso: the original decapitated him at card size. -->
+        <picture><source srcset="/assets/wrestling-card-face.webp" type="image/webp"><img src="/assets/wrestling-card-face.jpg" alt="A youth wrestler at Labyrinth BJJ in Fulshear, TX" class="program-card__image" loading="lazy" width="800" height="500"></picture>
         <div class="program-card__body">
           <p class="program-card__tag">Ages 7&ndash;17</p>
           <h3 class="program-card__title">Youth Wrestling</h3>
@@ -224,11 +228,11 @@
 
     <div class="trial__layout">
       <div class="trial__content fade-in">
-        <p>Fill this in and we will reply with class times that suit you. Or text <strong>ENNOVA</strong> to <a href="tel:2813937983">281-393-7983</a>, which reaches the same people.</p>
+        <p>Ready to train? <a data-book-trial href="/#book">Book your free class</a> straight off the timetable, and bring proof you live at Ennova to the desk. Prefer to talk first? Fill this in and we will reply with times that suit you, or text <strong>ENNOVA</strong> to <a href="tel:2813937983">281-393-7983</a>.</p>
 
         <h3>What happens next</h3>
         <ul>
-          <li>We text or email you back with times that fit your week</li>
+          <li>Book a class here, or we text you back with times that fit your week</li>
           <li>Your first class is free, whether or not you take the offer</li>
           <li>Show proof of Ennova residency at the desk and the rate is applied</li>
         </ul>
@@ -417,6 +421,6 @@
 </footer>
 
 <script src="/app.js?v=0cffaf2a"></script>
-<script src="/booking.js?v=15d7e249"></script>
+<script src="/booking.js?v=827906f7"></script>
 </body>
 </html>

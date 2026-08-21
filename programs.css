@@ -891,11 +891,18 @@
   margin-top: var(--space-12);
 }
 
+/* The number sits BESIDE the text, not above it. Stacked, the equal-height
+   grid rows stretched every card to the tallest one and the gap between a
+   lone numeral and its paragraph read as a layout fault, which on a phone it
+   effectively was. Side by side there is nothing to stretch. */
 .ennova-proof__item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: var(--space-7);
+  padding: var(--space-6);
   transition: transform var(--transition-fast), border-color var(--transition-fast);
 }
 
@@ -908,16 +915,18 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   border: 1px solid rgba(200, 162, 76, 0.35);
   background: rgba(200, 162, 76, 0.08);
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 1.0625rem;
+  font-size: 1rem;
   color: var(--gold);
-  margin-bottom: var(--space-5);
+  /* Optically centres the circle on the paragraph's first line. */
+  margin-top: -3px;
 }
 
 .ennova-proof__item p {

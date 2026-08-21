@@ -131,9 +131,11 @@
   var DAY_NAMES = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   var MONTH_NAMES = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-  /* How long before a class we will still offer it today. Enough to read the
-     email, find the place and arrive the ten minutes early we ask for. */
-  var SAME_DAY_CUTOFF_MINS = 90;
+  /* How long before a class we will still offer it today. Zero: the academy
+     takes walk-ins right up to the start of a class, and a website stricter
+     than the front desk loses the person already in the car park. Once the
+     start time has passed, the same class next week is offered instead. */
+  var SAME_DAY_CUTOFF_MINS = 0;
 
   /* Now, on the academy's clock rather than the visitor's.
 
@@ -599,7 +601,12 @@
     kidsTrialClasses: KIDS_TRIAL_CLASSES,
     // Exposed so a test can walk every row on the schedule and check where it
     // would be filed, without submitting a booking for each one.
-    programFor: crmProgramFor
+    programFor: crmProgramFor,
+    // The same-day arithmetic, exposed so the test suite can pin the rule
+    // that a class is bookable right up to its start time. Behaviour, not a
+    // constant: a regex on SAME_DAY_CUTOFF_MINS would pass with the maths
+    // broken.
+    nextDate: getNextDayDate
   };
 
   /**

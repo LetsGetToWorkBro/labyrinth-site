@@ -832,8 +832,9 @@ def render_ennova():
     <p class="hero__subtitle">For people who live at Ennova Fulshear. Our head instructor lives there too, which is the whole reason this exists.</p>
 
     <div class="hero__ctas">
-      <a href="sms:+12813937983?&amp;body=ENNOVA" class="btn btn--gold">Text ENNOVA to 281-393-7983</a>
-      <a href="#claim" class="btn btn--ghost">Claim it here &rarr;</a>
+      <a data-book-trial href="/#book" class="btn btn--gold">Book a Free Class</a>
+      <a href="#claim" class="btn btn--ghost">Claim the offer &rarr;</a>
+      <a href="sms:+12813937983?&amp;body=ENNOVA" class="btn btn--ghost">Text ENNOVA to 281-393-7983</a>
     </div>
 
     <div class="hero__stats stagger">
@@ -920,7 +921,10 @@ def render_ennova():
       </div>
 
       <div class="program-card program-card--third">
-        <picture><source srcset="/assets/wrestling-card.webp" type="image/webp"><img src="/assets/wrestling-card.jpg" alt="Youth wrestling athletes training at Labyrinth BJJ in Fulshear, TX" class="program-card__image" loading="lazy" width="528" height="820"></picture>
+        <!-- A 16:10 recut of the portrait, framed on his face. The card CSS
+             crops every image to 16:10, and the centre of a 528x820 portrait
+             is the torso: the original decapitated him at card size. -->
+        <picture><source srcset="/assets/wrestling-card-face.webp" type="image/webp"><img src="/assets/wrestling-card-face.jpg" alt="A youth wrestler at Labyrinth BJJ in Fulshear, TX" class="program-card__image" loading="lazy" width="800" height="500"></picture>
         <div class="program-card__body">
           <p class="program-card__tag">Ages 7&ndash;17</p>
           <h3 class="program-card__title">Youth Wrestling</h3>
@@ -958,11 +962,11 @@ def render_ennova():
 
     <div class="trial__layout">
       <div class="trial__content fade-in">
-        <p>Fill this in and we will reply with class times that suit you. Or text <strong>ENNOVA</strong> to <a href="tel:2813937983">281-393-7983</a>, which reaches the same people.</p>
+        <p>Ready to train? <a data-book-trial href="/#book">Book your free class</a> straight off the timetable, and bring proof you live at Ennova to the desk. Prefer to talk first? Fill this in and we will reply with times that suit you, or text <strong>ENNOVA</strong> to <a href="tel:2813937983">281-393-7983</a>.</p>
 
         <h3>What happens next</h3>
         <ul>
-          <li>We text or email you back with times that fit your week</li>
+          <li>Book a class here, or we text you back with times that fit your week</li>
           <li>Your first class is free, whether or not you take the offer</li>
           <li>Show proof of Ennova residency at the desk and the rate is applied</li>
         </ul>
@@ -1150,7 +1154,8 @@ def render_legacy():
     <p class="hero__subtitle">Team Legacy Martial Arts has merged with Labyrinth BJJ, and Grandmaster Scott Jones is bringing his team with him. Two head coaches on one mat. Come and see what that looks like.</p>
 
     <div class="hero__ctas">
-      <a data-book-trial href="/#book" class="btn btn--gold">Try a free class</a>
+      <a href="/legacy/transfer" class="btn btn--gold">Transfer my membership</a>
+      <a data-book-trial href="/#book" class="btn btn--ghost">Try a free class</a>
       <a href="tel:2813937983" class="btn btn--ghost">Call the school &middot; 281-393-7983</a>
     </div>
 

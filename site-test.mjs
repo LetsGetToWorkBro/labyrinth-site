@@ -511,6 +511,95 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   await page.unroute('**/functions/v1/member-transfer')
 }
 
+// ── L1t: who may book what, and until when ──
+// The rule: kids book trials into Friday classes and Saturday No-Gi, nothing
+// else; adults book anything; and a class is bookable right up to its start.
+// The first check sweeps all three renderings of the front-page timetable,
+// because the Tue/Thu advanced kids rows carried Book buttons behind the ADV
+// interstitial — a door the rule says does not exist.
+{
+  await page.goto('http://localhost:4620/', { waitUntil:'domcontentloaded' })
+
+  const leaks = await page.evaluate(() => {
+    const out = []
+    const kids = /kids|teens|grappl/i
+    const ths = [...document.querySelectorAll('.schedule-table thead th')].map(t => t.textContent.trim())
+    document.querySelectorAll('.schedule-table td .sched-cell').forEach(c => {
+      const name = c.querySelector('.sched-cell__name')?.textContent || ''
+      if (!kids.test(name)) return
+      const day = ths[c.closest('td').cellIndex]
+      if (day === 'Fri' || day === 'Sat') return
+      if (c.querySelector('.sched-book')) out.push(`table ${day}: ${name.trim()}`)
+    })
+    document.querySelectorAll('.type-sched-bar').forEach(bar => {
+      const name = bar.querySelector('.type-sched-bar__name')?.textContent || ''
+      const day = bar.querySelector('.type-sched-bar__day')?.textContent.trim()
+      if (!kids.test(name) || day === 'Fri' || day === 'Sat') return
+      if (bar.querySelector('.type-sched-bar__book')) out.push(`drawer ${day}: ${name.trim()}`)
+    })
+    document.querySelectorAll('.schedule-day').forEach(card => {
+      const day = card.querySelector('.schedule-day__header')?.textContent.trim()
+      if (day === 'Friday' || day === 'Saturday') return
+      card.querySelectorAll('.schedule-day__class').forEach(row => {
+        const name = row.querySelector('.schedule-day__name')?.textContent || ''
+        if (kids.test(name) && row.querySelector('.sched-book-mobile, .sched-book'))
+          out.push(`card ${day}: ${name.trim()}`)
+      })
+    })
+    return out
+  })
+  check('L1t kids classes outside Friday and Saturday are never bookable',
+    leaks.length === 0, leaks.join('; '))
+
+  // The same rule from the data side: the picker offers kids exactly these.
+  const kidsList = await page.evaluate(() =>
+    LabyrinthBooking.kidsTrialClasses.map(c => c.day + ' ' + c.type))
+  check('L1t the kids trial list is Friday Gi and Saturday No-Gi only',
+    kidsList.length > 0 && kidsList.every(x => x.startsWith('Fri ') || x === 'Sat No-Gi'),
+    kidsList.join(', '))
+
+  // Bookable until the class starts. Behaviour, on the academy's clock: a
+  // class starting a minute from now is offered today; one that started a
+  // minute ago is offered next week. Skipped in the minute either side of
+  // midnight, where "a minute ago" wraps into yesterday.
+  const cut = await page.evaluate(() => {
+    const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }))
+    const mins = now.getHours() * 60 + now.getMinutes()
+    if (mins < 2 || mins > 1437) return { skip: true }
+    const abbr = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][now.getDay()]
+    const fmt = m => {
+      let h = Math.floor(m / 60); const ap = h >= 12 ? 'PM' : 'AM'
+      return (h % 12 || 12) + ':' + String(m % 60).padStart(2, '0') + ' ' + ap
+    }
+    const soon = LabyrinthBooking.nextDate(abbr, fmt(mins + 1))
+    const past = LabyrinthBooking.nextDate(abbr, fmt(mins - 1))
+    return { skip: false,
+      soonToday: soon.getDate() === now.getDate() && soon.getMonth() === now.getMonth(),
+      pastNextWeek: past.getDate() !== now.getDate() || past.getMonth() !== now.getMonth() }
+  })
+  check('L1t a class is bookable up to the minute it starts',
+    cut.skip || (cut.soonToday && cut.pastNextWeek), JSON.stringify(cut))
+
+  // The campaign pages carry the booking modal at the top, and Legacy leads
+  // with the transfer.
+  const ennova = readFileSync(join(ROOT,'ennova.html'),'utf8')
+  check('L1t the Ennova hero opens the booking modal',
+    /hero__ctas[\s\S]{0,400}data-book-trial/.test(ennova))
+  const legacyPage = readFileSync(join(ROOT,'legacy/index.html'),'utf8')
+  check('L1t the Legacy hero leads with the transfer and can book a class',
+    /hero__ctas\s*">\s*<a href="\/legacy\/transfer"/.test(legacyPage)
+    && /hero__ctas[\s\S]{0,600}data-book-trial/.test(legacyPage))
+
+  // And the Ennova button actually opens it.
+  await page.goto('http://localhost:4620/ennova', { waitUntil:'networkidle' })
+  await page.click('.hero__ctas [data-book-trial]')
+  await page.waitForTimeout(400)
+  check('L1t the Ennova hero button opens the booking modal',
+    await page.evaluate(() =>
+      document.getElementById('bookingOverlay')?.classList.contains('open') === true))
+  await page.keyboard.press('Escape')
+}
+
 // ── L2: no .html blog links survive ──
 await page.goto('http://localhost:4620/blog/', { waitUntil:'domcontentloaded' })
 const dotHtml = await page.$$eval('a[href]', as => as.map(a=>a.getAttribute('href')).filter(h=>h && /[a-z0-9-]+\.html/.test(h)))
