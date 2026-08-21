@@ -1147,7 +1147,7 @@ def render_legacy():
 
     <h1 class="hero__title"><span class="hero__h1-seo">Team Legacy Martial Arts has merged with Labyrinth BJJ</span> <span class="hero__h1-visual">TWO SCHOOLS. <span>ONE TEAM.</span></span></h1>
 
-    <p class="hero__subtitle">Team Legacy Martial Arts has merged with Labyrinth BJJ. Thirty-plus students, a 7th Dan Grandmaster, and two head coaches on one mat. Come and see what that looks like.</p>
+    <p class="hero__subtitle">Team Legacy Martial Arts has merged with Labyrinth BJJ, and Grandmaster Scott Jones is bringing his team with him. Two head coaches on one mat. Come and see what that looks like.</p>
 
     <div class="hero__ctas">
       <a data-book-trial href="/#book" class="btn btn--gold">Try a free class</a>
@@ -1162,10 +1162,6 @@ def render_legacy():
       <div class="hero__stat">
         <div class="hero__stat-value">#1</div>
         <div class="hero__stat-label">In Texas</div>
-      </div>
-      <div class="hero__stat">
-        <div class="hero__stat-value">30+</div>
-        <div class="hero__stat-label">Students joining</div>
       </div>
       <div class="hero__stat">
         <div class="hero__stat-value">7th</div>
@@ -1201,7 +1197,7 @@ def render_legacy():
   <div class="container">
     <div class="legacy-coach fade-in">
       <div class="legacy-coach__shot">
-        <picture><source srcset="/assets/coach-scott.webp" type="image/webp"><img src="/assets/coach-scott.png" alt="Grandmaster Scott Jones of Team Legacy Martial Arts, now coaching full time at Labyrinth BJJ" width="560" height="560" loading="lazy"></picture>
+        <picture><source srcset="/assets/coach-scott.webp" type="image/webp"><img src="/assets/coach-scott.jpg" alt="Grandmaster Scott Jones of Team Legacy Martial Arts, now coaching full time at Labyrinth BJJ" width="560" height="560" loading="lazy"></picture>
         <picture class="legacy-coach__mark"><source srcset="/assets/team-legacy-wordmark.webp" type="image/webp"><img src="/assets/team-legacy-wordmark.png" alt="The Team Legacy BJJ and Taekwondo wordmark" width="900" height="727" loading="lazy"></picture>
       </div>
       <div class="legacy-coach__body">
@@ -1232,7 +1228,7 @@ def render_legacy():
       <div class="program-card program-card--half">
         <picture><source srcset="/assets/legacy-medals.webp" type="image/webp"><img src="/assets/legacy-medals.jpg" alt="Team Legacy Martial Arts students with their competition medals" class="program-card__image" loading="lazy" width="1200" height="900"></picture>
         <div class="program-card__body">
-          <p class="program-card__tag">Thirty-plus students</p>
+          <p class="program-card__tag">He brought his team</p>
           <h3 class="program-card__title">His Room, Not Just His Name</h3>
           <p class="program-card__desc">The families who trained at Team Legacy are training here now, in the same age groups, with the same coach at the front.</p>
         </div>

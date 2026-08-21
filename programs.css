@@ -685,6 +685,9 @@
    its ring and its lettering, and inverting that turns the blue orange. So
    neither is inverted here and both sit on the same light disc instead, which
    is how a crest is shown on a dark page anyway. */
+/* Three stats, not the front page's four: the head count came off. */
+.legacy-hero .hero__stats { grid-template-columns: repeat(3, 1fr); }
+
 .legacy-marks {
   display: flex;
   align-items: center;
@@ -700,8 +703,10 @@
   height: clamp(104px, 15vw, 168px);
   border-radius: 50%;
   background: #F4F1EA;
-  padding: clamp(12px, 1.6vw, 20px);
-  object-fit: contain;
+  /* No padding: both marks are already circular artwork trimmed to their own
+     edges, so any inset here shows as a cream ring around the logo rather
+     than as breathing room. They fill the disc. */
+  object-fit: cover;
   border: 1px solid var(--border);
   display: block;
 }
@@ -749,13 +754,22 @@
   display: block;
 }
 
-/* The portrait arrived already cut to a circle with its own thin ring, so it
-   gets no border here: a second one drawn outside the first reads as a mistake.
-   It is capped rather than filling the column, because a head shot blown up to
-   420px on a wide screen stops being a portrait and starts being a poster. */
+/* The portrait is a square photograph now, and the circle and its ring are
+   drawn by the browser. The version that shipped carried both baked in, and
+   the gold ring was one pixel wide sitting in the anti-aliased alpha edge: at
+   150px on a phone that is a third of a pixel, so it broke into a dotted arc.
+   border-radius redraws at whatever size the page actually uses.
+
+   Capped rather than filling the column, because a head shot at 420px on a
+   wide screen stops being a portrait and starts being a poster. */
 .legacy-coach__shot > picture:first-child img {
   max-width: 320px;
   margin-inline: auto;
+  aspect-ratio: 1;
+  height: auto;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid var(--gold);
 }
 
 /* His school's mark under his face, which is the pairing the section is about.
