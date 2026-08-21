@@ -707,8 +707,54 @@
   .legacy-facts { grid-template-columns: 1fr; }
 }
 
-/* Three stats, not the front page's four: the head count came off. */
-.legacy-hero .hero__stats { grid-template-columns: repeat(3, 1fr); }
+/* Three stats, not the front page's four: the head count came off. The row
+   sits outside the copy column and spans the whole grid, under copy and art
+   alike. */
+.legacy-hero .hero__stats {
+  grid-template-columns: repeat(3, 1fr);
+  grid-column: 1 / -1;
+}
+
+/* The hero splits: the announcement copy on the left, the two head coaches
+   from the "Two Schools. One Team." art on the right. The panel is capped
+   rather than fluid because the crop is 1280x800 and a panel wider than the
+   copy column would demote the headline to a caption. */
+.legacy-hero .hero__content {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 480px);
+  gap: clamp(var(--space-8), 4vw, var(--space-16));
+  align-items: center;
+}
+
+.legacy-hero__duo {
+  display: block;
+}
+
+.legacy-hero__duo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(200, 162, 76, 0.35);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* Sized from the width of the longer phrase in the narrowed copy column, the
+   same trick the ennova hero uses, so the headline is always exactly two
+   lines: TWO SCHOOLS. over ONE TEAM. At the front page's 6vw it wrapped after
+   the first word. */
+.legacy-hero .hero__h1-visual {
+  font-size: clamp(32px, 4.6vw, 64px);
+  white-space: nowrap;
+}
+.legacy-hero .hero__h1-visual span { display: block; }
+
+/* One column once the panel would squeeze the copy: art below the message,
+   centred, never wider than it is sharp. */
+@media (max-width: 960px) {
+  .legacy-hero .hero__content { grid-template-columns: 1fr; }
+  .legacy-hero__duo { max-width: 520px; }
+}
 
 .legacy-marks {
   display: flex;

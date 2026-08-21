@@ -1128,7 +1128,7 @@ def render_legacy():
                        "First class free, seven days a week in Fulshear.",
         "url": url,
         "og_title": "Two Schools. One Team.",
-        "image": SITE + "/assets/legacy-medals.jpg",
+        "image": SITE + "/assets/legacy-announcement.jpg",
         "schema": "\n".join([
             jsonld(crumb_schema([("Team Legacy", "/legacy/")])),
             jsonld({"@context": "https://schema.org", "@type": "WebPage",
@@ -1144,21 +1144,35 @@ def render_legacy():
   </div>
 
   <div class="hero__content">
-    <div class="hero__badge">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0l1.76 4.58L14 5.24l-3.82 3.18L11.36 14 7 11.08 2.64 14l1.18-5.58L0 5.24l5.24-.66z"/></svg>
-      It&rsquo;s official &middot; Fulshear, TX
+    <div class="legacy-hero__copy">
+      <div class="hero__badge">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0l1.76 4.58L14 5.24l-3.82 3.18L11.36 14 7 11.08 2.64 14l1.18-5.58L0 5.24l5.24-.66z"/></svg>
+        It&rsquo;s official &middot; Fulshear, TX
+      </div>
+
+      <h1 class="hero__title"><span class="hero__h1-seo">Team Legacy Martial Arts has merged with Labyrinth BJJ</span> <span class="hero__h1-visual">TWO SCHOOLS. <span>ONE TEAM.</span></span></h1>
+
+      <p class="hero__subtitle">Team Legacy Martial Arts has merged with Labyrinth BJJ, and Grandmaster Scott Jones is bringing his team with him. Two head coaches on one mat. Come and see what that looks like.</p>
+
+      <div class="hero__ctas">
+        <a href="/legacy/transfer" class="btn btn--gold">Transfer my membership</a>
+        <a data-book-trial href="/#book" class="btn btn--ghost">Try a free class</a>
+        <a href="tel:2813937983" class="btn btn--ghost">Call the school &middot; 281-393-7983</a>
+      </div>
     </div>
 
-    <h1 class="hero__title"><span class="hero__h1-seo">Team Legacy Martial Arts has merged with Labyrinth BJJ</span> <span class="hero__h1-visual">TWO SCHOOLS. <span>ONE TEAM.</span></span></h1>
+    <!-- The announcement art, minus its lower half: the graphic bakes in the
+         same TWO SCHOOLS. ONE TEAM. headline the H1 already sets, so the page
+         shows the part it cannot say in type — the two head coaches and the
+         crossed crests. The full square is the og:image, so shares get the
+         whole poster. -->
+    <picture class="legacy-hero__duo fade-in">
+      <source srcset="/assets/legacy-hero-duo.webp" type="image/webp">
+      <img src="/assets/legacy-hero-duo.jpg" alt="Head coach Anthony Curry of Labyrinth BJJ and Grandmaster Scott Jones of Team Legacy Martial Arts, with both school crests" width="1280" height="800" loading="eager" fetchpriority="high">
+    </picture>
 
-    <p class="hero__subtitle">Team Legacy Martial Arts has merged with Labyrinth BJJ, and Grandmaster Scott Jones is bringing his team with him. Two head coaches on one mat. Come and see what that looks like.</p>
-
-    <div class="hero__ctas">
-      <a href="/legacy/transfer" class="btn btn--gold">Transfer my membership</a>
-      <a data-book-trial href="/#book" class="btn btn--ghost">Try a free class</a>
-      <a href="tel:2813937983" class="btn btn--ghost">Call the school &middot; 281-393-7983</a>
-    </div>
-
+    <!-- Outside the copy column so it spans the full row on a desktop and
+         lands after the art on a phone, where copy, art and stats stack. -->
     <div class="hero__stats stagger">
       <div class="hero__stat">
         <div class="hero__stat-value">#9</div>
