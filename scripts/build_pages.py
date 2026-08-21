@@ -1287,12 +1287,12 @@ def render_legacy():
 
     <div class="trial__layout">
       <div class="trial__content fade-in">
-        <p>Your spot does not transfer automatically. We need you signed up at Labyrinth so we can put your child in the right class. It takes two minutes, and we cancel your Team Legacy billing the same day so <strong>you are never charged twice.</strong></p>
+        <p>Your spot does not transfer automatically. We need you signed up at Labyrinth so we can put your child in the right class. It takes two minutes. Your September payment to Team Legacy is your last one — <strong>Labyrinth billing starts in October,</strong> so you are never charged twice.</p>
 
         <h3>What happens next</h3>
         <ul>
           <li>Fill in the transfer form and we move your billing across</li>
-          <li>Your Team Legacy payment is cancelled the same day</li>
+          <li>Team Legacy takes its final payment in September; Labyrinth takes over from October</li>
           <li>We place your child in the age group they should be in</li>
         </ul>
 
@@ -1382,7 +1382,7 @@ def render_legacy_transfer():
     <div class="fade-in">
       <p class="section-label">Team Legacy members</p>
       <h1 class="section-title section-title--lg">TRANSFER YOUR MEMBERSHIP</h1>
-      <p class="section-subtitle">Two minutes. Coach Scott is now full time at Labyrinth: fill this in and we will move you across. We cancel your Team Legacy payment the same day so you are never charged twice.</p>
+      <p class="section-subtitle">Two minutes. Coach Scott is now full time at Labyrinth: fill this in and we will move you across. Your September Team Legacy payment is your last one, and Labyrinth billing starts in October — you are never charged twice.</p>
     </div>
 
     <div class="trial-form fade-in" id="tfPanel">
@@ -1427,7 +1427,7 @@ def render_legacy_transfer():
              determined" is the sentence doing the real work. -->
         <label class="ennova-check">
           <input type="checkbox" id="tfAuth" required>
-          <span>I authorize Labyrinth BJJ to store this card and charge it for my monthly membership, replacing my Team Legacy billing. <strong>Nothing is charged today.</strong> The rate is the one we agree for the plan we choose together, and Labyrinth will confirm it with me before the first charge. It then repeats monthly on the same date. Membership is month to month and I can cancel at any time by telling the academy.</span>
+          <span>I authorize Labyrinth BJJ to store this card and charge it for my monthly membership, replacing my Team Legacy billing. <strong>Nothing is charged today.</strong> Team Legacy takes its final payment in September, and my Labyrinth billing starts in October. The rate is the one we agree for the plan we choose together, and Labyrinth will confirm it with me before the first charge. It then repeats monthly on the same date. Membership is month to month and I can cancel at any time by telling the academy.</span>
         </label>
 
         <div class="form-row">
@@ -1447,12 +1447,12 @@ def render_legacy_transfer():
         <button type="submit" class="btn btn--gold trial-form__submit" id="tfSubmit">Continue to card details</button>
         <p class="ennova-form__error" id="tfError" role="alert" hidden></p>
       </form>
-      <p class="ennova-fine">The next screen is Stripe, where you enter your card. <strong>No payment is taken there.</strong> The card is stored so we can start your membership once we have agreed your rate. Questions? Text or call <a href="tel:2813937983">281-393-7983</a>.</p>
+      <p class="ennova-fine">The next screen is Stripe, where you enter your card. <strong>No payment is taken there.</strong> The card is stored so your Labyrinth membership can start in October, once we have agreed your rate. Questions? Text or call <a href="tel:2813937983">281-393-7983</a>.</p>
     </div>
 
     <div class="trial-form fade-in" id="tfDone" hidden>
       <h2 class="trial-form__title">You are on the roster.</h2>
-      <p class="legacy-transfer__done">Your card is saved and nothing has been charged. We will confirm your rate with you and start the membership from there. If anything looks wrong, text or call <a href="tel:2813937983">281-393-7983</a>.</p>
+      <p class="legacy-transfer__done">Your card is saved and nothing has been charged. September&rsquo;s Team Legacy payment is your last one; your Labyrinth billing starts in October, and we will confirm your rate with you before then. If anything looks wrong, text or call <a href="tel:2813937983">281-393-7983</a>.</p>
       <a data-book-trial href="/#book" class="btn btn--gold trial-form__submit">See the class times</a>
     </div>
   </div>

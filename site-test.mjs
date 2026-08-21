@@ -456,6 +456,8 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   // doing the real work, and losing it in an edit would be invisible.
   for (const [what, re] of [
     ['nothing is charged today', /Nothing is charged today/i],
+    ['when the last Team Legacy payment lands', /final payment in September/i],
+    ['when Labyrinth billing starts', /billing starts in October/i],
     ['how the rate is decided', /rate is the one we agree/i],
     ['when it recurs', /repeats monthly/i],
     ['how to cancel', /cancel at any time/i],
