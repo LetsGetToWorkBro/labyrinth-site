@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Enigma Gi Pre-order — Labyrinth BJJ</title>
+<meta name="description" content="Pre-order the Enigma gi. Two colourways, every size, $109 — paid now, which is what reserves it.">
+<meta name="robots" content="noindex">
+<style>
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: #0B0B0D; }
+</style>
+</head>
+<body>
+<!--
+  Labyrinth — the Enigma pre-order, for labyrinth.vision/drop.
+
+  A standalone page. Plain HTML, CSS and JavaScript, no dependencies and no
+  build step, so it works wherever the site is. Same shape as
+  integrations/website-booking/booking-form.html, which already lives on that
+  site — drop it into a page, a template, or an embed block.
+
+  ── TWO TAPS ───────────────────────────────────────────────────────────────
+  Tap a size, tap Reserve, pay. It asks for no name, no email and no phone
+  number: Stripe Checkout collects a name and an email on its way to taking the
+  money, and Apple Pay hands both over without a keyboard. Asking first was
+  asking twice.
+
+  ── WHY THIS EXISTS ALONGSIDE THE CRM'S OWN PAGE ────────────────────────────
+  The CRM serves the same thing at crm.labyrinth.vision/#/preorder. That one is
+  React and lives inside the app; this one is for the public site, where the
+  visitor should never see a different domain. Both post to the SAME endpoint,
+  and the endpoint decides what a valid size is, what a gi costs and what gets
+  written — so the two cannot disagree about anything that matters.
+  scripts/gi-sizes.test.mjs reads the size list, the colourways and the price
+  out of this file too, and fails if any of them drifts.
+
+  ── NOTHING SECRET IS IN HERE ───────────────────────────────────────────────
+  Deliberately. The endpoint takes writes only and never reads anything back, so
+  viewing source tells an attacker nothing they could not learn by opening the
+  page. The price below is only what the button SAYS; the server charges its own
+  copy, so editing this number in dev tools changes nothing.
+
+  ── AFTER PAYMENT ──────────────────────────────────────────────────────────
+  Handled for you. The page tells the endpoint where it is, the endpoint checks
+  that against its own allow-list, and Stripe returns people to THIS page —
+  wherever it is served from. There is no environment variable to set.
+
+  ── WHERE THIS PAGE HAS TO LIVE ────────────────────────────────────────────
+  labyrinth.vision is a SEPARATE Cloudflare Pages project. It is not this repo,
+  and nothing in this repo can deploy to it — so until this file is published
+  there, labyrinth.vision/drop is a 404. Paste it in as the /drop page.
+
+  In the meantime the CRM build publishes the very same file at
+  crm.labyrinth.vision/drop (scripts/copy-drop-page.mjs), so there is a working
+  link to give people either way.
+-->
+
+<link rel="preconnect" href="https://jctufxvmuvobaggxcwfn.supabase.co">
+
+<section class="drop" id="drop">
+  <header class="drop__head">
+    <p class="drop__kanji" aria-hidden="true">迷宮</p>
+    <h1 class="drop__title">ENIGMA</h1>
+    <p class="drop__sub">Pre-order</p>
+    <p class="drop__lede">
+      Two colourways, cut to your size. <strong>$109</strong> each, paid now —
+      that is what reserves it. We only have made what is paid for.
+    </p>
+  </header>
+
+  <div class="drop__done" id="drop-done" hidden role="status" tabindex="-1">
+    <p class="drop__tick" aria-hidden="true">✓</p>
+    <h2>Reserved</h2>
+    <p>Payment received — your Enigma gi is reserved. Stripe has emailed you a receipt.</p>
+    <p class="drop__fine">
+      We will let you know when the order goes to the maker, and again when it
+      lands. Any questions, just ask at the front desk.
+    </p>
+    <button class="drop__submit" type="button" id="drop-again">Reserve another</button>
+  </div>
+
+  <div id="drop-shop">
+    <p class="drop__notice" id="drop-cancelled" hidden role="status">
+      Payment cancelled — nothing has been charged and nothing is reserved.
+    </p>
+
+    <section class="drop__step">
+      <h2>Colour</h2>
+      <div class="drop__ways" id="drop-ways" role="radiogroup" aria-label="Colourway"></div>
+      <figure class="drop__figure">
+        <img id="drop-flat" alt="" width="1440" height="810">
+        <figcaption id="drop-caption"></figcaption>
+      </figure>
+    </section>
+
+    <section class="drop__step">
+      <h2>Size</h2>
+      <p class="drop__hint">
+        Tap a size to add it. Not sure? Ask at the front desk before you order —
+        we would rather check than send back a gi that does not fit.
+      </p>
+      <div id="drop-sizes"></div>
+    </section>
+
+    <p class="drop__error" id="drop-error" role="alert" hidden></p>
+
+    <p class="drop__fine">
+      Card, Apple Pay or Google Pay — handled by Stripe, so we never see your card
+      number. Your gi is reserved the moment the payment goes through.
+    </p>
+  </div>
+</section>
+
+<div class="drop__bar" id="drop-bar" hidden>
+  <button class="drop__bar-cart" type="button" id="drop-review"></button>
+  <button class="drop__submit drop__bar-go" type="button" id="drop-go"></button>
+</div>
+
+<div class="drop__sheet" id="drop-sheet" hidden role="dialog" aria-modal="true" aria-label="Your basket">
+  <div class="drop__sheet-inner">
+    <h2>Your basket</h2>
+    <ul class="drop__cart" id="drop-cart"></ul>
+    <p class="drop__cart-total"><span>Total</span><b id="drop-total"></b></p>
+    <!-- Empty and invisible unless TURNSTILE_SITE_KEY is set. See the note in the script. -->
+    <div id="drop-turnstile"></div>
+    <div class="drop__sheet-actions">
+      <button class="drop__ghost" type="button" id="drop-more">Add more</button>
+      <button class="drop__submit" type="button" id="drop-sheet-go">Reserve</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* The `hidden` attribute only gets its display:none from the browser's own
+     stylesheet, so ANY author rule that sets display on the same element beats
+     it. .drop__bar and .drop__sheet are both display:flex, which meant both
+     ignored the hidden they ship with: the empty basket sheet rendered over the
+     whole viewport on load — inset:0, z-index:70 — and swallowed every tap, so
+     no size could be chosen and no order could be placed. The script toggles
+     .hidden throughout, so the fix belongs here, in the one rule that makes the
+     attribute mean what it says. */
+  .drop [hidden], .drop__bar[hidden], .drop__sheet[hidden] { display: none !important; }
+
+  .drop { max-width: 640px; margin: 0 auto; padding: 28px 18px 120px; color: #efe7d8;
+          font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .drop__head { text-align: center; margin-bottom: 26px; }
+  .drop__kanji { font-size: 30px; letter-spacing: 6px; color: #e3c78f; margin: 0; }
+  .drop__title { font-size: 40px; font-weight: 300; letter-spacing: 12px;
+                 margin: 6px 0 2px; padding-left: 12px; }
+  .drop__sub { font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+               color: #9a927f; margin: 0; }
+  .drop__lede { font-size: 15px; line-height: 1.6; color: #c9c0ad; margin: 14px auto 0;
+                max-width: 46ch; }
+  .drop__lede strong { color: #e3c78f; }
+
+  .drop__step { margin: 0 0 30px; }
+  .drop__step h2 { font-size: 18px; font-weight: 800; margin: 0 0 8px; }
+  .drop__hint { font-size: 13.5px; line-height: 1.5; color: #9a927f; margin: 0 0 10px; }
+
+  .drop__ways { display: flex; flex-direction: column; gap: 10px; }
+  .drop__way { display: flex; align-items: center; gap: 14px; text-align: left;
+               padding: 14px; border-radius: 14px; min-height: 44px; cursor: pointer;
+               border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.03);
+               color: inherit; font: inherit; width: 100%; }
+  .drop__way[aria-checked="true"] { border-color: #e3c78f; background: rgba(227,199,143,0.09); }
+  .drop__sw { display: flex; flex: none; }
+  .drop__sw i { display: block; width: 26px; height: 38px; border: 1px solid rgba(255,255,255,0.2); }
+  .drop__sw i:first-child { border-radius: 4px 0 0 4px; }
+  .drop__sw i:last-child { border-radius: 0 4px 4px 0; margin-left: -1px; }
+  .drop__way b { display: block; font-size: 15.5px; }
+  .drop__way small { display: block; font-size: 13px; color: #9a927f; }
+
+  .drop__figure { margin: 14px 0 0; }
+  .drop__figure img { width: 100%; height: auto; display: block; border-radius: 12px;
+                      background: #8c8c8c; border: 1px solid rgba(255,255,255,0.14); }
+  .drop__figure figcaption { font-size: 12.5px; color: #9a927f; text-align: center;
+                             margin-top: 8px; }
+
+  .drop__group h3 { font-size: 14.5px; font-weight: 700; margin: 18px 0 2px; }
+  .drop__grid { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); }
+  .drop__size { position: relative; min-height: 48px; border-radius: 11px; cursor: pointer;
+                border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.03);
+                color: #c9c0ad; font: 700 14.5px/1 system-ui, sans-serif;
+                font-variant-numeric: tabular-nums; }
+  .drop__size[data-in="1"] { border-color: #e3c78f; background: #e3c78f; color: #17120b; }
+  .drop__n { position: absolute; top: -6px; right: -6px; min-width: 20px; height: 20px;
+             padding: 0 5px; border-radius: 999px; display: inline-flex;
+             align-items: center; justify-content: center; font-size: 12px; font-weight: 800;
+             background: #17120b; color: #e3c78f; border: 2px solid #e3c78f; }
+
+  .drop__notice, .drop__error { font-size: 14px; line-height: 1.5; padding: 12px 14px;
+                                border-radius: 12px; margin: 0 0 16px; }
+  .drop__notice { color: #c9c0ad; background: rgba(255,255,255,0.04);
+                  border: 1px solid rgba(255,255,255,0.14); }
+  .drop__error { color: #ffd9d9; background: rgba(217,83,79,0.16);
+                 border: 1px solid rgba(217,83,79,0.5); }
+
+  .drop__submit { min-height: 52px; padding: 0 20px; border-radius: 12px; cursor: pointer;
+                  border: 0; background: #e3c78f; color: #17120b;
+                  font: 800 15.5px/1 system-ui, sans-serif; }
+  .drop__submit:disabled { opacity: 0.45; cursor: not-allowed; }
+  .drop__ghost { min-height: 52px; padding: 0 18px; border-radius: 12px; cursor: pointer;
+                 border: 1px solid rgba(255,255,255,0.16); background: transparent;
+                 color: #efe7d8; font: 600 15px/1 system-ui, sans-serif; }
+  .drop__fine { font-size: 12.5px; line-height: 1.5; color: #9a927f; text-align: center;
+                margin: 12px auto 0; max-width: 42ch; }
+
+  /* Fixed, and paying the home-indicator inset — or its bottom 34px sit under
+     the bar on every iPhone since the X, which is where Reserve is. */
+  .drop__bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+               display: flex; align-items: center; gap: 10px;
+               padding: 12px calc(14px + env(safe-area-inset-right, 0px))
+                        calc(12px + env(safe-area-inset-bottom, 0px))
+                        calc(14px + env(safe-area-inset-left, 0px));
+               background: rgba(20,16,12,0.94);
+               -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
+               border-top: 1px solid rgba(255,255,255,0.14); }
+  .drop__bar-cart { display: flex; flex-direction: column; align-items: flex-start; gap: 1px;
+                    min-height: 48px; padding: 0 6px; flex: none; cursor: pointer;
+                    background: none; border: 0; color: #efe7d8; font-size: 14px;
+                    text-align: left; font-family: inherit; }
+  .drop__bar-cart b { font-size: 15px; font-weight: 800; }
+  .drop__bar-cart small { font-size: 12px; color: #e3c78f; }
+  .drop__bar-go { flex: 1; }
+
+  .drop__sheet { position: fixed; inset: 0; z-index: 70; display: flex;
+                 align-items: flex-end; justify-content: center;
+                 background: rgba(0,0,0,0.6); }
+  .drop__sheet-inner { width: 100%; max-width: 460px; border-radius: 18px 18px 0 0;
+                       background: #1b1712; border: 1px solid rgba(255,255,255,0.14);
+                       padding: 22px 18px calc(22px + env(safe-area-inset-bottom, 0px));
+                       color: #efe7d8; font-family: system-ui, sans-serif;
+                       max-height: 82vh; overflow-y: auto; }
+  .drop__sheet-inner h2 { font-size: 19px; margin: 0 0 6px; }
+  .drop__cart { list-style: none; margin: 14px 0 0; padding: 0; }
+  .drop__cart li { display: flex; align-items: center; gap: 12px; padding: 10px 0;
+                   border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .drop__cart-what { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+  .drop__cart-what b { font-size: 14.5px; }
+  .drop__cart-what small { font-size: 12.5px; color: #9a927f; }
+  .drop__qty { display: flex; align-items: center; gap: 4px; flex: none; }
+  /* 44px: these change what somebody is about to be charged. */
+  .drop__qty button { width: 44px; height: 44px; border-radius: 10px; cursor: pointer;
+                      border: 1px solid rgba(255,255,255,0.14);
+                      background: rgba(255,255,255,0.04); color: #efe7d8;
+                      font-size: 19px; line-height: 1; }
+  .drop__qty button:disabled { opacity: 0.35; cursor: not-allowed; }
+  .drop__qty b { min-width: 26px; text-align: center; font-variant-numeric: tabular-nums; }
+  .drop__cart-total { display: flex; justify-content: space-between; align-items: baseline;
+                      margin: 14px 0 4px; padding-top: 12px;
+                      border-top: 1px solid rgba(255,255,255,0.14); font-size: 15px; }
+  .drop__cart-total b { font-size: 19px; font-weight: 800; color: #e3c78f; }
+  .drop__sheet-actions { display: flex; gap: 10px; margin-top: 16px; }
+  .drop__sheet-actions .drop__submit { flex: 1; }
+
+  .drop__done { text-align: center; padding: 24px 8px; }
+  .drop__done:focus { outline: none; }
+  .drop__tick { width: 56px; height: 56px; margin: 0 auto 14px; border-radius: 999px;
+                display: flex; align-items: center; justify-content: center;
+                background: #e3c78f; color: #17120b; font-size: 26px; font-weight: 800; }
+  .drop__done h2 { font-size: 24px; margin: 0 0 8px; }
+  .drop__done p { font-size: 15px; line-height: 1.6; color: #c9c0ad; margin: 0 0 10px; }
+  .drop__done .drop__submit { margin-top: 12px; width: 100%; }
+
+  @media (max-width: 480px) {
+    .drop__title { font-size: 32px; letter-spacing: 8px; padding-left: 8px; }
+    .drop__grid { grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); }
+  }
+</style>
+
+<script>
+(function () {
+  'use strict';
+
+  var ENDPOINT = 'https://jctufxvmuvobaggxcwfn.supabase.co/functions/v1/gi-preorder';
+  var ASSETS = 'https://crm.labyrinth.vision/enigma/';
+
+  /**
+   * Cloudflare Turnstile — OFF, and the order you switch it on in matters.
+   *
+   * The endpoint already knows how to check a Turnstile token: if
+   * TURNSTILE_SECRET is set it demands one, and `if (!token) return false`.
+   * So setting that secret while this key is still blank does not tighten the
+   * door, it BRICKS it — every pre-order, from every member, comes back 403
+   * "Could not verify that you are a person", silently, for as long as it takes
+   * somebody to notice.
+   *
+   * The order is therefore: put the site key here (and in the CRM's
+   * VITE_TURNSTILE_SITE_KEY), ship both pages, confirm a real order still goes
+   * through — and only THEN set TURNSTILE_SECRET in Supabase.
+   *
+   * `interaction-only` means a real member sees nothing at all, which is the
+   * point: this drop is meant to be one tap.
+   */
+  var TURNSTILE_SITE_KEY = '';
+  var turnstileToken = '';
+
+  if (TURNSTILE_SITE_KEY) {
+    var ts = document.createElement('script');
+    ts.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+    ts.async = true;
+    ts.defer = true;
+    ts.onload = function () {
+      if (!window.turnstile) return;
+      window.turnstile.render('#drop-turnstile', {
+        sitekey: TURNSTILE_SITE_KEY,
+        appearance: 'interaction-only',
+        callback: function (t) { turnstileToken = t; },
+        'expired-callback': function () { turnstileToken = ''; }
+      });
+    };
+    document.head.appendChild(ts);
+  }
+
+  /* Display only. The server charges its own copy — see the note at the top. */
+  var PRICE = 109;
+  var MAX_QTY = 5;
+
+  var COLOURWAYS = [
+    { id: 'ariadne', name: 'Ariadne', blurb: 'Optic white gi, maroon patches, white type.',
+      body: '#FFFFFF', field: '#5E1622', image: 'ariadne.png' },
+    { id: 'asterion', name: 'Asterion', blurb: 'Black gi, charcoal patches, grey type.',
+      body: '#16161A', field: '#2E2E36', image: 'charcoal.png' }
+  ];
+
+  /* Kept in step with src/data/gi.ts by scripts/gi-sizes.test.mjs. */
+  var SIZE_GROUPS = [
+    { label: 'Kids', hint: 'M00 is the smallest. Most kids classes sit between M1 and M3.',
+      sizes: ['M00', 'M0', 'M1', 'M2', 'M3', 'M4'] },
+    { label: 'In between', hint: 'Bigger than the kids run, smaller than an adult A1 — teenagers, mostly.',
+      sizes: ['A0', 'A0H'] },
+    { label: 'Adult', hint: 'L is longer in the sleeve and leg. H is roomier through the body.',
+      sizes: ['A1', 'A1L', 'A1H', 'A2', 'A2L', 'A2H', 'A3', 'A3L', 'A3H',
+              'A4', 'A4L', 'A4H', 'A5'] },
+    { label: "Women's", hint: 'Cut for a woman’s frame. L is longer, H is roomier.',
+      sizes: ['F1', 'F1L', 'F1H', 'F2', 'F2L', 'F2H', 'F3', 'F3L', 'F3H'] }
+  ];
+
+  var $ = function (id) { return document.getElementById(id); };
+  var shop = $('drop-shop'); if (!shop) return;
+  var waysEl = $('drop-ways'), sizesEl = $('drop-sizes'), flat = $('drop-flat');
+  var caption = $('drop-caption'), errorEl = $('drop-error'), bar = $('drop-bar');
+  var review = $('drop-review'), go = $('drop-go'), sheet = $('drop-sheet');
+  var cartEl = $('drop-cart'), totalEl = $('drop-total'), doneEl = $('drop-done');
+
+  var colourway = 'ariadne';
+  var cart = [];          /* [{colourway, size, quantity}] */
+  var sending = false;
+
+  var key = function (c, s) { return c + '|' + s; };
+  var money = function (n) { return '$' + n.toFixed(2); };
+  var chosen = function () {
+    for (var i = 0; i < COLOURWAYS.length; i++) if (COLOURWAYS[i].id === colourway) return COLOURWAYS[i];
+    return COLOURWAYS[0];
+  };
+  var count = function () {
+    return cart.reduce(function (n, l) { return n + l.quantity; }, 0);
+  };
+
+  /* ── Coming back from Stripe ─────────────────────────────────────────── */
+  var params = new URLSearchParams(window.location.search);
+  var paid = params.get('paid');
+  if (params.get('cancelled') === '1') $('drop-cancelled').hidden = false;
+
+  if (paid) {
+    shop.hidden = true;
+    doneEl.hidden = false;
+    doneEl.focus();
+    /* The browser's word counts for nothing — this posts the session id so the
+       SERVER can ask Stripe, which is what marks it reserved. The webhook does
+       the same job for anybody who closed the tab. */
+    fetch(ENDPOINT, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ confirm: paid })
+    }).catch(function () {});
+    $('drop-again').addEventListener('click', function () {
+      window.location.search = '';
+    });
+    return;
+  }
+
+  function paintColourways() {
+    waysEl.innerHTML = '';
+    COLOURWAYS.forEach(function (c) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'drop__way';
+      b.setAttribute('role', 'radio');
+      b.setAttribute('aria-checked', String(c.id === colourway));
+      b.innerHTML = '<span class="drop__sw" aria-hidden="true">' +
+        '<i style="background:' + c.body + '"></i><i style="background:' + c.field + '"></i>' +
+        '</span><span><b></b><small></small></span>';
+      /* textContent, not innerHTML, for anything that could ever be data. */
+      b.querySelector('b').textContent = c.name;
+      b.querySelector('small').textContent = c.blurb;
+      b.addEventListener('click', function () {
+        colourway = c.id; paintColourways(); paintFlat(); paintSizes();
+      });
+      waysEl.appendChild(b);
+    });
+  }
+
+  function paintFlat() {
+    var c = chosen();
+    flat.src = ASSETS + c.image;
+    flat.alt = 'Enigma ' + c.name + ' — jacket and pants, front and back';
+    caption.textContent = 'Enigma “' + c.name + '” — jacket and pants, front and back.';
+  }
+
+  function qtyOf(size) {
+    for (var i = 0; i < cart.length; i++) {
+      if (key(cart[i].colourway, cart[i].size) === key(colourway, size)) return cart[i].quantity;
+    }
+    return 0;
+  }
+
+  function add(size) {
+    errorEl.hidden = true;
+    var k = key(colourway, size);
+    for (var i = 0; i < cart.length; i++) {
+      if (key(cart[i].colourway, cart[i].size) === k) {
+        /* A second tap bumps it rather than doing nothing, which is what a
+           person means by tapping twice. */
+        cart[i].quantity = Math.min(MAX_QTY, cart[i].quantity + 1);
+        paintSizes(); paintBar(); return;
+      }
+    }
+    cart.push({ colourway: colourway, size: size, quantity: 1 });
+    paintSizes(); paintBar();
+  }
+
+  function setQty(k, q) {
+    cart = cart.filter(function (l) {
+      if (key(l.colourway, l.size) !== k) return true;
+      l.quantity = Math.min(MAX_QTY, q);
+      return l.quantity > 0;
+    });
+    paintSizes(); paintBar(); paintCart();
+  }
+
+  function paintSizes() {
+    sizesEl.innerHTML = '';
+    SIZE_GROUPS.forEach(function (g) {
+      var wrap = document.createElement('div');
+      wrap.className = 'drop__group';
+      var h = document.createElement('h3'); h.textContent = g.label;
+      var p = document.createElement('p'); p.className = 'drop__hint'; p.textContent = g.hint;
+      var grid = document.createElement('div');
+      grid.className = 'drop__grid';
+      g.sizes.forEach(function (s) {
+        var n = qtyOf(s);
+        var b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'drop__size';
+        if (n > 0) b.setAttribute('data-in', '1');
+        b.setAttribute('aria-label', n > 0
+          ? s + ', ' + n + ' in your basket. Add another'
+          : 'Add ' + s + ' to your basket');
+        b.textContent = s;
+        if (n > 0) {
+          var badge = document.createElement('span');
+          badge.className = 'drop__n';
+          badge.setAttribute('aria-hidden', 'true');
+          badge.textContent = String(n);
+          b.appendChild(badge);
+        }
+        b.addEventListener('click', function () { add(s); });
+        grid.appendChild(b);
+      });
+      wrap.appendChild(h); wrap.appendChild(p); wrap.appendChild(grid);
+      sizesEl.appendChild(wrap);
+    });
+  }
+
+  function paintBar() {
+    var n = count();
+    bar.hidden = n === 0;
+    if (n === 0) return;
+    review.innerHTML = '';
+    var b = document.createElement('b');
+    b.textContent = n + (n === 1 ? ' gi · ' : ' gis · ') + money(n * PRICE);
+    var small = document.createElement('small'); small.textContent = 'Review';
+    review.appendChild(b); review.appendChild(small);
+    go.textContent = sending ? 'Opening…' : 'Reserve · ' + money(n * PRICE);
+    go.disabled = sending;
+  }
+
+  function paintCart() {
+    cartEl.innerHTML = '';
+    cart.forEach(function (l) {
+      var way = COLOURWAYS.filter(function (c) { return c.id === l.colourway; })[0];
+      var li = document.createElement('li');
+      var what = document.createElement('span');
+      what.className = 'drop__cart-what';
+      var b = document.createElement('b'); b.textContent = way.name + ' · ' + l.size;
+      var sm = document.createElement('small'); sm.textContent = money(PRICE) + ' each';
+      what.appendChild(b); what.appendChild(sm);
+
+      var qty = document.createElement('span');
+      qty.className = 'drop__qty';
+      var minus = document.createElement('button');
+      minus.type = 'button'; minus.textContent = '−';
+      minus.setAttribute('aria-label', 'One fewer ' + l.size);
+      minus.addEventListener('click', function () { setQty(key(l.colourway, l.size), l.quantity - 1); });
+      var num = document.createElement('b'); num.textContent = String(l.quantity);
+      var plus = document.createElement('button');
+      plus.type = 'button'; plus.textContent = '+';
+      plus.disabled = l.quantity >= MAX_QTY;
+      plus.setAttribute('aria-label', 'One more ' + l.size);
+      plus.addEventListener('click', function () { setQty(key(l.colourway, l.size), l.quantity + 1); });
+      qty.appendChild(minus); qty.appendChild(num); qty.appendChild(plus);
+
+      li.appendChild(what); li.appendChild(qty);
+      cartEl.appendChild(li);
+    });
+    totalEl.textContent = money(count() * PRICE);
+  }
+
+  function fail(message) {
+    errorEl.textContent = message;
+    errorEl.hidden = false;
+    sending = false;
+    paintBar();
+    sheet.hidden = true;
+  }
+
+  function checkout() {
+    if (sending || cart.length === 0) return;
+    errorEl.hidden = true;
+    sending = true;
+    paintBar();
+    sheet.hidden = true;
+
+    /* fetch has no timeout of its own, and a hung request on a phone is a
+       spinner nobody can get out of. */
+    var done = false;
+    var timer = setTimeout(function () {
+      if (done) return;
+      done = true;
+      fail('That took too long. Check your signal and try again.');
+    }, 20000);
+
+    fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        items: cart,
+        turnstileToken: turnstileToken,
+        /* Where to come back to after Stripe. The server ignores anything that
+           is not on its own allow-list, so this is a request, not an
+           instruction — but it is what lets this page be served from more than
+           one place and still return people to itself. */
+        returnTo: window.location.origin + window.location.pathname.replace(/\/+$/, '')
+      })
+    }).then(function (res) {
+      return res.json().catch(function () { return {}; });
+    }).then(function (data) {
+      if (done) return;
+      done = true; clearTimeout(timer);
+      if (!data || !data.ok) { fail((data && data.error) || 'That did not save — please try again.'); return; }
+      if (data.checkoutUrl) { window.location.assign(data.checkoutUrl); return; }
+      fail('The payment page did not open. Please tell the front desk.');
+    }).catch(function () {
+      if (done) return;
+      done = true; clearTimeout(timer);
+      fail('Could not reach the academy — check your internet and try again.');
+    });
+  }
+
+  review.addEventListener('click', function () { paintCart(); sheet.hidden = false; });
+  $('drop-more').addEventListener('click', function () { sheet.hidden = true; });
+  sheet.addEventListener('click', function (e) { if (e.target === sheet) sheet.hidden = true; });
+  go.addEventListener('click', checkout);
+  $('drop-sheet-go').addEventListener('click', checkout);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !sheet.hidden) sheet.hidden = true;
+  });
+
+  paintColourways();
+  paintFlat();
+  paintSizes();
+  paintBar();
+})();
+</script>
+
+</body>
+</html>
