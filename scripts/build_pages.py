@@ -1538,6 +1538,79 @@ def render_legacy_transfer():
         TAIL % {"footer": FOOTER}])
 
 
+def render_drop():
+    """The Enigma gi pre-order, at /drop.
+
+    The page itself is not written here. It arrives from the CRM as a
+    self-contained fragment and lives verbatim in scripts/drop-fragment.html,
+    because four things in it have to agree with the endpoint that takes the
+    money — the endpoint URL, the size list, the two colourway names and the
+    $109 — and a test in the CRM repo reads them straight out of that file. So
+    it is pasted in, not rewritten: when a new version is handed over, replace
+    that one file and rebuild. Nothing in this function edits its content.
+
+    What this adds is the building around it. Served as a raw standalone file
+    the page had no nav and no footer, so a buyer who wanted to see the
+    timetable or ring the academy had to type the address again. Wrapping it in
+    HEAD + NAV + TAIL is the case the fragment was written for — it carries no
+    doctype and no charset precisely so a host page can supply them — and it
+    also fixes the mobile trap the fragment warns about, since a fragment
+    served alone renders in quirks mode at 980px.
+
+    Three adjustments the site's own chrome makes necessary, in a style block
+    after the fragment so they win on document order rather than by editing it:
+    the nav is fixed, so the content needs to start below it; .nav sits at
+    z-index 100 and the basket sheet at 70, which would draw the site header on
+    top of an open modal; and the fixed Reserve bar would otherwise cover the
+    footer's one line of text. The typography is pointed at the site's faces so
+    the header and the page below it do not read as two different websites.
+
+    noindex, and out of the sitemap: it is a drop for people who are given the
+    link, not a shop front competing with the programme pages.
+    """
+    url = SITE + "/drop"
+    head = HEAD % {
+        "title": "Enigma Gi Pre-order | Labyrinth BJJ",
+        "description": "Pre-order the Enigma gi. Two colourways, every size, $109 "
+                       "— paid now, which is what reserves it.",
+        "url": url,
+        "og_title": "Enigma Gi Pre-order",
+        "image": SITE + "/assets/og-image.jpg",
+        "schema": "",
+    }
+    head = head.replace('<link rel="canonical"',
+                        '<meta name="robots" content="noindex, follow">\n<link rel="canonical"', 1)
+
+    with open(os.path.join(ROOT, "scripts", "drop-fragment.html"), encoding="utf-8") as fh:
+        fragment = fh.read()
+
+    fit = """
+<style>
+  /* The nav is fixed, so the fragment's own top padding starts underneath it. */
+  .drop { padding-top: calc(var(--nav-height) + var(--space-8)); }
+
+  /* .nav is z-index 100 and the basket sheet is 70, which drew the site header
+     over an open modal. Above the nav, below booking.css's overlay at 10000. */
+  .drop__sheet { z-index: 300; }
+
+  /* The Reserve bar is fixed to the bottom, and the footer is a single line:
+     without this it sits underneath the bar the moment anything is in the
+     basket. Unconditional, because the bar comes and goes. */
+  .footer { padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+
+  /* The fragment sets system-ui, including inside `font:` shorthands that carry
+     a family with them — hence the button selectors as well as the containers.
+     Left alone, the site's header and the page under it are visibly two
+     different websites. */
+  .drop, .drop__sheet-inner, .drop__size, .drop__submit, .drop__ghost,
+  .drop__qty button { font-family: var(--font-body); }
+  .drop__title { font-family: var(--font-display); }
+</style>
+"""
+
+    return "\n".join([head, NAV, fragment, fit, TAIL % {"footer": FOOTER}])
+
+
 def render_coach(c):
     url = "%s/coaches/%s" % (SITE, c["slug"])
     plain = re.sub(r"&\w+;", " ", c["name"]).strip()
@@ -1775,6 +1848,9 @@ def main():
     with open(os.path.join(ROOT, "ennova.html"), "w", encoding="utf-8") as fh:
         fh.write(stamp(render_ennova()))
     print("wrote ennova.html")
+    with open(os.path.join(ROOT, "drop.html"), "w", encoding="utf-8") as fh:
+        fh.write(stamp(render_drop()))
+    print("wrote drop.html")
 
     legacy = os.path.join(ROOT, "legacy")
     if not os.path.isdir(legacy):

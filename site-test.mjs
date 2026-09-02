@@ -658,6 +658,90 @@ await page.waitForTimeout(700)
 check('L6 failure does not fake success', await page.isVisible('#contactForm'))
 check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.stringify(alerted))
 
+// ── L1u: the Enigma drop ──
+// The page comes from the CRM as a fragment and is pasted in verbatim
+// (scripts/drop-fragment.html), so the two things worth guarding are the
+// values that have to agree with the endpoint taking the money, and the one
+// bug the fragment shipped with.
+//
+// That bug: `hidden` only gets its display:none from the browser's own
+// stylesheet, so the author rules setting .drop__bar and .drop__sheet to
+// display:flex beat it, and the empty basket sheet covered the whole viewport
+// on load — inset:0, z-index:70 — swallowing every tap. Nothing could be
+// ordered and the page still looked fine in a screenshot. A fresh copy pasted
+// in from the CRM would bring it straight back, which is what this catches.
+{
+  const drop = readFileSync(join(ROOT,'drop.html'),'utf8')
+
+  check('L1u the drop page is wrapped in the site chrome',
+    /<nav class="nav"/.test(drop) && /<footer class="footer"/.test(drop) && /<main id="main">/.test(drop))
+  check('L1u the drop page is noindex', /name="robots"[^>]*noindex/.test(drop))
+  const locs = [...readFileSync(join(ROOT,'sitemap.xml'),'utf8')
+    .matchAll(/<loc>(.*?)<\/loc>/g)].map(m=>m[1])
+  check('L1u the drop page is not in the sitemap',
+    !locs.some(l => l.replace(/\/$/,'') === 'https://labyrinth.vision/drop'))
+
+  // Must match the CRM's own copy. The server charges its own price, so a
+  // number that drifts here only makes the button lie.
+  for (const [what, re] of [
+    ['the endpoint', /https:\/\/jctufxvmuvobaggxcwfn\.supabase\.co\/functions\/v1\/gi-preorder/],
+    ['the price', /var PRICE = 109;/],
+    ['both colourways', /id: 'ariadne'[\s\S]*id: 'asterion'/],
+    ['the full size run', /'M00'[\s\S]*'A0H'[\s\S]*'A5'[\s\S]*'F3H'/],
+    ['the returnTo line', /returnTo: window\.location\.origin \+ window\.location\.pathname/],
+    ['Turnstile still off', /TURNSTILE_SITE_KEY = ''/],
+  ]) check(`L1u the drop page keeps ${what}`, re.test(drop))
+
+  await page.setViewportSize({ width:390, height:844 })
+  await page.goto('http://localhost:4620/drop', { waitUntil:'domcontentloaded' })
+  await page.waitForTimeout(250)
+
+  check('L1u the basket sheet is hidden until it is asked for',
+    await page.isHidden('#drop-sheet'))
+  check('L1u the reserve bar is hidden until something is in the basket',
+    await page.isHidden('#drop-bar'))
+  // The proof the tap actually lands: what is under the middle of the screen.
+  check('L1u nothing is covering the page on load',
+    !(await page.evaluate(() => {
+      const t = document.elementFromPoint(195, 400)
+      return !!(t && t.closest && t.closest('#drop-sheet'))
+    })))
+  check('L1u no horizontal overflow on a phone',
+    await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
+  // A modal drawn under the fixed header is a modal the header sits on top of.
+  check('L1u the basket sheet is above the site header',
+    await page.evaluate(() => {
+      const z = el => parseInt(getComputedStyle(el).zIndex || '0', 10)
+      return z(document.getElementById('drop-sheet')) > z(document.querySelector('.nav'))
+    }))
+
+  // A size can be chosen, and the bar then says what it will charge.
+  await page.click('.drop__size:text-is("A2")')
+  await page.waitForTimeout(200)
+  check('L1u a size can be added', await page.isVisible('#drop-bar'))
+  check('L1u the bar totals at the advertised price',
+    (await page.textContent('#drop-go')).includes('$109.00'),
+    await page.textContent('#drop-go'))
+
+  // What it would send. returnTo is the string the endpoint's allow-list
+  // checks and Stripe returns people to, so it has to be the page's own URL.
+  let dropPosted = null
+  await page.route('**/functions/v1/gi-preorder', route => {
+    dropPosted = JSON.parse(route.request().postData() || '{}')
+    return route.fulfill({ status:200, contentType:'application/json',
+      body: JSON.stringify({ ok:false, error:'test' }) })
+  })
+  await page.click('#drop-go')
+  await page.waitForTimeout(500)
+  check('L1u reserving sends the chosen gi',
+    dropPosted?.items?.[0]?.size === 'A2' && dropPosted?.items?.[0]?.colourway === 'ariadne',
+    JSON.stringify(dropPosted))
+  check('L1u and sends this page as the place to come back to',
+    dropPosted?.returnTo === 'http://localhost:4620/drop', dropPosted?.returnTo)
+  await page.unroute('**/functions/v1/gi-preorder')
+  await page.setViewportSize({ width:1280, height:800 })
+}
+
 console.log(`\n${pass} passed, ${fail} failed`)
 await browser.close(); server.close()
 process.exit(fail?1:0)
