@@ -99,11 +99,11 @@ SCHEDULE_FAQS = [
     ("Can I just turn up to a class?",
      "For a first class, book it. It takes a minute and it means a coach is expecting you and has a loaner gi ready. Adults can book into any class on this timetable. Kids trials run Friday afternoons in the Gi for ages 3 and up, or Saturday at 10:00 AM in No-Gi for ages 7 and up."),
     ("What does ADV mean on the timetable?",
-     "Advanced. Those classes need a grey-white belt or higher, or two or more years of wrestling. They move faster and drill at a higher intensity. Every class without that marker is open to a complete beginner, including somebody who has never trained anywhere."),
+     "Advanced. Those classes need a gray-white belt or higher, or two or more years of wrestling. They move faster and drill at a higher intensity. Every class without that marker is open to a complete beginner, including somebody who has never trained anywhere."),
     ("What is the difference between the Gi and No-Gi classes?",
      "Gi is the traditional uniform, and the jacket and trousers become part of the game: grips, collar chokes, sweeps off the sleeve. No-Gi is a rashguard and shorts: faster, more wrestling-like, nothing to hold on to. Most people here train both, and the same membership covers both."),
     ("Do you run early morning classes?",
-     "Yes: 6:30 AM, Monday through Thursday. Gi on Monday and Wednesday, No-Gi on Tuesday and Thursday. It is the class people are most sceptical about and the one they end up building the week around."),
+     "Yes: 6:30 AM, Monday through Thursday. Gi on Monday and Wednesday, No-Gi on Tuesday and Thursday. It is the class people are most skeptical about and the one they end up building the week around."),
     ("Does the timetable change in school holidays?",
      "Occasionally, and the live calendar is the place to check. Calendar.labyrinth.vision carries any changes, closures and tournament weekends. This page is the standing weekly timetable."),
     ("Is open mat only for members?",
@@ -188,7 +188,7 @@ def render_schedule():
   <div class="prog-week stagger" id="schedGrid">
 %(days)s
   </div>
-    <p class="prog-week__note fade-in"><strong>Adv</strong> classes need a grey-white belt or higher, or two or more years of wrestling. Everything else is open to a complete beginner. <strong>Comp</strong> classes are the competition sessions, included in unlimited memberships and open to any member in the age group; nobody is required to enter a tournament. Term-time changes, closures and tournament weekends go on the <a href="https://calendar.labyrinth.vision" target="_blank" rel="noopener noreferrer">live calendar</a>.</p>
+    <p class="prog-week__note fade-in"><strong>Adv</strong> classes need a gray-white belt or higher, or two or more years of wrestling. Everything else is open to a complete beginner. <strong>Comp</strong> classes are the competition sessions, included in unlimited memberships and open to any member in the age group; nobody is required to enter a tournament. Term-time changes, closures and tournament weekends go on the <a href="https://calendar.labyrinth.vision" target="_blank" rel="noopener noreferrer">live calendar</a>.</p>
   </div>
 </section>
 
@@ -451,7 +451,7 @@ COACHES = [
             "where": "Iowa City, Iowa",
             "body": [
                 "Anthony Curry received his black belt from <strong>Matt Leighton of Citadel BJJ in Iowa City</strong>. Leighton co-founded that academy and is a decorated no-gi competitor in his own right.",
-                "Lineage is the first question anybody in jiu-jitsu asks about an instructor, and it is a fair one. There is no central licensing body in this sport. A black belt is awarded by a person, not issued by an institution, which means the rank is only ever as good as the standards of whoever tied it on. Asking who promoted a coach is asking whose judgement is behind the rank.",
+                "Lineage is the first question anybody in jiu-jitsu asks about an instructor, and it is a fair one. There is no central licensing body in this sport. A black belt is awarded by a person, not issued by an institution, which means the rank is only ever as good as the standards of whoever tied it on. Asking who promoted a coach is asking whose judgment is behind the rank.",
                 "It also matters in the other direction, and Labyrinth has an unusually short answer there. <a href=\"/coaches/shaun-lawler\">Shaun Lawler</a> is the only black belt Anthony has promoted in five years of running this academy, one, in five years, out of a room that has produced Pan American champions.",
             ],
         },
@@ -459,9 +459,9 @@ COACHES = [
             ("Who is the head instructor at Labyrinth BJJ?",
              "Professor Anthony Curry, who founded the academy in Fulshear in 2021 and still runs it. He is a black belt with over fourteen years of training, and under his instruction Labyrinth has become the #1 ranked academy in Texas and #9 nationally on jits.gg."),
             ("What does “Professor” mean in Brazilian jiu-jitsu?",
-             "It is the customary title for a black belt instructor. Coloured-belt instructors are usually addressed as “coach”. It is not an academic title. It is the traditional form of address in a BJJ academy, and the black belt behind it typically represents about a decade of training."),
+             "It is the customary title for a black belt instructor. Colored-belt instructors are usually addressed as “coach”. It is not an academic title. It is the traditional form of address in a BJJ academy, and the black belt behind it typically represents about a decade of training."),
             ("Who is Anthony Curry's black belt under?",
-             "Matt Leighton of Citadel BJJ in Iowa City, who co-founded that academy and competes at a high level in no-gi. Lineage matters in Brazilian jiu-jitsu because there is no central licensing body. A black belt is awarded by a person rather than issued by an institution, so asking who promoted a coach is asking whose judgement stands behind the rank."),
+             "Matt Leighton of Citadel BJJ in Iowa City, who co-founded that academy and competes at a high level in no-gi. Lineage matters in Brazilian jiu-jitsu because there is no central licensing body. A black belt is awarded by a person rather than issued by an institution, so asking who promoted a coach is asking whose judgment stands behind the rank."),
             ("How many black belts has he promoted?",
              "One, in five years of running the academy: Professor Shaun Lawler. Awarding a black belt is the most consequential thing an instructor does, and Labyrinth has produced Pan American champions, 83 nationally ranked athletes and 267 gold medals against exactly one black belt promotion."),
             ("Does he still teach, or only run the academy?",
@@ -483,7 +483,7 @@ COACHES = [
         "body": [
             "Shaun Lawler brings deep competition experience and a technical precision that shows up in how he breaks a position down: the kind of teaching where a movement you have failed at for a month suddenly has three pieces instead of one.",
             "What the academy says about him is that he <strong>develops athletes at every level from beginner to elite competitor</strong>, and that range is rarer than it sounds. Plenty of high-level black belts are excellent with people who are already good. Being genuinely useful to somebody in their first month, and to somebody preparing for the IBJJF Pan Ams, is a different skill.",
-            "He is also the coach behind the <a href=\"/blog/strength-and-conditioning-for-kids-fulshear\">all-ages strength and conditioning class</a> that runs on Tuesdays and Thursdays at 4:15 PM: the session where a seven-year-old, a fifteen-year-old and a forty-two-year-old work through the same programme at their own load. It is included in every membership, and it exists because technique stops being the limiting factor in a match sooner than most people expect.",
+            "He is also the coach behind the <a href=\"/blog/strength-and-conditioning-for-kids-fulshear\">all-ages strength and conditioning class</a> that runs on Tuesdays and Thursdays at 4:15 PM: the session where a seven-year-old, a fifteen-year-old and a forty-two-year-old work through the same program at their own load. It is included in every membership, and it exists because technique stops being the limiting factor in a match sooner than most people expect.",
         ],
         "teaches_note": "He coaches across the timetable and runs the strength and conditioning session twice a week.",
         "lineage": {
@@ -519,7 +519,7 @@ COACHES = [
         "photo": "coach-malik",
         "title": "Coach Malik Pickett: Youth Wrestling | Labyrinth BJJ Fulshear",
         "description": "Malik Pickett, youth wrestling coach at Labyrinth BJJ in Fulshear, TX. Texas National Team wrestler teaching takedowns to ages 7–17, three sessions a week.",
-        "lead": "A Texas National Team wrestler coaching the youth wrestling programme: the fastest available upgrade to a young grappler's game, and the part of the room where the noise comes from.",
+        "lead": "A Texas National Team wrestler coaching the youth wrestling program: the fastest available upgrade to a young grappler's game, and the part of the room where the noise comes from.",
         "body": [
             "Malik Pickett wrestles for the Texas National Team, and he coaches our <a href=\"/programs/youth-wrestling-fulshear\">youth wrestling</a> classes for ages 7 to 17. He is known here for his energy and for how much attention he gives the younger end of the room, which is not where most elite wrestlers want to spend their evenings.",
             "The reason a jiu-jitsu academy employs a wrestling coach at all is straightforward. The usual weakness in a young grappler is that they are dangerous on the ground and lost standing up, and most youth matches are decided by who gets on top first. Wrestling addresses exactly that gap, and it is the single fastest improvement available to a child who already trains BJJ.",
@@ -528,7 +528,7 @@ COACHES = [
         "teaches_note": "Wrestling runs three times a week and is included in every kids and teens membership.",
         "faqs": [
             ("Who coaches wrestling at Labyrinth BJJ?",
-             "Coach Malik Pickett, a Texas National Team wrestler. He runs the youth wrestling programme for ages 7 to 17 on Wednesday and Thursday evenings at 7:30 PM and Sunday afternoons at 1:00 PM."),
+             "Coach Malik Pickett, a Texas National Team wrestler. He runs the youth wrestling program for ages 7 to 17 on Wednesday and Thursday evenings at 7:30 PM and Sunday afternoons at 1:00 PM."),
             ("Does my child need wrestling experience to train with him?",
              "None. Most of the children in the room started with none. The first weeks are stance, motion, level changes and safe falling. The same place every wrestler begins, taught without a season already in progress."),
             ("Does my child have to do jiu-jitsu as well?",
@@ -550,7 +550,7 @@ OTHER_COACHES = [
     ("Emma &ldquo;Armbar&rdquo;", "Assistant Coach", "Yellow/White Belt &middot; 4+ Yrs",
      "yellowwhite", "coach-emma",
      "Pan American gold medalist with over 100 competition wins by armbar. Four years training, three of them helping coach."),
-    ("&ldquo;Hurricane&rdquo; Hadley", "Assistant Coach", "Grey/Black Belt &middot; 2+ Yrs",
+    ("&ldquo;Hurricane&rdquo; Hadley", "Assistant Coach", "Gray/Black Belt &middot; 2+ Yrs",
      "greyblack", "coach-hadley",
      "ADCC Dallas gold medalist and a repeat JJWL and IBJJF champion in gi and no-gi. Over 100 matches at a 77% win rate."),
 ]
@@ -639,7 +639,7 @@ SUPPORT_FAQS = [
     ("I need help with the Cornerman timer.",
      "Cornerman has its own support page at <a href=\"https://cornerman.app/support\" target=\"_blank\" rel=\"noopener noreferrer\">cornerman.app/support</a>, which is the fastest route. Anything it does not answer can come to <a href=\"mailto:support@labyrinth.vision\">support@labyrinth.vision</a> and reaches the same people."),
     ("I run a gym and want Cornerman showing our name.",
-     "That is what the paid tier does: your logo and colours on unlimited screens for one price. Everything about it is at <a href=\"https://cornerman.app\" target=\"_blank\" rel=\"noopener noreferrer\">cornerman.app</a>. You do not need to be a Labyrinth member and you do not need to be in Texas."),
+     "That is what the paid tier does: your logo and colors on unlimited screens for one price. Everything about it is at <a href=\"https://cornerman.app\" target=\"_blank\" rel=\"noopener noreferrer\">cornerman.app</a>. You do not need to be a Labyrinth member and you do not need to be in Texas."),
     ("Who do I talk to about a concern involving a coach or another member?",
      "Anthony Curry, directly. Email <a href=\"mailto:support@labyrinth.vision\">support@labyrinth.vision</a> with the word PRIVATE in the subject line and it goes to him rather than the general queue. Anything involving a child is handled the same day."),
 ]
@@ -1081,7 +1081,7 @@ def render_ennova():
     var original = btn.textContent;
     btn.textContent = 'Sending...';
     /* The note is what the front desk reads. It has to say which offer this is
-       and which unit to check, because the programme field can only hold one of
+       and which unit to check, because the program field can only hold one of
        the CRM's own six values and none of them mean "Ennova". */
     crm.send({
       name: v('ennovaName'), email: v('ennovaEmail'), phone: v('ennovaPhone'),
@@ -1341,7 +1341,7 @@ def render_legacy():
          its items 1-2-3 because proving you live somewhere happens in an
          order; an address and a phone number do not, and the numerals read as
          instructions nobody can follow. .prog-facts is the label-and-value
-         strip the programme pages already use for exactly this. -->
+         strip the program pages already use for exactly this. -->
     <div class="prog-facts legacy-facts stagger">
       <div class="prog-fact">
         <div class="prog-fact__label">Address</div>
@@ -1544,7 +1544,7 @@ def render_drop():
     The page itself is not written here. It arrives from the CRM as a
     self-contained fragment and lives verbatim in scripts/drop-fragment.html,
     because four things in it have to agree with the endpoint that takes the
-    money — the endpoint URL, the size list, the two colourway names and the
+    money — the endpoint URL, the size list, the two colorway names and the
     $109 — and a test in the CRM repo reads them straight out of that file. So
     it is pasted in, not rewritten: when a new version is handed over, replace
     that one file and rebuild. Nothing in this function edits its content.
@@ -1566,12 +1566,12 @@ def render_drop():
     the header and the page below it do not read as two different websites.
 
     noindex, and out of the sitemap: it is a drop for people who are given the
-    link, not a shop front competing with the programme pages.
+    link, not a shop front competing with the program pages.
     """
     url = SITE + "/drop"
     head = HEAD % {
         "title": "Enigma Gi Pre-order | Labyrinth BJJ",
-        "description": "Pre-order the Enigma gi. Two colourways, every size, $109 "
+        "description": "Pre-order the Enigma gi. Two colorways, every size, $109 "
                        "— paid now, which is what reserves it.",
         "url": url,
         "og_title": "Enigma Gi Pre-order",

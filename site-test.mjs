@@ -692,6 +692,19 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
     ['Turnstile still off', /TURNSTILE_SITE_KEY = ''/],
   ]) check(`L1u the drop page keeps ${what}`, re.test(drop))
 
+  // The gi is meant to stay unseen until the drop lands, so the flats that
+  // showed it front and back are gone and the teaser film stands in their
+  // place. A re-paste from the CRM brings the images straight back.
+  check('L1u the teaser film is on the page',
+    /<video[^>]+class="drop__teaser"/.test(drop) && /\/assets\/enigma-teaser\.mp4/.test(drop))
+  check('L1u it plays without asking, and without sound',
+    /<video[^>]*\bautoplay\b/.test(drop) && /<video[^>]*\bmuted\b/.test(drop)
+    && /<video[^>]*\bloop\b/.test(drop) && /<video[^>]*\bplaysinline\b/.test(drop))
+  check('L1u the gi itself is not shown',
+    !/drop-flat/.test(drop) && !/crm\.labyrinth\.vision\/enigma\//.test(drop))
+  check('L1u the teaser file is actually published',
+    existsSync(join(ROOT,'assets/enigma-teaser.mp4')))
+
   await page.setViewportSize({ width:390, height:844 })
   await page.goto('http://localhost:4620/drop', { waitUntil:'domcontentloaded' })
   await page.waitForTimeout(250)
@@ -740,6 +753,31 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
     dropPosted?.returnTo === 'http://localhost:4620/drop', dropPosted?.returnTo)
   await page.unroute('**/functions/v1/gi-preorder')
   await page.setViewportSize({ width:1280, height:800 })
+}
+
+// ── L1v: the academy is in Texas, so the spelling is American ──
+// This kept coming back — colour, programme, grey, sceptical, organised — and
+// "remember not to" is not a mechanism. Checked against what a visitor
+// actually reads: scripts, styles and comments are stripped first, because
+// identifiers legitimately carry British spellings the wire format depends on
+// (the drop page posts a `colourway` key and reads a `cancelled` parameter,
+// both of which the endpoint defines and neither of which anybody sees).
+{
+  const BRITISH = /\b(colour\w*|honour\w*|favourite\w*|behaviour\w*|neighbour\w*|labour\w*|organis\w*|recognis\w*|authoris\w*|apologis\w*|realis(?:e|ed|ing|ation)\w*|analys(?:e|ed|ing)\w*|centre|metre|litre|fibre|theatre|defence|offence|licence|practis(?:e|ed|ing)|programmes?|travell\w*|jewell\w*|enrolment|fulfil|skilful|instalment|whilst|amongst|learnt|spelt|aluminium|artefact|judgement|ageing|manoeuvre|sceptic\w*|speciality|catalogue|cancelled|grey\w*)\b/gi
+  const offenders = []
+  const pages = readdirSync(ROOT).filter(f => f.endsWith('.html'))
+    .concat(['blog','programs','areas','coaches','legacy'].flatMap(d => {
+      try { return readdirSync(join(ROOT,d)).filter(f=>f.endsWith('.html')).map(f=>d+'/'+f) }
+      catch { return [] }
+    }))
+  for (const f of pages) {
+    const visible = readFileSync(join(ROOT,f),'utf8')
+      .replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<!--[\s\S]*?-->/g,' ')
+      .replace(/<[^>]+>/g,' ')
+    for (const m of visible.matchAll(BRITISH)) offenders.push(`${f}: ${m[0]}`)
+  }
+  check('L1v no British spelling in anything a visitor reads',
+    offenders.length === 0, [...new Set(offenders)].slice(0,10).join(', '))
 }
 
 console.log(`\n${pass} passed, ${fail} failed`)

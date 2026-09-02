@@ -68,7 +68,7 @@ dict(
 
       <p><strong>Almost everyone is new.</strong> If you feel like the family who does not know anyone, look around, so is half the room. Nobody has a decade of history here. This is a far easier place to arrive than an established town.</p>
 
-      <p><strong>Everything fills up.</strong> Programmes that had space in September are full by October. If you are choosing an activity, choose earlier than feels necessary.</p>
+      <p><strong>Everything fills up.</strong> Programs that had space in September are full by October. If you are choosing an activity, choose earlier than feels necessary.</p>
 
       <h2>The question to ask is not &ldquo;what should they do&rdquo;</h2>
 
@@ -216,7 +216,7 @@ dict(
 
       <p><strong>Week one.</strong> You will be exhausted in a way that has nothing to do with your fitness. Grappling uses muscles that no other activity asks for, and beginners burn enormous energy on tension: gripping too hard, holding their breath, trying to muscle out of positions. You will sleep well.</p>
 
-      <p><strong>Week two to three.</strong> Your hands and forearms will ache. This is universal and it passes. You will start to recognise positions instead of experiencing one long undifferentiated scramble.</p>
+      <p><strong>Week two to three.</strong> Your hands and forearms will ache. This is universal and it passes. You will start to recognize positions instead of experiencing one long undifferentiated scramble.</p>
 
       <p><strong>Week four to six.</strong> Something clicks, not skill exactly, but orientation. You stop panicking. You begin to notice what is happening rather than just that something is happening. This is the point most people start to enjoy it rather than endure it.</p>
 
@@ -303,7 +303,7 @@ dict(
 
       <p><strong>A gi.</strong> You will need your own eventually. A perfectly good starter gi runs somewhere around $80 to $150. You do not need an expensive one, and you certainly do not need one on day one: we lend gis to people trying a class.</p>
 
-      <p><strong>Belts and gradings.</strong> Ask whether promotions cost anything. At some schools each belt or stripe carries a testing fee, which adds up quickly for a child moving through a coloured-belt system. Ask before you join, not at your first grading.</p>
+      <p><strong>Belts and gradings.</strong> Ask whether promotions cost anything. At some schools each belt or stripe carries a testing fee, which adds up quickly for a child moving through a colored-belt system. Ask before you join, not at your first grading.</p>
 
       <p><strong>Competitions.</strong> Entirely optional, and most people never compete. If your child does want to, tournament entry is typically $80 to $120 per event, plus travel. Budget for it if competing is the goal; ignore it entirely if it is not.</p>
 
@@ -319,7 +319,7 @@ dict(
 
       <h2>Is it worth it?</h2>
 
-      <p>For a family, $399 a month is a real amount of money and we are not going to pretend otherwise. It compares to two children in most organised sports, and it is less than many one-to-one coaching arrangements.</p>
+      <p>For a family, $399 a month is a real amount of money and we are not going to pretend otherwise. It compares to two children in most organized sports, and it is less than many one-to-one coaching arrangements.</p>
 
       <p>What you are buying, if it works, is several hours a week of supervised physical activity, a coach who knows your child's name, and a group they belong to. Whether that is worth it depends on what else that money is doing.</p>
 

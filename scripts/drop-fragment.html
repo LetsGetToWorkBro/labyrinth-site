@@ -32,14 +32,32 @@
   that against its own allow-list, and Stripe returns people to THIS page —
   wherever it is served from. There is no environment variable to set.
 
-  ── WHERE THIS PAGE HAS TO LIVE ────────────────────────────────────────────
-  labyrinth.vision is a SEPARATE Cloudflare Pages project. It is not this repo,
-  and nothing in this repo can deploy to it — so until this file is published
-  there, labyrinth.vision/drop is a 404. Paste it in as the /drop page.
+  ── WHERE THIS PAGE LIVES NOW ──────────────────────────────────────────────
+  Published, at labyrinth.vision/drop. It is no longer served raw: this file is
+  the body, and scripts/build_pages.py (render_drop) wraps it in the site's
+  head, nav and footer, which is the case the fragment was written for. Do not
+  add a doctype or a charset here — the wrapper supplies them.
 
-  In the meantime the CRM build publishes the very same file at
-  crm.labyrinth.vision/drop (scripts/copy-drop-page.mjs), so there is a working
-  link to give people either way.
+  ── WHAT DIVERGES FROM THE CRM'S COPY ──────────────────────────────────────
+  Three things, all deliberate. Re-apply them if a fresh copy is ever pasted
+  over this file, because a straight paste undoes all three:
+
+    1. `[hidden]` is forced to display:none in the style block below. Without
+       it .drop__bar and .drop__sheet — both display:flex — ignore the hidden
+       they ship with, and the empty basket sheet covers the whole viewport on
+       load and swallows every tap. The page still looks right and takes no
+       orders.
+    2. The gi flats are gone. In their place is the 9:16 teaser film at
+       /assets/enigma-teaser.mp4: one clip for both colorways, because the gi
+       is meant to stay unseen until the drop lands. paintFlat() and the ASSETS
+       constant went with them.
+    3. American spelling in anything a customer reads. The wire format is NOT
+       touched — the `colourway` key in the payload, the COLOURWAYS constant
+       and the `cancelled` query parameter are what the endpoint expects and
+       have to stay exactly as they are.
+
+  site-test.mjs guards all of it (L1u), including a check on what is actually
+  under the middle of the screen, which is what catches (1) coming back.
 -->
 
 <link rel="preconnect" href="https://jctufxvmuvobaggxcwfn.supabase.co">
@@ -50,7 +68,7 @@
     <h1 class="drop__title">ENIGMA</h1>
     <p class="drop__sub">Pre-order</p>
     <p class="drop__lede">
-      Two colourways, cut to your size. <strong>$109</strong> each, paid now —
+      Two colorways, cut to your size. <strong>$109</strong> each, paid now —
       that is what reserves it. We only have made what is paid for.
     </p>
   </header>
@@ -68,15 +86,23 @@
 
   <div id="drop-shop">
     <p class="drop__notice" id="drop-cancelled" hidden role="status">
-      Payment cancelled — nothing has been charged and nothing is reserved.
+      Payment canceled — nothing has been charged and nothing is reserved.
     </p>
 
     <section class="drop__step">
-      <h2>Colour</h2>
-      <div class="drop__ways" id="drop-ways" role="radiogroup" aria-label="Colourway"></div>
+      <h2>Color</h2>
+      <div class="drop__ways" id="drop-ways" role="radiogroup" aria-label="Colorway"></div>
+      <!-- The teaser, not the gi. The flats used to sit here and showed the
+           whole thing front and back, which gives the drop away before it
+           lands; this is the 9:16 cut instead. Muted and looping so it plays
+           on a phone without asking, with controls because it has a soundtrack
+           and a muted autoplay is the only kind a browser will start. -->
       <figure class="drop__figure">
-        <img id="drop-flat" alt="" width="1440" height="810">
-        <figcaption id="drop-caption"></figcaption>
+        <video class="drop__teaser" src="/assets/enigma-teaser.mp4"
+               width="1080" height="1920" preload="metadata"
+               autoplay muted loop playsinline controls
+               aria-label="Enigma teaser film"></video>
+        <figcaption>A first look. The gi itself stays under wraps until the drop lands.</figcaption>
       </figure>
     </section>
 
@@ -158,8 +184,12 @@
   .drop__way small { display: block; font-size: 13px; color: #9a927f; }
 
   .drop__figure { margin: 14px 0 0; }
-  .drop__figure img { width: 100%; height: auto; display: block; border-radius: 12px;
-                      background: #8c8c8c; border: 1px solid rgba(255,255,255,0.14); }
+  /* The film is shot 9:16. Left at width:100% it is 1138px tall in this column
+     on a desktop, which is a page of video and nothing else, so it is capped
+     and centred. aspect-ratio holds the space before it loads. */
+  .drop__teaser { display: block; width: 100%; max-width: 320px; margin: 0 auto;
+                  aspect-ratio: 9 / 16; height: auto; border-radius: 12px;
+                  background: #000; border: 1px solid rgba(255,255,255,0.14); }
   .drop__figure figcaption { font-size: 12.5px; color: #9a927f; text-align: center;
                              margin-top: 8px; }
 
@@ -260,7 +290,10 @@
   'use strict';
 
   var ENDPOINT = 'https://jctufxvmuvobaggxcwfn.supabase.co/functions/v1/gi-preorder';
-  var ASSETS = 'https://crm.labyrinth.vision/enigma/';
+  /* No ASSETS here any more: the flats it pointed at have been replaced by the
+     teaser film, which is one clip for both colorways on purpose — the whole
+     point is that the gi is not shown until the drop lands. The `image` field
+     is left on each colorway below because that data is read elsewhere. */
 
   /**
    * Cloudflare Turnstile — OFF, and the order you switch it on in matters.
@@ -306,7 +339,7 @@
   var COLOURWAYS = [
     { id: 'ariadne', name: 'Ariadne', blurb: 'Optic white gi, maroon patches, white type.',
       body: '#FFFFFF', field: '#5E1622', image: 'ariadne.png' },
-    { id: 'asterion', name: 'Asterion', blurb: 'Black gi, charcoal patches, grey type.',
+    { id: 'asterion', name: 'Asterion', blurb: 'Black gi, charcoal patches, gray type.',
       body: '#16161A', field: '#2E2E36', image: 'charcoal.png' }
   ];
 
@@ -325,8 +358,8 @@
 
   var $ = function (id) { return document.getElementById(id); };
   var shop = $('drop-shop'); if (!shop) return;
-  var waysEl = $('drop-ways'), sizesEl = $('drop-sizes'), flat = $('drop-flat');
-  var caption = $('drop-caption'), errorEl = $('drop-error'), bar = $('drop-bar');
+  var waysEl = $('drop-ways'), sizesEl = $('drop-sizes');
+  var errorEl = $('drop-error'), bar = $('drop-bar');
   var review = $('drop-review'), go = $('drop-go'), sheet = $('drop-sheet');
   var cartEl = $('drop-cart'), totalEl = $('drop-total'), doneEl = $('drop-done');
 
@@ -381,17 +414,10 @@
       b.querySelector('b').textContent = c.name;
       b.querySelector('small').textContent = c.blurb;
       b.addEventListener('click', function () {
-        colourway = c.id; paintColourways(); paintFlat(); paintSizes();
+        colourway = c.id; paintColourways(); paintSizes();
       });
       waysEl.appendChild(b);
     });
-  }
-
-  function paintFlat() {
-    var c = chosen();
-    flat.src = ASSETS + c.image;
-    flat.alt = 'Enigma ' + c.name + ' — jacket and pants, front and back';
-    caption.textContent = 'Enigma “' + c.name + '” — jacket and pants, front and back.';
   }
 
   function qtyOf(size) {
@@ -564,7 +590,6 @@
   });
 
   paintColourways();
-  paintFlat();
   paintSizes();
   paintBar();
 })();
