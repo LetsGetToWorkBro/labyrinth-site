@@ -75,17 +75,12 @@
       <h2>Color</h2>
       <div class="drop__ways" id="drop-ways" role="radiogroup" aria-label="Colorway"></div>
       <figure class="drop__figure">
-        <!-- Who it is on. The sizes below are grouped Kids, Men's and Women's,
-             and "what does it look like on a child" is the question a parent
-             buying an M2 is actually asking — so the same three groups are
-             offered here, rather than one adult standing in for all of them. -->
-        <div class="drop__fits" id="drop-fits" role="tablist" aria-label="Shown on"></div>
-        <!-- Front and back. The back carries the patch, so it gets half the
-             width rather than being hidden behind a tap. -->
-        <div class="drop__shots" id="drop-shots">
-          <img id="drop-front" alt="" width="1920" height="2862" decoding="async">
-          <img id="drop-back" alt="" width="1920" height="2862" decoding="async" loading="lazy">
-        </div>
+        <!-- Every model in one swipe, rather than three tabs to discover.
+             Two shots are in view at a time with the next one cut off at the
+             edge, which is what says "keep going" without a caption saying it.
+             Each slide is labelled, so nothing depends on remembering which
+             tab was pressed. -->
+        <div class="drop__reel" id="drop-reel"></div>
         <figcaption id="drop-caption"></figcaption>
       </figure>
     </section>
@@ -173,34 +168,23 @@
      is enough to read the silhouette and the back patch. aspect-ratio holds the
      row's height from first paint so the size grid below does not jump when two
      200 kB photos land. */
-  /* Kids / Men's / Women's, on the photographs. Small, because they change
-     what is pictured and not what is bought — the size grid below is the
-     thing being chosen. 44px tall all the same: it is still a tap target. */
-  .drop__fits { display: flex; gap: 6px; margin: 0 0 10px; }
-  .drop__fit { flex: 1; min-height: 44px; border-radius: 10px; cursor: pointer;
-               border: 1px solid rgba(255,255,255,0.14); background: rgba(255,255,255,0.03);
-               color: #9a927f; font: 600 13.5px/1 system-ui, sans-serif; }
-  .drop__fit[aria-selected="true"] { border-color: #e3c78f; color: #17120b;
-                                     background: #e3c78f; }
-
-  .drop__shots { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  /* Every fit is photographed front and back today, so nothing reaches this
-     rule — it is the fallback for a fit added with a front alone, which the
-     `fits` data above allows. Kept because without it that case is a broken
-     image on a page taking money. Stretched across the full column one
-     portrait would tower over the page, so it keeps the width it would have
-     had in the pair, centred: a half-width shot pinned left under a centred
-     caption reads as a bug rather than a decision. */
-  /* Both selectors are needed: `.drop__shots img` sets width:100% further down
-     at the same specificity, and would win on document order alone — which
-     made the lone portrait fill the column and the page jump taller whenever
-     the women's tab was picked. */
-  .drop__shots--one { display: flex; justify-content: center; }
-  .drop__shots.drop__shots--one img { width: calc(50% - 4px); }
-  .drop__shots--one img:last-child { display: none; }
-  .drop__shots img { width: 100%; height: auto; display: block; border-radius: 12px;
+  /* One scroll through every model. scroll-snap does the paging natively, so
+     there is no carousel script to go wrong and a trackpad, a thumb and a
+     keyboard all work the way their owner expects. The scrollbar is hidden
+     because the cut-off slide at the edge already says there is more. */
+  .drop__reel { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory;
+                -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .drop__reel::-webkit-scrollbar { display: none; }
+  /* Just under half the column each. At an exact half the two in view fill the
+     width to the pixel, nothing peeks, and there is no sign the reel scrolls at
+     all — 46% leaves a slice of the third showing, which is the only cue that
+     does not need a caption to explain it. */
+  .drop__slide { flex: 0 0 46%; margin: 0; scroll-snap-align: start; }
+  .drop__slide img { width: 100%; height: auto; display: block; border-radius: 12px;
                      background: #cfc9c2; border: 1px solid rgba(255,255,255,0.14);
                      aspect-ratio: 1920 / 2862; object-fit: cover; }
+  .drop__slide figcaption { font-size: 11.5px; color: #9a927f; text-align: center;
+                            margin-top: 6px; }
   .drop__figure figcaption { font-size: 12.5px; color: #9a927f; text-align: center;
                              margin-top: 8px; }
 
@@ -368,12 +352,13 @@
       } }
   ];
 
-  /* Same order and the same words as the size groups below, so the tab a
-     person picked and the heading they scroll to agree. */
+  /* Reel order, not size-group order: the men's front is the frame the page
+     opens on and the one it has always led with, so it stays first. The words
+     are the size groups' own, so a slide and a heading below agree. */
   var FITS = [
-    { key: 'kids', label: 'Kids', who: 'a child' },
     { key: 'mens', label: "Men's", who: 'a man' },
-    { key: 'womens', label: "Women's", who: 'a woman' }
+    { key: 'womens', label: "Women's", who: 'a woman' },
+    { key: 'kids', label: 'Kids', who: 'a child' }
   ];
 
   /* Kept in step with src/data/gi.ts by scripts/gi-sizes.test.mjs. */
@@ -394,14 +379,12 @@
   var $ = function (id) { return document.getElementById(id); };
   var shop = $('drop-shop'); if (!shop) return;
   var waysEl = $('drop-ways'), sizesEl = $('drop-sizes');
-  var fitsEl = $('drop-fits'), shotsEl = $('drop-shots');
-  var shotFront = $('drop-front'), shotBack = $('drop-back');
+  var reelEl = $('drop-reel');
   var caption = $('drop-caption'), errorEl = $('drop-error'), bar = $('drop-bar');
   var review = $('drop-review'), go = $('drop-go'), sheet = $('drop-sheet');
   var cartEl = $('drop-cart'), totalEl = $('drop-total'), doneEl = $('drop-done');
 
   var colourway = 'ariadne';
-  var fit = 'mens';
   var cart = [];          /* [{colourway, size, quantity}] */
   var sending = false;
 
@@ -452,52 +435,51 @@
       b.querySelector('b').textContent = c.name;
       b.querySelector('small').textContent = c.blurb;
       b.addEventListener('click', function () {
-        colourway = c.id; paintColourways(); paintFlat(); paintSizes();
+        colourway = c.id; paintColourways(); paintReel(); paintSizes();
       });
       waysEl.appendChild(b);
     });
   }
 
-  function paintFits() {
-    fitsEl.innerHTML = '';
-    FITS.forEach(function (f) {
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'drop__fit';
-      b.setAttribute('role', 'tab');
-      b.setAttribute('aria-selected', String(f.key === fit));
-      b.textContent = f.label;
-      b.addEventListener('click', function () {
-        fit = f.key; paintFits(); paintFlat();
-      });
-      fitsEl.appendChild(b);
-    });
-  }
-
-  function paintFlat() {
+  /**
+   * Every photograph of the chosen colorway, in one horizontal scroll.
+   *
+   * Built from `fits` rather than written out, so a fit gains slides the
+   * moment it gains files and a fit photographed from the front alone
+   * contributes one slide instead of a broken second one.
+   */
+  function paintReel() {
     var c = chosen();
-    var f = (c.fits && c.fits[fit]) || { front: c.front, back: c.back };
-    var who = FITS.filter(function (x) { return x.key === fit; })[0];
-    var on = who ? ' on ' + who.who : '';
+    reelEl.innerHTML = '';
+    reelEl.scrollLeft = 0;
+    var n = 0;
+    FITS.forEach(function (f) {
+      var shots = (c.fits && c.fits[f.key]) || {};
+      ['front', 'back'].forEach(function (side) {
+        if (!shots[side]) return;
+        var fig = document.createElement('figure');
+        fig.className = 'drop__slide';
 
-    shotFront.src = ASSETS + f.front;
-    shotFront.alt = 'Enigma ' + c.name + ', front' + on;
+        var img = document.createElement('img');
+        img.src = ASSETS + shots[side];
+        img.alt = 'Enigma ' + c.name + ' on ' + f.who + ', ' + side;
+        img.width = 1920;
+        img.height = 2862;
+        img.decoding = 'async';
+        /* The first pair is on screen the moment the section is; the rest are
+           a swipe away and should not be fetched until they are wanted. */
+        if (n > 1) img.loading = 'lazy';
 
-    /* A fit photographed from the front only must not leave the previous
-       fit's back shot sitting beside it, which is how a black gi ends up
-       next to a white one. */
-    if (f.back) {
-      shotBack.src = ASSETS + f.back;
-      shotBack.alt = 'Enigma ' + c.name + ', back' + on;
-      shotsEl.classList.remove('drop__shots--one');
-    } else {
-      shotBack.removeAttribute('src');
-      shotBack.alt = '';
-      shotsEl.classList.add('drop__shots--one');
-    }
+        var cap = document.createElement('figcaption');
+        cap.textContent = f.label + ' \u00b7 ' + (side === 'front' ? 'Front' : 'Back');
 
-    caption.textContent = 'Enigma “' + c.name + '”' + on
-      + (f.back ? ' — front and back.' : ' — front.');
+        fig.appendChild(img);
+        fig.appendChild(cap);
+        reelEl.appendChild(fig);
+        n++;
+      });
+    });
+    caption.textContent = 'Enigma \u201c' + c.name + '\u201d \u2014 swipe for every fit, front and back.';
   }
 
   function qtyOf(size) {
@@ -670,8 +652,7 @@
   });
 
   paintColourways();
-  paintFits();
-  paintFlat();
+  paintReel();
   paintSizes();
   paintBar();
 })();
