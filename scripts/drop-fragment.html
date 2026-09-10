@@ -32,32 +32,14 @@
   that against its own allow-list, and Stripe returns people to THIS page —
   wherever it is served from. There is no environment variable to set.
 
-  ── WHERE THIS PAGE LIVES NOW ──────────────────────────────────────────────
-  Published, at labyrinth.vision/drop. It is no longer served raw: this file is
-  the body, and scripts/build_pages.py (render_drop) wraps it in the site's
-  head, nav and footer, which is the case the fragment was written for. Do not
-  add a doctype or a charset here — the wrapper supplies them.
+  ── WHERE THIS PAGE HAS TO LIVE ────────────────────────────────────────────
+  labyrinth.vision is a SEPARATE Cloudflare Pages project. It is not this repo,
+  and nothing in this repo can deploy to it — so until this file is published
+  there, labyrinth.vision/drop is a 404. Paste it in as the /drop page.
 
-  ── WHAT DIVERGES FROM THE CRM'S COPY ──────────────────────────────────────
-  Three things, all deliberate. Re-apply them if a fresh copy is ever pasted
-  over this file, because a straight paste undoes all three:
-
-    1. `[hidden]` is forced to display:none in the style block below. Without
-       it .drop__bar and .drop__sheet — both display:flex — ignore the hidden
-       they ship with, and the empty basket sheet covers the whole viewport on
-       load and swallows every tap. The page still looks right and takes no
-       orders.
-    2. The gi flats are gone. In their place is the 9:16 teaser film at
-       /assets/enigma-teaser.mp4: one clip for both colorways, because the gi
-       is meant to stay unseen until the drop lands. paintFlat() and the ASSETS
-       constant went with them.
-    3. American spelling in anything a customer reads. The wire format is NOT
-       touched — the `colourway` key in the payload, the COLOURWAYS constant
-       and the `cancelled` query parameter are what the endpoint expects and
-       have to stay exactly as they are.
-
-  site-test.mjs guards all of it (L1u), including a check on what is actually
-  under the middle of the screen, which is what catches (1) coming back.
+  In the meantime the CRM build publishes the very same file at
+  crm.labyrinth.vision/drop (scripts/copy-drop-page.mjs), so there is a working
+  link to give people either way.
 -->
 
 <link rel="preconnect" href="https://jctufxvmuvobaggxcwfn.supabase.co">
@@ -92,17 +74,14 @@
     <section class="drop__step">
       <h2>Color</h2>
       <div class="drop__ways" id="drop-ways" role="radiogroup" aria-label="Colorway"></div>
-      <!-- The teaser, not the gi. The flats used to sit here and showed the
-           whole thing front and back, which gives the drop away before it
-           lands; this is the 9:16 cut instead. Muted and looping so it plays
-           on a phone without asking, with controls because it has a soundtrack
-           and a muted autoplay is the only kind a browser will start. -->
       <figure class="drop__figure">
-        <video class="drop__teaser" src="/assets/enigma-teaser.mp4"
-               width="1080" height="1920" preload="metadata"
-               autoplay muted loop playsinline controls
-               aria-label="Enigma teaser film"></video>
-        <figcaption>A first look. The gi itself stays under wraps until the drop lands.</figcaption>
+        <!-- Front and back. The back carries the patch, so it gets half the
+             width rather than being hidden behind a tap. -->
+        <div class="drop__shots">
+          <img id="drop-front" alt="" width="1920" height="2862" decoding="async">
+          <img id="drop-back" alt="" width="1920" height="2862" decoding="async" loading="lazy">
+        </div>
+        <figcaption id="drop-caption"></figcaption>
       </figure>
     </section>
 
@@ -149,8 +128,9 @@
      it. .drop__bar and .drop__sheet are both display:flex, which meant both
      ignored the hidden they ship with: the empty basket sheet rendered over the
      whole viewport on load — inset:0, z-index:70 — and swallowed every tap, so
-     no size could be chosen and no order could be placed. The script toggles
-     .hidden throughout, so the fix belongs here, in the one rule that makes the
+     no size could be chosen and no order could be placed. The page still looked
+     right in a screenshot and took no orders. The script toggles .hidden
+     throughout, so the fix belongs here, in the one rule that makes the
      attribute mean what it says. */
   .drop [hidden], .drop__bar[hidden], .drop__sheet[hidden] { display: none !important; }
 
@@ -184,12 +164,14 @@
   .drop__way small { display: block; font-size: 13px; color: #9a927f; }
 
   .drop__figure { margin: 14px 0 0; }
-  /* The film is shot 9:16. Left at width:100% it is 1138px tall in this column
-     on a desktop, which is a page of video and nothing else, so it is capped
-     and centred. aspect-ratio holds the space before it loads. */
-  .drop__teaser { display: block; width: 100%; max-width: 320px; margin: 0 auto;
-                  aspect-ratio: 9 / 16; height: auto; border-radius: 12px;
-                  background: #000; border: 1px solid rgba(255,255,255,0.14); }
+  /* Two portrait shots side by side. About 180px each on a 390px phone, which
+     is enough to read the silhouette and the back patch. aspect-ratio holds the
+     row's height from first paint so the size grid below does not jump when two
+     200 kB photos land. */
+  .drop__shots { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .drop__shots img { width: 100%; height: auto; display: block; border-radius: 12px;
+                     background: #cfc9c2; border: 1px solid rgba(255,255,255,0.14);
+                     aspect-ratio: 1920 / 2862; object-fit: cover; }
   .drop__figure figcaption { font-size: 12.5px; color: #9a927f; text-align: center;
                              margin-top: 8px; }
 
@@ -290,10 +272,7 @@
   'use strict';
 
   var ENDPOINT = 'https://jctufxvmuvobaggxcwfn.supabase.co/functions/v1/gi-preorder';
-  /* No ASSETS here any more: the flats it pointed at have been replaced by the
-     teaser film, which is one clip for both colorways on purpose — the whole
-     point is that the gi is not shown until the drop lands. The `image` field
-     is left on each colorway below because that data is read elsewhere. */
+  var ASSETS = 'https://crm.labyrinth.vision/enigma/';
 
   /**
    * Cloudflare Turnstile — OFF, and the order you switch it on in matters.
@@ -338,28 +317,33 @@
 
   var COLOURWAYS = [
     { id: 'ariadne', name: 'Ariadne', blurb: 'Optic white gi, maroon patches, white type.',
-      body: '#FFFFFF', field: '#5E1622', image: 'ariadne.png' },
+      body: '#FFFFFF', field: '#5E1622',
+      front: 'ariadne-front.webp', back: 'ariadne-back.webp' },
     { id: 'asterion', name: 'Asterion', blurb: 'Black gi, charcoal patches, gray type.',
-      body: '#16161A', field: '#2E2E36', image: 'charcoal.png' }
+      body: '#16161A', field: '#2E2E36',
+      front: 'asterion-front.webp', back: 'asterion-back.webp' }
   ];
 
   /* Kept in step with src/data/gi.ts by scripts/gi-sizes.test.mjs. */
+  /* 34 sizes, from the academy's own size charts. L long, S short, H heavy,
+     F fitted, XL extra long, C curvy. Kept in step with src/data/gi.ts and the
+     endpoint by scripts/gi-sizes.test.mjs, which fails if any of the three
+     drifts from the others. */
   var SIZE_GROUPS = [
-    { label: 'Kids', hint: 'M00 is the smallest. Most kids classes sit between M1 and M3.',
-      sizes: ['M00', 'M0', 'M1', 'M2', 'M3', 'M4'] },
-    { label: 'In between', hint: 'Bigger than the kids run, smaller than an adult A1 — teenagers, mostly.',
-      sizes: ['A0', 'A0H'] },
-    { label: 'Adult', hint: 'L is longer in the sleeve and leg. H is roomier through the body.',
-      sizes: ['A1', 'A1L', 'A1H', 'A2', 'A2L', 'A2H', 'A3', 'A3L', 'A3H',
-              'A4', 'A4L', 'A4H', 'A5'] },
-    { label: "Women's", hint: 'Cut for a woman’s frame. L is longer, H is roomier.',
-      sizes: ['F1', 'F1L', 'F1H', 'F2', 'F2L', 'F2H', 'F3', 'F3L', 'F3H'] }
+    { label: 'Kids', hint: 'Ages 5 to 13. M0000 is the smallest; most kids classes sit between M1 and M3.',
+      sizes: ['M0000', 'M000', 'M00', 'M0', 'M1', 'M2', 'M3', 'M4'] },
+    { label: "Men's", hint: 'L is longer in the sleeve and leg, S is shorter, H is roomier through the body, F is a closer cut and XL is longer again. A0 is the smallest adult cut — the one teenagers usually land on.',
+      sizes: ['A0', 'A0L', 'A1', 'A1F', 'A1L', 'A2', 'A2S', 'A2H', 'A2L', 'A2XL',
+              'A3', 'A3S', 'A3L', 'A4', 'A5', 'A6'] },
+    { label: "Women's", hint: 'Cut for a woman’s frame. L is longer in the sleeve and leg, C is curvier through the hip.',
+      sizes: ['F1', 'F1L', 'F2', 'F2C', 'F2L', 'F3', 'F3C', 'F3L', 'F4', 'F4L'] }
   ];
 
   var $ = function (id) { return document.getElementById(id); };
   var shop = $('drop-shop'); if (!shop) return;
   var waysEl = $('drop-ways'), sizesEl = $('drop-sizes');
-  var errorEl = $('drop-error'), bar = $('drop-bar');
+  var shotFront = $('drop-front'), shotBack = $('drop-back');
+  var caption = $('drop-caption'), errorEl = $('drop-error'), bar = $('drop-bar');
   var review = $('drop-review'), go = $('drop-go'), sheet = $('drop-sheet');
   var cartEl = $('drop-cart'), totalEl = $('drop-total'), doneEl = $('drop-done');
 
@@ -414,10 +398,19 @@
       b.querySelector('b').textContent = c.name;
       b.querySelector('small').textContent = c.blurb;
       b.addEventListener('click', function () {
-        colourway = c.id; paintColourways(); paintSizes();
+        colourway = c.id; paintColourways(); paintFlat(); paintSizes();
       });
       waysEl.appendChild(b);
     });
+  }
+
+  function paintFlat() {
+    var c = chosen();
+    shotFront.src = ASSETS + c.front;
+    shotFront.alt = 'Enigma ' + c.name + ', front';
+    shotBack.src = ASSETS + c.back;
+    shotBack.alt = 'Enigma ' + c.name + ', back';
+    caption.textContent = 'Enigma “' + c.name + '” — jacket and pants, front and back.';
   }
 
   function qtyOf(size) {
@@ -590,6 +583,7 @@
   });
 
   paintColourways();
+  paintFlat();
   paintSizes();
   paintBar();
 })();

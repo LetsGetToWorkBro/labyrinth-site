@@ -687,23 +687,50 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
     ['the endpoint', /https:\/\/jctufxvmuvobaggxcwfn\.supabase\.co\/functions\/v1\/gi-preorder/],
     ['the price', /var PRICE = 109;/],
     ['both colourways', /id: 'ariadne'[\s\S]*id: 'asterion'/],
-    ['the full size run', /'M00'[\s\S]*'A0H'[\s\S]*'A5'[\s\S]*'F3H'/],
+    ['the returnTo line', /returnTo: window\.location\.origin \+ window\.location\.pathname/],
     ['the returnTo line', /returnTo: window\.location\.origin \+ window\.location\.pathname/],
     ['Turnstile still off', /TURNSTILE_SITE_KEY = ''/],
   ]) check(`L1u the drop page keeps ${what}`, re.test(drop))
 
-  // The gi is meant to stay unseen until the drop lands, so the flats that
-  // showed it front and back are gone and the teaser film stands in their
-  // place. A re-paste from the CRM brings the images straight back.
-  check('L1u the teaser film is on the page',
-    /<video[^>]+class="drop__teaser"/.test(drop) && /\/assets\/enigma-teaser\.mp4/.test(drop))
-  check('L1u it plays without asking, and without sound',
-    /<video[^>]*\bautoplay\b/.test(drop) && /<video[^>]*\bmuted\b/.test(drop)
-    && /<video[^>]*\bloop\b/.test(drop) && /<video[^>]*\bplaysinline\b/.test(drop))
-  check('L1u the gi itself is not shown',
-    !/drop-flat/.test(drop) && !/crm\.labyrinth\.vision\/enigma\//.test(drop))
-  check('L1u the teaser file is actually published',
-    existsSync(join(ROOT,'assets/enigma-teaser.mp4')))
+  // The real gi, front and back, per colorway.
+  check('L1u both shots are on the page',
+    /<img id="drop-front"/.test(drop) && /<img id="drop-back"/.test(drop))
+  check('L1u and the script points them at the photographs',
+    /front: 'ariadne-front\.webp'/.test(drop) && /back: 'asterion-back\.webp'/.test(drop))
+
+  /**
+   * The size run, exactly.
+   *
+   * This is the check that matters most on this page, and a loose one would
+   * have missed the reason it exists: the endpoint validates every size server
+   * side and refuses anything outside its own list, so a page offering a size
+   * the server has dropped sends somebody to a dead end at the pay button, and
+   * a page missing a size the server accepts silently loses the sale. Both
+   * happened here — this page went on offering eight sizes (A0H, A1H, A3H,
+   * A4L, A4H, F1H, F2H, F3H) after the endpoint stopped accepting them, and
+   * never offered the twelve it had gained, the two smallest kids sizes among
+   * them.
+   *
+   * So it is asserted as an exact list rather than a spot check. When the CRM
+   * changes the run again this fails until scripts/drop-fragment.html is
+   * re-synced, which is the whole point: the two must not be allowed to drift
+   * quietly a second time.
+   */
+  const ENDPOINT_SIZES = [
+    'M0000', 'M000', 'M00', 'M0', 'M1', 'M2', 'M3', 'M4',
+    'A0', 'A0L', 'A1', 'A1F', 'A1L', 'A2', 'A2S', 'A2H', 'A2L', 'A2XL',
+    'A3', 'A3S', 'A3L', 'A4', 'A5', 'A6',
+    'F1', 'F1L', 'F2', 'F2C', 'F2L', 'F3', 'F3C', 'F3L', 'F4', 'F4L',
+  ]
+  const groupBlock = /var SIZE_GROUPS = \[([\s\S]*?)\n  \];/.exec(drop)
+  const offered = groupBlock ? [...groupBlock[1].matchAll(/'([A-Z0-9]+)'/g)].map(m => m[1]) : []
+  const rejected = offered.filter(s => !ENDPOINT_SIZES.includes(s))
+  const unoffered = ENDPOINT_SIZES.filter(s => !offered.includes(s))
+  check('L1u every size offered is one the endpoint accepts',
+    rejected.length === 0, 'server would refuse: ' + rejected.join(', '))
+  check('L1u and every size the endpoint accepts is offered',
+    unoffered.length === 0, 'missing from the page: ' + unoffered.join(', '))
+  check('L1u the run is the full 34', offered.length === 34, 'offered: ' + offered.length)
 
   await page.setViewportSize({ width:390, height:844 })
   await page.goto('http://localhost:4620/drop', { waitUntil:'domcontentloaded' })
