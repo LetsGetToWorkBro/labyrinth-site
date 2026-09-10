@@ -136,7 +136,7 @@
   <div class="drop__done" id="drop-done" hidden role="status" tabindex="-1">
     <p class="drop__tick" aria-hidden="true">✓</p>
     <h2>Reserved</h2>
-    <p>Payment received — your Enigma gi is reserved. Stripe has emailed you a receipt.</p>
+    <p id="drop-done-lede">Payment received — your Enigma gi is reserved. Stripe has emailed you a receipt.</p>
     <p class="drop__fine">
       We will let you know when the order goes to the maker, and again when it
       lands. Any questions, just ask at the front desk.
@@ -190,7 +190,34 @@
   <div class="drop__sheet-inner">
     <h2>Your basket</h2>
     <ul class="drop__cart" id="drop-cart"></ul>
-    <p class="drop__cart-total"><span>Total</span><b id="drop-total"></b></p>
+
+    <!-- The page knows no codes. This posts what was typed and the server
+         decides; see the DISCOUNT CODES note in gi-preorder. -->
+    <div class="drop__promo">
+      <div class="drop__promo-row">
+        <label class="drop__promo-label" for="drop-promo">Discount code</label>
+        <input class="drop__promo-input" id="drop-promo" type="text" placeholder="Optional"
+               autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false">
+        <button class="drop__ghost drop__promo-go" type="button" id="drop-promo-go">Apply</button>
+      </div>
+      <p class="drop__promo-msg" id="drop-promo-msg" hidden role="status"></p>
+    </div>
+
+    <!-- Only for a code that takes the whole price. A free order never reaches
+         Stripe, and Stripe is what asks everybody else for these. -->
+    <div class="drop__who" id="drop-who" hidden>
+      <p class="drop__who-lede">Your gi is covered. We just need to know whose it is.</p>
+      <label for="drop-name">Name</label>
+      <input id="drop-name" type="text" autocomplete="name" spellcheck="false">
+      <label for="drop-email">Email</label>
+      <input id="drop-email" type="email" inputmode="email" autocomplete="email"
+             autocapitalize="off" autocorrect="off" spellcheck="false">
+    </div>
+
+    <p class="drop__cart-total">
+      <span>Total</span>
+      <span class="drop__amounts"><s id="drop-was" hidden></s><b id="drop-total"></b></span>
+    </p>
     <!-- Empty and invisible unless TURNSTILE_SITE_KEY is set. See the note in the script. -->
     <div id="drop-turnstile"></div>
     <div class="drop__sheet-actions">
@@ -209,8 +236,16 @@
      no size could be chosen and no order could be placed. The page still looked
      right in a screenshot and took no orders. The script toggles .hidden
      throughout, so the fix belongs here, in the one rule that makes the
-     attribute mean what it says. */
-  .drop [hidden], .drop__bar[hidden], .drop__sheet[hidden] { display: none !important; }
+     attribute mean what it says.
+
+     `.drop__sheet [hidden]` is the same trap one level down, and it bit again:
+     the sheet is a SIBLING of .drop, not a child, so `.drop [hidden]` never
+     covered anything inside it. The moment the sheet gained a `display: grid`
+     child that starts hidden — the name and email a free order asks for — that
+     child rendered for everybody, on every order, asking shoppers who were
+     about to pay for details Stripe was going to collect anyway. */
+  .drop [hidden], .drop__bar[hidden], .drop__sheet[hidden],
+  .drop__sheet [hidden] { display: none !important; }
 
   .drop { max-width: 640px; margin: 0 auto; padding: 28px 18px 120px; color: #efe7d8;
           font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
@@ -367,6 +402,33 @@
                       margin: 14px 0 4px; padding-top: 12px;
                       border-top: 1px solid rgba(255,255,255,0.14); font-size: 15px; }
   .drop__cart-total b { font-size: 19px; font-weight: 800; color: #e3c78f; }
+  .drop__amounts { display: inline-flex; align-items: baseline; gap: 8px; }
+  .drop__amounts s { color: #8b8373; font-size: 14.5px; }
+
+  /* The code row. `min-width: 0` on the input because a flex item defaults to
+     min-width:auto and refuses to shrink below its own placeholder, which on a
+     narrow phone pushes Apply off the edge of the sheet. */
+  .drop__promo { margin-top: 14px; padding-top: 14px;
+                 border-top: 1px solid rgba(255,255,255,0.14); }
+  .drop__promo-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .drop__promo-label { flex: 1 0 100%; font-size: 13px; color: #9a927f; margin-bottom: 2px; }
+  .drop__promo-input { flex: 1 1 auto; min-width: 0; min-height: 52px; padding: 0 14px;
+                       border-radius: 12px; border: 1px solid rgba(255,255,255,0.16);
+                       background: rgba(0,0,0,0.25); color: #efe7d8;
+                       font: 600 15px/1 system-ui, sans-serif; text-transform: uppercase; }
+  .drop__promo-input::placeholder { color: #7d7566; text-transform: none; font-weight: 500; }
+  .drop__promo-go { flex: 0 0 auto; }
+  .drop__promo-msg { margin: 8px 0 0; font-size: 13px; line-height: 1.5; color: #9a927f; }
+  .drop__promo-msg[data-ok="1"] { color: #8fd3a0; }
+  .drop__promo-msg[data-ok="0"] { color: #f0a9a5; }
+
+  .drop__who { margin-top: 14px; display: grid; gap: 6px; }
+  .drop__who-lede { margin: 0 0 4px; font-size: 13px; line-height: 1.5; color: #9a927f; }
+  .drop__who label { font-size: 13px; color: #9a927f; }
+  .drop__who input { min-height: 52px; padding: 0 14px; border-radius: 12px;
+                     border: 1px solid rgba(255,255,255,0.16); background: rgba(0,0,0,0.25);
+                     color: #efe7d8; font: 500 15px/1 system-ui, sans-serif; }
+
   .drop__sheet-actions { display: flex; gap: 10px; margin-top: 16px; }
   .drop__sheet-actions .drop__submit { flex: 1; }
 
@@ -567,13 +629,34 @@
   var caption = $('drop-caption'), errorEl = $('drop-error'), bar = $('drop-bar');
   var review = $('drop-review'), go = $('drop-go'), sheet = $('drop-sheet');
   var cartEl = $('drop-cart'), totalEl = $('drop-total'), doneEl = $('drop-done');
+  var wasEl = $('drop-was');
+  var promoInput = $('drop-promo'), promoGo = $('drop-promo-go'), promoMsg = $('drop-promo-msg');
+  var whoEl = $('drop-who'), nameEl = $('drop-name'), emailEl = $('drop-email');
 
   var colourway = 'ariadne';
   var cart = [];          /* [{colourway, size, quantity}] */
   var sending = false;
 
+  /* An applied code, as the SERVER described it: {code, percent, maxUnits}.
+     Nothing here is trusted with money — the server recomputes the price from
+     its own copy of both the price and the percentage. This only decides what
+     the sheet says. */
+  var promo = null;
+  var checking = false;
+
   var key = function (c, s) { return c + '|' + s; };
   var money = function (n) { return '$' + n.toFixed(2); };
+
+  /* Worked in cents and rounded the same way the server rounds, so the sheet
+     and the charge cannot disagree by a penny on an odd percentage. */
+  var unitCents = function () {
+    return promo ? Math.round(PRICE * 100 * (100 - promo.percent) / 100) : PRICE * 100;
+  };
+  var unitPrice = function () { return unitCents() / 100; };
+  var dueNow = function () { return count() * unitPrice(); };
+  var goLabel = function () {
+    return dueNow() === 0 && promo ? 'Reserve · Free' : 'Reserve · ' + money(dueNow());
+  };
   var chosen = function () {
     for (var i = 0; i < COLOURWAYS.length; i++) if (COLOURWAYS[i].id === colourway) return COLOURWAYS[i];
     return COLOURWAYS[0];
@@ -785,11 +868,14 @@
     if (n === 0) return;
     review.innerHTML = '';
     var b = document.createElement('b');
-    b.textContent = n + (n === 1 ? ' gi · ' : ' gis · ') + money(n * PRICE);
+    b.textContent = n + (n === 1 ? ' gi · ' : ' gis · ')
+      + (dueNow() === 0 && promo ? 'Free' : money(dueNow()));
     var small = document.createElement('small'); small.textContent = 'Review';
     review.appendChild(b); review.appendChild(small);
-    go.textContent = sending ? 'Opening…' : 'Reserve · ' + money(n * PRICE);
+    go.textContent = sending ? 'Opening…' : goLabel();
     go.disabled = sending;
+    var sheetGo = $('drop-sheet-go');
+    if (sheetGo) { sheetGo.textContent = sending ? 'Opening…' : goLabel(); sheetGo.disabled = sending; }
   }
 
   function paintCart() {
@@ -800,7 +886,10 @@
       var what = document.createElement('span');
       what.className = 'drop__cart-what';
       var b = document.createElement('b'); b.textContent = way.name + ' · ' + l.size;
-      var sm = document.createElement('small'); sm.textContent = money(PRICE) + ' each';
+      var sm = document.createElement('small');
+      sm.textContent = promo
+        ? (unitCents() === 0 ? 'Free with your code' : money(unitPrice()) + ' each, with your code')
+        : money(PRICE) + ' each';
       what.appendChild(b); what.appendChild(sm);
 
       var qty = document.createElement('span');
@@ -820,7 +909,90 @@
       li.appendChild(what); li.appendChild(qty);
       cartEl.appendChild(li);
     });
-    totalEl.textContent = money(count() * PRICE);
+    totalEl.textContent = dueNow() === 0 && promo ? 'Free' : money(dueNow());
+    wasEl.hidden = !promo;
+    if (promo) wasEl.textContent = money(count() * PRICE);
+
+    paintPromoMsg();
+  }
+
+  /**
+   * What the line under the code box says, decided in one place.
+   *
+   * It has to be one place because the basket can change after a code is
+   * applied: adding a second gi to a code that covers one must warn, and taking
+   * it back out again must go back to saying the code is fine. Two functions
+   * each writing this line was how the warning got stuck on screen after the
+   * thing it warned about was undone.
+   */
+  function paintPromoMsg() {
+    if (!promo || !promo.applied) return;
+    var n = count();
+    var over = n > promo.maxUnits;
+    promoMsg.hidden = false;
+    promoMsg.setAttribute('data-ok', over ? '0' : '1');
+    promoMsg.textContent = over
+      ? 'That code covers ' + promo.maxUnits + (promo.maxUnits === 1 ? ' gi' : ' gis')
+        + ', and there ' + (n === 1 ? 'is ' : 'are ') + n + ' in your basket.'
+      : promo.applied;
+  }
+
+  /**
+   * "Apply" — ask the server whether this string is worth anything.
+   *
+   * Nothing is reserved by asking, and the answer can go stale: a code with a
+   * cap can be spent by somebody else between here and Reserve, which is why
+   * the server claims it again for real at the end. This only dresses the sheet.
+   */
+  function applyPromo() {
+    var typed = promoInput.value.trim();
+    if (checking) return;
+
+    if (!typed) {
+      promo = null;
+      whoEl.hidden = true;
+      promoMsg.hidden = true;
+      promoMsg.removeAttribute('data-ok');
+      paintCart(); paintBar();
+      return;
+    }
+
+    checking = true;
+    promoGo.disabled = true;
+    promoMsg.hidden = false;
+    promoMsg.removeAttribute('data-ok');
+    promoMsg.textContent = 'Checking…';
+
+    fetch(ENDPOINT, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ checkPromo: typed, turnstileToken: turnstileToken })
+    }).then(function (res) {
+      return res.json().catch(function () { return {}; });
+    }).then(function (data) {
+      checking = false; promoGo.disabled = false;
+      if (!data || !data.valid) {
+        promo = null;
+        whoEl.hidden = true;
+        promoMsg.setAttribute('data-ok', '0');
+        promoMsg.textContent = (data && data.error) || 'That code is not valid for this order.';
+      } else {
+        promo = {
+          code: typed,
+          percent: data.percent,
+          maxUnits: data.maxUnits,
+          applied: (data.percent === 100
+            ? 'Code applied — your gi is covered.'
+            : 'Code applied — ' + data.percent + '% off.')
+            + ' Covers ' + data.maxUnits + (data.maxUnits === 1 ? ' gi.' : ' gis.')
+        };
+        whoEl.hidden = data.percent !== 100;
+      }
+      paintCart(); paintBar();
+    }).catch(function () {
+      checking = false; promoGo.disabled = false;
+      promoMsg.setAttribute('data-ok', '0');
+      promoMsg.textContent = 'Could not check that code — try again.';
+    });
   }
 
   function fail(message) {
@@ -833,6 +1005,24 @@
 
   function checkout() {
     if (sending || cart.length === 0) return;
+
+    /* A comped order never meets Stripe, so this is the only chance to find
+       out whose gi it is. Caught here so the sheet stays open on the field
+       they need to fix, rather than closing to show an error behind it. */
+    var name = nameEl ? nameEl.value.trim() : '';
+    var email = emailEl ? emailEl.value.trim() : '';
+    if (promo && promo.percent === 100) {
+      if (!name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+        sheet.hidden = false;
+        whoEl.hidden = false;
+        promoMsg.hidden = false;
+        promoMsg.setAttribute('data-ok', '0');
+        promoMsg.textContent = 'Add your name and email so we know whose gi it is.';
+        (name ? emailEl : nameEl).focus();
+        return;
+      }
+    }
+
     errorEl.hidden = true;
     sending = true;
     paintBar();
@@ -853,6 +1043,11 @@
       body: JSON.stringify({
         items: cart,
         turnstileToken: turnstileToken,
+        /* What was typed, not what it is worth. The server looks the code up
+           again and recomputes the price; the browser has no say in either. */
+        promo: promo ? promo.code : '',
+        name: name,
+        email: email,
         /* Where to come back to after Stripe. The server ignores anything that
            is not on its own allow-list, so this is a request, not an
            instruction — but it is what lets this page be served from more than
@@ -866,6 +1061,21 @@
       done = true; clearTimeout(timer);
       if (!data || !data.ok) { fail((data && data.error) || 'That did not save — please try again.'); return; }
       if (data.checkoutUrl) { window.location.assign(data.checkoutUrl); return; }
+      /* Nothing to pay, so there was no trip to Stripe and the gi is already
+         reserved. Same panel, minus the promise of a receipt nobody sent. */
+      if (data.status === 'reserved') {
+        var lede = $('drop-done-lede');
+        if (lede) {
+          lede.textContent = 'Your Enigma gi is reserved. Nothing was charged — '
+            + 'the code covered it.';
+        }
+        shop.hidden = true;
+        bar.hidden = true;
+        doneEl.hidden = false;
+        doneEl.focus();
+        $('drop-again').addEventListener('click', function () { window.location.reload(); });
+        return;
+      }
       fail('The payment page did not open. Please tell the front desk.');
     }).catch(function () {
       if (done) return;
@@ -873,6 +1083,13 @@
       fail('Could not reach the academy — check your internet and try again.');
     });
   }
+
+  promoGo.addEventListener('click', applyPromo);
+  promoInput.addEventListener('keydown', function (e) {
+    /* Enter in a lone text field submits the form it is in; there is no form
+       here, so it would do nothing at all unless this catches it. */
+    if (e.key === 'Enter') { e.preventDefault(); applyPromo(); }
+  });
 
   review.addEventListener('click', function () { paintCart(); sheet.hidden = false; });
   $('drop-more').addEventListener('click', function () { sheet.hidden = true; });

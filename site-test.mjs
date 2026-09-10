@@ -816,6 +816,145 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
   await page.setViewportSize({ width:1280, height:800 })
 }
 
+// ── L1w: the discount code ──
+// A staff code takes the whole $109, and a redemption is a real garment the
+// academy pays a maker to produce. Two things therefore have to stay true, and
+// only one of them is about the page working.
+//
+// The first is that THE CODE IS NOT IN THE PAGE. This is static HTML served to
+// the public: a code written into its script is readable by anybody who presses
+// View Source, and "100% off" published to the internet is not a discount, it
+// is a free shop. The page holds no codes at all — it posts what somebody typed
+// and the endpoint decides — and the check below is what keeps it that way when
+// somebody later reaches for the obvious shortcut of validating in the browser.
+//
+// The second is that a free order still says whose gi it is. It never reaches
+// Stripe (Stripe will not open a session for a zero total), and Stripe is what
+// collects the name and email on every other order — so without these fields a
+// comped gi arrives with nobody attached to it.
+{
+  const drop = readFileSync(join(ROOT,'drop.html'),'utf8')
+
+  // Every code in the table, not just the one that exists today. If a second
+  // code is ever added, add it here — the point is that none of them ship.
+  for (const secret of ['100lab', '100LAB', '100Lab'])
+    check(`L1w the code ${secret} is nowhere in the page`,
+      !drop.toLowerCase().includes(secret.toLowerCase()))
+  check('L1w the page validates nothing about codes on its own',
+    !/percent_off|max_redemptions|claim_gi_promo/.test(drop))
+  check('L1w the code box posts to the endpoint to find out',
+    /checkPromo:/.test(drop))
+
+  await page.setViewportSize({ width:390, height:844 })
+  await page.goto('http://localhost:4620/drop', { waitUntil:'domcontentloaded' })
+  await page.waitForTimeout(250)
+
+  // One handler for both shapes of request. Registering a second route for the
+  // same URL does not layer — the later one wins and swallows the first.
+  let posted = null, reply = { ok:false, error:'test' }
+  await page.route('**/functions/v1/gi-preorder', route => {
+    const body = JSON.parse(route.request().postData() || '{}')
+    if (body.checkPromo) {
+      const ok = String(body.checkPromo).trim().toLowerCase() === 'goodcode'
+      return route.fulfill({ status:200, contentType:'application/json',
+        body: JSON.stringify(ok
+          ? { ok:true, valid:true, percent:100, maxUnits:1, label:'Staff' }
+          : { ok:true, valid:false, error:'That code is not valid for this order.' }) })
+    }
+    posted = body
+    return route.fulfill({ status:200, contentType:'application/json',
+      body: JSON.stringify(reply) })
+  })
+
+  await page.click('.drop__size:text-is("A2")')
+  await page.click('#drop-review')
+  await page.waitForTimeout(200)
+  check('L1w the basket has a code box', await page.isVisible('#drop-promo'))
+  check('L1w and asks for nobody\'s name until a code takes the whole price',
+    await page.isHidden('#drop-who'))
+  check('L1w and shows no struck-through price before there is a discount',
+    await page.isHidden('#drop-was'))
+  check('L1w and says nothing under the code box before one is tried',
+    await page.isHidden('#drop-promo-msg'))
+
+  // A wrong code changes nothing about what is owed.
+  await page.fill('#drop-promo', 'nope')
+  await page.click('#drop-promo-go')
+  await page.waitForTimeout(300)
+  check('L1w a code that is not real is refused',
+    await page.getAttribute('#drop-promo-msg', 'data-ok') === '0')
+  check('L1w and the total is untouched by it',
+    (await page.textContent('#drop-total')).includes('109.00'),
+    await page.textContent('#drop-total'))
+  check('L1w and it still does not ask who you are',
+    await page.isHidden('#drop-who'))
+
+  // A real one takes it to nothing, and only then asks who it is for.
+  await page.fill('#drop-promo', 'goodcode')
+  await page.click('#drop-promo-go')
+  await page.waitForTimeout(300)
+  check('L1w a real code applies',
+    await page.getAttribute('#drop-promo-msg', 'data-ok') === '1')
+  check('L1w the total goes to nothing',
+    (await page.textContent('#drop-total')).trim() === 'Free',
+    await page.textContent('#drop-total'))
+  check('L1w the old price is shown struck through',
+    await page.isVisible('#drop-was')
+      && (await page.textContent('#drop-was')).includes('109.00'))
+  check('L1w and now it asks whose gi it is', await page.isVisible('#drop-who'))
+
+  // The cap is per order, and the basket can change after the code is applied.
+  // The warning has to arrive in the basket, where it can still be fixed —
+  // and has to LEAVE again when the basket goes back under the cap.
+  await page.click('#drop-more')
+  await page.click('.drop__size:text-is("A2")')
+  await page.click('#drop-review')
+  await page.waitForTimeout(200)
+  check('L1w a basket over what the code covers says so',
+    await page.getAttribute('#drop-promo-msg', 'data-ok') === '0'
+      && (await page.textContent('#drop-promo-msg')).includes('covers 1 gi'),
+    await page.textContent('#drop-promo-msg'))
+  await page.click('.drop__qty button:has-text("−")')
+  await page.waitForTimeout(200)
+  check('L1w and stops saying so once the basket fits again',
+    await page.getAttribute('#drop-promo-msg', 'data-ok') === '1',
+    await page.textContent('#drop-promo-msg'))
+
+  // Reserve must not go anywhere without a name on a free order.
+  posted = null
+  await page.click('#drop-sheet-go')
+  await page.waitForTimeout(300)
+  check('L1w a free order will not send without a name',
+    posted === null && await page.isVisible('#drop-sheet'))
+
+  await page.fill('#drop-name', 'Sam Coach')
+  await page.fill('#drop-email', 'not-an-email')
+  await page.click('#drop-sheet-go')
+  await page.waitForTimeout(300)
+  check('L1w nor with an address that is not one', posted === null)
+
+  reply = { ok:true, status:'reserved', comped:true }
+  await page.fill('#drop-email', 'sam@example.com')
+  await page.click('#drop-sheet-go')
+  await page.waitForTimeout(500)
+  check('L1w it sends the code as typed, for the server to judge',
+    posted?.promo === 'goodcode', JSON.stringify(posted?.promo))
+  check('L1w with the name and email Stripe never got to ask for',
+    posted?.name === 'Sam Coach' && posted?.email === 'sam@example.com',
+    JSON.stringify([posted?.name, posted?.email]))
+  check('L1w it never posts a price of its own',
+    posted && !('amount' in posted) && !('price' in posted) && !('percent' in posted),
+    JSON.stringify(Object.keys(posted || {})))
+  check('L1w a comped order lands on the confirmation without going to Stripe',
+    await page.isVisible('#drop-done'))
+  check('L1w and does not promise a receipt nobody sent',
+    !(await page.textContent('#drop-done-lede')).includes('Stripe'),
+    await page.textContent('#drop-done-lede'))
+
+  await page.unroute('**/functions/v1/gi-preorder')
+  await page.setViewportSize({ width:1280, height:800 })
+}
+
 // ── L1v: the academy is in Texas, so the spelling is American ──
 // This kept coming back — colour, programme, grey, sceptical, organised — and
 // "remember not to" is not a mechanism. Checked against what a visitor
