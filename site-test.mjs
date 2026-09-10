@@ -702,9 +702,18 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
   // Every photograph the script can ask for has to exist on the CRM's host, or
   // a tap lands on a broken image. Named here so a typo in one filename fails
   // rather than shipping.
-  for (const f of ['ariadne-kids-front', 'ariadne-kids-back', 'ariadne-womens-front',
-                   'asterion-kids-front', 'asterion-kids-back', 'asterion-womens-front'])
+  for (const f of ['ariadne-kids-front', 'ariadne-kids-back',
+                   'ariadne-womens-front', 'ariadne-womens-back',
+                   'asterion-kids-front', 'asterion-kids-back',
+                   'asterion-womens-front', 'asterion-womens-back'])
     check(`L1u the script names ${f}.webp`, new RegExp(`'${f}\\.webp'`).test(drop))
+  // Every fit is now shot from both sides, so nobody meets a half-populated
+  // figure whichever tab they open.
+  // Keyed on the fit name, because `front`/`back` also sit at the top level of
+  // each colorway as the men's pair — counting bare pairs finds 8, not 6.
+  const withBoth = drop.match(/(kids|mens|womens): \{ front: '[a-z-]+\.webp', back: '[a-z-]+\.webp' \}/g) || []
+  check('L1u all three fits have a front and a back, in both colorways',
+    withBoth.length === 6, `${withBoth.length} of 6`)
 
   /**
    * The size run, exactly.
