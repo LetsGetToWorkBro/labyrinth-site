@@ -762,7 +762,7 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
   const orphans = charted.filter(c => !ENDPOINT_SIZES.includes(c))
   check('L1u every size in the guide is a size that can be ordered',
     orphans.length === 0, 'not in the run: ' + orphans.join(', '))
-  check('L1u the guide covers the whole men\'s run', charted.length === 16, charted.length + ' charted')
+  check('L1u the guide covers the whole run', charted.length === 34, charted.length + ' charted')
 
   await page.setViewportSize({ width:390, height:844 })
   await page.goto('http://localhost:4620/drop', { waitUntil:'domcontentloaded' })
@@ -791,7 +791,7 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
   await page.click('.drop__size:text-is("A2")')
   await page.waitForTimeout(200)
   check('L1u the guide is folded away until asked for',
-    await page.$$eval('.drop__guide', e => e.length === 1 && e.every(x => !x.open)))
+    await page.$$eval('.drop__guide', e => e.length === 3 && e.every(x => !x.open)))
   check('L1u a size can be added', await page.isVisible('#drop-bar'))
   check('L1u the bar totals at the advertised price',
     (await page.textContent('#drop-go')).includes('$109.00'),

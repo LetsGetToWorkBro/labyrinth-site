@@ -289,6 +289,9 @@
   .drop__row span + span { font-size: 11.5px; color: #7d7666; margin-top: 1px; }
   .drop__row em { display: block; font-style: normal; font-size: 11.5px;
                   color: #9a927f; margin-top: 3px; }
+  .drop__guide-foot { font-size: 11.5px; line-height: 1.5; color: #9a927f;
+                      margin: 10px 0 0; padding-top: 9px;
+                      border-top: 1px solid rgba(255,255,255,0.06); }
 
   .drop__group h3 { font-size: 14.5px; font-weight: 700; margin: 18px 0 2px; }
   .drop__grid { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); }
@@ -517,7 +520,44 @@
              note: 'L = Long. Pants are 5cm longer than A3, wingspan is 5cm longer.' },
     A4:    { lb: '220\u2013253', kg: '100\u2013115', ft: '6\u20321\u2033\u20136\u20324\u2033',  cm: '185\u2013193' },
     A5:    { lb: '253\u2013287', kg: '115\u2013130', ft: '6\u20322\u2033\u20136\u20325\u2033',  cm: '188\u2013195' },
-    A6:    { lb: '287\u2013320', kg: '130\u2013145', ft: '6\u20324\u2033\u20136\u20327\u2033',  cm: '193\u2013200' }
+    A6:    { lb: '287\u2013320', kg: '130\u2013145', ft: '6\u20324\u2033\u20136\u20327\u2033',  cm: '193\u2013200' },
+
+    /* Kids are sized by height and age, not weight — that is how the chart
+       is written and how a parent thinks about it. No lb/kg here, and the
+       renderer leads with height for anything without a weight. */
+    M0000: { ft: '3\u20323\u2033\u20133\u20326\u2033', cm: '99\u2013106', age: '5\u20136' },
+    M000:  { ft: '3\u20326\u2033\u20133\u20328\u2033', cm: '106\u2013113', age: '6\u20137' },
+    M00:   { ft: '3\u20328\u2033\u20133\u203211\u2033', cm: '113\u2013120', age: '7\u20138' },
+    M0:    { ft: '3\u203211\u2033\u20134\u20322\u2033', cm: '120\u2013127', age: '8\u20139' },
+    M1:    { ft: '4\u20322\u2033\u20134\u20324\u2033', cm: '127\u2013134', age: '9\u201310' },
+    M2:    { ft: '4\u20324\u2033\u20134\u20327\u2033', cm: '134\u2013141', age: '10\u201311' },
+    M3:    { ft: '4\u20327\u2033\u20134\u203210\u2033', cm: '141\u2013148', age: '11\u201312' },
+    M4:    { ft: '4\u203210\u2033\u20135\u20321\u2033', cm: '148\u2013155', age: '12\u201313' },
+
+    F1:    { lb: '90\u2013110', kg: '40\u201350', ft: '5\u20320\u2033\u20135\u20322\u2033', cm: '152\u2013158' },
+    F1L:   { lb: '90\u2013110', kg: '40\u201350', ft: '5\u20321\u2033\u20135\u20323\u2033', cm: '155\u2013160',
+             note: 'L = Long. Pants are 4cm longer than F1, wingspan is 7cm longer.' },
+    F2:    { lb: '110\u2013125', kg: '50\u201357', ft: '5\u20322\u2033\u20135\u20325\u2033', cm: '158\u2013165' },
+    F2C:   { lb: '120\u2013135', kg: '54\u201361', ft: '5\u20322\u2033\u20135\u20325\u2033', cm: '158\u2013165',
+             note: 'C = Curvy. Chest is 5cm wider, hips 4cm wider, side vents 1cm longer.' },
+    F2L:   { lb: '110\u2013125', kg: '50\u201357', ft: '5\u20323\u2033\u20135\u20326\u2033', cm: '160\u2013168',
+             note: 'L = Long. Pants are 4cm longer than F2, wingspan is 7cm longer.' },
+    F3:    { lb: '125\u2013145', kg: '57\u201365', ft: '5\u20323\u2033\u20135\u20326\u2033', cm: '160\u2013168' },
+    F3C:   { lb: '135\u2013150', kg: '61\u201368', ft: '5\u20323\u2033\u20135\u20326\u2033', cm: '160\u2013168',
+             note: 'C = Curvy. Chest is 5cm wider, hips 4cm wider, side vents 1cm longer.' },
+    F3L:   { lb: '125\u2013145', kg: '57\u201365', ft: '5\u20325\u2033\u20135\u20327\u2033', cm: '165\u2013170',
+             note: 'L = Long. Pants are 4cm longer than F3, wingspan is 7cm longer.' },
+    F4:    { lb: '145\u2013165', kg: '65\u201375', ft: '5\u20326\u2033\u20135\u20328\u2033', cm: '168\u2013172' },
+    F4L:   { lb: '145\u2013165', kg: '65\u201375', ft: '5\u20327\u2033\u20135\u20329\u2033', cm: '170\u2013175',
+             note: 'L = Long. Pants are 4cm longer than F4, wingspan is 7cm longer.' }
+  };
+
+  /* The charts each end with a row pointing at another range. A0 is already in
+     the men's run, so repeating it as a kids or women's size would offer the
+     same size twice under two headings — it is a footnote instead. */
+  var GUIDE_NOTES = {
+    'Kids': 'Fourteen and over has outgrown this range \u2014 use the Men\'s or Women\'s sizes.',
+    'Women\'s': 'A0 in the Men\'s run is an alternative: 132\u2013155 lb, 5\u20324\u2033\u20135\u20326\u2033.'
   };
 
   var $ = function (id) { return document.getElementById(id); };
@@ -705,10 +745,18 @@
           row.className = 'drop__row';
           var code = document.createElement('b'); code.textContent = x;
           var cell = document.createElement('div');
+          /* Adults are matched on weight first, kids on height and age —
+             the charts are written that way and so is the thinking. A kids
+             row has no lb at all, so leading with it would print "undefined
+             lb" to somebody choosing a gi for a seven-year-old. */
           var main = document.createElement('span');
-          main.textContent = e.lb + ' lb \u00b7 ' + e.ft;
+          main.textContent = e.lb
+            ? e.lb + ' lb \u00b7 ' + e.ft
+            : e.ft + (e.age ? ' \u00b7 ages ' + e.age : '');
           var alt = document.createElement('span');
-          alt.textContent = e.kg + ' kg \u00b7 ' + e.cm + ' cm';
+          alt.textContent = e.lb
+            ? e.kg + ' kg \u00b7 ' + e.cm + ' cm'
+            : e.cm + ' cm';
           cell.appendChild(main); cell.appendChild(alt);
           if (e.note) {
             var n = document.createElement('em'); n.textContent = e.note;
@@ -717,6 +765,12 @@
           row.appendChild(code); row.appendChild(cell);
           body.appendChild(row);
         });
+        if (GUIDE_NOTES[g.label]) {
+          var foot = document.createElement('p');
+          foot.className = 'drop__guide-foot';
+          foot.textContent = GUIDE_NOTES[g.label];
+          body.appendChild(foot);
+        }
         det.appendChild(sum); det.appendChild(body);
         wrap.appendChild(det);
       }
