@@ -845,6 +845,13 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
   check('L1w the code box posts to the endpoint to find out',
     /checkPromo:/.test(drop))
 
+  // The closing date is the one fact that decides whether somebody orders
+  // today, so it is on the page and not only in the email that announced it.
+  check('L1w the page says when pre-orders close',
+    /Pre-orders close <strong>Wednesday, September 30<\/strong>/.test(drop))
+  check('L1w and says there is no second run to catch',
+    /order nothing extra/.test(drop))
+
   await page.setViewportSize({ width:390, height:844 })
   await page.goto('http://localhost:4620/drop', { waitUntil:'domcontentloaded' })
   await page.waitForTimeout(250)
