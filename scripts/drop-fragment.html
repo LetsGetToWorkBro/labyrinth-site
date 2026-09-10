@@ -188,6 +188,30 @@
   .drop__figure figcaption { font-size: 12.5px; color: #9a927f; text-align: center;
                              margin-top: 8px; }
 
+  /* The guide, per group and folded away. One table of all 34 would make
+     somebody buying an M2 scroll past sixteen men's rows to reach it, and open
+     by default it would push the sizes themselves off the screen. A row rather
+     than a <table>: at 354px a four-column table either wraps to nonsense or
+     needs a sideways scroll, and weight-then-height stacked reads fine. */
+  .drop__guide { margin: 10px 0 0; border: 1px solid rgba(255,255,255,0.14);
+                 border-radius: 11px; background: rgba(255,255,255,0.02); }
+  .drop__guide > summary { min-height: 44px; display: flex; align-items: center;
+                           padding: 0 14px; cursor: pointer; font-size: 13.5px;
+                           font-weight: 700; color: #e3c78f; list-style: none; }
+  .drop__guide > summary::-webkit-details-marker { display: none; }
+  .drop__guide > summary::after { content: '\002b'; margin-left: auto; font-size: 17px; }
+  .drop__guide[open] > summary::after { content: '\2212'; }
+  .drop__guide-body { padding: 0 14px 12px; }
+  .drop__row { display: flex; gap: 12px; padding: 9px 0;
+               border-top: 1px solid rgba(255,255,255,0.06); }
+  .drop__row b { flex: 0 0 52px; font-size: 13.5px; color: #efe7d8;
+                 font-variant-numeric: tabular-nums; }
+  .drop__row div { flex: 1; min-width: 0; }
+  .drop__row span { display: block; font-size: 13px; color: #c9c0ad; }
+  .drop__row span + span { font-size: 11.5px; color: #7d7666; margin-top: 1px; }
+  .drop__row em { display: block; font-style: normal; font-size: 11.5px;
+                  color: #9a927f; margin-top: 3px; }
+
   .drop__group h3 { font-size: 14.5px; font-weight: 700; margin: 18px 0 2px; }
   .drop__grid { display: grid; gap: 8px; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); }
   .drop__size { position: relative; min-height: 48px; border-radius: 11px; cursor: pointer;
@@ -376,6 +400,48 @@
       sizes: ['F1', 'F1L', 'F2', 'F2C', 'F2L', 'F3', 'F3C', 'F3L', 'F4', 'F4L'] }
   ];
 
+
+  /**
+   * The size guide, from the academy's own charts.
+   *
+   * A SEPARATE constant, not folded into SIZE_GROUPS: gi-sizes.test.mjs reads
+   * the run by pulling every quoted capital out of that block and comparing it
+   * to the endpoint's list, so a size code written twice in there would fail a
+   * check that is right to be strict. Keys here are matched against the run at
+   * paint time instead, and a size with no entry simply gets no row.
+   *
+   * Men's only so far. Kids and Women's have charts of their own that are not
+   * in hand yet; until they are, those groups keep their written hint and show
+   * no guide rather than a half-filled one.
+   */
+  var SIZE_CHART = {
+    A0:    { lb: '132\u2013155', kg: '60\u201370',   ft: '5\u20324\u2033\u20135\u20326\u2033',  cm: '162\u2013168' },
+    A0L:   { lb: '132\u2013155', kg: '60\u201370',   ft: '5\u20326\u2033\u20135\u20328\u2033',  cm: '168\u2013172',
+             note: 'L = Long. Pants are 4cm longer than A0, wingspan is 5cm longer.' },
+    A1:    { lb: '154\u2013170', kg: '70\u201377',   ft: '5\u20325\u2033\u20135\u20327\u2033',  cm: '165\u2013170' },
+    A1F:   { lb: '143\u2013159', kg: '65\u201372',   ft: '5\u20325\u2033\u20135\u20327\u2033',  cm: '165\u2013170',
+             note: 'F = Fitted. Jacket is 3cm narrower than A1, pants are 4cm narrower.' },
+    A1L:   { lb: '154\u2013170', kg: '70\u201377',   ft: '5\u20327\u2033\u20135\u20329\u2033',  cm: '170\u2013175',
+             note: 'L = Long. Pants are 3cm longer than A1, wingspan is 5cm longer.' },
+    A2:    { lb: '170\u2013192', kg: '77\u201387',   ft: '5\u20327\u2033\u20135\u203210\u2033', cm: '170\u2013178' },
+    A2S:   { lb: '170\u2013192', kg: '77\u201387',   ft: '5\u20325\u2033\u20135\u20327\u2033',  cm: '165\u2013170',
+             note: 'S = Shorter. Jacket is 3cm shorter with 3cm less wingspan than A2, pants are 3cm shorter.' },
+    A2H:   { lb: '187\u2013205', kg: '85\u201393',   ft: '5\u20327\u2033\u20135\u203210\u2033', cm: '170\u2013178',
+             note: 'H = Heavy. Jacket is 4cm wider than A2, pants are 4cm wider.' },
+    A2L:   { lb: '170\u2013192', kg: '77\u201387',   ft: '5\u203210\u2033\u20136\u20320\u2033', cm: '178\u2013183',
+             note: 'L = Long. Pants are 3cm longer than A2, wingspan is 4cm longer.' },
+    A2XL:  { lb: '170\u2013192', kg: '77\u201387',   ft: '6\u20320\u2033\u20136\u20324\u2033',  cm: '183\u2013193',
+             note: 'XL = Extra Long. Pants are 8cm longer than A2, wingspan is 8cm longer.' },
+    A3:    { lb: '192\u2013220', kg: '87\u2013100',  ft: '5\u203210\u2033\u20136\u20322\u2033', cm: '178\u2013188' },
+    A3S:   { lb: '192\u2013220', kg: '87\u2013100',  ft: '5\u20327\u2033\u20135\u203210\u2033', cm: '170\u2013178',
+             note: 'S = Shorter. Jacket is 5cm shorter with 5cm less wingspan than A3, pants are 3cm shorter.' },
+    A3L:   { lb: '192\u2013220', kg: '87\u2013100',  ft: '6\u20320\u2033\u20136\u20324\u2033',  cm: '183\u2013193',
+             note: 'L = Long. Pants are 5cm longer than A3, wingspan is 5cm longer.' },
+    A4:    { lb: '220\u2013253', kg: '100\u2013115', ft: '6\u20321\u2033\u20136\u20324\u2033',  cm: '185\u2013193' },
+    A5:    { lb: '253\u2013287', kg: '115\u2013130', ft: '6\u20322\u2033\u20136\u20325\u2033',  cm: '188\u2013195' },
+    A6:    { lb: '287\u2013320', kg: '130\u2013145', ft: '6\u20324\u2033\u20136\u20327\u2033',  cm: '193\u2013200' }
+  };
+
   var $ = function (id) { return document.getElementById(id); };
   var shop = $('drop-shop'); if (!shop) return;
   var waysEl = $('drop-ways'), sizesEl = $('drop-sizes');
@@ -543,6 +609,40 @@
         grid.appendChild(b);
       });
       wrap.appendChild(h); wrap.appendChild(p); wrap.appendChild(grid);
+
+      /* Only for a group the chart actually covers. A group with no entries
+         keeps its written hint and shows nothing, rather than an empty panel
+         implying the numbers exist somewhere. */
+      var covered = g.sizes.filter(function (x) { return SIZE_CHART[x]; });
+      if (covered.length) {
+        var det = document.createElement('details');
+        det.className = 'drop__guide';
+        var sum = document.createElement('summary');
+        sum.textContent = 'Size guide \u2014 weight and height';
+        var body = document.createElement('div');
+        body.className = 'drop__guide-body';
+        covered.forEach(function (x) {
+          var e = SIZE_CHART[x];
+          var row = document.createElement('div');
+          row.className = 'drop__row';
+          var code = document.createElement('b'); code.textContent = x;
+          var cell = document.createElement('div');
+          var main = document.createElement('span');
+          main.textContent = e.lb + ' lb \u00b7 ' + e.ft;
+          var alt = document.createElement('span');
+          alt.textContent = e.kg + ' kg \u00b7 ' + e.cm + ' cm';
+          cell.appendChild(main); cell.appendChild(alt);
+          if (e.note) {
+            var n = document.createElement('em'); n.textContent = e.note;
+            cell.appendChild(n);
+          }
+          row.appendChild(code); row.appendChild(cell);
+          body.appendChild(row);
+        });
+        det.appendChild(sum); det.appendChild(body);
+        wrap.appendChild(det);
+      }
+
       sizesEl.appendChild(wrap);
     });
   }
