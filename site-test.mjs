@@ -692,11 +692,19 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
     ['Turnstile still off', /TURNSTILE_SITE_KEY = ''/],
   ]) check(`L1u the drop page keeps ${what}`, re.test(drop))
 
-  // The real gi, front and back, per colorway.
+  // The real gi, front and back, per colorway — and now per fit as well.
   check('L1u both shots are on the page',
     /<img id="drop-front"/.test(drop) && /<img id="drop-back"/.test(drop))
   check('L1u and the script points them at the photographs',
     /front: 'ariadne-front\.webp'/.test(drop) && /back: 'asterion-back\.webp'/.test(drop))
+  check('L1u the three fits are offered', /<div class="drop__fits"/.test(drop)
+    && /key: 'kids'/.test(drop) && /key: 'mens'/.test(drop) && /key: 'womens'/.test(drop))
+  // Every photograph the script can ask for has to exist on the CRM's host, or
+  // a tap lands on a broken image. Named here so a typo in one filename fails
+  // rather than shipping.
+  for (const f of ['ariadne-kids-front', 'ariadne-kids-back', 'ariadne-womens-front',
+                   'asterion-kids-front', 'asterion-kids-back', 'asterion-womens-front'])
+    check(`L1u the script names ${f}.webp`, new RegExp(`'${f}\\.webp'`).test(drop))
 
   /**
    * The size run, exactly.
