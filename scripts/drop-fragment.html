@@ -293,18 +293,30 @@
 
   /* Fixed, and paying the home-indicator inset — or its bottom 34px sit under
      the bar on every iPhone since the X, which is where Reserve is. */
+  /* The bottom inset is a MINIMUM of 14px rather than whatever env() reports.
+     Safari hands back 0 for safe-area-inset-bottom while its toolbar is
+     collapsed, which is exactly when this bar is flush against the bottom of
+     the screen — so the padding vanished at the one moment it was needed and
+     "Review" ended up in the home-indicator swipe strip, half off the glass.
+     Tapping it there either did nothing or dismissed the browser chrome. */
   .drop__bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
                display: flex; align-items: center; gap: 10px;
-               padding: 12px calc(14px + env(safe-area-inset-right, 0px))
-                        calc(12px + env(safe-area-inset-bottom, 0px))
+               padding: 10px calc(14px + env(safe-area-inset-right, 0px))
+                        max(14px, env(safe-area-inset-bottom, 0px))
                         calc(14px + env(safe-area-inset-left, 0px));
                background: rgba(20,16,12,0.94);
                -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px);
                border-top: 1px solid rgba(255,255,255,0.14); }
-  .drop__bar-cart { display: flex; flex-direction: column; align-items: flex-start; gap: 1px;
-                    min-height: 48px; padding: 0 6px; flex: none; cursor: pointer;
-                    background: none; border: 0; color: #efe7d8; font-size: 14px;
+  /* Drawn as something pressable, and sized like it. It was borderless text at
+     the edge of the screen: the only clue it could be tapped was the word
+     "Review", and the target was as narrow as that word. */
+  .drop__bar-cart { display: flex; flex-direction: column; align-items: flex-start;
+                    justify-content: center; gap: 1px;
+                    min-height: 52px; padding: 6px 14px; flex: none; cursor: pointer;
+                    border-radius: 12px; border: 1px solid rgba(255,255,255,0.18);
+                    background: rgba(255,255,255,0.05); color: #efe7d8; font-size: 14px;
                     text-align: left; font-family: inherit; }
+  .drop__bar-cart:active { background: rgba(255,255,255,0.11); }
   .drop__bar-cart b { font-size: 15px; font-weight: 800; }
   .drop__bar-cart small { font-size: 12px; color: #e3c78f; }
   .drop__bar-go { flex: 1; }

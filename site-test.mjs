@@ -797,6 +797,37 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
     (await page.textContent('#drop-go')).includes('$109.00'),
     await page.textContent('#drop-go'))
 
+  /**
+   * Review has to be reachable with a thumb.
+   *
+   * It is the only way into the basket, and it lives in the bottom bar — which
+   * on a phone shares the bottom of the screen with the home indicator's swipe
+   * strip. Safari reports `safe-area-inset-bottom` as 0 while its toolbar is
+   * collapsed, which is exactly when this bar is flush to the glass, so the
+   * padding meant to keep clear of that strip disappeared at the one moment it
+   * mattered and the word "Review" sat half off the bottom of the screen.
+   *
+   * Headless Chromium reports 0 for that inset too, so this is the same case
+   * rather than an approximation of it — which is what makes the clearance
+   * assertion below meaningful rather than decorative.
+   */
+  const review = await page.evaluate(() => {
+    const el = document.getElementById('drop-review')
+    const r = el.getBoundingClientRect()
+    const hit = document.elementFromPoint(
+      Math.round(r.left + r.width / 2), Math.round(r.top + r.height / 2))
+    return {
+      w: Math.round(r.width), h: Math.round(r.height),
+      clearance: Math.round(window.innerHeight - r.bottom),
+      hits: !!(hit && hit.closest && hit.closest('#drop-review')),
+    }
+  })
+  check('L1u the Review target is big enough for a thumb',
+    review.w >= 44 && review.h >= 44, `${review.w}×${review.h}`)
+  check('L1u and sits clear of the home-indicator strip',
+    review.clearance >= 12, `${review.clearance}px above the bottom`)
+  check('L1u and a tap in the middle of it lands on it', review.hits)
+
   // What it would send. returnTo is the string the endpoint's allow-list
   // checks and Stripe returns people to, so it has to be the page's own URL.
   let dropPosted = null
