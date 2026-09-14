@@ -836,7 +836,26 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
     return route.fulfill({ status:200, contentType:'application/json',
       body: JSON.stringify({ ok:false, error:'test' }) })
   })
+  /**
+   * The bar opens the basket. It must NOT pay.
+   *
+   * It used to go straight to Stripe, and the abandonment pattern said that
+   * was costing orders: people reached the payment page and left without
+   * typing a character, several retrying the same size minutes later. This is
+   * the assertion that keeps the confirmation step in place — wiring the bar
+   * back to `checkout` is a one-word change and would look harmless.
+   */
   await page.click('#drop-go')
+  await page.waitForTimeout(400)
+  check('L1u the bar opens the basket rather than paying',
+    dropPosted === null && await page.isVisible('#drop-sheet'),
+    JSON.stringify(dropPosted))
+  check('L1u and the basket shows what is about to be charged',
+    (await page.textContent('#drop-total')).includes('109.00'),
+    await page.textContent('#drop-total'))
+
+  // Only the button inside the basket sends anybody to Stripe.
+  await page.click('#drop-sheet-go')
   await page.waitForTimeout(500)
   check('L1u reserving sends the chosen gi',
     dropPosted?.items?.[0]?.size === 'A2' && dropPosted?.items?.[0]?.colourway === 'ariadne',

@@ -600,9 +600,10 @@
   };
   var unitPrice = function () { return unitCents() / 100; };
   var dueNow = function () { return count() * unitPrice(); };
-  var goLabel = function () {
-    return dueNow() === 0 && promo ? 'Reserve · Free' : 'Reserve · ' + money(dueNow());
-  };
+  /* "Free" rather than "$0.00" once a code covers the whole thing — a zero in a
+     money slot reads as a pricing fault, not as a gift. */
+  var dueLabel = function () { return dueNow() === 0 && promo ? 'Free' : money(dueNow()); };
+  var goLabel = function () { return 'Reserve · ' + dueLabel(); };
   var chosen = function () {
     for (var i = 0; i < COLOURWAYS.length; i++) if (COLOURWAYS[i].id === colourway) return COLOURWAYS[i];
     return COLOURWAYS[0];
@@ -814,12 +815,27 @@
     if (n === 0) return;
     review.innerHTML = '';
     var b = document.createElement('b');
-    b.textContent = n + (n === 1 ? ' gi · ' : ' gis · ')
-      + (dueNow() === 0 && promo ? 'Free' : money(dueNow()));
-    var small = document.createElement('small'); small.textContent = 'Review';
+    b.textContent = n + (n === 1 ? ' gi · ' : ' gis · ') + dueLabel();
+    var small = document.createElement('small'); small.textContent = 'In your basket';
     review.appendChild(b); review.appendChild(small);
-    go.textContent = sending ? 'Opening…' : goLabel();
+
+    /**
+     * The bar opens the basket. It does NOT pay.
+     *
+     * It used to go straight to Stripe, and that is very likely what was
+     * costing orders: fourteen people reached the payment page and left
+     * without typing a single character, several of them coming back minutes
+     * later to try the same size again. Nobody deliberating over $109 behaves
+     * like that — it is what somebody does when a tap they expected to show
+     * them something instead threw them onto a card form.
+     *
+     * So the label says Review, because that is what the button does. The
+     * Reserve inside the sheet is the one that takes money, and by then a
+     * person has seen what they are buying and what it costs.
+     */
+    go.textContent = 'Review · ' + dueLabel();
     go.disabled = sending;
+
     var sheetGo = $('drop-sheet-go');
     if (sheetGo) { sheetGo.textContent = sending ? 'Opening…' : goLabel(); sheetGo.disabled = sending; }
   }
@@ -1037,10 +1053,16 @@
     if (e.key === 'Enter') { e.preventDefault(); applyPromo(); }
   });
 
-  review.addEventListener('click', function () { paintCart(); sheet.hidden = false; });
+  /* Both halves of the bar open the basket. Two targets for one action is
+     deliberate here: the thing that started this was a Review button nobody
+     could hit, so the whole bar being that button is the fix holding. */
+  var openBasket = function () { paintCart(); sheet.hidden = false; };
+  review.addEventListener('click', openBasket);
+  go.addEventListener('click', openBasket);
+
   $('drop-more').addEventListener('click', function () { sheet.hidden = true; });
   sheet.addEventListener('click', function (e) { if (e.target === sheet) sheet.hidden = true; });
-  go.addEventListener('click', checkout);
+  /* The only control on the page that sends anybody to Stripe. */
   $('drop-sheet-go').addEventListener('click', checkout);
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && !sheet.hidden) sheet.hidden = true;
