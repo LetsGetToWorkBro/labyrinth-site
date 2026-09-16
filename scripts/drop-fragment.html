@@ -133,14 +133,42 @@
     </div>
 
     <!-- Only for a code that takes the whole price. A free order never reaches
-         Stripe, and Stripe is what asks everybody else for these. -->
+         Stripe, so this is the one chance to ask whose gi it is. The email is
+         asked of everybody below, so only the name lives here. -->
     <div class="drop__who" id="drop-who" hidden>
       <p class="drop__who-lede">Your gi is covered. We just need to know whose it is.</p>
       <label for="drop-name">Name</label>
       <input id="drop-name" type="text" autocomplete="name" spellcheck="false">
+    </div>
+
+    <!--
+      Asked here, once, and handed to Stripe already filled in.
+
+      The note at the top of gi-preorder is right that asking for details in
+      front of a $109 button is asking twice, and this page used to do exactly
+      that. What changed is what the drop's own numbers showed: of 19 visits,
+      14 left without buying, and not one of them had typed an email. So there
+      was nobody to remind, and no way to tell a change of mind apart from a
+      phone that lost the Stripe page.
+
+      `customer_email` on the session means Stripe shows this address already
+      entered, so it is still typed once — just in the place where the reason
+      for it is visible. Apple Pay fills the rest as before.
+    -->
+    <div class="drop__mail" id="drop-mail">
       <label for="drop-email">Email</label>
       <input id="drop-email" type="email" inputmode="email" autocomplete="email"
-             autocapitalize="off" autocorrect="off" spellcheck="false">
+             autocapitalize="off" autocorrect="off" spellcheck="false"
+             placeholder="you@example.com">
+      <p class="drop__mail-note" id="drop-mail-note">For your receipt — and so we
+        can hold your size if something interrupts you.</p>
+      <!-- Its own message, inside the sheet. #drop-error lives up in the shop
+           and the sheet covers it, so a complaint written there while the
+           basket is open is a complaint nobody can see. It REPLACES the note
+           rather than stacking under it: the two say much the same thing, and
+           a field with two lines of grey and pink beneath it reads as broken
+           rather than as one small thing to fix. -->
+      <p class="drop__mail-err" id="drop-mail-err" role="alert" hidden></p>
     </div>
 
     <p class="drop__cart-total">
@@ -375,6 +403,20 @@
                      border: 1px solid rgba(255,255,255,0.16); background: rgba(0,0,0,0.25);
                      color: #efe7d8; font: 500 15px/1 system-ui, sans-serif; }
 
+  /* Same furniture as .drop__who, because it is the same kind of question and
+     the two can appear together on a comped order. 16px on the input is not a
+     style choice: iOS Safari zooms the whole page in on focus for anything
+     smaller, and a page that jumps and re-centres as you tap the last field
+     before paying is how a basket gets abandoned. */
+  .drop__mail { margin-top: 14px; display: grid; gap: 6px; }
+  .drop__mail label { font-size: 13px; color: #9a927f; }
+  .drop__mail input { min-height: 52px; padding: 0 14px; border-radius: 12px;
+                      border: 1px solid rgba(255,255,255,0.16); background: rgba(0,0,0,0.25);
+                      color: #efe7d8; font: 500 16px/1 system-ui, sans-serif; }
+  .drop__mail input[aria-invalid="true"] { border-color: #d98d7a; }
+  .drop__mail-note { margin: 2px 0 0; font-size: 12.5px; line-height: 1.5; color: #9a927f; }
+  .drop__mail-err { margin: 2px 0 0; font-size: 13px; line-height: 1.5; color: #e9a892; }
+
   .drop__sheet-actions { display: flex; gap: 10px; margin-top: 16px; }
   .drop__sheet-actions .drop__submit { flex: 1; }
 
@@ -578,10 +620,70 @@
   var wasEl = $('drop-was');
   var promoInput = $('drop-promo'), promoGo = $('drop-promo-go'), promoMsg = $('drop-promo-msg');
   var whoEl = $('drop-who'), nameEl = $('drop-name'), emailEl = $('drop-email');
+  var mailErr = $('drop-mail-err'), mailNote = $('drop-mail-note');
+  /* One line under the field at a time — the complaint, or the reason. */
+  var sayMail = function (message) {
+    if (mailNote) mailNote.hidden = !!message;
+    if (!mailErr) return;
+    mailErr.hidden = !message;
+    if (message) mailErr.textContent = message;
+  };
 
   var colourway = 'ariadne';
   var cart = [];          /* [{colourway, size, quantity}] */
   var sending = false;
+
+  /*
+   * The basket, kept where a back button cannot lose it.
+   *
+   * Reserve sends people to Stripe on a different origin, and coming back —
+   * with the back arrow, with a swipe, or because Stripe's page never loaded
+   * on a bad signal — used to land on an empty page. The bar was gone, there
+   * was no sign of the size they had picked, and the only way forward was to
+   * choose again and press Reserve again. Every one of those presses opens a
+   * FRESH Stripe session, which is exactly the shape of the drop's worst
+   * visit: eleven sessions in one sitting, eleven different sizes, not one
+   * email typed. That is not eleven changes of mind, it is one person who
+   * could not get back to where they were.
+   *
+   * sessionStorage, not localStorage: a basket should survive a trip to Stripe
+   * and the back button, not turn up again in a fortnight offering a size
+   * somebody has already thought better of. Wrapped because Safari's private
+   * mode throws on write, and a basket that cannot be saved must still work.
+   */
+  var STORE = 'labyrinth.drop.basket.v1';
+  var remember = function () {
+    try {
+      sessionStorage.setItem(STORE, JSON.stringify({
+        cart: cart, colourway: colourway, email: emailEl ? emailEl.value : ''
+      }));
+    } catch (e) { /* no storage: the basket simply does not outlive the page */ }
+  };
+  var recall = function () {
+    var raw;
+    try { raw = sessionStorage.getItem(STORE); } catch (e) { return; }
+    if (!raw) return;
+    var saved;
+    try { saved = JSON.parse(raw); } catch (e) { return; }
+    if (!saved || !Array.isArray(saved.cart)) return;
+    /* Only shapes this page still recognises. A stored size that has since
+       been dropped from the run would otherwise reappear as an orderable
+       line that the server refuses at the last step. */
+    var known = [];
+    SIZE_GROUPS.forEach(function (g) { known = known.concat(g.sizes); });
+    cart = saved.cart.filter(function (it) {
+      return it && typeof it.size === 'string' && known.indexOf(it.size) !== -1
+        && (it.colourway === 'ariadne' || it.colourway === 'asterion')
+        && typeof it.quantity === 'number' && it.quantity > 0 && it.quantity <= 10;
+    });
+    if (saved.colourway === 'ariadne' || saved.colourway === 'asterion') {
+      colourway = saved.colourway;
+    }
+    if (emailEl && typeof saved.email === 'string') emailEl.value = saved.email;
+  };
+  var forget = function () {
+    try { sessionStorage.removeItem(STORE); } catch (e) { /* nothing to do */ }
+  };
 
   /* An applied code, as the SERVER described it: {code, percent, maxUnits}.
      Nothing here is trusted with money — the server recomputes the price from
@@ -621,6 +723,12 @@
     shop.hidden = true;
     doneEl.hidden = false;
     doneEl.focus();
+    /* Paid, so the saved basket has done its job. Left in place it would come
+       back on the next visit in this tab and offer to sell the same gi again.
+       Note where this sits: on the way BACK from a completed payment, never on
+       the way out — `cancelled=1` deliberately keeps the basket, because that
+       is the person most worth returning to exactly where they were. */
+    forget();
     /* The browser's word counts for nothing — this posts the session id so the
        SERVER can ask Stripe, which is what marks it reserved. The webhook does
        the same job for anybody who closed the tab. */
@@ -811,6 +919,10 @@
 
   function paintBar() {
     var n = count();
+    /* Every path that changes the basket repaints the bar, so saving here
+       covers all of them — rather than one `remember()` per mutation, which
+       is one call somebody adds a thirteenth size and forgets. */
+    remember();
     bar.hidden = n === 0;
     if (n === 0) return;
     review.innerHTML = '';
@@ -968,21 +1080,39 @@
   function checkout() {
     if (sending || cart.length === 0) return;
 
-    /* A comped order never meets Stripe, so this is the only chance to find
-       out whose gi it is. Caught here so the sheet stays open on the field
-       they need to fix, rather than closing to show an error behind it. */
     var name = nameEl ? nameEl.value.trim() : '';
     var email = emailEl ? emailEl.value.trim() : '';
-    if (promo && promo.percent === 100) {
-      if (!name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
-        sheet.hidden = false;
-        whoEl.hidden = false;
-        promoMsg.hidden = false;
-        promoMsg.setAttribute('data-ok', '0');
-        promoMsg.textContent = 'Add your name and email so we know whose gi it is.';
-        (name ? emailEl : nameEl).focus();
-        return;
+    var emailOk = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email);
+
+    /* Everybody, not only the comped orders. Stripe would ask for this a
+       moment later anyway and the server hands it over prefilled, so the cost
+       is nothing — and it is the difference between an abandoned basket we can
+       write to and the fourteen we could not. Checked here so the sheet stays
+       open on the field that needs fixing, rather than closing to show an
+       error behind it. */
+    if (!emailOk) {
+      sheet.hidden = false;
+      if (emailEl) {
+        emailEl.setAttribute('aria-invalid', 'true');
+        emailEl.focus();
       }
+      sayMail(email
+        ? 'That email does not look right — check it and try again.'
+        : 'Add your email so we can send your receipt and hold your size.');
+      return;
+    }
+    sayMail('');
+
+    /* A comped order never meets Stripe, so it is also the only chance to find
+       out whose gi it is — and Stripe is what asks everybody else for a name. */
+    if (promo && promo.percent === 100 && !name) {
+      sheet.hidden = false;
+      whoEl.hidden = false;
+      promoMsg.hidden = false;
+      promoMsg.setAttribute('data-ok', '0');
+      promoMsg.textContent = 'Add your name so we know whose gi it is.';
+      if (nameEl) nameEl.focus();
+      return;
     }
 
     errorEl.hidden = true;
@@ -1026,6 +1156,9 @@
       /* Nothing to pay, so there was no trip to Stripe and the gi is already
          reserved. Same panel, minus the promise of a receipt nobody sent. */
       if (data.status === 'reserved') {
+        /* Reserved without a trip to Stripe, so this is where that basket is
+           spent — the `paid` branch above never runs for a comped order. */
+        forget();
         var lede = $('drop-done-lede');
         if (lede) {
           lede.textContent = 'Your Enigma gi is reserved. Nothing was charged — '
@@ -1067,6 +1200,20 @@
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && !sheet.hidden) sheet.hidden = true;
   });
+
+  /* The address is part of the basket, so a half-typed one survives the same
+     trip the sizes do. */
+  if (emailEl) {
+    emailEl.addEventListener('input', function () {
+      emailEl.removeAttribute('aria-invalid');
+      sayMail('');
+      remember();
+    });
+  }
+
+  /* Before the first paint, so the bar and the size grid come up showing what
+     this person already chose rather than an empty shop. */
+  recall();
 
   paintColourways();
   paintReel();

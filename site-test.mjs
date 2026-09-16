@@ -854,14 +854,66 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
     (await page.textContent('#drop-total')).includes('109.00'),
     await page.textContent('#drop-total'))
 
+  /**
+   * Nobody reaches Stripe without an address the academy can write to.
+   *
+   * Of the drop's first 19 visits, 14 left without buying and Stripe held an
+   * email for none of them — it only asks once somebody is already on its
+   * page, and they left before typing a character. So the basket asks, and
+   * this is the check that keeps it asking.
+   */
+  await page.click('#drop-sheet-go')
+  await page.waitForTimeout(400)
+  check('L1u reserving without an email posts nothing',
+    dropPosted === null, JSON.stringify(dropPosted))
+  check('L1u and says so inside the basket, where it can be seen',
+    await page.isVisible('#drop-mail-err') && await page.isVisible('#drop-sheet'),
+    `err=${await page.isVisible('#drop-mail-err')} sheet=${await page.isVisible('#drop-sheet')}`)
+
+  await page.fill('#drop-email', 'not-an-address')
+  await page.click('#drop-sheet-go')
+  await page.waitForTimeout(300)
+  check('L1u nor with something that is not an address',
+    dropPosted === null, JSON.stringify(dropPosted))
+
   // Only the button inside the basket sends anybody to Stripe.
+  await page.fill('#drop-email', 'buyer@example.com')
   await page.click('#drop-sheet-go')
   await page.waitForTimeout(500)
   check('L1u reserving sends the chosen gi',
     dropPosted?.items?.[0]?.size === 'A2' && dropPosted?.items?.[0]?.colourway === 'ariadne',
     JSON.stringify(dropPosted))
+  check('L1u and the address the basket collected',
+    dropPosted?.email === 'buyer@example.com', dropPosted?.email)
   check('L1u and sends this page as the place to come back to',
     dropPosted?.returnTo === 'http://localhost:4620/drop', dropPosted?.returnTo)
+
+  /**
+   * The basket survives leaving the page.
+   *
+   * Reserve sends people to Stripe on another origin, and coming back used to
+   * land on an empty shop: no bar, no sign of the size chosen, and the only
+   * way on was to pick again and press Reserve again — a fresh Stripe session
+   * every time. The drop's worst visit was eleven sessions in one sitting,
+   * eleven different sizes, not one email typed. That is one person who could
+   * not get back to where they were.
+   */
+  await page.goto('http://localhost:4620/drop')
+  await page.waitForTimeout(500)
+  check('L1u coming back finds the basket still there',
+    (await page.textContent('#drop-go')).includes('109.00'),
+    await page.textContent('#drop-go'))
+  check('L1u and the address still typed in',
+    await page.inputValue('#drop-email'), 'buyer@example.com')
+
+  // And it is spent once the order lands, so it cannot sell the same gi twice.
+  await page.goto('http://localhost:4620/drop?paid=cs_test_x')
+  await page.waitForTimeout(500)
+  await page.goto('http://localhost:4620/drop')
+  await page.waitForTimeout(500)
+  check('L1u a completed order clears it',
+    await page.isHidden('#drop-bar'), 'bar still showing after a paid return')
+
   await page.unroute('**/functions/v1/gi-preorder')
   await page.setViewportSize({ width:1280, height:800 })
 }
@@ -904,6 +956,12 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
 
   await page.setViewportSize({ width:390, height:844 })
   await page.goto('http://localhost:4620/drop', { waitUntil:'domcontentloaded' })
+  /* The basket now outlives a navigation on purpose, so a block that assumes an
+     empty shop has to say so. Without this, L1u's A2 is still in the basket and
+     every total here reads $218.00 — which is the persistence working, not a
+     fault, but it is not what this block is testing. */
+  await page.evaluate(() => sessionStorage.clear())
+  await page.reload({ waitUntil:'domcontentloaded' })
   await page.waitForTimeout(250)
 
   // One handler for both shapes of request. Registering a second route for the
