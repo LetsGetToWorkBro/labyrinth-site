@@ -350,6 +350,14 @@
   cursor: default;
 }
 
+.booking-cal__note {
+  margin: 10px 0 0;
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
 .booking-cal__grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
@@ -384,6 +392,17 @@
    one, and a greyed-out control says the academy is shut. Plain text. */
 .booking-cal__day--off {
   color: var(--text-faint, #555);
+}
+
+/* A class day the academy is shut for. Struck through rather than merely
+   dimmed: a bare grey number is indistinguishable from the Tuesdays either
+   side of it, and somebody hunting for the second Friday in July needs to see
+   that it exists and is closed, not that it silently vanished. */
+.booking-cal__day--shut {
+  color: var(--text-faint, #555);
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+  cursor: default;
 }
 
 .booking-cal__day--open {

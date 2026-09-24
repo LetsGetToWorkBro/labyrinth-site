@@ -293,6 +293,86 @@ console.log('\nPicking the date on a calendar:')
   await ctx.close()
 }
 
+// ── The academy is shut on federal holidays ─────────────────────────────────
+//
+// The calendar would otherwise offer Christmas Day if it fell on a Friday, and
+// a wider date range makes that easier to hit than it used to be.
+console.log('\nHolidays are not offered:')
+{
+  const { page, ctx } = await open('/index.html')
+
+  // The arithmetic, against the published dates. Computed rather than listed
+  // because everything but the five fixed dates moves each year — a hardcoded
+  // table is right until January and then books people into a shut gym.
+  const holidays = await page.evaluate(() => {
+    const p = n => (n < 10 ? '0' : '') + n
+    const ymd = d => d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate())
+    return window.LabyrinthBooking.holidays(2027).map(ymd)
+  })
+  check('the eleven federal holidays, for 2027', holidays, [
+    '2027-01-01', '2027-01-18', '2027-02-15', '2027-05-31', '2027-06-19',
+    '2027-07-04', '2027-09-06', '2027-10-11', '2027-11-11', '2027-11-25', '2027-12-25',
+  ])
+
+  /* A holiday that lands on a class day INSIDE the booking horizon.
+     Thanksgiving is always a Thursday and there is a Thursday class, so this
+     is the case a real visitor meets. Christmas 2026 is also a Friday, but it
+     falls past the twelve-week horizon from most of the year — a day that is
+     simply not open yet is dimmed like any other, which is a different state
+     from closed and would make this assertion pass or fail by the calendar
+     date the suite happens to run on. */
+  const thanksgiving = await page.evaluate(() => {
+    const p = n => (n < 10 ? '0' : '') + n
+    const d = window.LabyrinthBooking.holidays(2026)[9]
+    return { key: d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()), day: d.getDay() }
+  })
+  check('Thanksgiving 2026 is a Thursday', [thanksgiving.key, thanksgiving.day], ['2026-11-26', 4])
+
+  await page.evaluate(() => window.LabyrinthBooking.openForm('Adult BJJ', 'No-Gi', 'Thu', '6:30 PM'))
+  await page.waitForTimeout(300)
+  let reached = false
+  for (let i = 0; i < 12; i++) {
+    if ((await page.textContent('.booking-cal__month')).trim() === 'November 2026') { reached = true; break }
+    const nav = page.locator('[data-cal-move="1"]')
+    if (await nav.isDisabled()) break
+    await nav.click(); await page.waitForTimeout(120)
+  }
+  check('November 2026 is reachable', reached, true)
+  const nov = await page.evaluate(() => ({
+    shut: [...document.querySelectorAll('.booking-cal__day--shut')].map(e => e.textContent.trim()),
+    open: [...document.querySelectorAll('.booking-cal__day--open')].map(e => e.textContent.replace(/\D+/g, ' ').trim().split(' ')[0]),
+  }))
+  check('Thanksgiving is drawn, not missing', nov.shut.includes('26'), true)
+  check('and it is not bookable', nov.open.includes('26'), false)
+  check('the other Thursdays that month still are', nov.open.length >= 3, true)
+  // Named under the grid: a struck-through two-digit number is easy to miss on
+  // a phone and says nothing about why the class is not there.
+  check('and the reason is spelled out under the calendar',
+    (await page.textContent('.booking-cal__note') || '').trim(), 'Closed Nov 26 \u2014 Thanksgiving')
+
+  // Whatever month is on screen, nothing shut is ever a control.
+  check('no bookable day is a holiday', await page.evaluate(() => {
+    const p = n => (n < 10 ? '0' : '') + n
+    const ymd = d => d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate())
+    const shut = new Set()
+    for (const y of [2026, 2027]) window.LabyrinthBooking.holidays(y).forEach(h => shut.add(ymd(h)))
+    return [...document.querySelectorAll('input[name="bookingDate"]')]
+      .every(r => !shut.has(r.id.replace('bookingDate-', '')))
+  }), true)
+
+  // And the list the form derives its default from skips them too, so the
+  // preselected date can never be a day the academy is closed.
+  check('the offered run skips holidays', await page.evaluate(() => {
+    const p = n => (n < 10 ? '0' : '') + n
+    const ymd = d => d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate())
+    const shut = new Set()
+    for (const y of [2026, 2027]) window.LabyrinthBooking.holidays(y).forEach(h => shut.add(ymd(h)))
+    return window.LabyrinthBooking.upcomingDates('Fri', '5:15 PM').every(d => !shut.has(ymd(d)))
+  }), true)
+
+  await ctx.close()
+}
+
 // ── /#book opens the picker on arrival ───────────────────────────────────────
 console.log('\nArriving at the front page on #book:')
 {

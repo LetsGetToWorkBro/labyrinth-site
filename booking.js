@@ -184,21 +184,94 @@
      likely to be the timetable that runs. */
   var BOOK_AHEAD_DAYS = 84;
 
+  /*
+   * ─── DAYS THE ACADEMY IS SHUT ───────────────────────────────────────────
+   *
+   * Computed rather than listed, because every one of these but the five fixed
+   * dates moves each year — a hardcoded table is right until January and then
+   * silently books people into a closed gym. The rule is the rule, so the
+   * arithmetic keeps working for as long as the site is up.
+   *
+   * The ACTUAL day, not the federal observed day. When 4 July falls on a
+   * Saturday the government takes Friday off; a gym closes on the Saturday,
+   * because that is when the family is at a barbecue. If this academy does
+   * something else on a particular year, CLOSED_DATES below is the place to
+   * say so.
+   */
+  function nthWeekdayOf(year, month, weekday, nth) {
+    var d = new Date(year, month, 1);
+    var shift = (weekday - d.getDay() + 7) % 7;
+    return new Date(year, month, 1 + shift + (nth - 1) * 7);
+  }
+  function lastWeekdayOf(year, month, weekday) {
+    var d = new Date(year, month + 1, 0); // the last day of the month
+    return new Date(year, month, d.getDate() - ((d.getDay() - weekday + 7) % 7));
+  }
+
+  /* Named, because the calendar says which holiday it is closed for. "Closed
+     Nov 26" invites a phone call; "Closed Thanksgiving" does not. */
+  function federalHolidayList(year) {
+    return [
+      { d: new Date(year, 0, 1), name: 'New Year\u2019s Day' },
+      { d: nthWeekdayOf(year, 0, 1, 3), name: 'Martin Luther King Jr. Day' },
+      { d: nthWeekdayOf(year, 1, 1, 3), name: 'Presidents\u2019 Day' },
+      { d: lastWeekdayOf(year, 4, 1), name: 'Memorial Day' },
+      { d: new Date(year, 5, 19), name: 'Juneteenth' },
+      { d: new Date(year, 6, 4), name: 'Independence Day' },
+      { d: nthWeekdayOf(year, 8, 1, 1), name: 'Labor Day' },
+      { d: nthWeekdayOf(year, 9, 1, 2), name: 'Columbus Day' },
+      { d: new Date(year, 10, 11), name: 'Veterans Day' },
+      { d: nthWeekdayOf(year, 10, 4, 4), name: 'Thanksgiving' },
+      { d: new Date(year, 11, 25), name: 'Christmas Day' }
+    ];
+  }
+
+  /* Just the dates, which is what the test pins against the published list. */
+  function federalHolidays(year) {
+    return federalHolidayList(year).map(function (h) { return h.d; });
+  }
+
+  /* Anything else the academy closes for — a seminar, a tournament weekend,
+     the days between Christmas and New Year. Plain 'YYYY-MM-DD' strings, and
+     the only edit needed to take a date off the calendar. */
+  var CLOSED_DATES = [];
+
+  /* Built once per page rather than per cell: the calendar asks this question
+     about thirty times per month drawn, and the answer for a given year does
+     not change while somebody is looking at it. */
+  var shutCache = {};
+  function shutReason(d) {
+    var y = d.getFullYear();
+    if (!shutCache[y]) {
+      var set = {};
+      federalHolidayList(y).forEach(function (h) { set[ymd(h.d)] = h.name; });
+      shutCache[y] = set;
+    }
+    var key = ymd(d);
+    if (shutCache[y][key]) return shutCache[y][key];
+    return CLOSED_DATES.indexOf(key) !== -1 ? 'Closed' : null;
+  }
+  function isShut(d) { return shutReason(d) !== null; }
+
   /* The dates this class runs, soonest first, out to the horizon.
 
-     The first is exactly what getNextDayDate returns, so a visitor who wants
-     the soonest class does nothing and gets what they always got. The rest are
-     that date plus whole weeks — every class on the timetable is weekly, so
-     the run is a simple step, and stepping by 7 days on a Date also carries
-     itself across month ends and the November change off daylight saving. */
+     The first is the soonest class the academy is actually open for — which is
+     what getNextDayDate returns, unless that day is a holiday, in which case
+     it is the week after. The rest step by whole weeks, because every class on
+     the timetable is weekly, and stepping 7 days on a Date carries itself
+     across month ends and the November change off daylight saving. */
   function upcomingDayDates(dayAbbr, timeStr, count) {
     var first = getNextDayDate(dayAbbr, timeStr);
     var n = count || Math.floor(BOOK_AHEAD_DAYS / 7);
     var out = [];
-    for (var i = 0; i < n; i++) {
+    /* Walk the full horizon and keep the open ones, rather than taking the
+       first n and filtering after — filtering afterwards returns fewer than n
+       dates in any run containing a holiday, and the caller asking for one
+       date would get none at all in Christmas week. */
+    for (var i = 0; out.length < n && i < Math.ceil(BOOK_AHEAD_DAYS / 7) + 4; i++) {
       var d = new Date(first);
       d.setDate(first.getDate() + i * 7);
-      out.push(d);
+      if (!isShut(d)) out.push(d);
     }
     return out;
   }
@@ -268,11 +341,31 @@
     }
     for (var b = 0; b < lead; b++) html += '<span class="booking-cal__pad"></span>';
 
+    /* Collected while drawing, and printed under the grid. A strike-through on
+       a two-digit number is easy to miss on a phone and says nothing about
+       why — "Closed Nov 26 — Thanksgiving" is the sentence that stops somebody
+       ringing the desk to ask whether the calendar is broken. */
+    var shutSeen = [];
+
     for (var day = 1; day <= daysInMonth; day++) {
       var d = new Date(y, mo, day);
       var key = ymd(d);
-      var bookable = d.getDay() === target && key >= ymd(first) && key <= ymd(last);
-      if (!bookable) {
+      var inRange = key >= ymd(first) && key <= ymd(last);
+      var isClassDay = d.getDay() === target;
+
+      /* A closed day that WOULD otherwise have been bookable is called out,
+         rather than dimmed like every other day of the week. Somebody looking
+         for the second Friday in July needs to see why it is missing —
+         silently skipping it reads as a bug in the calendar, and they try the
+         same tap twice before giving up. */
+      if (isClassDay && inRange && isShut(d)) {
+        var why = shutReason(d);
+        shutSeen.push(MONTH_NAMES[mo].slice(0, 3) + ' ' + day + ' — ' + why);
+        html += '<span class="booking-cal__day booking-cal__day--shut"'
+          + ' title="Closed — ' + why + '">' + day + '</span>';
+        continue;
+      }
+      if (!isClassDay || !inRange) {
         html += '<span class="booking-cal__day booking-cal__day--off">' + day + '</span>';
         continue;
       }
@@ -284,6 +377,9 @@
         + '<span class="booking-cal__sr">' + formatDate(d) + '</span></label>';
     }
     html += '</div>';
+    if (shutSeen.length) {
+      html += '<p class="booking-cal__note">Closed ' + shutSeen.join('; ') + '</p>';
+    }
     return html;
   }
 
@@ -786,7 +882,12 @@
     // The dates the form offers. Exposed for the same reason as nextDate: the
     // rule worth pinning is that they are the right weekday, in order, a week
     // apart — which a test can only see by running the arithmetic.
-    upcomingDates: upcomingDayDates
+    upcomingDates: upcomingDayDates,
+    // The days the academy is shut. Exposed so the test can check the
+    // arithmetic against the published federal dates for years nobody has
+    // reached yet — everything but the five fixed dates moves annually, and a
+    // rule that is wrong in 2028 is wrong silently.
+    holidays: federalHolidays
   };
 
   /**
