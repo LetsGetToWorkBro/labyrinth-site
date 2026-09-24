@@ -12,7 +12,9 @@ Where the page gives two figures for the same thing, the higher one is used,
 and only if it is on the page. Gold medals are 327 in the tracked-medal count
 and 324 in the header; wins are 1,235 tracked wins and 1,125 "roster career
 wins". Nothing is rounded up past what the page says, except that #39 of 7,869
-is called the top 1% (it is the top 0.5%) and #13 of 935 the top 2% (1.4%).
+is called the top 1% (it is the top 0.5%). The Texas rank (#13 of 935) is
+kept here for reference but is not shown anywhere: the site says "top 1% in
+the nation" and leaves it there.
 
 The site used to read these from the "Config" and "Athletes" tabs of a Google
 Sheet at page load. That sheet stopped updating in March 2026, still said #9
@@ -34,7 +36,6 @@ NATIONAL_OF = 7869
 STATE_RANK = 13
 STATE_OF = 935
 NATIONAL_TOP_PCT = 1   # 39 / 7,869 = 0.5%
-STATE_TOP_PCT = 2      # 13 / 935 = 1.4%
 
 ROSTER = 117           # current tracked youth roster
 RANKED = 108           # "ranked fighters"

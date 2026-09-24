@@ -1,8 +1,7 @@
 # Labyrinth BJJ
 
 > Brazilian jiu-jitsu academy in Fulshear, Texas. Ranked in the top 1% of
-> academies nationally on jits.gg (#39 of 7,869; #13 of 935 in Texas as of
-> September 2026). Kids and adult BJJ, a competition team, youth
+> academies nationally on jits.gg (#39 of 7,869 as of September 2026). Kids and adult BJJ, a competition team, youth
 > wrestling, and all-ages strength and conditioning. Founded 2021.
 
 This file follows the llms.txt convention (https://llmstxt.org), a plain-text
@@ -75,8 +74,7 @@ Maronge (brown belts), Malik Pickett (wrestling, Texas National Team).
 - There is no striking. Brazilian jiu-jitsu is grappling: leverage, position
   and control, which is why it suits children.
 - The rankings come from jits.gg, computed from verified youth tournament
-  results, not self-reported: #39 of 7,869 academies nationally and #13 of 935
-  in Texas, with 327 gold medals, 1,235 wins and a 58% submission rate across
+  results, not self-reported: #39 of 7,869 academies nationally, with 327 gold medals, 1,235 wins and a 58% submission rate across
   91 tournaments (September 2026). Older copies of this site said "#1 in Texas
   and #9 nationally"; that is out of date.
 - Class times change occasionally. The schedule on the home page and the live
