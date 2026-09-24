@@ -193,7 +193,7 @@ def main():
         "@context": "https://schema.org",
         "@type": "Blog",
         "name": "Labyrinth BJJ Blog",
-        "description": "Articles on kids and adult Brazilian jiu-jitsu from the #1 ranked academy in Texas.",
+        "description": "Articles on kids and adult Brazilian jiu-jitsu from one of the top 1% of academies in the country.",
         "url": SITE + "/blog/",
         "publisher": {"@type": "Organization", "name": "Labyrinth BJJ", "url": SITE},
         "blogPost": [{"@type": "BlogPosting", "headline": re.sub(r"&[a-z]+;", "", p["title"]),

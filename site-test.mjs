@@ -363,19 +363,17 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   await page.unroute('**/functions/v1/book-trial')
 }
 
-// ── L1q: only the front page's hero is rewritten from the spreadsheet ──
-// app.js pulls the ranking and medal counts from a Google Sheet and writes them
-// straight into .hero__h1-visual and .hero__subtitle. That was safe while the
-// front page was the only page with a hero. /ennova now uses the same hero
-// component, and the script replaced its headline with "RANKED #9 IN THE
-// NATION" and its subtitle with the medal count, live on the page a printed
-// card sends people to. A page has to carry data-live-stats to be rewritten.
+// ── L1q: nothing rewrites the ranking from the spreadsheet any more ──
+// app.js used to pull the ranking and medal counts from a Google Sheet and
+// write them into the front page hero. The sheet stopped updating in March
+// 2026 and still said "#9 nationally, #1 in Texas", so every visit replaced
+// the current jits.gg numbers with stale ones. The numbers now come from
+// scripts/jits_data.py and are built into the HTML. Serve a sheet that says
+// something else entirely and make sure neither page takes any of it.
 {
-  // Serve a fixed sheet so the test does not depend on the network or on what
-  // the real spreadsheet happens to say today.
   await page.route('**/spreadsheets/**', route => route.fulfill({
     status: 200, contentType: 'text/csv',
-    body: 'Metric,Value\nNational Rank,3\nState Rank,2\nGold Medals,999\nTotal Wins,888\n'
+    body: 'Key,Value\nNational Rank,3\nState Rank,2\nGold Medals,999\nTotal Wins,888\n'
   }))
 
   await page.goto('http://localhost:4620/ennova', { waitUntil: 'networkidle' })
@@ -389,14 +387,16 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   check('L1q the offer page keeps its own subtitle',
     offer.sub.includes('Ennova') && !/gold medals/.test(offer.sub), offer.sub)
 
-  // The other half: the front page must still be rewritten, or this guard has
-  // been "passed" by breaking the feature it is protecting.
   await page.goto('http://localhost:4620/', { waitUntil: 'networkidle' })
-  await page.waitForTimeout(600)
-  const home = await page.evaluate(() =>
-    document.querySelector('.hero__h1-visual')?.textContent || '')
-  check('L1q the front page still takes its ranking from the sheet',
-    home.includes('RANKED #3') && home.includes('#2 IN TEXAS'), home)
+  await page.evaluate(() => document.getElementById('competition')?.scrollIntoView())
+  await page.waitForTimeout(1800)
+  const home = await page.evaluate(() => ({
+    h1: document.querySelector('.hero__h1-visual')?.textContent || '',
+    all: document.body.innerText
+  }))
+  check('L1q the front page headline is the one it was built with',
+    home.h1.includes('TOP 1% IN THE NATION') && !/#3|#2 IN TEXAS/.test(home.h1), home.h1)
+  check('L1q no sheet number reaches the page', !/\b(999|888)\b/.test(home.all))
   await page.unroute('**/spreadsheets/**')
 }
 

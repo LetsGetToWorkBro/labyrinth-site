@@ -364,7 +364,7 @@ def render(a):
     <div class="prog-siblings stagger">
       <a href="/programs/kids-bjj-fulshear" class="prog-sibling"><div class="prog-sibling__title">Kids Brazilian Jiu-Jitsu</div><div class="prog-sibling__desc">Ages 3–15 in separated groups, six days a week</div></a>
       <a href="/programs/adult-bjj-fulshear" class="prog-sibling"><div class="prog-sibling__title">Adult Brazilian Jiu-Jitsu</div><div class="prog-sibling__desc">Gi and No-Gi, seven days a week, beginners welcome</div></a>
-      <a href="/programs/bjj-competition-team" class="prog-sibling"><div class="prog-sibling__title">Competition Team</div><div class="prog-sibling__desc">#1 in Texas, #9 nationally: IBJJF, ADCC, JJWL</div></a>
+      <a href="/programs/bjj-competition-team" class="prog-sibling"><div class="prog-sibling__title">Competition Team</div><div class="prog-sibling__desc">Top 1%% nationally: IBJJF, ADCC, JJWL</div></a>
       <a href="/programs/youth-wrestling-fulshear" class="prog-sibling"><div class="prog-sibling__title">Youth Wrestling</div><div class="prog-sibling__desc">Ages 7–17, three sessions a week</div></a>
       <a href="/programs/summer-camp-fulshear" class="prog-sibling"><div class="prog-sibling__title">Summer Camp</div><div class="prog-sibling__desc">Ages 5–15, $60 a day, next running summer 2027</div></a>
       <a href="/blog/strength-and-conditioning-for-kids-fulshear" class="prog-sibling"><div class="prog-sibling__title">Strength &amp; Conditioning</div><div class="prog-sibling__desc">All ages, Tuesday and Thursday, in every membership</div></a>

@@ -5,206 +5,15 @@
 (function () {
   'use strict';
 
-  // ===== LIVE STATS FROM GOOGLE SHEET =====
-  // Replace with your actual Google Sheet ID (same one used for the tournament calendar)
+  // The Google Sheet behind the upcoming tournaments list.
+  //
+  // It used to feed the ranking, medal counts and athlete cards as well, from
+  // its Config and Athletes tabs. Those stopped updating in March 2026 (still
+  // "#9 nationally, #1 in Texas") and the Athletes tab had a column out of
+  // place, so the page was overwriting correct numbers with stale ones. The
+  // competition numbers now come from scripts/jits_data.py, built into the
+  // HTML, and nothing here rewrites them.
   var SHEET_ID = '1rUtzsV6l1fHcgYuCjaqCh-oG2XosggrW1el3aqaDOME';
-
-  // Promise that resolves when live stats are loaded (or fails silently)
-  var statsReady;
-
-  /**
-   * Fetches live stats from the Google Sheet Config tab and updates
-   * all data-target attributes + hardcoded text on the page.
-   * Falls back silently to the defaults already in the HTML if fetch fails.
-   */
-  function fetchLiveStats() {
-    // Only the front page carries the numbers this updates. The program pages
-    // load this same file for the nav, the accordions and the booking modal,
-    // and a cross-origin fetch of a spreadsheet none of them displays is a
-    // request they should not be making.
-    //
-    // This used to sniff for .hero__stat-label, on the reasoning that only the
-    // page with live numbers would have a hero stat row. That stopped being
-    // true the moment a second page used the hero component: /ennova has a
-    // stat row of its own ($0, 50%, None, Free), so it passed the check, made
-    // the cross-origin request, and had its headline overwritten with the
-    // front page's ranking copy. A page now has to say it wants this.
-    if (!SHEET_ID || !document.querySelector('[data-live-stats]')) {
-      statsReady = Promise.resolve();
-      return;
-    }
-
-    var url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
-              '/gviz/tq?tqx=out:csv&sheet=Config';
-
-    statsReady = fetch(url)
-      .then(function (res) { return res.text(); })
-      .then(function (csv) {
-        var stats = parseConfigCSV(csv);
-        if (stats) applyStats(stats);
-      })
-      .catch(function () {
-        // Silent fail. Hardcoded defaults remain
-      });
-  }
-
-  function parseConfigCSV(csv) {
-    var lines = csv.split('\n').map(function (l) {
-      return l.replace(/"/g, '').split(',');
-    });
-    var stats = {};
-    lines.forEach(function (row) {
-      if (!row[0]) return;
-      var key = row[0].trim().toLowerCase();
-      var val = (row[1] || '').trim();
-      if (key === 'national rank' && val) stats.nationalRank = parseInt(val, 10) || null;
-      if (key === 'gold medals' && val) stats.goldMedals = parseInt(val, 10) || null;
-      if (key === 'total medals' && val) stats.totalMedals = parseInt(val, 10) || null;
-      if (key === 'submission rate' && val) stats.submissionRate = parseFloat(val) || null;
-      if (key === 'active competitors' && val) stats.activeCompetitors = parseInt(val, 10) || null;
-      if (key === 'total matches' && val) stats.totalMatches = parseInt(val, 10) || null;
-      if (key === 'total wins' && val) stats.totalWins = parseInt(val, 10) || null;
-      if (key === 'state rank' && val) stats.stateRank = parseInt(val, 10) || null;
-      if (key === 'academy score' && val) stats.academyScore = parseInt(val, 10) || null;
-      if (key === 'tournaments' && val) stats.tournaments = parseInt(val, 10) || null;
-    });
-    // Only return if we got at least some data
-    return (stats.nationalRank || stats.goldMedals) ? stats : null;
-  }
-
-  function applyStats(s) {
-    // Helper: update data-target on elements matching a label
-    function updateByLabel(labelText, value, containerId) {
-      if (!value) return;
-      var container = containerId ? document.getElementById(containerId) : document;
-      if (!container) return;
-      var labels = container.querySelectorAll('.hero__stat-label, .stat-card__label');
-      labels.forEach(function (label) {
-        if (label.textContent.trim().toLowerCase() === labelText.toLowerCase()) {
-          var valEl = label.previousElementSibling ||
-                      label.parentElement.querySelector('[data-target]');
-          if (valEl && valEl.hasAttribute('data-target')) {
-            valEl.setAttribute('data-target', value);
-          }
-        }
-      });
-    }
-
-    // ── Hero stats ──
-    updateByLabel('Gold Medals', s.goldMedals, 'heroStats');
-    var winsVal = s.totalWins || s.totalMatches;
-    if (winsVal) updateByLabel('Total Wins', winsVal, 'heroStats');
-    updateByLabel('Ranked Athletes', s.activeCompetitors, 'heroStats');
-
-    // ── Stats grid ──
-    updateByLabel('National Rank', s.nationalRank, 'statsGrid');
-    updateByLabel('Gold Medals', s.goldMedals, 'statsGrid');
-    if (winsVal) updateByLabel('Total Wins', winsVal, 'statsGrid');
-    if (s.submissionRate) updateByLabel('Submission Rate', Math.round(s.submissionRate), 'statsGrid');
-
-    // ── Meters ──
-    if (s.submissionRate) {
-      var subFill = document.querySelector('.meter__fill[data-width]');
-      var subValue = document.querySelector('.meter__value');
-      if (subFill) subFill.setAttribute('data-width', Math.round(s.submissionRate));
-      if (subValue) subValue.textContent = Math.round(s.submissionRate) + '%';
-    }
-
-    // ── Hero title and subtitle ──
-    // Both of these replace whatever copy is in the HTML, so they are scoped to
-    // the hero that opted in. Every other hero on the site is selling something
-    // other than the ranking and has to keep the words it shipped with.
-    var liveHero = document.querySelector('.hero[data-live-stats]');
-    if (liveHero) {
-      var natRank = s.nationalRank || 9;
-      var stRank  = s.stateRank || 1;
-      // .hero__h1-visual keeps the SEO span above it intact; .hero__title is
-      // the older markup, where the whole heading is the ranking.
-      var heroHeading = liveHero.querySelector('.hero__h1-visual') ||
-                        liveHero.querySelector('.hero__title');
-      if (heroHeading) {
-        heroHeading.innerHTML = 'RANKED #' + natRank + ' IN THE NATION. <span>#' +
-          stRank + ' IN TEXAS.</span>';
-      }
-
-      var heroSub = liveHero.querySelector('.hero__subtitle');
-      if (heroSub) {
-        var goldText = s.goldMedals ? s.goldMedals : '267';
-        var winsText = s.totalWins ? s.totalWins : (s.totalMatches ? s.totalMatches : '890');
-        heroSub.textContent = goldText + ' gold medals. ' + winsText +
-          '+ wins. IBJJF Pan Am, ADCC, and JJWL champions, built from the ground up in Fulshear.';
-      }
-    }
-
-    // ── Hero stat: "In Texas". Update state rank ──
-    updateByLabel('In Texas', s.stateRank || 1, 'heroStats');
-  }
-
-  /**
-   * Fetches live athlete stats from the Athletes tab and updates
-   * the athlete cards on the page. Falls back to hardcoded defaults.
-   */
-  function fetchAthleteStats() {
-    if (!SHEET_ID) return;
-
-    var url = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID +
-              '/gviz/tq?tqx=out:csv&sheet=Athletes';
-
-    fetch(url)
-      .then(function (res) { return res.text(); })
-      .then(function (csv) {
-        var athletes = parseAthletesCSV(csv);
-        athletes.forEach(function (a) { applyAthleteStats(a); });
-      })
-      .catch(function () {
-        // Silent fail. Hardcoded defaults remain
-      });
-  }
-
-  function parseAthletesCSV(csv) {
-    var lines = csv.trim().split('\n');
-    if (lines.length < 2) return [];
-
-    // Parse header
-    var headers = lines[0].replace(/"/g, '').split(',').map(function (h) { return h.trim().toLowerCase().replace(/\s+/g, '_'); });
-    var athletes = [];
-
-    for (var i = 1; i < lines.length; i++) {
-      var vals = lines[i].replace(/"/g, '').split(',');
-      var obj = {};
-      headers.forEach(function (h, idx) { obj[h] = (vals[idx] || '').trim(); });
-      if (obj.slug) athletes.push(obj);
-    }
-    return athletes;
-  }
-
-  function applyAthleteStats(a) {
-    var card = document.querySelector('[data-athlete="' + a.slug + '"]');
-    if (!card) return;
-
-    // Update tier + rating
-    var tierEl = card.querySelector('.athlete-card__tier');
-    if (tierEl && a.tier && a.rating) {
-      tierEl.textContent = a.tier + ' \u00B7 ' + Number(a.rating).toLocaleString();
-    } else if (tierEl && a.tier) {
-      tierEl.textContent = a.tier;
-    }
-
-    // Update stat spans in order: record, win rate, sub rate/golds
-    var statEls = card.querySelectorAll('.athlete-card__stat');
-    statEls.forEach(function (el) {
-      var text = el.textContent.toLowerCase();
-      if (text.includes('record') && a.wins && a.losses) {
-        el.innerHTML = '<strong>' + a.wins + '-' + a.losses + '</strong> record';
-      } else if (text.includes('win rate') && a.win_rate) {
-        el.innerHTML = '<strong>' + a.win_rate + '%</strong> win rate';
-      } else if (text.includes('sub rate') && a.sub_rate) {
-        el.innerHTML = '<strong>' + a.sub_rate + '%</strong> sub rate';
-      } else if (text.includes('gold') && a.golds) {
-        el.innerHTML = '<strong>' + a.golds + '</strong> golds';
-      }
-    });
-  }
 
   // ===== UPCOMING TOURNAMENTS FROM GOOGLE SHEET =====
   var ORG_HEX = {
@@ -482,8 +291,6 @@
   }
 
   // Kick off all fetches immediately
-  fetchLiveStats();
-  fetchAthleteStats();
   fetchUpcomingTournaments();
 
   // ===== NAVIGATION =====
@@ -586,7 +393,7 @@
     requestAnimationFrame(update);
   }
 
-  // Observe counters. Wait for live stats before animating so we count to the right numbers
+  // Observe counters and count up once they scroll into view.
   function animateAllCounters(container) {
     var counters = container.querySelectorAll('[data-target]');
     counters.forEach(function (counter) {
@@ -599,10 +406,7 @@
       if (entry.isIntersecting) {
         var target = entry.target;
         counterObserver.unobserve(target);
-        // Wait for live stats to load so data-target values are updated first
-        (statsReady || Promise.resolve()).then(function () {
-          animateAllCounters(target);
-        });
+        animateAllCounters(target);
       }
     });
   }, { threshold: 0.3 });

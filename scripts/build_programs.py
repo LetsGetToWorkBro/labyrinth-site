@@ -31,6 +31,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import schedule_data  # noqa: E402
+import jits_data  # noqa: E402
 
 # Every page this file writes goes through stamp() so the shared CSS and JS are
 # requested with a content hash. Without it a returning visitor gets new markup
@@ -212,8 +213,8 @@ PROGRAMS = [
         ],
         "intro": [
             "Most parents come to us for one of three reasons. Their child is being pushed around at school and they want them to be able to handle it. Their child has energy that no amount of playground time absorbs. Or their child has tried a sport, sat on a bench for a season, and quietly decided they are not sporty.",
-            "Brazilian jiu-jitsu answers all three, and it does it without a single punch being thrown. It is a grappling art (leverage, position and control) which makes it the martial art paediatricians tend to be least nervous about, and it is one of the few children's activities where a small child who thinks carefully genuinely beats a bigger one who does not.",
-            "We teach it in Fulshear to about a hundred and fifty children a week, in age groups that are actually separated rather than nominally separated, and we have coached kids from their first day on the mats to <strong>IBJJF Pan American titles</strong>. Labyrinth is the <strong>#1 ranked academy in Texas and #9 nationally</strong> on jits.gg, which is a competition statistic, but the reason it matters to a parent who never wants their child to compete is that the coaching that produces those results is the same coaching a beginner gets on a Monday afternoon.",
+            "Brazilian jiu-jitsu answers all three, and it does it without a single punch being thrown. It is a grappling art (leverage, position and control) which makes it the martial art pediatricians tend to be least nervous about, and it is one of the few children's activities where a small child who thinks carefully genuinely beats a bigger one who does not.",
+            "We teach it in Fulshear to about a hundred and fifty children a week, in age groups that are actually separated rather than nominally separated, and we have coached kids from their first day on the mats to <strong>IBJJF Pan American titles</strong>. Labyrinth is ranked in the <strong>top 1% of academies nationally</strong> on jits.gg, #39 of 7,869, which is a competition statistic, but the reason it matters to a parent who never wants their child to compete is that the coaching that produces those results is the same coaching a beginner gets on a Monday afternoon.",
         ],
         "groups_title": "The three age groups",
         "groups_lead": "A six-year-old and a fourteen-year-old need different things from the same art. They are not in the same room.",
@@ -345,22 +346,22 @@ PROGRAMS = [
         "name": "BJJ Competition Team",
         "h1": "The Labyrinth Competition Team",
         "title": "Competition Team: IBJJF, ADCC & JJWL | Labyrinth BJJ Fulshear",
-        "og_title": "BJJ Competition Team: #1 Ranked Academy in Texas",
-        "description": "BJJ competition training in Fulshear, TX for kids, teens and adults. IBJJF, ADCC and JJWL. #1 ranked academy in Texas, #9 nationally.",
-        "eyebrow": "#1 in Texas · #9 nationally",
+        "og_title": "BJJ Competition Team: Top 1% Nationally on jits.gg",
+        "description": "BJJ competition training in Fulshear, TX for kids, teens and adults. IBJJF, ADCC and JJWL. Ranked in the top 1%% of academies nationally, #%d of %s, on jits.gg." % (jits_data.NATIONAL_RANK, jits_data.n(jits_data.NATIONAL_OF)),
+        "eyebrow": "Top 1%% nationally · %s gold medals" % jits_data.n(jits_data.GOLDS),
         "image": "competition-card",
         "image_alt": "Labyrinth BJJ competitor on the podium after an IBJJF tournament",
         "lead": "Dedicated competition classes for kids, teens and adults, and the ranking to show they work. Included in unlimited memberships, and nobody is ever made to compete.",
-        "service_desc": "Brazilian jiu-jitsu competition team training in Fulshear, TX for kids, teens and adults preparing for IBJJF, ADCC and JJWL tournaments. Ranked #1 in Texas and #9 nationally on jits.gg.",
+        "service_desc": "Brazilian jiu-jitsu competition team training in Fulshear, TX for kids, teens and adults preparing for IBJJF, ADCC and JJWL tournaments. Ranked in the top 1% of academies nationally on jits.gg.",
         "facts": [
-            ("Texas rank", "<em>#1</em> academy"),
-            ("National rank", "<em>#9</em> on jits.gg"),
+            ("National rank", "<em>Top 1%%</em> &middot; #%d of %s" % (jits_data.NATIONAL_RANK, jits_data.n(jits_data.NATIONAL_OF))),
+            ("Texas rank", "<em>#%d</em> of %s" % (jits_data.STATE_RANK, jits_data.n(jits_data.STATE_OF))),
             ("Who", "Kids, teens and adults"),
             ("Cost", "In unlimited memberships"),
         ],
         "intro": [
             "There are two honest reasons to have a competition team. One is that some people want to test themselves against strangers under rules, and a gym that cannot offer that loses them. The other is that a room with competitors in it trains harder, and everybody in the room benefits from that whether they ever enter a tournament or not.",
-            "Ours is ranked <strong>#1 in Texas and #9 nationally</strong> on jits.gg, which is the largest verified grappling database there is. The ranking is computed from actual match results rather than claimed. Our athletes compete at <strong>IBJJF, ADCC and JJWL</strong> events, and the youth side of the team has produced Pan American champions.",
+            "Ours is ranked <strong>#%d of %s academies nationally</strong>, the top 1%%, and #%d of %s in Texas on jits.gg, which is the largest verified youth grappling database there is. The ranking is computed from actual match results rather than claimed, and the team holds %s." % (jits_data.NATIONAL_RANK, jits_data.n(jits_data.NATIONAL_OF), jits_data.STATE_RANK, jits_data.n(jits_data.STATE_OF), jits_data.rivals_line()) + " Our athletes compete at <strong>IBJJF, ADCC and JJWL</strong> events, and the youth side of the team has produced Pan American champions.",
             "None of that obliges anybody. Competition classes are on the timetable for the people who want them, and the rest of the academy runs exactly as it would without them.",
         ],
         "stats": True,
@@ -401,8 +402,8 @@ PROGRAMS = [
              "Mostly IBJJF, ADCC and JJWL events, which are the three circuits that matter most in Texas and nationally. There is a live tournament calendar on the front page and at calendar.labyrinth.vision, and coaches corner at the events the team travels to."),
             ("Is there an extra fee to be on the competition team?",
              "No. Competition classes are included in the unlimited memberships: $199 a month for adults, $249 for kids and teens. You pay tournament organizers their own entry fees when you enter an event, but the academy does not charge a team fee on top of the membership."),
-            ("What does the #1 in Texas ranking actually mean?",
-             "It comes from jits.gg, which aggregates verified match results across tournaments and ranks academies on the performance of their athletes. Wins, medals and submission rates, not self-reporting. We currently sit #1 in Texas and #9 nationally, with 83 individually ranked athletes."),
+            ("What does the jits.gg ranking actually mean?",
+             "It comes from jits.gg, which aggregates verified match results across tournaments and ranks academies on the performance of their athletes. Wins, medals and submission rates, not self-reporting. We currently sit #%d of %s academies nationally, the top 1%%, and #%d of %s in Texas, with %d individually ranked athletes and %s golds." % (jits_data.NATIONAL_RANK, jits_data.n(jits_data.NATIONAL_OF), jits_data.STATE_RANK, jits_data.n(jits_data.STATE_OF), jits_data.RANKED, jits_data.n(jits_data.GOLDS))),
             ("Can an adult beginner join the competition classes?",
              "The Friday evening adult competition class, yes. Turn up. The advanced grappling classes on Tuesday and Thursday need a gray-white belt or higher, or two or more years of wrestling, because the pace assumes a base you will not have in your first months."),
         ],
@@ -577,7 +578,7 @@ PROGRAMS = [
 # name, role, rank label, belt-bar modifier, photo, bio
 COACHES = {
     "tony": ("Prof. Anthony Curry", "Head Instructor &amp; Owner", "Black Belt &middot; 14+ Yrs", "black", "coach-tony",
-             "Founder of Labyrinth BJJ. Built the academy from the ground up into the #1 ranked team in Texas."),
+             "Founder of Labyrinth BJJ. Built the academy from the ground up into one of the top 1% of teams in the country."),
     "shaun": ("Prof. Shaun Lawler", "Professor", "Black Belt &middot; 15+ Yrs", "black", "coach-shaun",
               "Deep competition experience and technical precision. Develops athletes at every level from beginner to elite competitor."),
     "jared": ("Jared Vevera", "Head Coach: Katy", "Black Belt &middot; 14+ Yrs", "black", "coach-jared",
@@ -749,19 +750,15 @@ def render(p):
                          inner='  <div class="prog-prose fade-in">\n%s\n  </div>'
                                % "\n".join("    <p>%s</p>" % x for x in p["intro"])))
 
-    # Live competition numbers, on the one page that is about them. These are the
-    # same data-target elements the front page uses, so app.js animates them and
-    # refreshes them from the stats sheet rather than them going stale here.
+    # Competition numbers, on the one page that is about them. The same cards as
+    # the front page, from the same place: scripts/jits_data.py.
     #
     # id="statsGrid" is load-bearing, not decoration: app.js observes that exact
     # id to fire the count-up, so without it the cards render a permanent 0.
     if p.get("stats"):
         parts.append(section("Competition stats", "THE NUMBERS", "Verified from jits.gg, the largest grappling results database there is.",
                              inner="""  <div class="stats-grid stagger" id="statsGrid">
-    <div class="stat-card"><div class="stat-card__value" data-target="9" data-prefix="#">0</div><div class="stat-card__label">National Rank</div></div>
-    <div class="stat-card"><div class="stat-card__value" data-target="267" data-suffix="">0</div><div class="stat-card__label">Gold Medals</div></div>
-    <div class="stat-card"><div class="stat-card__value" data-target="890" data-suffix="+">0</div><div class="stat-card__label">Total Wins</div></div>
-    <div class="stat-card"><div class="stat-card__value" data-target="59" data-suffix="%">0</div><div class="stat-card__label">Submission Rate</div></div>
+    """ + jits_data.stats_grid() + """
   </div>"""))
 
     # Groups
@@ -910,7 +907,7 @@ def render_hub():
   <div class="container">
     <p class="section-label">Programs</p>
     <h1 class="prog-hero__title">Find Your Path</h1>
-    <p class="prog-hero__lead">Five programs under one roof in Fulshear, from a three-year-old's first class to the mats of the #1 ranked competition team in Texas. Every one of them starts with a free class.</p>
+    <p class="prog-hero__lead">Five programs under one roof in Fulshear, from a three-year-old's first class to the mats of a competition team ranked in the top 1%% nationally. Every one of them starts with a free class.</p>
     <div class="prog-prose" style="margin-top:var(--space-6)">
       <p>Most people arrive knowing roughly what they want and not what it is called. If it is for a child, it is almost always <a href="/programs/kids-bjj-fulshear">kids Brazilian jiu-jitsu</a>. That is the program with three age groups and six days a week of classes. If it is for you, it is <a href="/programs/adult-bjj-fulshear">adult BJJ</a>, and it does not matter that you have never done a combat sport, because almost nobody who walks in here has.</p>
       <p>The other three are additions rather than alternatives. <a href="/programs/bjj-competition-team">The competition team</a> is for anyone, child or adult, who wants harder rounds and the option of entering tournaments. <a href="/programs/youth-wrestling-fulshear">Youth wrestling</a> runs three evenings a week and is the fastest upgrade available to a young grappler's takedowns. <a href="/blog/strength-and-conditioning-for-kids-fulshear">Strength and conditioning</a> is all ages in one room, twice a week, at no extra cost on any membership.</p>
