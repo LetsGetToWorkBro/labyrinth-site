@@ -50,7 +50,6 @@
     {name:'Adult BJJ', type:'No-Gi', day:'Thu', time:'6:30 PM', crm:'Adult BJJ'},
     {name:'Adult BJJ', type:'Gi', day:'Fri', time:'11:00 AM', crm:'Adult BJJ'},
     {name:'Adult Comp', type:'Gi', day:'Fri', time:'6:30 PM', crm:'Adult BJJ'},
-    {name:'Adult Comp', type:'No-Gi', day:'Sat', time:'9:00 AM', crm:'Adult BJJ'},
     {name:'Adult & Teens', type:'No-Gi', day:'Sat', time:'11:00 AM', crm:'Adult BJJ'},
     {name:'Strength & Conditioning', type:'', day:'Tue', time:'4:15 PM', crm:'Strength & Conditioning'},
     {name:'Strength & Conditioning', type:'', day:'Thu', time:'4:15 PM', crm:'Strength & Conditioning'},
@@ -58,14 +57,16 @@
   ];
   /* The classes a child who has never trained here may book into.
      Friday is the Gi afternoon and covers every age from three up. Saturday
-     morning is No-Gi and starts at seven, because there is no 3\u20136 class on a
-     Saturday to put a younger child in. Everything else on the kids timetable
-     is either a regular class that trial students do not drop into or an
-     advanced one with a belt requirement. */
+     morning starts at seven, because there is no 3\u20136 class on a Saturday
+     to put a younger child in: Youth MMA at 9:00, then No-Gi grappling at
+     10:00. Everything else on the kids timetable is either a regular class
+     that trial students do not drop into or an advanced one with a belt
+     requirement. */
   var KIDS_TRIAL_CLASSES = [
     {name:'Kids BJJ (3\u20136)', type:'Gi', day:'Fri', time:'4:45 PM', crm:'Kids 3-6'},
     {name:'Kids BJJ Comp (7\u201312)', type:'Gi', day:'Fri', time:'5:15 PM', crm:'Kids 7-12'},
     {name:'Teens BJJ Comp (12\u201315)', type:'Gi', day:'Fri', time:'5:15 PM', crm:'Teens'},
+    {name:'Youth MMA (7\u201315)', type:'', day:'Sat', time:'9:00 AM', crm:'Youth MMA'},
     {name:'Kids Grappling (7\u201312)', type:'No-Gi', day:'Sat', time:'10:00 AM', crm:'Kids 7-12'}
   ];
 
@@ -79,7 +80,7 @@
      (the endpoint substitutes exactly what it substitutes today) and means the
      site needs no second change once that deploy happens. The real class is in
      the note either way. */
-  var CRM_PROGRAMS = ['Adult BJJ', 'Kids 3-6', 'Kids 7-12', 'Teens', 'Wrestling', 'Womens'];
+  var CRM_PROGRAMS = ['Adult BJJ', 'Kids 3-6', 'Kids 7-12', 'Teens', 'Wrestling', 'Womens', 'Youth MMA'];
   var CRM_PROGRAMS_PENDING = ['Strength & Conditioning', 'Open Mat'];
 
   /**

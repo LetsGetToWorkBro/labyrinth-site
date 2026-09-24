@@ -34,6 +34,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import schedule_data  # noqa: E402
+import schedule_component  # noqa: E402
 from build_programs import NAV, FOOTER, HEAD, TAIL, PHONE, SITE, jsonld  # noqa: E402
 
 # Every page this file writes goes through stamp() so the shared CSS and JS are
@@ -97,7 +98,7 @@ def faq_schema(faqs):
 
 SCHEDULE_FAQS = [
     ("Can I just turn up to a class?",
-     "For a first class, book it. It takes a minute and it means a coach is expecting you and has a loaner gi ready. Adults can book into any class on this timetable. Kids trials run Friday afternoons in the Gi for ages 3 and up, or Saturday at 10:00 AM in No-Gi for ages 7 and up."),
+     "For a first class, book it. It takes a minute and it means a coach is expecting you and has a loaner gi ready. Adults can book into any class on this timetable. Kids trials run Friday afternoons in the Gi for ages 3 and up, or Saturday morning for ages 7 and up: Youth MMA at 9:00 or No-Gi grappling at 10:00."),
     ("What does ADV mean on the timetable?",
      "Advanced. Those classes need a gray-white belt or higher, or two or more years of wrestling. They move faster and drill at a higher intensity. Every class without that marker is open to a complete beginner, including somebody who has never trained anywhere."),
     ("What is the difference between the Gi and No-Gi classes?",
@@ -115,26 +116,7 @@ def render_schedule():
     url = SITE + "/schedule"
     c = schedule_data.counts()
 
-    days = []
-    for day in schedule_data.DAYS:
-        rows = []
-        for _, time, name, ages, style, aud, flags in schedule_data.for_day(day):
-            badges = ""
-            if style == "Gi":
-                badges += '<span class="prog-slot__badge prog-slot__badge--gi">Gi</span>'
-            elif style == "No-Gi":
-                badges += '<span class="prog-slot__badge prog-slot__badge--nogi">No-Gi</span>'
-            if "adv" in flags:
-                badges += '<span class="prog-slot__badge prog-slot__badge--adv">Adv</span>'
-            if "comp" in flags:
-                badges += '<span class="prog-slot__badge prog-slot__badge--adv">Comp</span>'
-            label = "%s <span class=\"sched-pg__ages\">(%s)</span>" % (name, ages) if ages else name
-            rows.append('      <div class="prog-slot" data-audience="%s">\n'
-                        '        <div class="prog-slot__time">%s%s</div>\n'
-                        '        <div class="prog-slot__name">%s</div>\n'
-                        '      </div>' % (aud, time, badges, label))
-        days.append('    <div class="prog-day">\n      <div class="prog-day__name">%s</div>\n%s\n    </div>'
-                    % (day, "\n".join(rows)))
+    week = schedule_component.render("sched")
 
     head = HEAD % {
         "title": "Class Schedule: Fulshear, TX | Labyrinth BJJ",
@@ -174,21 +156,11 @@ def render_schedule():
 
 <section class="prog-section" id="times">
   <div class="container">
-    <div class="fade-in sched-pg__head">
-      <div>
-        <p class="section-label">The week</p>
-        <h2 class="section-title section-title--lg">EVERY CLASS WE RUN</h2>
-      </div>
-      <div class="sched-pg__filters" role="group" aria-label="Filter the timetable">
-        <button class="sched-pg__filter is-active" data-filter="all">All</button>
-        <button class="sched-pg__filter" data-filter="adult">Adults</button>
-        <button class="sched-pg__filter" data-filter="kids">Kids &amp; Teens</button>
-      </div>
+    <div class="fade-in">
+      <p class="section-label">The week</p>
+      <h2 class="section-title section-title--lg">EVERY CLASS WE RUN</h2>
     </div>
-  <div class="prog-week stagger" id="schedGrid">
-%(days)s
-  </div>
-    <p class="prog-week__note fade-in"><strong>Adv</strong> classes need a gray-white belt or higher, or two or more years of wrestling. Everything else is open to a complete beginner. <strong>Comp</strong> classes are the competition sessions, included in unlimited memberships and open to any member in the age group; nobody is required to enter a tournament. Term-time changes, closures and tournament weekends go on the <a href="https://calendar.labyrinth.vision" target="_blank" rel="noopener noreferrer">live calendar</a>.</p>
+  %(week)s
   </div>
 </section>
 
@@ -201,8 +173,9 @@ def render_schedule():
     <div class="prog-siblings stagger">
       <a href="/programs/kids-bjj-fulshear" class="prog-sibling"><div class="prog-sibling__title">Kids, ages 3–15</div><div class="prog-sibling__desc">4:45 PM and 5:15 PM on weekdays, plus Saturday morning. Three separated age groups.</div></a>
       <a href="/programs/adult-bjj-fulshear" class="prog-sibling"><div class="prog-sibling__title">Adults, any level</div><div class="prog-sibling__desc">6:30 AM, 11:00 AM and 6:30 PM. Gi and No-Gi, complete beginners included.</div></a>
-      <a href="/programs/bjj-competition-team" class="prog-sibling"><div class="prog-sibling__title">Competition team</div><div class="prog-sibling__desc">Friday and Saturday, plus the advanced grappling sessions midweek.</div></a>
+      <a href="/programs/bjj-competition-team" class="prog-sibling"><div class="prog-sibling__title">Competition team</div><div class="prog-sibling__desc">Friday evening, plus the advanced grappling sessions midweek and Saturday at noon.</div></a>
       <a href="/programs/youth-wrestling-fulshear" class="prog-sibling"><div class="prog-sibling__title">Youth wrestling</div><div class="prog-sibling__desc">Wednesday and Thursday at 7:30 PM, Sunday at 1:00 PM. Ages 7–17.</div></a>
+      <a href="/coaches/scott-jones" class="prog-sibling"><div class="prog-sibling__title">Youth MMA</div><div class="prog-sibling__desc">Saturday at 9:00 AM, ages 7–15, with Grandmaster Scott Jones. A first class is free.</div></a>
       <a href="/blog/strength-and-conditioning-for-kids-fulshear" class="prog-sibling"><div class="prog-sibling__title">Strength &amp; conditioning</div><div class="prog-sibling__desc">Tuesday and Thursday at 4:15 PM. All ages in one session, in every membership.</div></a>
       <a href="/pricing" class="prog-sibling"><div class="prog-sibling__title">What it costs</div><div class="prog-sibling__desc">Every membership, punch card and add-on, with nothing held back for a phone call.</div></a>
     </div>
@@ -224,40 +197,16 @@ def render_schedule():
 <div class="container">
   <div class="prog-close fade-in">
     <h2 class="prog-close__title">PICK ONE AND COME</h2>
-    <p class="prog-close__text">Adults can book into any class above. Kids trials are Friday afternoon in the Gi or Saturday at 10:00 AM in No-Gi. It is free either way and nobody will call you afterwards to talk you into anything.</p>
+    <p class="prog-close__text">Adults can book into any class above. Kids trials are Friday afternoon in the Gi, or Saturday morning: Youth MMA at 9:00 or No-Gi grappling at 10:00. It is free either way and nobody will call you afterwards to talk you into anything.</p>
     <div class="prog-hero__cta" style="justify-content:center">
       <a data-book-trial href="/#book" class="btn btn--gold">Book a Free Class</a>
       <a href="tel:2813937983" class="btn btn--ghost">Call %(phone)s</a>
     </div>
   </div>
-</div>""" % {"total": c["total"], "facts": facts, "days": "\n".join(days),
+</div>""" % {"total": c["total"], "facts": facts, "week": week,
              "faqs": faq_block(SCHEDULE_FAQS), "phone": PHONE},
         """
-<script>
-/* Filtering the timetable. Plain classList work rather than re-rendering, so a
-   day with nothing left in it collapses instead of leaving an empty card. */
-(function () {
-  var grid = document.getElementById('schedGrid');
-  if (!grid) return;
-  var buttons = document.querySelectorAll('.sched-pg__filter');
-  buttons.forEach(function (b) {
-    b.addEventListener('click', function () {
-      var want = b.getAttribute('data-filter');
-      buttons.forEach(function (o) { o.classList.toggle('is-active', o === b); });
-      grid.querySelectorAll('.prog-day').forEach(function (day) {
-        var shown = 0;
-        day.querySelectorAll('.prog-slot').forEach(function (slot) {
-          var aud = slot.getAttribute('data-audience');
-          var on = want === 'all' || aud === want || aud === 'all';
-          slot.hidden = !on;
-          if (on) shown++;
-        });
-        day.hidden = shown === 0;
-      });
-    });
-  });
-})();
-</script>""", TAIL % {"footer": FOOTER}])
+<script src="/schedule.js"></script>""", TAIL % {"footer": FOOTER}])
 
 
 # ── /pricing ─────────────────────────────────────────────────────────────────
@@ -466,6 +415,42 @@ COACHES = [
              "One, in five years of running the academy: Professor Shaun Lawler. Awarding a black belt is the most consequential thing an instructor does, and Labyrinth has produced Pan American champions, 83 nationally ranked athletes and 267 gold medals against exactly one black belt promotion."),
             ("Does he still teach, or only run the academy?",
              "He teaches. Labyrinth is an owner-operated academy rather than a franchise with a manager, and the head instructor being on the mats is most of the point of training at one."),
+        ],
+    },
+    # Every fact here is one the academy has already published about him, on
+    # /legacy/ and on foundations.labyrinth.vision. Nothing is taken from the
+    # card beside his on Foundations (the medal count there is the head
+    # instructor's). His BJJ lineage is not published anywhere, so there is no
+    # "lineage" key and the page draws no lineage section rather than guess.
+    {
+        "slug": "scott-jones",
+        "name": "Grandmaster Scott Jones",
+        "short": "Scott Jones",
+        "role": "Grandmaster &amp; Youth MMA Coach",
+        # The Taekwondo rank, named as such. See .belt-bar--tkd in style.css:
+        # a bare black belt on this site would be read as a BJJ black belt.
+        "rank": "7th Dan Black Belt &middot; Taekwondo",
+        # Must be set. The profile template falls back to "Texas National
+        # Team" when this is empty, which is Malik's credential, not Scott's.
+        "years": "30+ years",
+        "belt": "tkd",
+        "photo": "coach-scott",
+        "title": "Grandmaster Scott Jones: Youth MMA &amp; Taekwondo | Labyrinth BJJ Fulshear",
+        "description": "Grandmaster Scott Jones, 7th dan Taekwondo black belt and BJJ purple belt, coaches Youth MMA for ages 7–15 at Labyrinth BJJ in Fulshear, TX. 30+ years teaching.",
+        "lead": "A 7th dan Taekwondo black belt with more than 27 years in MMA, who built Team Legacy from nothing and then merged it into Labyrinth, bringing his whole room with him.",
+        "body": [
+            "Scott Jones founded Team Legacy Martial Arts and built it from nothing. When Team Legacy <a href=\"/legacy/\">merged with Labyrinth</a>, he did not change jobs; he brought his school with him, students and all, and now coaches here full time. If your child learned from Coach Scott at Team Legacy, they still do.",
+            "He is a 7th dan black belt in Taekwondo and a four-stripe purple belt in Brazilian jiu-jitsu, with more than 27 years of MMA behind him and over thirty years of teaching children and adults: more time on the mat as a teacher than anyone else on our staff. He has trained at Labyrinth since the day it opened, and he was the first student ever to tap our head coach in a live roll.",
+            "That combination is why he runs <strong>Youth MMA</strong>. A striking black belt who is also a jiu-jitsu player can teach a child to stand, move and defend themselves without losing sight of what happens when the fight reaches the ground, which is where most of the rest of this timetable lives.",
+        ],
+        "teaches_note": "He runs Youth MMA on Saturday mornings for ages 7 to 15, and the families who trained with him at Team Legacy train with him here.",
+        "faqs": [
+            ("Who teaches Youth MMA at Labyrinth BJJ?",
+             "Grandmaster Scott Jones, a 7th dan Taekwondo black belt and BJJ purple belt with more than 27 years in MMA. Youth MMA runs on Saturdays at 9:00 AM for ages 7 to 15, and a first class is free."),
+            ("Is this the same Coach Scott from Team Legacy?",
+             "Yes. Team Legacy Martial Arts merged with Labyrinth BJJ and Scott came with it; he coaches here full time. Children who trained with him at Team Legacy still train with him."),
+            ("Does my child need striking or martial arts experience for Youth MMA?",
+             "No. The class is open to beginners from age 7, and a first class is free. Come in comfortable workout clothes; we will talk you through what to wear for MMA once your child decides to carry on."),
         ],
     },
     {
@@ -1734,7 +1719,7 @@ def render_coach(c):
     </div>
     <div class="prog-siblings stagger">
 %(others)s
-      <a href="/coaches/" class="prog-sibling"><div class="prog-sibling__title">All nine coaches</div><div class="prog-sibling__desc">Three black belts, two brown belts, a national-team wrestler and three coaches of the kids classes</div></a>
+      <a href="/coaches/" class="prog-sibling"><div class="prog-sibling__title">All ten coaches</div><div class="prog-sibling__desc">Three black belts, two brown belts, a Taekwondo grandmaster, a national-team wrestler and three coaches of the kids classes</div></a>
     </div>
   </div>
 </section>
@@ -1769,7 +1754,7 @@ def render_coach_hub():
 
     head = HEAD % {
         "title": "Our Coaches: Black Belt Instructors in Fulshear | Labyrinth BJJ",
-        "description": "The instructors at Labyrinth BJJ in Fulshear, TX: three black belts, two brown belts, a Texas National Team wrestler and three coaches of the kids classes.",
+        "description": "The instructors at Labyrinth BJJ in Fulshear, TX: three black belts, two brown belts, a 7th dan Taekwondo grandmaster, a Texas National Team wrestler and three coaches of the kids classes.",
         "url": url, "og_title": "The Coaches at Labyrinth BJJ, Fulshear TX",
         "image": SITE + "/assets/og-image.jpg",
         "schema": "\n".join([
@@ -1820,6 +1805,8 @@ def coach_classes_html(c):
     """The classes each coach is publicly tied to, drawn from the timetable."""
     if c["slug"] == "malik-pickett":
         rows = schedule_data.week_for({"Youth Wrestling"})
+    elif c["slug"] == "scott-jones":
+        rows = schedule_data.week_for({"Youth MMA"})
     elif c["slug"] == "shaun-lawler":
         rows = schedule_data.week_for({"Strength & Conditioning"})
     else:
@@ -1835,10 +1822,41 @@ def coach_classes_html(c):
     return "\n".join(out)
 
 
+def splice(path, name, content, inline=False):
+    """Replace what sits between <!-- NAME:START ... --> and <!-- NAME:END -->.
+
+    index.html is hand-written, but the parts of it that restate the timetable
+    are not: they are generated here, from the same data as /schedule, so a
+    class moved in schedule_data.py moves everywhere on the next build. The
+    START comment is kept (it carries the do-not-edit note); only what follows
+    it is replaced. Fails loudly if a marker is missing, because a silent no-op
+    here is exactly how the front page drifted from the CRM before.
+    """
+    with open(path, encoding="utf-8") as fh:
+        page = fh.read()
+    start = page.index("<!-- %s:START" % name)
+    start = page.index("-->", start) + 3
+    end = page.index("<!-- %s:END -->" % name, start)
+    if inline:
+        # Inside a sentence ("7 Classes/Week"): no line breaks around it.
+        page = page[:start] + content.strip() + page[end:]
+    else:
+        indent = " " * (start - page.rfind("\n", 0, start) - 1 - len(page[page.rfind("\n", 0, start) + 1:start].lstrip()))
+        page = page[:start] + "\n" + indent + content.strip() + "\n" + indent + page[end:]
+    with open(path, "w", encoding="utf-8") as fh:
+        fh.write(page)
+
+
 def main():
     with open(os.path.join(ROOT, "schedule.html"), "w", encoding="utf-8") as fh:
         fh.write(stamp(render_schedule()))
     print("wrote schedule.html")
+    index = os.path.join(ROOT, "index.html")
+    splice(index, "SCHEDULE", schedule_component.render("home"))
+    for key in schedule_component.DRAWERS:
+        splice(index, "DRAWER-" + key, schedule_component.drawer_rows(key))
+        splice(index, "COUNT-" + key, str(len(schedule_component.drawer_classes(key))), inline=True)
+    print("wrote the schedule, four drawers and their counts into index.html")
     with open(os.path.join(ROOT, "pricing.html"), "w", encoding="utf-8") as fh:
         fh.write(stamp(render_pricing()))
     print("wrote pricing.html")

@@ -48,7 +48,7 @@ for (const path of pages) {
   }
 }
 check('L1 no broken internal links', broken.length === 0, '\n    ' + broken.slice(0,8).join('\n    '))
-check('L1 all 46 pages served 200', pages.length === 46, 'pages: ' + pages.length)
+check('L1 all 47 pages served 200', pages.length === 47, 'pages: ' + pages.length)
 
 // ── L1b: every program page carries the schema and the canonical it exists for ──
 // A program page whose Service block is missing is still a page, and still
@@ -177,7 +177,7 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   // The six the endpoint accepts today, plus the two it will accept once
   // PROGRAMS in _shared/trial-emails.ts is extended. Sending a pending one
   // degrades to exactly today's behaviour rather than breaking.
-  const LIVE = ['Adult BJJ', 'Kids 3-6', 'Kids 7-12', 'Teens', 'Wrestling', 'Womens']
+  const LIVE = ['Adult BJJ', 'Kids 3-6', 'Kids 7-12', 'Teens', 'Wrestling', 'Womens', 'Youth MMA']
   const PENDING = ['Strength & Conditioning', 'Open Mat']
   const ALLOWED = LIVE.concat(PENDING)
   const entries = [...js.matchAll(/\{name:'(.*?)',[^}]*?crm:'(.*?)'\}/g)]
@@ -193,7 +193,7 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   const kidsBlock = js.slice(js.indexOf('KIDS_TRIAL_CLASSES = ['))
   const kids = [...kidsBlock.slice(0, kidsBlock.indexOf('];')).matchAll(/crm:'(.*?)'/g)].map(m => m[1])
   check('L1j kids trial classes are not filed as Adult BJJ',
-    kids.length === 4 && kids.every(k => k !== 'Adult BJJ'), kids.join(', '))
+    kids.length === 5 && kids.every(k => k !== 'Adult BJJ'), kids.join(', '))
 
   check('L1j the booking payload sends the CRM programme, not the display name',
     /program: data\.crmProgram/.test(js) && !/program: data\.className/.test(js))
@@ -514,50 +514,53 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
 }
 
 // ── L1t: who may book what, and until when ──
-// The rule: kids book trials into Friday classes and Saturday No-Gi, nothing
-// else; adults book anything; and a class is bookable right up to its start.
-// The first check sweeps all three renderings of the front-page timetable,
-// because the Tue/Thu advanced kids rows carried Book buttons behind the ADV
-// interstitial — a door the rule says does not exist.
+// The rule: a brand-new child books a trial only into the classes flagged
+// "trial" (Friday afternoon, Saturday morning); youth wrestling is its own
+// program and books directly; adults book anything; and a class is bookable
+// right up to its start.
+//
+// This used to sweep three hand-kept copies of the week and exempted Friday
+// and Saturday wholesale, which let the Saturday-noon advanced classes carry a
+// Book button behind the belt warning. There is now one generated schedule and
+// one set of drawers, and the check is exact: every directly bookable kids
+// class must be one the kids trial list actually offers.
 {
   await page.goto('http://localhost:4620/', { waitUntil:'domcontentloaded' })
 
   const leaks = await page.evaluate(() => {
     const out = []
-    const kids = /kids|teens|grappl/i
-    const ths = [...document.querySelectorAll('.schedule-table thead th')].map(t => t.textContent.trim())
-    document.querySelectorAll('.schedule-table td .sched-cell').forEach(c => {
-      const name = c.querySelector('.sched-cell__name')?.textContent || ''
-      if (!kids.test(name)) return
-      const day = ths[c.closest('td').cellIndex]
-      if (day === 'Fri' || day === 'Sat') return
-      if (c.querySelector('.sched-book')) out.push(`table ${day}: ${name.trim()}`)
+    const trials = new Set(LabyrinthBooking.kidsTrialClasses.map(c => `${c.name}|${c.day}|${c.time}`))
+    const norm = n => n.replace(/\s+/g, ' ').trim()
+    document.querySelectorAll('.sc__class[data-aud="kids"][data-book="form"]').forEach(c => {
+      const name = c.getAttribute('data-name')
+      if (/wrestl/i.test(name)) return
+      const key = `${name}|${c.getAttribute('data-day')}|${c.getAttribute('data-time')}`
+      if (!trials.has(key)) out.push(`schedule ${key}`)
     })
-    document.querySelectorAll('.type-sched-bar').forEach(bar => {
-      const name = bar.querySelector('.type-sched-bar__name')?.textContent || ''
+    // Only the kids drawers: guessing from the name caught "Adult & Teens".
+    document.querySelectorAll('#drawer-kids-gi .type-sched-bar, #drawer-kids-nogi .type-sched-bar').forEach(bar => {
+      const nameEl = bar.querySelector('.type-sched-bar__name')
+      const name = norm(nameEl?.textContent || '').replace(/\((\d)/, ' ($1').replace(/\s+\(/, ' (')
+      if (/wrestl/i.test(name) || !bar.querySelector('.type-sched-bar__book')) return
       const day = bar.querySelector('.type-sched-bar__day')?.textContent.trim()
-      if (!kids.test(name) || day === 'Fri' || day === 'Sat') return
-      if (bar.querySelector('.type-sched-bar__book')) out.push(`drawer ${day}: ${name.trim()}`)
-    })
-    document.querySelectorAll('.schedule-day').forEach(card => {
-      const day = card.querySelector('.schedule-day__header')?.textContent.trim()
-      if (day === 'Friday' || day === 'Saturday') return
-      card.querySelectorAll('.schedule-day__class').forEach(row => {
-        const name = row.querySelector('.schedule-day__name')?.textContent || ''
-        if (kids.test(name) && row.querySelector('.sched-book-mobile, .sched-book'))
-          out.push(`card ${day}: ${name.trim()}`)
-      })
+      const time = bar.querySelector('.type-sched-bar__time')?.textContent.trim()
+      if (!trials.has(`${name}|${day}|${time}`)) out.push(`drawer ${name}|${day}|${time}`)
     })
     return out
   })
-  check('L1t kids classes outside Friday and Saturday are never bookable',
+  // A sweep that finds nothing to sweep proves nothing. The old version of
+  // this check passed silently for as long as its selectors matched nothing.
+  const swept = await page.evaluate(() =>
+    document.querySelectorAll('.sc__class[data-aud="kids"]').length)
+  check('L1t the sweep below is looking at the real schedule', swept > 10, 'kids cards: ' + swept)
+  check('L1t kids classes outside the trial list are never bookable',
     leaks.length === 0, leaks.join('; '))
 
   // The same rule from the data side: the picker offers kids exactly these.
   const kidsList = await page.evaluate(() =>
     LabyrinthBooking.kidsTrialClasses.map(c => c.day + ' ' + c.type))
-  check('L1t the kids trial list is Friday Gi and Saturday No-Gi only',
-    kidsList.length > 0 && kidsList.every(x => x.startsWith('Fri ') || x === 'Sat No-Gi'),
+  check('L1t the kids trial list is Friday Gi, Saturday No-Gi and Saturday Youth MMA',
+    kidsList.length > 0 && kidsList.every(x => x.startsWith('Fri ') || x === 'Sat No-Gi' || x === 'Sat '),
     kidsList.join(', '))
 
   // Bookable until the class starts. Behaviour, on the academy's clock: a

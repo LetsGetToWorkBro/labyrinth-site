@@ -275,7 +275,7 @@ button {
   border-width: 0;
 }
 </style>
-<link rel="stylesheet" href="./style.css?v=00841c2d">
+<link rel="stylesheet" href="./style.css?v=9bb4a00b">
 <link rel="stylesheet" href="./booking.css?v=6073b089">
 
 <!-- JSON-LD Structured Data -->
@@ -484,7 +484,7 @@ button {
       "name": "How do I book a free trial class?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Just click 'Try a Free Class' anywhere on this site, give us a call at (281) 393-7983, or stop by the academy. No commitment, no pressure. Adult trials are available any class time. Kids trials are on Friday afternoons in the Gi for ages 3 and up, or Saturday at 10:00 AM in No-Gi for ages 7 and up."
+        "text": "Just click 'Try a Free Class' anywhere on this site, give us a call at (281) 393-7983, or stop by the academy. No commitment, no pressure. Adult trials are available any class time. Kids trials are on Friday afternoons in the Gi for ages 3 and up, or Saturday morning for ages 7 and up: Youth MMA at 9:00 or No-Gi grappling at 10:00."
       }
     }
   ]
@@ -769,7 +769,7 @@ button {
         <span class="type-card__badge type-card__badge--gi">GI</span>
         <div class="type-card__text">
           <h4 class="type-card__title">Adult Gi</h4>
-          <p class="type-card__stat">7 Classes/Week</p>
+          <p class="type-card__stat"><!-- COUNT-ADULT-GI:START -->7<!-- COUNT-ADULT-GI:END --> Classes/Week</p>
           <p class="type-card__note">Mon · Wed · Fri, morning & evening</p>
         </div>
         <span class="type-card__toggle">View Schedule ▾</span>
@@ -780,7 +780,7 @@ button {
         <span class="type-card__badge type-card__badge--nogi">NO-GI</span>
         <div class="type-card__text">
           <h4 class="type-card__title">Adult No-Gi</h4>
-          <p class="type-card__stat">7 Classes/Week</p>
+          <p class="type-card__stat"><!-- COUNT-ADULT-NOGI:START -->6<!-- COUNT-ADULT-NOGI:END --> Classes/Week</p>
           <p class="type-card__note">Tue · Thu · Sat, more no-gi than most gyms</p>
         </div>
         <span class="type-card__toggle">View Schedule ▾</span>
@@ -791,7 +791,7 @@ button {
         <span class="type-card__badge type-card__badge--gi">GI</span>
         <div class="type-card__text">
           <h4 class="type-card__title">Kids & Teens Gi</h4>
-          <p class="type-card__stat">7 Classes/Week</p>
+          <p class="type-card__stat"><!-- COUNT-KIDS-GI:START -->7<!-- COUNT-KIDS-GI:END --> Classes/Week</p>
           <p class="type-card__note">Mon · Wed · Fri, ages 3–15</p>
         </div>
         <span class="type-card__toggle">View Schedule ▾</span>
@@ -802,7 +802,7 @@ button {
         <span class="type-card__badge type-card__badge--nogi">NO-GI</span>
         <div class="type-card__text">
           <h4 class="type-card__title">Kids & Teens No-Gi</h4>
-          <p class="type-card__stat">6 Classes/Week</p>
+          <p class="type-card__stat"><!-- COUNT-KIDS-NOGI:START -->7<!-- COUNT-KIDS-NOGI:END --> Classes/Week</p>
           <p class="type-card__note">Tue · Thu · Sat, 4 comp-focused sessions</p>
         </div>
         <span class="type-card__toggle">View Schedule ▾</span>
@@ -811,6 +811,7 @@ button {
       <!-- Schedule drawers (inserted via JS after the card row) -->
       <div class="type-schedule-drawer" id="drawer-adult-gi">
         <div class="type-schedule-drawer__inner">
+          <!-- DRAWER-ADULT-GI:START generated from scripts/schedule_data.py; do not edit -->
           <div class="type-sched-bar type-sched-bar--gi"><span class="type-sched-bar__day">Mon</span><span class="type-sched-bar__time">6:30 AM</span><span class="type-sched-bar__name">Adult BJJ</span><a data-book-trial href="/#book" class="type-sched-bar__book">Book Trial</a></div>
           <div class="type-sched-bar type-sched-bar--gi"><span class="type-sched-bar__day">Mon</span><span class="type-sched-bar__time">11:00 AM</span><span class="type-sched-bar__name">Adult BJJ</span><a data-book-trial href="/#book" class="type-sched-bar__book">Book Trial</a></div>
           <div class="type-sched-bar type-sched-bar--gi"><span class="type-sched-bar__day">Mon</span><span class="type-sched-bar__time">6:30 PM</span><span class="type-sched-bar__name">Adult BJJ</span><a data-book-trial href="/#book" class="type-sched-bar__book">Book Trial</a></div>
@@ -818,23 +819,26 @@ button {
           <div class="type-sched-bar type-sched-bar--gi"><span class="type-sched-bar__day">Wed</span><span class="type-sched-bar__time">6:30 PM</span><span class="type-sched-bar__name">Adult BJJ</span><a data-book-trial href="/#book" class="type-sched-bar__book">Book Trial</a></div>
           <div class="type-sched-bar type-sched-bar--gi"><span class="type-sched-bar__day">Fri</span><span class="type-sched-bar__time">11:00 AM</span><span class="type-sched-bar__name">Adult BJJ</span><a data-book-trial href="/#book" class="type-sched-bar__book">Book Trial</a></div>
           <div class="type-sched-bar type-sched-bar--gi"><span class="type-sched-bar__day">Fri</span><span class="type-sched-bar__time">6:30 PM</span><span class="type-sched-bar__name">Adult Comp</span><a data-book-trial href="/#book" class="type-sched-bar__book">Book Trial</a></div>
+          <!-- DRAWER-ADULT-GI:END -->
         </div>
       </div>
 
       <div class="type-schedule-drawer" id="drawer-adult-nogi">
         <div class="type-schedule-drawer__inner">
+          <!-- DRAWER-ADULT-NOGI:START generated from scripts/schedule_data.py; do not edit -->
           <div class="type-sched-bar type-sched-bar--nogi"><span class="type-sched-bar__day">Tue</span><span class="type-sched-bar__time">6:30 AM</span><span class="type-sched-bar__name">Adult BJJ</span><a data-book-trial href="/#book" class="type-sched-bar__book">Book Trial</a></div>
           <div class="type-sched-bar type-sched-bar--nogi"><span class="type-sched-bar__day">Tue</span><span class="type-sched-bar__time">6:30 PM</span><span class="type-sched-bar__name">Adult BJJ</span><a data-book-trial href="/#book" class="type-sched-bar__book">Book Trial</a></div>
           <div class="type-sched-bar type-sched-bar--nogi"><span class="type-sched-bar__day">Wed</span><span class="type-sched-bar__time">11:00 AM</span><span class="type-sched-bar__name">Adult BJJ</span><a data-book-trial href="/#book" class="type-sched-bar__book">Book Trial</a></div>
           <div class="type-sched-bar type-sched-bar--nogi"><span class="type-sched-bar__day">Thu</span><span class="type-sched-bar__time">6:30 AM</span><span class="type-sched-bar__name">Adult BJJ</span><a data-book-trial href="/#book" class="type-sched-bar__book">Book Trial</a></div>
           <div class="type-sched-bar type-sched-bar--nogi"><span class="type-sched-bar__day">Thu</span><span class="type-sched-bar__time">6:30 PM</span><span class="type-sched-bar__name">Adult BJJ</span><a data-book-trial href="/#book" class="type-sched-bar__book">Book Trial</a></div>
-          <div class="type-sched-bar type-sched-bar--nogi"><span class="type-sched-bar__day">Sat</span><span class="type-sched-bar__time">9:00 AM</span><span class="type-sched-bar__name">Adult Comp</span><a data-book-trial href="/#book" class="type-sched-bar__book">Book Trial</a></div>
-          <div class="type-sched-bar type-sched-bar--nogi"><span class="type-sched-bar__day">Sat</span><span class="type-sched-bar__time">11:00 AM</span><span class="type-sched-bar__name">Adult & Teens</span><a data-book-trial href="/#book" class="type-sched-bar__book">Book Trial</a></div>
+          <div class="type-sched-bar type-sched-bar--nogi"><span class="type-sched-bar__day">Sat</span><span class="type-sched-bar__time">11:00 AM</span><span class="type-sched-bar__name">Adult &amp; Teens</span><a data-book-trial href="/#book" class="type-sched-bar__book">Book Trial</a></div>
+          <!-- DRAWER-ADULT-NOGI:END -->
         </div>
       </div>
 
       <div class="type-schedule-drawer" id="drawer-kids-gi">
         <div class="type-schedule-drawer__inner">
+          <!-- DRAWER-KIDS-GI:START generated from scripts/schedule_data.py; do not edit -->
           <div class="type-sched-bar type-sched-bar--gi"><span class="type-sched-bar__day">Mon</span><span class="type-sched-bar__time">4:45 PM</span><span class="type-sched-bar__name">Kids BJJ<span class="type-sched-bar__ages">(3–6)</span></span><span class="type-sched-bar__trial-badge">Trials Fri &amp; Sat</span></div>
           <div class="type-sched-bar type-sched-bar--gi"><span class="type-sched-bar__day">Mon</span><span class="type-sched-bar__time">5:15 PM</span><span class="type-sched-bar__name">Kids BJJ<span class="type-sched-bar__ages">(7–12)</span></span><span class="type-sched-bar__trial-badge">Trials Fri &amp; Sat</span></div>
           <div class="type-sched-bar type-sched-bar--gi"><span class="type-sched-bar__day">Wed</span><span class="type-sched-bar__time">4:45 PM</span><span class="type-sched-bar__name">Kids BJJ<span class="type-sched-bar__ages">(3–6)</span></span><span class="type-sched-bar__trial-badge">Trials Fri &amp; Sat</span></div>
@@ -842,18 +846,21 @@ button {
           <div class="type-sched-bar type-sched-bar--gi"><span class="type-sched-bar__day">Fri</span><span class="type-sched-bar__time">4:45 PM</span><span class="type-sched-bar__name">Kids BJJ<span class="type-sched-bar__ages">(3–6)</span></span><a data-book-trial href="/#book" class="type-sched-bar__book">Book Trial</a></div>
           <div class="type-sched-bar type-sched-bar--gi"><span class="type-sched-bar__day">Fri</span><span class="type-sched-bar__time">5:15 PM</span><span class="type-sched-bar__name">Kids BJJ Comp<span class="type-sched-bar__ages">(7–12)</span></span><a data-book-trial href="/#book" class="type-sched-bar__book">Book Trial</a></div>
           <div class="type-sched-bar type-sched-bar--gi"><span class="type-sched-bar__day">Fri</span><span class="type-sched-bar__time">5:15 PM</span><span class="type-sched-bar__name">Teens BJJ Comp<span class="type-sched-bar__ages">(12–15)</span></span><a data-book-trial href="/#book" class="type-sched-bar__book">Book Trial</a></div>
+          <!-- DRAWER-KIDS-GI:END -->
         </div>
       </div>
 
       <div class="type-schedule-drawer" id="drawer-kids-nogi">
         <div class="type-schedule-drawer__inner">
+          <!-- DRAWER-KIDS-NOGI:START generated from scripts/schedule_data.py; do not edit -->
           <div class="type-sched-bar type-sched-bar--nogi"><span class="type-sched-bar__day">Tue</span><span class="type-sched-bar__time">5:15 PM</span><span class="type-sched-bar__name">Kids Grappling<span class="type-sched-bar__ages">(7–12)</span></span><span class="type-sched-bar__badge-adv">ADV</span><span class="type-sched-bar__trial-badge">Trials Fri &amp; Sat</span></div>
           <div class="type-sched-bar type-sched-bar--nogi"><span class="type-sched-bar__day">Tue</span><span class="type-sched-bar__time">5:15 PM</span><span class="type-sched-bar__name">Teens Grappling<span class="type-sched-bar__ages">(12–15)</span></span><span class="type-sched-bar__badge-adv">ADV</span><span class="type-sched-bar__trial-badge">Trials Fri &amp; Sat</span></div>
           <div class="type-sched-bar type-sched-bar--nogi"><span class="type-sched-bar__day">Thu</span><span class="type-sched-bar__time">5:15 PM</span><span class="type-sched-bar__name">Kids Grappling<span class="type-sched-bar__ages">(7–12)</span></span><span class="type-sched-bar__badge-adv">ADV</span><span class="type-sched-bar__trial-badge">Trials Fri &amp; Sat</span></div>
           <div class="type-sched-bar type-sched-bar--nogi"><span class="type-sched-bar__day">Thu</span><span class="type-sched-bar__time">5:15 PM</span><span class="type-sched-bar__name">Teens Grappling<span class="type-sched-bar__ages">(12–15)</span></span><span class="type-sched-bar__badge-adv">ADV</span><span class="type-sched-bar__trial-badge">Trials Fri &amp; Sat</span></div>
           <div class="type-sched-bar type-sched-bar--nogi"><span class="type-sched-bar__day">Sat</span><span class="type-sched-bar__time">10:00 AM</span><span class="type-sched-bar__name">Kids Grappling<span class="type-sched-bar__ages">(7–12)</span></span><a data-book-trial href="/#book" class="type-sched-bar__book">Book Trial</a></div>
-          <div class="type-sched-bar type-sched-bar--nogi"><span class="type-sched-bar__day">Sat</span><span class="type-sched-bar__time">12:00 PM</span><span class="type-sched-bar__name">Kids Grappling<span class="type-sched-bar__ages">(7–12)</span></span><span class="type-sched-bar__badge-adv">ADV</span><a data-book-trial href="/#book" class="type-sched-bar__book">Book</a></div>
-          <div class="type-sched-bar type-sched-bar--nogi"><span class="type-sched-bar__day">Sat</span><span class="type-sched-bar__time">12:00 PM</span><span class="type-sched-bar__name">Teens Grappling<span class="type-sched-bar__ages">(12–15)</span></span><span class="type-sched-bar__badge-adv">ADV</span><a data-book-trial href="/#book" class="type-sched-bar__book">Book</a></div>
+          <div class="type-sched-bar type-sched-bar--nogi"><span class="type-sched-bar__day">Sat</span><span class="type-sched-bar__time">12:00 PM</span><span class="type-sched-bar__name">Kids Grappling<span class="type-sched-bar__ages">(7–12)</span></span><span class="type-sched-bar__badge-adv">ADV</span><span class="type-sched-bar__trial-badge">Trials Fri &amp; Sat</span></div>
+          <div class="type-sched-bar type-sched-bar--nogi"><span class="type-sched-bar__day">Sat</span><span class="type-sched-bar__time">12:00 PM</span><span class="type-sched-bar__name">Teens Grappling<span class="type-sched-bar__ages">(12–15)</span></span><span class="type-sched-bar__badge-adv">ADV</span><span class="type-sched-bar__trial-badge">Trials Fri &amp; Sat</span></div>
+          <!-- DRAWER-KIDS-NOGI:END -->
         </div>
       </div>
     </div>
@@ -1089,6 +1096,28 @@ button {
             <span class="coach-card__rank-label">Black Belt · 14+ Yrs</span>
           </div>
           <p class="coach-card__bio">Founder of Labyrinth BJJ. Built the academy from the ground up into the #1 ranked team in Texas. Black belt under Matt Leighton of Citadel BJJ, Iowa City.</p>
+        </div>
+      </div>
+
+      <!-- The second head coach. Team Legacy merged into Labyrinth and Scott
+           came with it: "two head coaches on one mat", as /legacy/ puts it. The
+           Taekwondo bar (belt-bar--tkd) is not the BJJ black belt: gold tab,
+           and the label names the art. -->
+      <div class="coach-card coach-card--featured coach-card--head">
+        <div class="coach-card__avatar">
+          <picture><source srcset="./assets/coach-scott.webp" type="image/webp"><img src="./assets/coach-scott.jpg" alt="Grandmaster Scott Jones - 7th Dan Taekwondo black belt and Youth MMA coach at Labyrinth BJJ Fulshear TX" loading="lazy" width="200" height="200"></picture>
+        </div>
+        <div class="coach-card__info">
+          <h3 class="coach-card__name">Grandmaster Scott Jones</h3>
+          <p class="coach-card__role">Head Coach / Youth MMA</p>
+          <div class="coach-card__rank">
+            <div class="belt-bar belt-bar--tkd">
+              <span class="belt-bar__belt"></span>
+              <span class="belt-bar__tab"></span>
+            </div>
+            <span class="coach-card__rank-label">7th Dan Taekwondo · BJJ Purple</span>
+          </div>
+          <p class="coach-card__bio">Founder of Team Legacy Martial Arts, now merged into Labyrinth and coaching full time. 27+ years of MMA and over thirty years teaching children and adults. Runs Youth MMA on Saturday mornings. <a href="/coaches/scott-jones" class="coach-card__link">Full profile &rarr;</a></p>
         </div>
       </div>
 
@@ -1625,7 +1654,7 @@ button {
           <svg class="faq-item__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <div class="faq-item__answer">
-          <p>Just click "Try a Free Class" anywhere on this site, give us a call at (281) 393-7983, or stop by the academy. No commitment, no pressure. Show up in comfortable clothes, and we'll take care of the rest. Adult trials are available any class time. Kids trials are on Friday afternoons in the Gi for ages 3 and up, or Saturday at 10:00 AM in No-Gi for ages 7 and up.</p>
+          <p>Just click "Try a Free Class" anywhere on this site, give us a call at (281) 393-7983, or stop by the academy. No commitment, no pressure. Show up in comfortable clothes, and we'll take care of the rest. Adult trials are available any class time. Kids trials are on Friday afternoons in the Gi for ages 3 and up, or Saturday morning for ages 7 and up: Youth MMA at 9:00 or No-Gi grappling at 10:00.</p>
         </div>
       </div>
     </div>
@@ -1641,235 +1670,100 @@ button {
       <p class="section-subtitle">Every class we run, seven days a week. <a href="/schedule" class="section-subtitle__link">Full class schedule &rarr;</a></p>
     </div>
 
-    <!-- Schedule Key -->
-    <div class="schedule-key fade-in">
-      <div class="schedule-key__title">Key</div>
-      <div class="schedule-key__items">
-        <span class="schedule-key__item"><span class="schedule-key__swatch schedule-key__swatch--gi"></span> Gi</span>
-        <span class="schedule-key__item"><span class="schedule-key__swatch schedule-key__swatch--nogi"></span> No-Gi</span>
-        <span class="schedule-key__divider"></span>
-        <span class="schedule-key__item"><span class="schedule-key__swatch schedule-key__swatch--adults"></span> Adults</span>
-        <span class="schedule-key__item"><span class="schedule-key__swatch schedule-key__swatch--kids"></span> Kids & Teens</span>
-        <span class="schedule-key__divider"></span>
-        <span class="schedule-key__item"><span class="schedule-key__swatch schedule-key__swatch--comp"></span> Competition</span>
-        <span class="schedule-key__item"><span class="schedule-key__swatch schedule-key__swatch--adv"></span> Advanced</span>
-        <span class="schedule-key__item"><span class="schedule-key__swatch schedule-key__swatch--wrestling"></span> Wrestling</span>
-        <span class="schedule-key__item"><span class="schedule-key__swatch schedule-key__swatch--open"></span> Open Mat</span>
+    <!-- SCHEDULE:START
+         Generated by scripts/build_pages.py from scripts/schedule_data.py
+         (component: scripts/schedule_component.py, behavior: schedule.js).
+         Do not edit between these markers: the next build overwrites it.
+         This replaced four hand-kept copies of the week on this page. -->
+         <div class="sc" data-sc>
+    <div class="sc__bar">
+      <div class="sc__filters" role="group" aria-label="Show classes for">
+        <button type="button" class="sc__filter is-active" data-sc-filter="all" aria-pressed="true">All classes</button>
+        <button type="button" class="sc__filter" data-sc-filter="adult" aria-pressed="false">Adults</button>
+        <button type="button" class="sc__filter" data-sc-filter="kids" aria-pressed="false">Kids &amp; Teens</button>
       </div>
+      <ul class="sc__legend" aria-label="Key">
+        <li><span class="sc__swatch sc__swatch--gi"></span>Gi</li>
+        <li><span class="sc__swatch sc__swatch--nogi"></span>No-Gi</li>
+        <li><span class="sc__swatch sc__swatch--other"></span>MMA, wrestling &amp; more</li>
+      </ul>
     </div>
-
-    <!-- Desktop Table (removed - now using day cards for both) -->
-    <div class="schedule-full fade-in" style="display:none!important">
-      <table class="schedule-table schedule-table--full">
-        <thead>
-          <tr>
-            <th>Time</th>
-            <th>Mon</th>
-            <th>Tue</th>
-            <th>Wed</th>
-            <th>Thu</th>
-            <th>Fri</th>
-            <th>Sat</th>
-            <th>Sun</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- ADULTS section label -->
-          <tr class="sched-section-row">
-            <td colspan="8"><span class="sched-section-label sched-section-label--adults">Adults</span></td>
-          </tr>
-          <!-- 6:30 AM -->
-          <tr class="sched-row--adults">
-            <td>6:30 AM</td>
-            <td class="sched-gi"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--gi">Gi</span> <span class="sched-cell__name">Adult BJJ</span></div><a data-book-trial href="/#book" class="sched-book">Book Trial Class</a></div></td>
-            <td class="sched-nogi"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--nogi">No-Gi</span> <span class="sched-cell__name">Adult BJJ</span></div><a data-book-trial href="/#book" class="sched-book">Book Trial Class</a></div></td>
-            <td class="sched-gi"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--gi">Gi</span> <span class="sched-cell__name">Adult BJJ</span></div><a data-book-trial href="/#book" class="sched-book">Book Trial Class</a></div></td>
-            <td class="sched-nogi"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--nogi">No-Gi</span> <span class="sched-cell__name">Adult BJJ</span></div><a data-book-trial href="/#book" class="sched-book">Book Trial Class</a></div></td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-          </tr>
-          <!-- 9:00 AM -->
-          <tr class="sched-row--adults">
-            <td>9:00 AM</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td class="sched-comp"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--nogi">No-Gi</span> <span class="sched-cell__name">Adult Comp</span></div><a data-book-trial href="/#book" class="sched-book">Book Trial Class</a></div></td>
-            <td>&ndash;</td>
-          </tr>
-          <!-- KIDS section label -->
-          <tr class="sched-section-row">
-            <td colspan="8"><span class="sched-section-label sched-section-label--kids">Kids & Teens</span></td>
-          </tr>
-          <!-- 10:00 AM -->
-          <tr class="sched-row--kids">
-            <td>10:00 AM</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td class="sched-kids"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--nogi">No-Gi</span> <span class="sched-cell__name">Kids Grappling <span class="sched-cell__ages">(7–12)</span></span></div><a data-book-trial href="/#book" class="sched-book">Book Trial Class</a></div></td>
-            <td>&ndash;</td>
-          </tr>
-          <!-- 10:30 AM -->
-          <tr class="sched-row--kids">
-            <td>10:30 AM</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td class="sched-open"><div class="sched-cell"><span class="sched-cell__name">Open Mat</span><a data-book-trial href="/#book" class="sched-book">Book</a></div></td>
-          </tr>
-          <!-- ADULTS section label -->
-          <tr class="sched-section-row">
-            <td colspan="8"><span class="sched-section-label sched-section-label--adults">Adults</span></td>
-          </tr>
-          <!-- 11:00 AM -->
-          <tr class="sched-row--adults">
-            <td>11:00 AM</td>
-            <td class="sched-gi"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--gi">Gi</span> <span class="sched-cell__name">Adult BJJ</span></div><a data-book-trial href="/#book" class="sched-book">Book Trial Class</a></div></td>
-            <td>&ndash;</td>
-            <td class="sched-nogi"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--nogi">No-Gi</span> <span class="sched-cell__name">Adult BJJ</span></div><a data-book-trial href="/#book" class="sched-book">Book Trial Class</a></div></td>
-            <td>&ndash;</td>
-            <td class="sched-gi"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--gi">Gi</span> <span class="sched-cell__name">Adult BJJ</span></div><a data-book-trial href="/#book" class="sched-book">Book Trial Class</a></div></td>
-            <td class="sched-nogi"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--nogi">No-Gi</span> <span class="sched-cell__name">Adult & Teens</span></div><a data-book-trial href="/#book" class="sched-book">Book Trial Class</a></div></td>
-            <td>&ndash;</td>
-          </tr>
-          <!-- KIDS section label -->
-          <tr class="sched-section-row">
-            <td colspan="8"><span class="sched-section-label sched-section-label--kids">Kids & Teens</span></td>
-          </tr>
-          <!-- 12:00 PM -->
-          <tr class="sched-row--kids">
-            <td>12:00 PM</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td class="sched-kids"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--nogi">No-Gi</span> <span class="sched-cell__name">Kids Grappling <span class="sched-cell__ages">(7–12)</span></span></div><div class="sched-cell__bottom"><span class="sched-note">Adv</span> <button class="sched-book sched-book--adv" data-adv="true">Book</button></div></div></td>
-            <td>&ndash;</td>
-          </tr>
-          <tr class="sched-row--kids">
-            <td></td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td class="sched-kids"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--nogi">No-Gi</span> <span class="sched-cell__name">Teens Grappling <span class="sched-cell__ages">(12–15)</span></span></div><div class="sched-cell__bottom"><span class="sched-note">Adv</span> <button class="sched-book sched-book--adv" data-adv="true">Book</button></div></div></td>
-            <td>&ndash;</td>
-          </tr>
-          <!-- STRENGTH & CONDITIONING section label -->
-          <tr class="sched-section-row">
-            <td colspan="8"><span class="sched-section-label sched-section-label--sc">Strength &amp; Conditioning <span class="sched-section-label__note">all ages</span></span></td>
-          </tr>
-          <!-- 4:15 PM -->
-          <tr class="sched-row--sc">
-            <td>4:15 PM</td>
-            <td>&ndash;</td>
-            <td class="sched-sc"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--sc">S&amp;C</span> <span class="sched-cell__name">Strength &amp; Conditioning</span></div><a data-book-trial href="/#book" class="sched-book">Book Trial Class</a></div></td>
-            <td>&ndash;</td>
-            <td class="sched-sc"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--sc">S&amp;C</span> <span class="sched-cell__name">Strength &amp; Conditioning</span></div><a data-book-trial href="/#book" class="sched-book">Book Trial Class</a></div></td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-          </tr>
-          <!-- 1:00 PM -->
-          <tr class="sched-row--kids">
-            <td>1:00 PM</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td class="sched-wrestling"><div class="sched-cell"><span class="sched-cell__name">Wrestling <span class="sched-cell__ages">(7–17)</span></span><a data-book-trial href="/#book" class="sched-book sched-book--trial">Book Trial</a></div></td>
-          </tr>
-          <!-- 4:45 PM -->
-          <tr class="sched-row--kids">
-            <td>4:45 PM</td>
-            <td class="sched-kids"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--gi">Gi</span> <span class="sched-cell__name">Kids BJJ <span class="sched-cell__ages">(3–6)</span></span></div><span class="sched-trial-note">Trials Fri only</span></div></td>
-            <td>&ndash;</td>
-            <td class="sched-kids"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--gi">Gi</span> <span class="sched-cell__name">Kids BJJ <span class="sched-cell__ages">(3–6)</span></span></div><span class="sched-trial-note">Trials Fri only</span></div></td>
-            <td>&ndash;</td>
-            <td class="sched-kids"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--gi">Gi</span> <span class="sched-cell__name">Kids BJJ <span class="sched-cell__ages">(3–6)</span></span></div><a data-book-trial href="/#book" class="sched-book sched-book--trial">Book Trial</a></div></td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-          </tr>
-          <!-- 5:15 PM -->
-          <tr class="sched-row--kids">
-            <td>5:15 PM</td>
-            <td class="sched-kids"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--gi">Gi</span> <span class="sched-cell__name">Kids BJJ <span class="sched-cell__ages">(7–12)</span></span></div><span class="sched-trial-note">Trials Fri only</span></div></td>
-            <td class="sched-kids"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--nogi">No-Gi</span> <span class="sched-cell__name">Kids Grappling <span class="sched-cell__ages">(7–12)</span></span></div><div class="sched-cell__bottom"><span class="sched-note">Adv</span> <span class="sched-trial-note">Trials Fri &amp; Sat</span></div></div></td>
-            <td class="sched-kids"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--gi">Gi</span> <span class="sched-cell__name">Kids BJJ <span class="sched-cell__ages">(7–12)</span></span></div><span class="sched-trial-note">Trials Fri only</span></div></td>
-            <td class="sched-kids"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--nogi">No-Gi</span> <span class="sched-cell__name">Kids Grappling <span class="sched-cell__ages">(7–12)</span></span></div><div class="sched-cell__bottom"><span class="sched-note">Adv</span> <span class="sched-trial-note">Trials Fri &amp; Sat</span></div></div></td>
-            <td class="sched-comp"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--gi">Gi</span> <span class="sched-cell__name">Kids BJJ Comp <span class="sched-cell__ages">(7–12)</span></span></div><a data-book-trial href="/#book" class="sched-book sched-book--trial">Book Trial</a></div></td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-          </tr>
-          <tr class="sched-row--kids">
-            <td></td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td class="sched-comp"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--gi">Gi</span> <span class="sched-cell__name">Teens BJJ Comp <span class="sched-cell__ages">(12–15)</span></span></div><a data-book-trial href="/#book" class="sched-book sched-book--trial">Book Trial</a></div></td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-          </tr>
-          <!-- 5:15 PM cont -->
-          <tr class="sched-row--kids">
-            <td></td>
-            <td>&ndash;</td>
-            <td class="sched-kids"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--nogi">No-Gi</span> <span class="sched-cell__name">Teens Grappling <span class="sched-cell__ages">(12–15)</span></span></div><div class="sched-cell__bottom"><span class="sched-note">Adv</span> <span class="sched-trial-note">Trials Fri &amp; Sat</span></div></div></td>
-            <td>&ndash;</td>
-            <td class="sched-kids"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--nogi">No-Gi</span> <span class="sched-cell__name">Teens Grappling <span class="sched-cell__ages">(12–15)</span></span></div><div class="sched-cell__bottom"><span class="sched-note">Adv</span> <span class="sched-trial-note">Trials Fri &amp; Sat</span></div></div></td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-          </tr>
-          <!-- ADULTS section label -->
-          <tr class="sched-section-row">
-            <td colspan="8"><span class="sched-section-label sched-section-label--adults">Adults</span></td>
-          </tr>
-          <!-- 6:30 PM -->
-          <tr class="sched-row--adults">
-            <td>6:30 PM</td>
-            <td class="sched-gi"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--gi">Gi</span> <span class="sched-cell__name">Adult BJJ</span></div><a data-book-trial href="/#book" class="sched-book">Book Trial Class</a></div></td>
-            <td class="sched-nogi"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--nogi">No-Gi</span> <span class="sched-cell__name">Adult BJJ</span></div><a data-book-trial href="/#book" class="sched-book">Book Trial Class</a></div></td>
-            <td class="sched-gi"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--gi">Gi</span> <span class="sched-cell__name">Adult BJJ</span></div><a data-book-trial href="/#book" class="sched-book">Book Trial Class</a></div></td>
-            <td class="sched-nogi"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--nogi">No-Gi</span> <span class="sched-cell__name">Adult BJJ</span></div><a data-book-trial href="/#book" class="sched-book">Book Trial Class</a></div></td>
-            <td class="sched-comp"><div class="sched-cell"><div class="sched-cell__top"><span class="sched-type sched-type--gi">Gi</span> <span class="sched-cell__name">Adult Comp</span></div><a data-book-trial href="/#book" class="sched-book">Book Trial Class</a></div></td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-          </tr>
-          <!-- WRESTLING -->
-          <tr class="sched-section-row">
-            <td colspan="8"><span class="sched-section-label sched-section-label--wrestling">Wrestling</span></td>
-          </tr>
-          <!-- 7:30 PM -->
-          <tr class="sched-row--kids">
-            <td>7:30 PM</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td class="sched-wrestling"><div class="sched-cell"><span class="sched-cell__name">Wrestling <span class="sched-cell__ages">(7–17)</span></span><a data-book-trial href="/#book" class="sched-book sched-book--trial">Book Trial</a></div></td>
-            <td class="sched-wrestling"><div class="sched-cell"><span class="sched-cell__name">Wrestling <span class="sched-cell__ages">(7–17)</span></span><a data-book-trial href="/#book" class="sched-book sched-book--trial">Book Trial</a></div></td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-            <td>&ndash;</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="sc__picker" role="group" aria-label="Choose a day" hidden><button type="button" class="sc__pick" data-sc-pick="Mon" aria-pressed="false">Mon</button><button type="button" class="sc__pick" data-sc-pick="Tue" aria-pressed="false">Tue</button><button type="button" class="sc__pick" data-sc-pick="Wed" aria-pressed="false">Wed</button><button type="button" class="sc__pick" data-sc-pick="Thu" aria-pressed="false">Thu</button><button type="button" class="sc__pick" data-sc-pick="Fri" aria-pressed="false">Fri</button><button type="button" class="sc__pick" data-sc-pick="Sat" aria-pressed="false">Sat</button><button type="button" class="sc__pick" data-sc-pick="Sun" aria-pressed="false">Sun</button></div>
+    <p class="sc__kids-note" hidden><strong>Kids trials</strong> are on Friday afternoons in the Gi (ages 3 and up) and Saturday mornings: Youth MMA at 9:00 or No-Gi grappling at 10:00 (ages 7 and up).</p>
+    <div class="sc__week">
+      <section class="sc__col" data-sc-col="Mon" aria-labelledby="home-Mon">
+        <h3 class="sc__day" id="home-Mon"><span class="sc__day-full">Monday</span><span class="sc__day-short" aria-hidden="true">Mon</span><span class="sc__today" hidden>Today</span></h3>
+        <ul class="sc__list">
+          <li><button type="button" class="sc__class sc__class--gi" data-aud="adult" data-book="form" data-name="Adult BJJ" data-type="Gi" data-day="Mon" data-time="6:30 AM" aria-label="Book Adult BJJ, Monday at 6:30 AM"><span class="sc__time">6:30 AM<span class="sc__style">Gi</span></span><span class="sc__name">Adult BJJ</span><span class="sc__tags"></span></button></li>
+          <li><button type="button" class="sc__class sc__class--gi" data-aud="adult" data-book="form" data-name="Adult BJJ" data-type="Gi" data-day="Mon" data-time="11:00 AM" aria-label="Book Adult BJJ, Monday at 11:00 AM"><span class="sc__time">11:00 AM<span class="sc__style">Gi</span></span><span class="sc__name">Adult BJJ</span><span class="sc__tags"></span></button></li>
+          <li><button type="button" class="sc__class sc__class--gi" data-aud="kids" data-book="kids" data-name="Kids BJJ (3–6)" data-type="Gi" data-day="Mon" data-time="4:45 PM" aria-label="Book Kids BJJ, Monday at 4:45 PM, ages 3–6"><span class="sc__time">4:45 PM<span class="sc__style">Gi</span></span><span class="sc__name">Kids BJJ<span class="sc__ages">3–6</span></span><span class="sc__tags"><span class="sc__hint">Trials: Fri &amp; Sat</span></span></button></li>
+          <li><button type="button" class="sc__class sc__class--gi" data-aud="kids" data-book="kids" data-name="Kids BJJ (7–12)" data-type="Gi" data-day="Mon" data-time="5:15 PM" aria-label="Book Kids BJJ, Monday at 5:15 PM, ages 7–12"><span class="sc__time">5:15 PM<span class="sc__style">Gi</span></span><span class="sc__name">Kids BJJ<span class="sc__ages">7–12</span></span><span class="sc__tags"><span class="sc__hint">Trials: Fri &amp; Sat</span></span></button></li>
+          <li><button type="button" class="sc__class sc__class--gi" data-aud="adult" data-book="form" data-name="Adult BJJ" data-type="Gi" data-day="Mon" data-time="6:30 PM" aria-label="Book Adult BJJ, Monday at 6:30 PM"><span class="sc__time">6:30 PM<span class="sc__style">Gi</span></span><span class="sc__name">Adult BJJ</span><span class="sc__tags"></span></button></li>
+        </ul>
+      </section>
+      <section class="sc__col" data-sc-col="Tue" aria-labelledby="home-Tue">
+        <h3 class="sc__day" id="home-Tue"><span class="sc__day-full">Tuesday</span><span class="sc__day-short" aria-hidden="true">Tue</span><span class="sc__today" hidden>Today</span></h3>
+        <ul class="sc__list">
+          <li><button type="button" class="sc__class sc__class--nogi" data-aud="adult" data-book="form" data-name="Adult BJJ" data-type="No-Gi" data-day="Tue" data-time="6:30 AM" aria-label="Book Adult BJJ, Tuesday at 6:30 AM"><span class="sc__time">6:30 AM<span class="sc__style">No-Gi</span></span><span class="sc__name">Adult BJJ</span><span class="sc__tags"></span></button></li>
+          <li><button type="button" class="sc__class sc__class--other" data-aud="all" data-book="form" data-name="Strength &amp; Conditioning" data-type="" data-day="Tue" data-time="4:15 PM" aria-label="Book Strength &amp; Conditioning, Tuesday at 4:15 PM"><span class="sc__time">4:15 PM</span><span class="sc__name">Strength &amp; Conditioning<span class="sc__ages">all ages</span></span><span class="sc__tags"></span></button></li>
+          <li><button type="button" class="sc__class sc__class--nogi" data-aud="kids" data-book="kids" data-name="Kids Grappling (7–12)" data-type="No-Gi" data-day="Tue" data-time="5:15 PM" aria-label="Book Kids Grappling, Tuesday at 5:15 PM, ages 7–12"><span class="sc__time">5:15 PM<span class="sc__style">No-Gi</span></span><span class="sc__name">Kids Grappling<span class="sc__ages">7–12</span></span><span class="sc__tags"><span class="sc__tag sc__tag--adv">Advanced</span><span class="sc__hint">Trials: Fri &amp; Sat</span></span></button></li>
+          <li><button type="button" class="sc__class sc__class--nogi" data-aud="kids" data-book="kids" data-name="Teens Grappling (12–15)" data-type="No-Gi" data-day="Tue" data-time="5:15 PM" aria-label="Book Teens Grappling, Tuesday at 5:15 PM, ages 12–15"><span class="sc__time">5:15 PM<span class="sc__style">No-Gi</span></span><span class="sc__name">Teens Grappling<span class="sc__ages">12–15</span></span><span class="sc__tags"><span class="sc__tag sc__tag--adv">Advanced</span><span class="sc__hint">Trials: Fri &amp; Sat</span></span></button></li>
+          <li><button type="button" class="sc__class sc__class--nogi" data-aud="adult" data-book="form" data-name="Adult BJJ" data-type="No-Gi" data-day="Tue" data-time="6:30 PM" aria-label="Book Adult BJJ, Tuesday at 6:30 PM"><span class="sc__time">6:30 PM<span class="sc__style">No-Gi</span></span><span class="sc__name">Adult BJJ</span><span class="sc__tags"></span></button></li>
+        </ul>
+      </section>
+      <section class="sc__col" data-sc-col="Wed" aria-labelledby="home-Wed">
+        <h3 class="sc__day" id="home-Wed"><span class="sc__day-full">Wednesday</span><span class="sc__day-short" aria-hidden="true">Wed</span><span class="sc__today" hidden>Today</span></h3>
+        <ul class="sc__list">
+          <li><button type="button" class="sc__class sc__class--gi" data-aud="adult" data-book="form" data-name="Adult BJJ" data-type="Gi" data-day="Wed" data-time="6:30 AM" aria-label="Book Adult BJJ, Wednesday at 6:30 AM"><span class="sc__time">6:30 AM<span class="sc__style">Gi</span></span><span class="sc__name">Adult BJJ</span><span class="sc__tags"></span></button></li>
+          <li><button type="button" class="sc__class sc__class--nogi" data-aud="adult" data-book="form" data-name="Adult BJJ" data-type="No-Gi" data-day="Wed" data-time="11:00 AM" aria-label="Book Adult BJJ, Wednesday at 11:00 AM"><span class="sc__time">11:00 AM<span class="sc__style">No-Gi</span></span><span class="sc__name">Adult BJJ</span><span class="sc__tags"></span></button></li>
+          <li><button type="button" class="sc__class sc__class--gi" data-aud="kids" data-book="kids" data-name="Kids BJJ (3–6)" data-type="Gi" data-day="Wed" data-time="4:45 PM" aria-label="Book Kids BJJ, Wednesday at 4:45 PM, ages 3–6"><span class="sc__time">4:45 PM<span class="sc__style">Gi</span></span><span class="sc__name">Kids BJJ<span class="sc__ages">3–6</span></span><span class="sc__tags"><span class="sc__hint">Trials: Fri &amp; Sat</span></span></button></li>
+          <li><button type="button" class="sc__class sc__class--gi" data-aud="kids" data-book="kids" data-name="Kids BJJ (7–12)" data-type="Gi" data-day="Wed" data-time="5:15 PM" aria-label="Book Kids BJJ, Wednesday at 5:15 PM, ages 7–12"><span class="sc__time">5:15 PM<span class="sc__style">Gi</span></span><span class="sc__name">Kids BJJ<span class="sc__ages">7–12</span></span><span class="sc__tags"><span class="sc__hint">Trials: Fri &amp; Sat</span></span></button></li>
+          <li><button type="button" class="sc__class sc__class--gi" data-aud="adult" data-book="form" data-name="Adult BJJ" data-type="Gi" data-day="Wed" data-time="6:30 PM" aria-label="Book Adult BJJ, Wednesday at 6:30 PM"><span class="sc__time">6:30 PM<span class="sc__style">Gi</span></span><span class="sc__name">Adult BJJ</span><span class="sc__tags"></span></button></li>
+          <li><button type="button" class="sc__class sc__class--other" data-aud="kids" data-book="form" data-name="Youth Wrestling (7–17)" data-type="" data-day="Wed" data-time="7:30 PM" aria-label="Book Youth Wrestling, Wednesday at 7:30 PM, ages 7–17"><span class="sc__time">7:30 PM</span><span class="sc__name">Youth Wrestling<span class="sc__ages">7–17</span></span><span class="sc__tags"></span></button></li>
+        </ul>
+      </section>
+      <section class="sc__col" data-sc-col="Thu" aria-labelledby="home-Thu">
+        <h3 class="sc__day" id="home-Thu"><span class="sc__day-full">Thursday</span><span class="sc__day-short" aria-hidden="true">Thu</span><span class="sc__today" hidden>Today</span></h3>
+        <ul class="sc__list">
+          <li><button type="button" class="sc__class sc__class--nogi" data-aud="adult" data-book="form" data-name="Adult BJJ" data-type="No-Gi" data-day="Thu" data-time="6:30 AM" aria-label="Book Adult BJJ, Thursday at 6:30 AM"><span class="sc__time">6:30 AM<span class="sc__style">No-Gi</span></span><span class="sc__name">Adult BJJ</span><span class="sc__tags"></span></button></li>
+          <li><button type="button" class="sc__class sc__class--other" data-aud="all" data-book="form" data-name="Strength &amp; Conditioning" data-type="" data-day="Thu" data-time="4:15 PM" aria-label="Book Strength &amp; Conditioning, Thursday at 4:15 PM"><span class="sc__time">4:15 PM</span><span class="sc__name">Strength &amp; Conditioning<span class="sc__ages">all ages</span></span><span class="sc__tags"></span></button></li>
+          <li><button type="button" class="sc__class sc__class--nogi" data-aud="kids" data-book="kids" data-name="Kids Grappling (7–12)" data-type="No-Gi" data-day="Thu" data-time="5:15 PM" aria-label="Book Kids Grappling, Thursday at 5:15 PM, ages 7–12"><span class="sc__time">5:15 PM<span class="sc__style">No-Gi</span></span><span class="sc__name">Kids Grappling<span class="sc__ages">7–12</span></span><span class="sc__tags"><span class="sc__tag sc__tag--adv">Advanced</span><span class="sc__hint">Trials: Fri &amp; Sat</span></span></button></li>
+          <li><button type="button" class="sc__class sc__class--nogi" data-aud="kids" data-book="kids" data-name="Teens Grappling (12–15)" data-type="No-Gi" data-day="Thu" data-time="5:15 PM" aria-label="Book Teens Grappling, Thursday at 5:15 PM, ages 12–15"><span class="sc__time">5:15 PM<span class="sc__style">No-Gi</span></span><span class="sc__name">Teens Grappling<span class="sc__ages">12–15</span></span><span class="sc__tags"><span class="sc__tag sc__tag--adv">Advanced</span><span class="sc__hint">Trials: Fri &amp; Sat</span></span></button></li>
+          <li><button type="button" class="sc__class sc__class--nogi" data-aud="adult" data-book="form" data-name="Adult BJJ" data-type="No-Gi" data-day="Thu" data-time="6:30 PM" aria-label="Book Adult BJJ, Thursday at 6:30 PM"><span class="sc__time">6:30 PM<span class="sc__style">No-Gi</span></span><span class="sc__name">Adult BJJ</span><span class="sc__tags"></span></button></li>
+          <li><button type="button" class="sc__class sc__class--other" data-aud="kids" data-book="form" data-name="Youth Wrestling (7–17)" data-type="" data-day="Thu" data-time="7:30 PM" aria-label="Book Youth Wrestling, Thursday at 7:30 PM, ages 7–17"><span class="sc__time">7:30 PM</span><span class="sc__name">Youth Wrestling<span class="sc__ages">7–17</span></span><span class="sc__tags"></span></button></li>
+        </ul>
+      </section>
+      <section class="sc__col" data-sc-col="Fri" aria-labelledby="home-Fri">
+        <h3 class="sc__day" id="home-Fri"><span class="sc__day-full">Friday</span><span class="sc__day-short" aria-hidden="true">Fri</span><span class="sc__today" hidden>Today</span></h3>
+        <ul class="sc__list">
+          <li><button type="button" class="sc__class sc__class--gi" data-aud="adult" data-book="form" data-name="Adult BJJ" data-type="Gi" data-day="Fri" data-time="11:00 AM" aria-label="Book Adult BJJ, Friday at 11:00 AM"><span class="sc__time">11:00 AM<span class="sc__style">Gi</span></span><span class="sc__name">Adult BJJ</span><span class="sc__tags"></span></button></li>
+          <li><button type="button" class="sc__class sc__class--gi" data-aud="kids" data-book="form" data-name="Kids BJJ (3–6)" data-type="Gi" data-day="Fri" data-time="4:45 PM" aria-label="Book Kids BJJ, Friday at 4:45 PM, ages 3–6"><span class="sc__time">4:45 PM<span class="sc__style">Gi</span></span><span class="sc__name">Kids BJJ<span class="sc__ages">3–6</span></span><span class="sc__tags"><span class="sc__tag sc__tag--trial">Free trial</span></span></button></li>
+          <li><button type="button" class="sc__class sc__class--gi" data-aud="kids" data-book="form" data-name="Kids BJJ Comp (7–12)" data-type="Gi" data-day="Fri" data-time="5:15 PM" aria-label="Book Kids BJJ Comp, Friday at 5:15 PM, ages 7–12"><span class="sc__time">5:15 PM<span class="sc__style">Gi</span></span><span class="sc__name">Kids BJJ Comp<span class="sc__ages">7–12</span></span><span class="sc__tags"><span class="sc__tag sc__tag--comp">Competition</span><span class="sc__tag sc__tag--trial">Free trial</span></span></button></li>
+          <li><button type="button" class="sc__class sc__class--gi" data-aud="kids" data-book="form" data-name="Teens BJJ Comp (12–15)" data-type="Gi" data-day="Fri" data-time="5:15 PM" aria-label="Book Teens BJJ Comp, Friday at 5:15 PM, ages 12–15"><span class="sc__time">5:15 PM<span class="sc__style">Gi</span></span><span class="sc__name">Teens BJJ Comp<span class="sc__ages">12–15</span></span><span class="sc__tags"><span class="sc__tag sc__tag--comp">Competition</span><span class="sc__tag sc__tag--trial">Free trial</span></span></button></li>
+          <li><button type="button" class="sc__class sc__class--gi" data-aud="adult" data-book="form" data-name="Adult Comp" data-type="Gi" data-day="Fri" data-time="6:30 PM" aria-label="Book Adult Comp, Friday at 6:30 PM"><span class="sc__time">6:30 PM<span class="sc__style">Gi</span></span><span class="sc__name">Adult Comp</span><span class="sc__tags"><span class="sc__tag sc__tag--comp">Competition</span></span></button></li>
+        </ul>
+      </section>
+      <section class="sc__col" data-sc-col="Sat" aria-labelledby="home-Sat">
+        <h3 class="sc__day" id="home-Sat"><span class="sc__day-full">Saturday</span><span class="sc__day-short" aria-hidden="true">Sat</span><span class="sc__today" hidden>Today</span></h3>
+        <ul class="sc__list">
+          <li><button type="button" class="sc__class sc__class--other" data-aud="kids" data-book="form" data-name="Youth MMA (7–15)" data-type="" data-day="Sat" data-time="9:00 AM" aria-label="Book Youth MMA, Saturday at 9:00 AM, ages 7–15"><span class="sc__time">9:00 AM</span><span class="sc__name">Youth MMA<span class="sc__ages">7–15</span></span><span class="sc__tags"><span class="sc__tag sc__tag--trial">Free trial</span></span></button></li>
+          <li><button type="button" class="sc__class sc__class--nogi" data-aud="kids" data-book="form" data-name="Kids Grappling (7–12)" data-type="No-Gi" data-day="Sat" data-time="10:00 AM" aria-label="Book Kids Grappling, Saturday at 10:00 AM, ages 7–12"><span class="sc__time">10:00 AM<span class="sc__style">No-Gi</span></span><span class="sc__name">Kids Grappling<span class="sc__ages">7–12</span></span><span class="sc__tags"><span class="sc__tag sc__tag--trial">Free trial</span></span></button></li>
+          <li><button type="button" class="sc__class sc__class--nogi" data-aud="adult" data-book="form" data-name="Adult &amp; Teens" data-type="No-Gi" data-day="Sat" data-time="11:00 AM" aria-label="Book Adult &amp; Teens, Saturday at 11:00 AM"><span class="sc__time">11:00 AM<span class="sc__style">No-Gi</span></span><span class="sc__name">Adult &amp; Teens</span><span class="sc__tags"></span></button></li>
+          <li><button type="button" class="sc__class sc__class--nogi" data-aud="kids" data-book="kids" data-name="Kids Grappling (7–12)" data-type="No-Gi" data-day="Sat" data-time="12:00 PM" aria-label="Book Kids Grappling, Saturday at 12:00 PM, ages 7–12"><span class="sc__time">12:00 PM<span class="sc__style">No-Gi</span></span><span class="sc__name">Kids Grappling<span class="sc__ages">7–12</span></span><span class="sc__tags"><span class="sc__tag sc__tag--adv">Advanced</span><span class="sc__hint">Trials: Fri &amp; Sat</span></span></button></li>
+          <li><button type="button" class="sc__class sc__class--nogi" data-aud="kids" data-book="kids" data-name="Teens Grappling (12–15)" data-type="No-Gi" data-day="Sat" data-time="12:00 PM" aria-label="Book Teens Grappling, Saturday at 12:00 PM, ages 12–15"><span class="sc__time">12:00 PM<span class="sc__style">No-Gi</span></span><span class="sc__name">Teens Grappling<span class="sc__ages">12–15</span></span><span class="sc__tags"><span class="sc__tag sc__tag--adv">Advanced</span><span class="sc__hint">Trials: Fri &amp; Sat</span></span></button></li>
+        </ul>
+      </section>
+      <section class="sc__col" data-sc-col="Sun" aria-labelledby="home-Sun">
+        <h3 class="sc__day" id="home-Sun"><span class="sc__day-full">Sunday</span><span class="sc__day-short" aria-hidden="true">Sun</span><span class="sc__today" hidden>Today</span></h3>
+        <ul class="sc__list">
+          <li><button type="button" class="sc__class sc__class--other" data-aud="all" data-book="form" data-name="Open Mat" data-type="" data-day="Sun" data-time="10:30 AM" aria-label="Book Open Mat, Sunday at 10:30 AM"><span class="sc__time">10:30 AM</span><span class="sc__name">Open Mat<span class="sc__ages">all levels</span></span><span class="sc__tags"></span></button></li>
+          <li><button type="button" class="sc__class sc__class--other" data-aud="kids" data-book="form" data-name="Youth Wrestling (7–17)" data-type="" data-day="Sun" data-time="1:00 PM" aria-label="Book Youth Wrestling, Sunday at 1:00 PM, ages 7–17"><span class="sc__time">1:00 PM</span><span class="sc__name">Youth Wrestling<span class="sc__ages">7–17</span></span><span class="sc__tags"></span></button></li>
+        </ul>
+      </section>
     </div>
-
-
+    <p class="sc__foot">Tap any class to book it. The first class is free. <strong>Advanced</strong> classes need a gray-white belt or higher, or two years of wrestling; everything else is open to beginners. Closures and tournament weekends are on the <a href="https://calendar.labyrinth.vision" target="_blank" rel="noopener noreferrer">live calendar</a>.</p>
+  </div>
+         <!-- SCHEDULE:END -->
 
     <!-- Live stream notice.
          Every class on the schedule above goes out live. The site did not
@@ -1884,105 +1778,6 @@ button {
         <a href="https://stream.labyrinth.vision" target="_blank" rel="noopener noreferrer">member portal</a>.
         Parents can follow along without standing at the door.</p>
     </div>
-
-    <!-- Kids Trial Notice -->
-    <div class="schedule-trial-banner fade-in">
-      <span class="schedule-trial-banner__icon">🥋</span>
-      <p><strong>Kids trials run on Fridays and Saturday mornings.</strong> Friday afternoons are Gi and take every age from 3 up; Saturday at 10:00 AM is No-Gi for ages 7 and up.</p>
-    </div>
-
-    <!-- Schedule Day Cards (all viewports) -->
-    <div class="schedule-cards fade-in">
-      <div class="schedule-day">
-        <div class="schedule-day__header">Monday</div>
-        <div class="schedule-day__classes">
-          <div class="schedule-day__section-label schedule-day__section-label--adults">Adults</div>
-          <div class="schedule-day__class schedule-day__class--gi"><span class="schedule-day__time">6:30 AM</span><span class="sched-type sched-type--gi">Gi</span><span class="schedule-day__name">Adult BJJ</span><a data-book-trial href="/#book" class="sched-book-mobile">Book Trial</a></div>
-          <div class="schedule-day__class schedule-day__class--gi"><span class="schedule-day__time">11:00 AM</span><span class="sched-type sched-type--gi">Gi</span><span class="schedule-day__name">Adult BJJ</span><a data-book-trial href="/#book" class="sched-book-mobile">Book Trial</a></div>
-          <div class="schedule-day__class schedule-day__class--gi"><span class="schedule-day__time">6:30 PM</span><span class="sched-type sched-type--gi">Gi</span><span class="schedule-day__name">Adult BJJ</span><a data-book-trial href="/#book" class="sched-book-mobile">Book Trial</a></div>
-          <div class="schedule-day__section-label schedule-day__section-label--kids">Kids & Teens</div>
-          <div class="schedule-day__class schedule-day__class--gi"><span class="schedule-day__time">4:45 PM</span><span class="sched-type sched-type--gi">Gi</span><span class="schedule-day__name">Kids BJJ<span class="schedule-day__ages">(3–6)</span></span><span class="sched-trial-badge">Trials Fri &amp; Sat</span></div>
-          <div class="schedule-day__class schedule-day__class--gi"><span class="schedule-day__time">5:15 PM</span><span class="sched-type sched-type--gi">Gi</span><span class="schedule-day__name">Kids BJJ<span class="schedule-day__ages">(7–12)</span></span><span class="sched-trial-badge">Trials Fri &amp; Sat</span></div>
-        </div>
-      </div>
-      <div class="schedule-day">
-        <div class="schedule-day__header">Tuesday</div>
-        <div class="schedule-day__classes">
-          <div class="schedule-day__section-label schedule-day__section-label--adults">Adults</div>
-          <div class="schedule-day__class schedule-day__class--nogi"><span class="schedule-day__time">6:30 AM</span><span class="sched-type sched-type--nogi">No-Gi</span><span class="schedule-day__name">Adult BJJ</span><a data-book-trial href="/#book" class="sched-book-mobile">Book Trial</a></div>
-          <div class="schedule-day__class schedule-day__class--nogi"><span class="schedule-day__time">6:30 PM</span><span class="sched-type sched-type--nogi">No-Gi</span><span class="schedule-day__name">Adult BJJ</span><a data-book-trial href="/#book" class="sched-book-mobile">Book Trial</a></div>
-          <div class="schedule-day__section-label schedule-day__section-label--sc">Strength &amp; Conditioning</div>
-          <div class="schedule-day__class schedule-day__class--sc"><span class="schedule-day__time">4:15 PM</span><span class="sched-type sched-type--sc">S&amp;C</span><span class="schedule-day__name">Strength &amp; Conditioning <span class="schedule-day__ages">(all ages)</span></span><a data-book-trial href="/#book" class="sched-book-mobile">Book Trial</a></div>
-          <div class="schedule-day__section-label schedule-day__section-label--kids">Kids & Teens</div>
-          <div class="schedule-day__class schedule-day__class--nogi"><span class="schedule-day__time">5:15 PM</span><span class="sched-type sched-type--nogi">No-Gi</span><span class="schedule-day__name">Kids Grappling<span class="schedule-day__ages">(7–12)</span></span><span class="sched-note">Adv</span> <span class="sched-trial-badge">Trials Fri &amp; Sat</span></div>
-          <div class="schedule-day__class schedule-day__class--nogi"><span class="schedule-day__time">5:15 PM</span><span class="sched-type sched-type--nogi">No-Gi</span><span class="schedule-day__name">Teens Grappling<span class="schedule-day__ages">(12–15)</span></span><span class="sched-note">Adv</span> <span class="sched-trial-badge">Trials Fri &amp; Sat</span></div>
-        </div>
-      </div>
-      <div class="schedule-day">
-        <div class="schedule-day__header">Wednesday</div>
-        <div class="schedule-day__classes">
-          <div class="schedule-day__section-label schedule-day__section-label--adults">Adults</div>
-          <div class="schedule-day__class schedule-day__class--gi"><span class="schedule-day__time">6:30 AM</span><span class="sched-type sched-type--gi">Gi</span><span class="schedule-day__name">Adult BJJ</span><a data-book-trial href="/#book" class="sched-book-mobile">Book Trial</a></div>
-          <div class="schedule-day__class schedule-day__class--nogi"><span class="schedule-day__time">11:00 AM</span><span class="sched-type sched-type--nogi">No-Gi</span><span class="schedule-day__name">Adult BJJ</span><a data-book-trial href="/#book" class="sched-book-mobile">Book Trial</a></div>
-          <div class="schedule-day__class schedule-day__class--gi"><span class="schedule-day__time">6:30 PM</span><span class="sched-type sched-type--gi">Gi</span><span class="schedule-day__name">Adult BJJ</span><a data-book-trial href="/#book" class="sched-book-mobile">Book Trial</a></div>
-          <div class="schedule-day__section-label schedule-day__section-label--kids">Kids & Teens</div>
-          <div class="schedule-day__class schedule-day__class--gi"><span class="schedule-day__time">4:45 PM</span><span class="sched-type sched-type--gi">Gi</span><span class="schedule-day__name">Kids BJJ<span class="schedule-day__ages">(3–6)</span></span><span class="sched-trial-badge">Trials Fri &amp; Sat</span></div>
-          <div class="schedule-day__class schedule-day__class--gi"><span class="schedule-day__time">5:15 PM</span><span class="sched-type sched-type--gi">Gi</span><span class="schedule-day__name">Kids BJJ<span class="schedule-day__ages">(7–12)</span></span><span class="sched-trial-badge">Trials Fri &amp; Sat</span></div>
-          <div class="schedule-day__section-label schedule-day__section-label--wrestling">Wrestling</div>
-          <div class="schedule-day__class schedule-day__class--wrestling"><span class="schedule-day__time">7:30 PM</span><span class="schedule-day__name">Wrestling<span class="schedule-day__ages">(7–17)</span></span><a data-book-trial href="/#book" class="sched-book-mobile sched-book--trial">Book Trial</a></div>
-        </div>
-      </div>
-      <div class="schedule-day">
-        <div class="schedule-day__header">Thursday</div>
-        <div class="schedule-day__classes">
-          <div class="schedule-day__section-label schedule-day__section-label--adults">Adults</div>
-          <div class="schedule-day__class schedule-day__class--nogi"><span class="schedule-day__time">6:30 AM</span><span class="sched-type sched-type--nogi">No-Gi</span><span class="schedule-day__name">Adult BJJ</span><a data-book-trial href="/#book" class="sched-book-mobile">Book Trial</a></div>
-          <div class="schedule-day__class schedule-day__class--nogi"><span class="schedule-day__time">6:30 PM</span><span class="sched-type sched-type--nogi">No-Gi</span><span class="schedule-day__name">Adult BJJ</span><a data-book-trial href="/#book" class="sched-book-mobile">Book Trial</a></div>
-          <div class="schedule-day__section-label schedule-day__section-label--sc">Strength &amp; Conditioning</div>
-          <div class="schedule-day__class schedule-day__class--sc"><span class="schedule-day__time">4:15 PM</span><span class="sched-type sched-type--sc">S&amp;C</span><span class="schedule-day__name">Strength &amp; Conditioning <span class="schedule-day__ages">(all ages)</span></span><a data-book-trial href="/#book" class="sched-book-mobile">Book Trial</a></div>
-          <div class="schedule-day__section-label schedule-day__section-label--kids">Kids & Teens</div>
-          <div class="schedule-day__class schedule-day__class--nogi"><span class="schedule-day__time">5:15 PM</span><span class="sched-type sched-type--nogi">No-Gi</span><span class="schedule-day__name">Kids Grappling<span class="schedule-day__ages">(7–12)</span></span><span class="sched-note">Adv</span> <span class="sched-trial-badge">Trials Fri &amp; Sat</span></div>
-          <div class="schedule-day__class schedule-day__class--nogi"><span class="schedule-day__time">5:15 PM</span><span class="sched-type sched-type--nogi">No-Gi</span><span class="schedule-day__name">Teens Grappling<span class="schedule-day__ages">(12–15)</span></span><span class="sched-note">Adv</span> <span class="sched-trial-badge">Trials Fri &amp; Sat</span></div>
-          <div class="schedule-day__section-label schedule-day__section-label--wrestling">Wrestling</div>
-          <div class="schedule-day__class schedule-day__class--wrestling"><span class="schedule-day__time">7:30 PM</span><span class="schedule-day__name">Wrestling<span class="schedule-day__ages">(7–17)</span></span><a data-book-trial href="/#book" class="sched-book-mobile sched-book--trial">Book Trial</a></div>
-        </div>
-      </div>
-      <div class="schedule-day">
-        <div class="schedule-day__header">Friday</div>
-        <div class="schedule-day__classes">
-          <div class="schedule-day__section-label schedule-day__section-label--adults">Adults</div>
-          <div class="schedule-day__class schedule-day__class--gi"><span class="schedule-day__time">11:00 AM</span><span class="sched-type sched-type--gi">Gi</span><span class="schedule-day__name">Adult BJJ</span><a data-book-trial href="/#book" class="sched-book-mobile">Book Trial</a></div>
-          
-          <div class="schedule-day__class schedule-day__class--gi"><span class="schedule-day__time">6:30 PM</span><span class="sched-type sched-type--gi">Gi</span><span class="schedule-day__name">Adult Comp</span><a data-book-trial href="/#book" class="sched-book-mobile">Book Trial</a></div>
-          <div class="schedule-day__section-label schedule-day__section-label--kids">Kids & Teens</div>
-          <div class="schedule-day__class schedule-day__class--gi"><span class="schedule-day__time">4:45 PM</span><span class="sched-type sched-type--gi">Gi</span><span class="schedule-day__name">Kids BJJ<span class="schedule-day__ages">(3–6)</span></span><a data-book-trial href="/#book" class="sched-book-mobile sched-book--trial">Book Trial</a></div>
-          <div class="schedule-day__class schedule-day__class--gi"><span class="schedule-day__time">5:15 PM</span><span class="sched-type sched-type--gi">Gi</span><span class="schedule-day__name">Kids BJJ Comp<span class="schedule-day__ages">(7–12)</span></span><a data-book-trial href="/#book" class="sched-book-mobile sched-book--trial">Book Trial</a></div>
-          <div class="schedule-day__class schedule-day__class--gi"><span class="schedule-day__time">5:15 PM</span><span class="sched-type sched-type--gi">Gi</span><span class="schedule-day__name">Teens BJJ Comp<span class="schedule-day__ages">(12–15)</span></span><a data-book-trial href="/#book" class="sched-book-mobile sched-book--trial">Book Trial</a></div>
-        </div>
-      </div>
-      <div class="schedule-day">
-        <div class="schedule-day__header">Saturday</div>
-        <div class="schedule-day__classes">
-          <div class="schedule-day__section-label schedule-day__section-label--adults">Adults</div>
-          <div class="schedule-day__class schedule-day__class--nogi"><span class="schedule-day__time">9:00 AM</span><span class="sched-type sched-type--nogi">No-Gi</span><span class="schedule-day__name">Adult Comp</span><a data-book-trial href="/#book" class="sched-book-mobile">Book Trial</a></div>
-          <div class="schedule-day__class schedule-day__class--nogi"><span class="schedule-day__time">11:00 AM</span><span class="sched-type sched-type--nogi">No-Gi</span><span class="schedule-day__name">Adult & Teens</span><a data-book-trial href="/#book" class="sched-book-mobile">Book Trial</a></div>
-          <div class="schedule-day__section-label schedule-day__section-label--kids">Kids & Teens</div>
-          <div class="schedule-day__class schedule-day__class--nogi"><span class="schedule-day__time">10:00 AM</span><span class="sched-type sched-type--nogi">No-Gi</span><span class="schedule-day__name">Kids Grappling<span class="schedule-day__ages">(7–12)</span></span><a data-book-trial href="/#book" class="sched-book-mobile">Book Trial</a></div>
-          <div class="schedule-day__class schedule-day__class--nogi"><span class="schedule-day__time">12:00 PM</span><span class="sched-type sched-type--nogi">No-Gi</span><span class="schedule-day__name">Kids Grappling<span class="schedule-day__ages">(7–12)</span></span><span class="sched-note">Adv</span> <button class="sched-book-mobile sched-book--adv" data-adv="true">Book</button></div>
-          <div class="schedule-day__class schedule-day__class--nogi"><span class="schedule-day__time">12:00 PM</span><span class="sched-type sched-type--nogi">No-Gi</span><span class="schedule-day__name">Teens Grappling<span class="schedule-day__ages">(12–15)</span></span><span class="sched-note">Adv</span> <button class="sched-book-mobile sched-book--adv" data-adv="true">Book</button></div>
-        </div>
-      </div>
-      <div class="schedule-day">
-        <div class="schedule-day__header">Sunday</div>
-        <div class="schedule-day__classes">
-          <div class="schedule-day__section-label schedule-day__section-label--open">Open Mat</div>
-          <div class="schedule-day__class schedule-day__class--open"><span class="schedule-day__time">10:30 AM</span><span class="schedule-day__name">Open Mat</span><a data-book-trial href="/#book" class="sched-book-mobile">Book</a></div>
-          <div class="schedule-day__section-label schedule-day__section-label--wrestling">Wrestling</div>
-          <div class="schedule-day__class schedule-day__class--wrestling"><span class="schedule-day__time">1:00 PM</span><span class="schedule-day__name">Wrestling<span class="schedule-day__ages">(7–17)</span></span><a data-book-trial href="/#book" class="sched-book-mobile sched-book--trial">Book Trial</a></div>
-        </div>
-      </div>
-    </div>
-
 
   </div>
 </section>
@@ -2372,8 +2167,9 @@ button {
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
 
 <!-- App JS -->
-<script src="./booking.js?v=22b29285"></script>
+<script src="./booking.js?v=b0b6fda0"></script>
 <script src="./app.js?v=0cffaf2a"></script>
+<script src="./schedule.js?v=418a5570"></script>
 
 <script data-pplx-inline-edit>
 (function(){

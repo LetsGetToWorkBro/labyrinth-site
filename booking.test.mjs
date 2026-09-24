@@ -157,10 +157,9 @@ console.log('\nThe front page still books, after the move:')
   await page.waitForTimeout(200)
   check('Escape closes it', await isOpen(page), false)
 
-  // A specific class off the schedule keeps its context. The page carries both
-  // a desktop table and mobile day cards and hides one of them, so take
-  // whichever "Book Trial" this viewport actually shows.
-  await page.locator('.sched-book--trial:visible, .sched-book-mobile:visible').first().click()
+  // A specific class off the schedule keeps its context. Every card on the
+  // schedule is the button; take the first one that books straight to a form.
+  await page.locator('.sc__class[data-book="form"]:visible').first().click()
   await page.waitForTimeout(300)
   check('a schedule button goes straight to the form',
     await page.evaluate(() => !!document.getElementById('bookingForm')), true)
