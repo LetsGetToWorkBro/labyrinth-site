@@ -281,6 +281,156 @@
   font-family: var(--font-body);
 }
 
+/* Which occurrence of the class — a month, not a list.
+   "Which Friday of the month" is a question people answer by looking at a
+   month, so the control is a month. Every day is drawn so the shape is the
+   familiar one; only the class's own weekday is a control. */
+.booking-cal {
+  border: 0;
+  margin: 0 0 20px;
+  padding: 0;
+  min-width: 0; /* a fieldset will not shrink below its content without this */
+}
+
+.booking-cal__legend {
+  padding: 0;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+}
+
+.booking-cal__body {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 10px 10px 12px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.booking-cal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.booking-cal__month {
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.booking-cal__nav {
+  /* 40px rather than the 44 the chips used: these sit in their own row with
+     nothing beside them, so a miss costs a tap and not a wrong field. */
+  width: 40px;
+  height: 40px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.booking-cal__nav:hover:not(:disabled) { border-color: var(--gold, #C8A24C); }
+
+/* Disabled at the ends of the bookable range rather than hidden: a control
+   that vanishes moves everything under it, and the thumb already travelling
+   towards it presses whatever slid into its place. */
+.booking-cal__nav:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.booking-cal__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.booking-cal__dow {
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-faint, #555);
+  padding-bottom: 4px;
+}
+
+.booking-cal__pad { display: block; }
+
+.booking-cal__day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Square cells, so seven of them fit any phone without a horizontal scroll
+     and the grid reads as a calendar rather than a list of buttons. */
+  aspect-ratio: 1 / 1;
+  border-radius: 9px;
+  font-family: var(--font-body);
+  font-size: 14px;
+}
+
+/* Not a disabled button: there IS a class on Wednesday, it is simply not this
+   one, and a greyed-out control says the academy is shut. Plain text. */
+.booking-cal__day--off {
+  color: var(--text-faint, #555);
+}
+
+.booking-cal__day--open {
+  color: var(--text);
+  font-weight: 600;
+  border: 1px solid var(--border-strong, rgba(255, 255, 255, 0.14));
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
+}
+
+.booking-cal__day--open:hover { border-color: var(--gold, #C8A24C); }
+
+/* Hidden from sight, NOT from the keyboard or the accessibility tree —
+   display:none would take the whole group out of the tab order and leave the
+   calendar mouse-only. */
+.booking-cal__radio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.booking-cal__radio:checked + .booking-cal__day--open {
+  background: var(--gold, #C8A24C);
+  border-color: var(--gold, #C8A24C);
+  color: #17120b;
+}
+
+/* Drawn on the label, because the input it belongs to is the invisible one. */
+.booking-cal__radio:focus-visible + .booking-cal__day--open {
+  outline: 2px solid var(--gold, #C8A24C);
+  outline-offset: 2px;
+}
+
+/* The full date, for a screen reader. The visible cell is a bare number, which
+   on its own says nothing about which month or weekday it belongs to. */
+.booking-cal__sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
 /* Form inputs */
 .booking-form {
   display: flex;

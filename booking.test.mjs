@@ -170,6 +170,129 @@ console.log('\nThe front page still books, after the move:')
   await ctx.close()
 }
 
+// ── Choosing WHICH Friday, on a calendar ────────────────────────────────────
+//
+// The form used to pin every booking to the next occurrence of the class's
+// weekday and say so in a line of text. A parent who could not make this
+// Friday had no way to say which one they could, so they either came on a day
+// that did not suit them or did not come — and the academy never learned
+// which. The soonest is still selected on open, so nothing changes for
+// somebody who wants the next one.
+console.log('\nPicking the date on a calendar:')
+{
+  const { page, ctx } = await open('/index.html')
+  await page.evaluate(() => window.LabyrinthBooking.openForm('Kids BJJ Comp (7–12)', 'Gi', 'Fri', '5:15 PM'))
+  await page.waitForTimeout(300)
+
+  check('the form draws a month', await page.locator('.booking-cal__grid').count(), 1)
+  check('the question names the day',
+    (await page.textContent('.booking-cal__legend')).trim(), 'Which Friday?')
+  check('with a weekday header row', await page.locator('.booking-cal__dow').count(), 7)
+
+  // Every day of the month is drawn, so the shape is the familiar one.
+  const shown = await page.evaluate(() => {
+    const cells = [...document.querySelectorAll('.booking-cal__day')]
+    const m = document.querySelector('.booking-cal__month').textContent.trim()
+    return { cells: cells.length, month: m,
+             open: [...document.querySelectorAll('.booking-cal__day--open')].map(c => c.textContent.replace(/\D+/g, ' ').trim().split(' ')[0]) }
+  })
+  const daysInMonth = await page.evaluate(() => {
+    const [name, yr] = document.querySelector('.booking-cal__month').textContent.trim().split(' ')
+    const mi = ['January','February','March','April','May','June','July','August','September','October','November','December'].indexOf(name)
+    return new Date(Number(yr), mi + 1, 0).getDate()
+  })
+  check('every day of the month is drawn', shown.cells, daysInMonth)
+
+  // Only the class's own weekday is selectable.
+  check('only Fridays are bookable', await page.evaluate(() => {
+    const opens = [...document.querySelectorAll('.booking-cal__day--open')]
+    return opens.every(l => {
+      const v = document.getElementById(l.getAttribute('for')).value
+      return v.startsWith('Friday,')
+    })
+  }), true)
+  check('and the other days are not controls', await page.evaluate(() =>
+    document.querySelectorAll('.booking-cal__day--off button, .booking-cal__day--off input').length), 0)
+
+  // The soonest is preselected, so the fast path is unchanged.
+  const soonest = await page.evaluate(() => {
+    const d = window.LabyrinthBooking.nextDate('Fri', '5:15 PM')
+    const p = n => (n < 10 ? '0' : '') + n
+    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate())
+  })
+  check('the soonest class is chosen on open', await page.evaluate(() => {
+    const r = document.querySelector('input[name="bookingDate"]:checked')
+    return r ? r.id.replace('bookingDate-', '') : null
+  }), soonest)
+
+  // Nothing in the past, and nothing beyond the booking horizon.
+  check('no day before the soonest is offered', await page.evaluate(s => {
+    return [...document.querySelectorAll('input[name="bookingDate"]')]
+      .every(r => r.id.replace('bookingDate-', '') >= s)
+  }, soonest), true)
+
+  // Paging to the next month keeps the choice made in this one.
+  await page.click('[data-cal-move="1"]')
+  await page.waitForTimeout(200)
+  const monthAfter = await page.textContent('.booking-cal__month')
+  check('the next-month arrow moves the calendar', monthAfter.trim() !== shown.month, true)
+  check('and the earlier choice survives being off screen', await page.evaluate(() =>
+    document.querySelectorAll('input[name="bookingDate"]:checked').length), 0)
+
+  await page.click('[data-cal-move="-1"]')
+  await page.waitForTimeout(200)
+  check('coming back shows it still chosen', await page.evaluate(() => {
+    const r = document.querySelector('input[name="bookingDate"]:checked')
+    return r ? r.id.replace('bookingDate-', '') : null
+  }), soonest)
+
+  // You cannot page back before the soonest bookable class.
+  check('there is no paging into the past', await page.evaluate(() =>
+    document.querySelector('[data-cal-move="-1"]').disabled), true)
+
+  // Pick a later Friday and confirm THAT is what gets submitted.
+  let sent = null
+  await page.route('**/functions/v1/book-trial', route => {
+    sent = JSON.parse(route.request().postData() || '{}')
+    return route.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' })
+  })
+  /* Page forward to find one. The month the form opens on can hold only a
+     single remaining class — late September has one Friday left — so a test
+     that assumed two in view passed for eleven months of the year and failed
+     in the twelfth. */
+  let later = await page.evaluate(s => {
+    const rs = [...document.querySelectorAll('input[name="bookingDate"]')]
+      .map(r => r.id.replace('bookingDate-', '')).filter(k => k !== s)
+    return rs[0] || null
+  }, soonest)
+  if (!later) {
+    await page.click('[data-cal-move="1"]')
+    await page.waitForTimeout(200)
+    later = await page.evaluate(() => {
+      const r = document.querySelector('input[name="bookingDate"]')
+      return r ? r.id.replace('bookingDate-', '') : null
+    })
+  }
+  check('a later class can be reached', typeof later === 'string' && later > soonest, true)
+  const laterLong = await page.evaluate(k => document.getElementById('bookingDate-' + k).value, later)
+  await page.locator(`label[for="bookingDate-${later}"]`).click()
+  await page.waitForTimeout(150)
+  await page.fill('#bookingName', 'Test Parent')
+  await page.fill('#bookingEmail', 'parent@example.com')
+  await page.fill('#bookingPhone', '(281) 555-0000')
+  await page.click('#bookingSubmitBtn')
+  await page.waitForTimeout(800)
+
+  check('the chosen date is what reaches the CRM',
+    sent && sent.trialAt ? sent.trialAt.slice(0, 10) : sent, later)
+  check('and it is not the soonest one', later !== soonest, true)
+  check('the confirmation names the date they picked',
+    (await page.textContent('.booking-success__detail') || '').includes(laterLong.replace(/^[A-Za-z]+, /, '')), true)
+
+  await page.unroute('**/functions/v1/book-trial')
+  await ctx.close()
+}
+
 // ── /#book opens the picker on arrival ───────────────────────────────────────
 console.log('\nArriving at the front page on #book:')
 {

@@ -177,8 +177,114 @@
     return next;
   }
 
+  /* How far ahead a trial can be booked.
+
+     Twelve weeks. Far enough that a family planning around a school term can
+     say so, short enough that the timetable they are booking against is still
+     likely to be the timetable that runs. */
+  var BOOK_AHEAD_DAYS = 84;
+
+  /* The dates this class runs, soonest first, out to the horizon.
+
+     The first is exactly what getNextDayDate returns, so a visitor who wants
+     the soonest class does nothing and gets what they always got. The rest are
+     that date plus whole weeks — every class on the timetable is weekly, so
+     the run is a simple step, and stepping by 7 days on a Date also carries
+     itself across month ends and the November change off daylight saving. */
+  function upcomingDayDates(dayAbbr, timeStr, count) {
+    var first = getNextDayDate(dayAbbr, timeStr);
+    var n = count || Math.floor(BOOK_AHEAD_DAYS / 7);
+    var out = [];
+    for (var i = 0; i < n; i++) {
+      var d = new Date(first);
+      d.setDate(first.getDate() + i * 7);
+      out.push(d);
+    }
+    return out;
+  }
+
   function formatDate(d) {
     return DAY_NAMES[d.getDay()] + ', ' + MONTH_NAMES[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear();
+  }
+
+  /* A calendar day, as a key. Local parts, never toISOString(): that converts
+     to UTC first, so any evening date in Central time comes back as the
+     following day and every comparison below silently shifts by one. */
+  function ymd(d) {
+    var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  }
+
+  /**
+   * A month of the calendar, with only the days this class runs selectable.
+   *
+   * Shown instead of a list of dates because "which Friday of the month" is a
+   * question people answer by looking at a month — a parent checking a trial
+   * against a birthday party is reading a calendar in their head either way,
+   * and a row of four dates makes them do the conversion themselves.
+   *
+   * Every day of the month is drawn, so the shape is the one everybody already
+   * knows, but only the class's own weekday is a control. The rest are plain
+   * text: dimmed, unfocusable, and carrying no promise that the academy is
+   * open. Drawing Wednesday as a disabled BUTTON would say "you may not book
+   * this", which is wrong — there is a Wednesday class, it is simply not this
+   * one.
+   *
+   * `sel` is the chosen day as YYYY-MM-DD, `view` any date inside the month to
+   * draw, and `first` the earliest bookable day, which is the same date the
+   * old single-date form would have used.
+   */
+  var WEEKDAY_INITIALS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+
+  function calendarHTML(dayAbbr, view, sel, first, last) {
+    var target = DAY_MAP[dayAbbr];
+    var y = view.getFullYear(), mo = view.getMonth();
+    var firstOfMonth = new Date(y, mo, 1);
+    var daysInMonth = new Date(y, mo + 1, 0).getDate();
+    var lead = firstOfMonth.getDay();
+
+    var html = '<div class="booking-cal__head">';
+    /* Disabled rather than hidden at the ends of the range: a control that
+       vanishes moves everything under it, and the visitor who was reaching for
+       it presses whatever slid into its place. */
+    var prevOff = new Date(y, mo - 1, 1);
+    var nextOff = new Date(y, mo + 1, 1);
+    var prevOk = new Date(y, mo, 0) >= new Date(first.getFullYear(), first.getMonth(), first.getDate());
+    var nextOk = nextOff <= last;
+    html += '<button type="button" class="booking-cal__nav" data-cal-move="-1"'
+      + (prevOk ? '' : ' disabled') + ' aria-label="Previous month">‹</button>';
+    html += '<span class="booking-cal__month" aria-live="polite">'
+      + MONTH_NAMES[mo] + ' ' + y + '</span>';
+    html += '<button type="button" class="booking-cal__nav" data-cal-move="1"'
+      + (nextOk ? '' : ' disabled') + ' aria-label="Next month">›</button>';
+    html += '</div>';
+
+    html += '<div class="booking-cal__grid">';
+    for (var w = 0; w < 7; w++) {
+      /* aria-hidden: a screen reader gets the whole weekday from each day's own
+         label ("Friday, October 9"), so reading a column of bare letters first
+         is noise. */
+      html += '<span class="booking-cal__dow" aria-hidden="true">' + WEEKDAY_INITIALS[w] + '</span>';
+    }
+    for (var b = 0; b < lead; b++) html += '<span class="booking-cal__pad"></span>';
+
+    for (var day = 1; day <= daysInMonth; day++) {
+      var d = new Date(y, mo, day);
+      var key = ymd(d);
+      var bookable = d.getDay() === target && key >= ymd(first) && key <= ymd(last);
+      if (!bookable) {
+        html += '<span class="booking-cal__day booking-cal__day--off">' + day + '</span>';
+        continue;
+      }
+      var id = 'bookingDate-' + key;
+      html += '<input class="booking-cal__radio" type="radio" name="bookingDate" id="' + id + '"'
+        + ' value="' + formatDate(d) + '"' + (key === sel ? ' checked' : '') + '>';
+      html += '<label class="booking-cal__day booking-cal__day--open" for="' + id + '">'
+        + '<span aria-hidden="true">' + day + '</span>'
+        + '<span class="booking-cal__sr">' + formatDate(d) + '</span></label>';
+    }
+    html += '</div>';
+    return html;
   }
 
   function dayAbbrToFull(abbr) {
@@ -392,8 +498,8 @@
 
   // ── Render State B: Booking Form ──
   function showBookingForm(className, classType, dayAbbr, timeStr) {
-    var nextDate = getNextDayDate(dayAbbr, timeStr);
-    var dateStr = formatDate(nextDate);
+    var dates = upcomingDayDates(dayAbbr, timeStr);
+    var dateStr = formatDate(dates[0]);
     var dayFull = dayAbbrToFull(dayAbbr);
 
     var typeClass = classType && classType.toLowerCase().replace('-','').replace(' ','') === 'nogi' ? 'nogi' : 'gi';
@@ -406,8 +512,21 @@
     if (typeLabel) html += '<span class="booking-class-badge__type booking-class-badge__type--' + typeClass + '">' + typeLabel + '</span>';
     html += '</div>';
     html += '<div class="booking-class-info__datetime">' + dayFull + ' at ' + timeStr + '</div>';
-    html += '<div class="booking-class-info__next">Next class: ' + dateStr + '</div>';
     html += '</div>';
+
+    /*
+     * Which one they want.
+     *
+     * This used to be a line of text reading "Next class: <date>", and that
+     * line was the whole booking — a parent who could not make this Friday
+     * could either come on a day that did not suit them or give up, and the
+     * academy never heard which it was. The soonest is still selected when the
+     * form opens, so the fast path is unchanged.
+     */
+    html += '<fieldset class="booking-cal">';
+    html += '<legend class="booking-cal__legend">Which ' + dayFull + '?</legend>';
+    html += '<div class="booking-cal__body" id="bookingCal"></div>';
+    html += '</fieldset>';
 
     html += '<form class="booking-form" id="bookingForm" autocomplete="on">';
     html += '<div class="booking-form__group"><label class="booking-form__label" for="bookingName">Full Name</label><input class="booking-form__input" type="text" id="bookingName" name="name" placeholder="Your full name" required autocomplete="name"></div>';
@@ -432,6 +551,63 @@
       classTime: timeStr,
       classDate: dateStr
     };
+
+    /*
+     * The calendar's state, and the one place it is drawn.
+     *
+     * `selected` is the answer and is kept here rather than read off the DOM,
+     * because paging to another month replaces the grid: a choice living only
+     * in a radio would be lost the moment somebody looked at November and came
+     * back. `view` is only which month is on screen.
+     */
+    var firstDate = upcomingDayDates(dayAbbr, timeStr, 1)[0];
+    var lastDate = new Date(firstDate);
+    lastDate.setDate(firstDate.getDate() + BOOK_AHEAD_DAYS);
+    var selected = ymd(firstDate);
+    var view = new Date(firstDate.getFullYear(), firstDate.getMonth(), 1);
+    var calEl = document.getElementById('bookingCal');
+
+    function drawCal() {
+      calEl.innerHTML = calendarHTML(dayAbbr, view, selected, firstDate, lastDate);
+    }
+    drawCal();
+
+    /* One listener on the container, so the handlers survive every redraw.
+       Binding per cell would mean re-binding on each month change, which is
+       how a calendar ends up with a month you can page into but not book. */
+    calEl.addEventListener('click', function (e) {
+      var nav = e.target.closest('[data-cal-move]');
+      if (!nav || nav.disabled) return;
+      view = new Date(view.getFullYear(), view.getMonth() + Number(nav.getAttribute('data-cal-move')), 1);
+      drawCal();
+      /* Keep the keyboard where the person left it: redrawing replaces the
+         button they just pressed, and focus would otherwise fall to the body
+         and drop them at the top of the modal. */
+      var again = calEl.querySelector('[data-cal-move="' + nav.getAttribute('data-cal-move') + '"]');
+      if (again && !again.disabled) again.focus();
+      else {
+        var other = calEl.querySelector('[data-cal-move]:not([disabled])');
+        if (other) other.focus();
+      }
+    });
+
+    calEl.addEventListener('change', function (e) {
+      if (e.target.name !== 'bookingDate') return;
+      selected = e.target.id.replace('bookingDate-', '');
+    });
+
+    /* What the form will send: the chosen day, in the long form the CRM and
+       the confirmation message both already expect. */
+    function chosenDate() {
+      var picked = calEl.querySelector('input[name="bookingDate"]:checked');
+      if (picked) return picked.value;
+      /* Selected, but in a month that is not on screen. Rebuild the string
+         from the key rather than falling back to the soonest date — silently
+         booking a different day than the one showing as chosen is the worst
+         thing this form could do. */
+      var parts = selected.split('-');
+      return formatDate(new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2])));
+    }
 
     var form = document.getElementById('bookingForm');
     form.addEventListener('submit', function (e) {
@@ -459,7 +635,7 @@
         crmProgram: classInfo.crmProgram,
         classDay: classInfo.classDay,
         classTime: classInfo.classTime,
-        classDate: classInfo.classDate
+        classDate: chosenDate()
       };
 
       submitBooking(lastBookingData);
@@ -606,7 +782,11 @@
     // that a class is bookable right up to its start time. Behaviour, not a
     // constant: a regex on SAME_DAY_CUTOFF_MINS would pass with the maths
     // broken.
-    nextDate: getNextDayDate
+    nextDate: getNextDayDate,
+    // The dates the form offers. Exposed for the same reason as nextDate: the
+    // rule worth pinning is that they are the right weekday, in order, a week
+    // apart — which a test can only see by running the arithmetic.
+    upcomingDates: upcomingDayDates
   };
 
   /**
