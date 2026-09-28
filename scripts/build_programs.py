@@ -228,7 +228,7 @@ PROGRAMS = [
         ],
         "schedule_title": "Kids class times",
         "schedule_note": "Classes marked <strong>ADV</strong> are the advanced grappling classes: a child needs a gray-white belt or higher, or two or more years of wrestling, to join one. Everything else is open to any child in the age range, including one who has never trained. <strong>Free trials for kids run on Friday afternoons and Saturday mornings.</strong> Friday is Gi and takes every age from three up; Saturday at 10:00 AM is No-Gi and starts at seven, because there is no 3–6 class on a Saturday to put a younger child in.",
-        "week": schedule_data.week_for({"Kids BJJ", "Kids Grappling", "Teens Grappling", "Kids BJJ Comp", "Teens BJJ Comp", "Youth MMA"}),
+        "week": schedule_data.week_for({"Kids BJJ", "Kids Grappling", "Teens Grappling", "Kids BJJ Comp", "Teens BJJ Comp", "MMA Conditioning"}),
         "body_title": "What a class actually looks like",
         "body": [
             "Forty-five minutes, and the shape of it barely changes: a warm-up that is mostly movement games, a technique of the day broken into two or three pieces, drilling that technique with a partner, and then positional rounds: live training from a set starting position, which is how a child learns to apply something under mild resistance without it becoming a fight.",
@@ -249,7 +249,7 @@ PROGRAMS = [
             ("Is jiu-jitsu safe for a young child?",
              "It is one of the safest martial arts a child can do, because there is no striking in it at all. BJJ is grappling (leverage, position and control) so children are not being hit, and they are not hitting anyone. Classes are grouped by age, beginners are not put in with advanced kids, and a coach is watching every round. Falling safely is one of the first things we teach, and it is the skill parents tell us shows up outside the gym."),
             ("When can we come and try a class?",
-             "Two options. Friday afternoons in the Gi: 4:45 PM for ages 3–6, and 5:15 PM for 7–12 and 12–15. Or Saturday morning for ages 7 and up: Youth MMA at 9:00, or No-Gi grappling at 10:00. It is free either way, there is no commitment, and nobody will call you afterwards to talk you into anything. Book online or ring the academy on " + PHONE + "."),
+             "Two options. Friday afternoons in the Gi: 4:45 PM for ages 3–6, and 5:15 PM for 7–12 and 12–15. Or Saturday morning: MMA Conditioning at 9:00 for all ages, or No-Gi grappling at 10:00 for ages 7 and up. It is free either way, there is no commitment, and nobody will call you afterwards to talk you into anything. Book online or ring the academy on " + PHONE + "."),
             ("Does my child need a gi to start?",
              "No. Come in a t-shirt and shorts or leggings with no zippers, buttons or pockets. We have loaner gis for trial classes. If your child carries on training we will get them fitted properly, but nobody needs to spend money to find out whether their kid likes it."),
             ("Will my child have to compete?",

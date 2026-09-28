@@ -61,11 +61,12 @@ CLASSES = [
     ("Friday", "5:15 PM", "Teens BJJ Comp", "12–15", "Gi", "kids", {"comp", "trial"}),
     ("Friday", "6:30 PM", "Adult Comp", "", "Gi", "adult", {"comp"}),
     # ── Saturday ──
-    # Youth MMA took the 9:00 slot from the Saturday adult No-Gi competition
-    # class. Taught by Grandmaster Scott Jones, who came across with Team
-    # Legacy. Trial-bookable: it is a new program, and a program nobody new can
-    # book into is a program that only ever teaches the kids already enrolled.
-    ("Saturday", "9:00 AM", "Youth MMA", "7–15", "", "kids", {"trial"}),
+    # MMA Conditioning took the 9:00 slot from the Saturday adult No-Gi
+    # competition class. Taught by Grandmaster Scott Jones, who came across with
+    # Team Legacy. All ages, like Strength & Conditioning, so anybody can book it
+    # straight from the timetable; it also stays on the kids trial list, because
+    # it is one of only two Saturday classes a new child can start in.
+    ("Saturday", "9:00 AM", "MMA Conditioning", "all ages", "", "all", {"trial"}),
     ("Saturday", "10:00 AM", "Kids Grappling", "7–12", "No-Gi", "kids", {"trial"}),
     ("Saturday", "11:00 AM", "Adult & Teens", "", "No-Gi", "adult", set()),
     ("Saturday", "12:00 PM", "Kids Grappling", "7–12", "No-Gi", "kids", {"adv"}),

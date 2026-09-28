@@ -146,7 +146,7 @@ AREAS = [
             "You and we are in the same school district, which matters more than it sounds. Our kids classes are timed around the Lamar CISD day, so pick-up and a 4:45 or 5:15 class fit together without anybody eating in the car. Term dates and school holidays line up too, which is the difference between a camp week you can use and one that falls in the wrong fortnight.",
             "The other thing worth saying to a Simonton family: the drive does not get harder as you approach. FM 1093 eastbound into Fulshear is not the road that fills up. That is FM 1093 further east, towards Katy and the Grand Parkway, which is a journey you are not making.",
         ],
-        "timing": "Weekday evenings are straightforward. If FM 1093 is having a bad afternoon, the Saturday morning kids classes (Youth MMA at 9:00, grappling at 10:00 AM and noon) are the low-stress alternative.",
+        "timing": "Weekday evenings are straightforward. If FM 1093 is having a bad afternoon, the Saturday morning classes (MMA Conditioning at 9:00 for all ages, kids grappling at 10:00 AM and noon) are the low-stress alternative.",
         "faqs": [
             ("How far is Labyrinth BJJ from Simonton?",
              "Under ten miles, east along FM 1093. We are inside Cross Creek Ranch in Fulshear, on Cross Creek Bend Lane: one road most of the way and no highway."),
@@ -206,7 +206,7 @@ AREAS = [
             ("Why would I drive to Fulshear at all?",
              "The Fulshear academy runs the full seven-day timetable and is where the competition team trains, so some Cinco Ranch families come west for a specific session (the Saturday competition classes, or the all-ages strength and conditioning on Tuesday and Thursday) and train in Katy the rest of the week."),
             ("Is the first class free at both?",
-             "Yes. Try either, or both. Adults can book into any class on the Fulshear timetable; kids trials run on Friday afternoons in the Gi and on Saturday mornings, Youth MMA at 9:00 or No-Gi grappling at 10:00."),
+             "Yes. Try either, or both. Adults can book into any class on the Fulshear timetable; kids trials run on Friday afternoons in the Gi and on Saturday mornings, MMA Conditioning at 9:00 (all ages) or No-Gi grappling at 10:00."),
         ],
     },
     {

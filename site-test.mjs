@@ -177,7 +177,7 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   // The six the endpoint accepts today, plus the two it will accept once
   // PROGRAMS in _shared/trial-emails.ts is extended. Sending a pending one
   // degrades to exactly today's behaviour rather than breaking.
-  const LIVE = ['Adult BJJ', 'Kids 3-6', 'Kids 7-12', 'Teens', 'Wrestling', 'Womens', 'Youth MMA']
+  const LIVE = ['Adult BJJ', 'Kids 3-6', 'Kids 7-12', 'Teens', 'Wrestling', 'Womens', 'MMA Conditioning']
   const PENDING = ['Strength & Conditioning', 'Open Mat']
   const ALLOWED = LIVE.concat(PENDING)
   const entries = [...js.matchAll(/\{name:'(.*?)',[^}]*?crm:'(.*?)'\}/g)]
@@ -559,7 +559,7 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   // The same rule from the data side: the picker offers kids exactly these.
   const kidsList = await page.evaluate(() =>
     LabyrinthBooking.kidsTrialClasses.map(c => c.day + ' ' + c.type))
-  check('L1t the kids trial list is Friday Gi, Saturday No-Gi and Saturday Youth MMA',
+  check('L1t the kids trial list is Friday Gi, Saturday No-Gi and Saturday MMA Conditioning',
     kidsList.length > 0 && kidsList.every(x => x.startsWith('Fri ') || x === 'Sat No-Gi' || x === 'Sat '),
     kidsList.join(', '))
 

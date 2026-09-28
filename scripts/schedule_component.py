@@ -125,7 +125,7 @@ def render(uid="sc"):
       </ul>
     </div>
     <div class="sc__picker" role="group" aria-label="Choose a day" hidden>%(days)s</div>
-    <p class="sc__kids-note" hidden><strong>Kids trials</strong> are on Friday afternoons in the Gi (ages 3 and up) and Saturday mornings: Youth MMA at 9:00 or No-Gi grappling at 10:00 (ages 7 and up).</p>
+    <p class="sc__kids-note" hidden><strong>Kids trials</strong> are on Friday afternoons in the Gi (ages 3 and up) and Saturday mornings: MMA Conditioning at 9:00 (all ages) or No-Gi grappling at 10:00 (ages 7 and up).</p>
     <div class="sc__week">
 %(cols)s
     </div>
