@@ -1757,9 +1757,9 @@ def render_coach_hub():
                         c["belt"], c["photo"], c["lead"], "/coaches/" + c["slug"], c.get("belt2"))
              for c in COACHES]
     cards += [coach_card(n, r, rk, b, p, bio) for n, r, rk, b, p, bio in OTHER_COACHES]
-    # The same order as the front page: the two head coaches, then Shaun and
+    # The same order as the front page: Anthony and Shaun, then Jared and
     # Scott side by side, then everyone else as listed.
-    first = ["Anthony Curry", "Jared Vevera", "Shaun Lawler", "Scott Jones"]
+    first = ["Anthony Curry", "Shaun Lawler", "Jared Vevera", "Scott Jones"]
     def rank_of(card):
         name = re.search(r'coach-card__name">([^<]+)<', card).group(1)
         hits = [i for i, f in enumerate(first) if f in name]

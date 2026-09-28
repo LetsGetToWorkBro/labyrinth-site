@@ -3197,7 +3197,7 @@ body {
     grid-column: span 1;
   }
   /* A last card with no partner looks better centered than left-aligned in a
-     half-empty row. The two head coaches (Anthony and Jared) each take a full
+     half-empty row. The two .coach-card--head cards (Anthony and Shaun) each take a full
      row here, so everyone after them pairs off, and the last card only has no
      partner when the total is odd. This said "even" while there was one head
      coach; with two it caught Hadley, who has a partner, and stranded her
