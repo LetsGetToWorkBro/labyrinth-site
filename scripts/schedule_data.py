@@ -62,7 +62,7 @@ CLASSES = [
     ("Friday", "6:30 PM", "Adult Comp", "", "Gi", "adult", {"comp"}),
     # ── Saturday ──
     # MMA Conditioning took the 9:00 slot from the Saturday adult No-Gi
-    # competition class. Taught by Grandmaster Scott Jones, who came across with
+    # competition class. Taught by Scott Jones, who came across with
     # Team Legacy. All ages, like Strength & Conditioning, so anybody can book it
     # straight from the timetable; it also stays on the kids trial list, because
     # it is one of only two Saturday classes a new child can start in.

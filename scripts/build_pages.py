@@ -176,7 +176,7 @@ def render_schedule():
       <a href="/programs/adult-bjj-fulshear" class="prog-sibling"><div class="prog-sibling__title">Adults, any level</div><div class="prog-sibling__desc">6:30 AM, 11:00 AM and 6:30 PM. Gi and No-Gi, complete beginners included.</div></a>
       <a href="/programs/bjj-competition-team" class="prog-sibling"><div class="prog-sibling__title">Competition team</div><div class="prog-sibling__desc">Friday evening, plus the advanced grappling sessions midweek and Saturday at noon.</div></a>
       <a href="/programs/youth-wrestling-fulshear" class="prog-sibling"><div class="prog-sibling__title">Youth wrestling</div><div class="prog-sibling__desc">Wednesday and Thursday at 7:30 PM, Sunday at 1:00 PM. Ages 7–17.</div></a>
-      <a href="/coaches/scott-jones" class="prog-sibling"><div class="prog-sibling__title">MMA Conditioning</div><div class="prog-sibling__desc">Saturday at 9:00 AM, all ages, with Grandmaster Scott Jones. A first class is free.</div></a>
+      <a href="/coaches/scott-jones" class="prog-sibling"><div class="prog-sibling__title">MMA Conditioning</div><div class="prog-sibling__desc">Saturday at 9:00 AM, all ages, with Scott Jones. A first class is free.</div></a>
       <a href="/blog/strength-and-conditioning-for-kids-fulshear" class="prog-sibling"><div class="prog-sibling__title">Strength &amp; conditioning</div><div class="prog-sibling__desc">Tuesday and Thursday at 4:15 PM. All ages in one session, in every membership.</div></a>
       <a href="/pricing" class="prog-sibling"><div class="prog-sibling__title">What it costs</div><div class="prog-sibling__desc">Every membership, punch card and add-on, with nothing held back for a phone call.</div></a>
     </div>
@@ -425,29 +425,31 @@ COACHES = [
     # "lineage" key and the page draws no lineage section rather than guess.
     {
         "slug": "scott-jones",
-        "name": "Grandmaster Scott Jones",
+        "name": "Scott Jones",
         "short": "Scott Jones",
-        "role": "Grandmaster &amp; MMA Conditioning Coach",
+        "role": "MMA Conditioning Coach",
         # The Taekwondo rank, named as such. See .belt-bar--tkd in style.css:
         # a bare black belt on this site would be read as a BJJ black belt.
-        "rank": "7th Dan Black Belt &middot; Taekwondo",
+        "rank": "7th Dan Taekwondo &middot; BJJ Brown Belt",
+        # A second belt bar on his card: the BJJ rank, beside the Taekwondo one.
+        "belt2": "brown",
         # Must be set. The profile template falls back to "Texas National
         # Team" when this is empty, which is Malik's credential, not Scott's.
         "years": "30+ years",
         "belt": "tkd",
         "photo": "coach-scott",
-        "title": "Grandmaster Scott Jones: MMA Conditioning &amp; Taekwondo | Labyrinth BJJ Fulshear",
-        "description": "Grandmaster Scott Jones, 7th dan Taekwondo black belt and BJJ purple belt, coaches MMA Conditioning, an all-ages class, at Labyrinth BJJ in Fulshear, TX. 30+ years teaching.",
+        "title": "Scott Jones: MMA Conditioning &amp; Taekwondo | Labyrinth BJJ Fulshear",
+        "description": "Scott Jones, 7th dan Taekwondo black belt and BJJ brown belt, coaches MMA Conditioning, an all-ages class, at Labyrinth BJJ in Fulshear, TX. 30+ years teaching.",
         "lead": "A 7th dan Taekwondo black belt with more than 27 years in MMA, who built Team Legacy from nothing and then merged it into Labyrinth, bringing his whole room with him.",
         "body": [
             "Scott Jones founded Team Legacy Martial Arts and built it from nothing. When Team Legacy <a href=\"/legacy/\">merged with Labyrinth</a>, he did not change jobs; he brought his school with him, students and all, and now coaches here full time. If your child learned from Coach Scott at Team Legacy, they still do.",
-            "He is a 7th dan black belt in Taekwondo and a four-stripe purple belt in Brazilian jiu-jitsu, with more than 27 years of MMA behind him and over thirty years of teaching children and adults: more time on the mat as a teacher than anyone else on our staff. He has trained at Labyrinth since the day it opened, and he was the first student ever to tap our head coach in a live roll.",
+            "He is a 7th dan black belt in Taekwondo and a brown belt in Brazilian jiu-jitsu, with more than 27 years of MMA behind him and over thirty years of teaching children and adults: more time on the mat as a teacher than anyone else on our staff. He has trained at Labyrinth since the day it opened, and he was the first student ever to tap our head coach in a live roll.",
             "That combination is why he runs <strong>MMA Conditioning</strong>. A striking black belt who is also a jiu-jitsu player can teach anybody, child or adult, to stand, move and defend themselves without losing sight of what happens when the fight reaches the ground, which is where most of the rest of this timetable lives.",
         ],
         "teaches_note": "He runs MMA Conditioning on Saturday mornings, open to all ages, and the families who trained with him at Team Legacy train with him here.",
         "faqs": [
             ("Who teaches MMA Conditioning at Labyrinth BJJ?",
-             "Grandmaster Scott Jones, a 7th dan Taekwondo black belt and BJJ purple belt with more than 27 years in MMA. MMA Conditioning runs on Saturdays at 9:00 AM, is open to all ages, and a first class is free."),
+             "Scott Jones, a 7th dan Taekwondo black belt and BJJ brown belt with more than 27 years in MMA. MMA Conditioning runs on Saturdays at 9:00 AM, is open to all ages, and a first class is free."),
             ("Is this the same Coach Scott from Team Legacy?",
              "Yes. Team Legacy Martial Arts merged with Labyrinth BJJ and Scott came with it; he coaches here full time. Children who trained with him at Team Legacy still train with him."),
             ("Do I need striking or martial arts experience for MMA Conditioning?",
@@ -555,7 +557,7 @@ def plain(name):
     return re.sub(r"\s+", " ", re.sub(r"&\w+;", " ", name)).strip()
 
 
-def coach_card(name, role, rank, belt, photo, bio, href=None):
+def coach_card(name, role, rank, belt, photo, bio, href=None, belt2=None):
     stripes = STRIPES.get(photo, 0)
     stripe_html = ('<span class="belt-bar__stripes">%s</span>' % ("<span></span>" * stripes)) if stripes else ""
     # Three degrees are the most that fit the default tab; past that the
@@ -568,11 +570,13 @@ def coach_card(name, role, rank, belt, photo, bio, href=None):
       <h3 class="coach-card__name">%s</h3>
       <p class="coach-card__role">%s</p>
       <div class="coach-card__rank">
-        <div class="belt-bar belt-bar--%s"><span class="belt-bar__belt"></span><span class="belt-bar__tab"></span>%s</div>
+        <div class="belt-bar belt-bar--%s"><span class="belt-bar__belt"></span><span class="belt-bar__tab"></span>%s</div>%s
         <span class="coach-card__rank-label">%s</span>
       </div>
       <p class="coach-card__bio">%s</p>
-%s    </div>""" % (photo, photo, plain(name), name, role, belt, stripe_html, rank, bio,
+%s    </div>""" % (photo, photo, plain(name), name, role, belt, stripe_html,
+                  ('\n        <div class="belt-bar belt-bar--%s"><span class="belt-bar__belt"></span><span class="belt-bar__tab"></span></div>' % belt2) if belt2 else "",
+                  rank, bio,
                   '      <a href="%s" class="coach-card__link">Full profile &rarr;</a>\n' % href if href else "")
     return '  <div class="coach-card">\n%s\n  </div>' % inner
 
@@ -1110,7 +1114,7 @@ def render_legacy():
     head = HEAD % {
         "title": "Team Legacy has merged with Labyrinth BJJ | Fulshear, TX",
         "description": "Team Legacy Martial Arts and Labyrinth BJJ are now one team. "
-                       "Grandmaster Scott Jones coaches full time at Labyrinth. "
+                       "Scott Jones coaches full time at Labyrinth. "
                        "First class free, seven days a week in Fulshear.",
         "url": url,
         "og_title": "Two Schools. One Team.",
@@ -1138,7 +1142,7 @@ def render_legacy():
 
       <h1 class="hero__title"><span class="hero__h1-seo">Team Legacy Martial Arts has merged with Labyrinth BJJ</span> <span class="hero__h1-visual">TWO SCHOOLS. <span>ONE TEAM.</span></span></h1>
 
-      <p class="hero__subtitle">Team Legacy Martial Arts has merged with Labyrinth BJJ, and Grandmaster Scott Jones is bringing his team with him. Two head coaches on one mat. Come and see what that looks like.</p>
+      <p class="hero__subtitle">Team Legacy Martial Arts has merged with Labyrinth BJJ, and Scott Jones is bringing his team with him. Two head coaches on one mat. Come and see what that looks like.</p>
 
       <div class="hero__ctas">
         <a href="/legacy/transfer" class="btn btn--gold">Transfer my membership</a>
@@ -1154,7 +1158,7 @@ def render_legacy():
          whole poster. -->
     <picture class="legacy-hero__duo fade-in">
       <source srcset="/assets/legacy-hero-duo.webp" type="image/webp">
-      <img src="/assets/legacy-hero-duo.jpg" alt="Head coach Anthony Curry of Labyrinth BJJ and Grandmaster Scott Jones of Team Legacy Martial Arts, with both school crests" width="1280" height="800" loading="eager" fetchpriority="high">
+      <img src="/assets/legacy-hero-duo.jpg" alt="Head coach Anthony Curry of Labyrinth BJJ and Scott Jones of Team Legacy Martial Arts, with both school crests" width="1280" height="800" loading="eager" fetchpriority="high">
     </picture>
 
     <!-- Outside the copy column so it spans the full row on a desktop and
@@ -1170,7 +1174,7 @@ def render_legacy():
       </div>
       <div class="hero__stat">
         <div class="hero__stat-value">7th</div>
-        <div class="hero__stat-label">Dan Grandmaster</div>
+        <div class="hero__stat-label">Dan Taekwondo</div>
       </div>
     </div>
   </div>
@@ -1202,12 +1206,12 @@ def render_legacy():
   <div class="container">
     <div class="legacy-coach fade-in">
       <div class="legacy-coach__shot">
-        <picture><source srcset="/assets/coach-scott-portrait.webp" type="image/webp"><img src="/assets/coach-scott-portrait.jpg" alt="Grandmaster Scott Jones of Team Legacy Martial Arts, now coaching full time at Labyrinth BJJ" width="560" height="560" loading="lazy"></picture>
+        <picture><source srcset="/assets/coach-scott-portrait.webp" type="image/webp"><img src="/assets/coach-scott-portrait.jpg" alt="Scott Jones of Team Legacy Martial Arts, now coaching full time at Labyrinth BJJ" width="560" height="560" loading="lazy"></picture>
         <picture class="legacy-coach__mark"><source srcset="/assets/team-legacy-wordmark.webp" type="image/webp"><img src="/assets/team-legacy-wordmark.png" alt="The Team Legacy BJJ and Taekwondo wordmark" width="900" height="727" loading="lazy"></picture>
       </div>
       <div class="legacy-coach__body">
         <p class="section-label">Your coach is still your coach</p>
-        <h2 class="section-title">Grandmaster <span>Scott Jones</span></h2>
+        <h2 class="section-title">Scott <span>Jones</span></h2>
         <div class="legacy-coach__pills">
           <span class="hero__badge">7th Dan Black Belt</span>
           <span class="hero__badge">30+ Years Coaching</span>
@@ -1720,7 +1724,7 @@ def render_coach(c):
     </div>
     <div class="prog-siblings stagger">
 %(others)s
-      <a href="/coaches/" class="prog-sibling"><div class="prog-sibling__title">All ten coaches</div><div class="prog-sibling__desc">Three black belts, two brown belts, a Taekwondo grandmaster, a national-team wrestler and three coaches of the kids classes</div></a>
+      <a href="/coaches/" class="prog-sibling"><div class="prog-sibling__title">All ten coaches</div><div class="prog-sibling__desc">Three black belts, three brown belts (one of them a 7th dan in Taekwondo), a national-team wrestler and three coaches of the kids classes</div></a>
     </div>
   </div>
 </section>
@@ -1750,12 +1754,21 @@ def render_coach_hub():
     url = SITE + "/coaches/"
     cards = [coach_card(c["name"], re.sub(r"&\w+;", "&", c["role"]),
                         "%s &middot; %s" % (c["rank"], c["years"]) if c["years"] else c["rank"],
-                        c["belt"], c["photo"], c["lead"], "/coaches/" + c["slug"]) for c in COACHES]
+                        c["belt"], c["photo"], c["lead"], "/coaches/" + c["slug"], c.get("belt2"))
+             for c in COACHES]
     cards += [coach_card(n, r, rk, b, p, bio) for n, r, rk, b, p, bio in OTHER_COACHES]
+    # The same order as the front page: the two head coaches, then Shaun and
+    # Scott side by side, then everyone else as listed.
+    first = ["Anthony Curry", "Jared Vevera", "Shaun Lawler", "Scott Jones"]
+    def rank_of(card):
+        name = re.search(r'coach-card__name">([^<]+)<', card).group(1)
+        hits = [i for i, f in enumerate(first) if f in name]
+        return hits[0] if hits else len(first)
+    cards.sort(key=rank_of)
 
     head = HEAD % {
         "title": "Our Coaches: Black Belt Instructors in Fulshear | Labyrinth BJJ",
-        "description": "The instructors at Labyrinth BJJ in Fulshear, TX: three black belts, two brown belts, a 7th dan Taekwondo grandmaster, a Texas National Team wrestler and three coaches of the kids classes.",
+        "description": "The instructors at Labyrinth BJJ in Fulshear, TX: three black belts, three brown belts (one of them a 7th dan in Taekwondo), a Texas National Team wrestler and three coaches of the kids classes.",
         "url": url, "og_title": "The Coaches at Labyrinth BJJ, Fulshear TX",
         "image": SITE + "/assets/og-image.jpg",
         "schema": "\n".join([

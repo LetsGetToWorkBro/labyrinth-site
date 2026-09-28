@@ -3196,12 +3196,14 @@ body {
   .coach-card:not(.coach-card--featured) {
     grid-column: span 1;
   }
-  /* A last card with no partner looks better centred than left-aligned in a
-     half-empty row. It only has no partner when the roster is even: the head
-     coach takes a full row here, so the rest pair off and the odd one out is
-     the last of an even total. Without the parity guard this fires on every
-     roster and strands the last two coaches on separate rows each. */
-  .coach-card:not(.coach-card--featured):last-child:nth-child(even) {
+  /* A last card with no partner looks better centered than left-aligned in a
+     half-empty row. The two head coaches (Anthony and Jared) each take a full
+     row here, so everyone after them pairs off, and the last card only has no
+     partner when the total is odd. This said "even" while there was one head
+     coach; with two it caught Hadley, who has a partner, and stranded her
+     alone at a different width. Change the parity if the number of
+     .coach-card--head cards changes. */
+  .coach-card:not(.coach-card--featured):last-child:nth-child(odd) {
     grid-column: 1 / -1;
     max-width: 280px;
     margin: 0 auto;
