@@ -533,8 +533,6 @@ OTHER_COACHES = [
      "Over a decade of training forged into sharp no-gi technique."),
     ("Jake Maronge", "Instructor", "Brown Belt &middot; 9 Yrs", "brown", "coach-jake",
      "Leads the Wednesday early morning gi class."),
-    ("Jess Mozisek", "Kids Coach", "Blue Belt &middot; 3+ Yrs", "blue", "coach-jess",
-     "A seasoned competitor in JJWL and IBJJF tournaments. She helps coach both kids classes, ages 3 to 6 and 7 to 12, and brings 20 years of experience teaching children."),
     ("Emma &ldquo;Armbar&rdquo;", "Assistant Coach", "Yellow/White Belt &middot; 4+ Yrs",
      "yellowwhite", "coach-emma",
      "Pan American gold medalist with over 100 competition wins by armbar. Four years training, three of them helping coach."),
@@ -545,7 +543,7 @@ OTHER_COACHES = [
 
 
 # Degrees on the tab, by coach. Only the ones who have them.
-STRIPES = {"coach-jess": 2, "coach-emma": 1, "coach-hadley": 4}
+STRIPES = {"coach-emma": 1, "coach-hadley": 4}
 
 
 def plain(name):
@@ -1724,7 +1722,7 @@ def render_coach(c):
     </div>
     <div class="prog-siblings stagger">
 %(others)s
-      <a href="/coaches/" class="prog-sibling"><div class="prog-sibling__title">All ten coaches</div><div class="prog-sibling__desc">Three black belts, three brown belts (one of them a 7th dan in Taekwondo), a national-team wrestler and three coaches of the kids classes</div></a>
+      <a href="/coaches/" class="prog-sibling"><div class="prog-sibling__title">All nine coaches</div><div class="prog-sibling__desc">Three black belts, three brown belts (one of them a 7th dan in Taekwondo), a national-team wrestler and two coaches of the kids classes</div></a>
     </div>
   </div>
 </section>
@@ -1768,7 +1766,7 @@ def render_coach_hub():
 
     head = HEAD % {
         "title": "Our Coaches: Black Belt Instructors in Fulshear | Labyrinth BJJ",
-        "description": "The instructors at Labyrinth BJJ in Fulshear, TX: three black belts, three brown belts (one of them a 7th dan in Taekwondo), a Texas National Team wrestler and three coaches of the kids classes.",
+        "description": "The instructors at Labyrinth BJJ in Fulshear, TX: three black belts, three brown belts (one of them a 7th dan in Taekwondo), a Texas National Team wrestler and two coaches of the kids classes.",
         "url": url, "og_title": "The Coaches at Labyrinth BJJ, Fulshear TX",
         "image": SITE + "/assets/og-image.jpg",
         "schema": "\n".join([

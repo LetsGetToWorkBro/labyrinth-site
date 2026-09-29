@@ -2851,6 +2851,13 @@ body {
 .coach-card:not(.coach-card--featured) {
   grid-column: span 2;
 }
+/* A last row of two supporting coaches sits in the middle rather than
+   against the left edge. Supporting cards start after the four featured
+   ones, so their rows begin at children 5, 8, 11 (3n+2); the second-to-last
+   card starting such a row means the row holds two. */
+#coaches .coach-card:not(.coach-card--featured):nth-last-child(2):nth-child(3n+2) {
+  grid-column: 2 / span 2;
+}
 
 .coach-card--featured .coach-card__avatar {
   width: 110px;
@@ -3203,10 +3210,15 @@ body {
      coach; with two it caught Hadley, who has a partner, and stranded her
      alone at a different width. Change the parity if the number of
      .coach-card--head cards changes. */
-  .coach-card:not(.coach-card--featured):last-child:nth-child(odd) {
+  #coaches .coach-card:not(.coach-card--featured):nth-last-child(2):nth-child(3n+2) {
+    grid-column: auto / span 1;
+  }
+  #coaches .coach-card:not(.coach-card--featured):last-child:nth-child(odd) {
     grid-column: 1 / -1;
-    max-width: 280px;
-    margin: 0 auto;
+    justify-self: center;
+    /* Same width as every other card in the two-column grid, not a narrower
+       one: a different size is what made Hadley's card look broken. */
+    width: calc((100% - var(--space-5)) / 2);
   }
   .programs__types {
     grid-template-columns: repeat(2, 1fr);
@@ -3358,6 +3370,9 @@ body {
   .coaches__grid {
     grid-template-columns: repeat(2, 1fr);
     gap: var(--space-4);
+  }
+  #coaches .coach-card:not(.coach-card--featured):last-child:nth-child(odd) {
+    width: calc((100% - var(--space-4)) / 2);
   }
   /* Only the head coach card spans full width on mobile */
   .coach-card--head {
