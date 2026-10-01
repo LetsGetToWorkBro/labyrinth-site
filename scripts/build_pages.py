@@ -884,6 +884,8 @@ def render_event_rsvp():
                         "postalCode": "77441", "addressCountry": "US"},
                 },
                 "organizer": {"@type": "Organization", "name": "Labyrinth BJJ", "url": SITE},
+                "performer": [{"@type": "Person", "name": "Scott Jones", "url": SITE + "/coaches/scott-jones"},
+                              {"@type": "Person", "name": "Anthony Curry", "url": SITE + "/coaches/anthony-curry"}],
                 "offers": {"@type": "Offer", "url": url, "price": "0", "priceCurrency": "USD",
                            "availability": "https://schema.org/InStock"},
             }),
@@ -985,6 +987,33 @@ def render_event_rsvp():
     </div>
 
     <p class="rsvp__over" id="rsvp-over" hidden>This event has passed. Thank you to everyone who came. See what is coming up on the <a href="/schedule">schedule</a>.</p>
+  </div>
+</section>
+
+<section class="prog-section rsvp-led" id="instructors">
+  <div class="container">
+    <div>
+      <p class="section-label rsvp-label">@@RIBBON16@@Your instructors</p>
+      <h2 class="section-title section-title--lg">LED BY COACH SCOTT AND PROFESSOR TONY</h2>
+    </div>
+    <div class="rsvp-led__grid">
+      <a class="rsvp-led__card" href="/coaches/scott-jones">
+        <picture><source srcset="/assets/coach-scott.webp" type="image/webp"><img src="/assets/coach-scott.jpg" alt="Coach Scott Jones" width="96" height="96" loading="lazy"></picture>
+        <span class="rsvp-led__body">
+          <strong>Coach Scott Jones</strong>
+          <em>7th dan Taekwondo black belt, BJJ brown belt</em>
+          <span>Scott has a lot of experience with self defense and more than 27 years in MMA. He founded Team Legacy Martial Arts and now coaches full time at Labyrinth.</span>
+        </span>
+      </a>
+      <a class="rsvp-led__card" href="/coaches/anthony-curry">
+        <picture><source srcset="/assets/coach-tony.webp" type="image/webp"><img src="/assets/coach-tony.jpg" alt="Professor Anthony Curry" width="96" height="96" loading="lazy"></picture>
+        <span class="rsvp-led__body">
+          <strong>Professor Anthony Curry</strong>
+          <em>Founder and head instructor, BJJ black belt</em>
+          <span>Tony has trained for more than 14 years and started Labyrinth in Fulshear in 2021. He teaches the jiu-jitsu this seminar is built on.</span>
+        </span>
+      </a>
+    </div>
   </div>
 </section>
 

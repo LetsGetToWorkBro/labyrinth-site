@@ -457,6 +457,12 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   check('L1x structured data describes a free event at the right time',
     !!ev && ev.startDate === '2026-10-24T11:00:00-05:00' && ev.isAccessibleForFree === true
       && ev.location?.address?.addressLocality === 'Fulshear', JSON.stringify(ev)?.slice(0, 120))
+  const led = await rp.$$eval('#instructors a.rsvp-led__card', as => as.map(a => [a.getAttribute('href'), a.textContent]))
+  check('L1x it names the two instructors and links to their pages',
+    led.length === 2 && led[0][0] === '/coaches/scott-jones' && /Scott Jones/.test(led[0][1]) && /self defense/i.test(led[0][1])
+      && led[1][0] === '/coaches/anthony-curry' && /Anthony Curry/.test(led[1][1]) && /Professor/.test(led[1][1]), JSON.stringify(led).slice(0, 160))
+  check('L1x structured data lists both instructors as performers',
+    !!ev && Array.isArray(ev.performer) && ev.performer.map(p => p.name).join() === 'Scott Jones,Anthony Curry')
   check('L1x no em dashes in what a visitor reads', !/—/.test(text))
   const pink = await rp.evaluate(() => {
     const rgb = c => c.match(/\d+/g).slice(0, 3).map(Number)
