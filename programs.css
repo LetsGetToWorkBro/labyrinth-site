@@ -1396,3 +1396,32 @@ body.theme-pink main .prog-section--surface {
   color: var(--text);
 }
 .pink-ended a { color: var(--awareness); text-decoration: underline; }
+
+
+/* ── The pink ribbon labyrinth (assets/ribbon-labyrinth.svg, scripts/ribbon_labyrinth.py) ──
+   The event's mark: the awareness ribbon drawn as a maze, in the spirit of the
+   Labyrinth logo. On a phone it sits above the title; on a wide screen it is
+   the right-hand half of the header. */
+.rsvp-hero__art {
+  display: block;
+  width: auto;
+  height: 132px;
+  margin: 0 0 var(--space-4);
+  filter: drop-shadow(0 0 22px rgba(229, 143, 181, 0.28));
+}
+@media (min-width: 900px) {
+  .rsvp-hero .container { min-height: 440px; }
+  .rsvp-hero__art {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 420px;
+    margin: 0;
+  }
+  .rsvp-hero .prog-hero__title, .rsvp-hero .prog-hero__lead { max-width: calc(100% - 330px); }
+  .rsvp-hero .prog-facts { width: calc(100% - 330px); }
+}
+.rsvp__success-art { display: block; width: auto; height: 96px; margin-bottom: var(--space-3); }
+/* The labyrinth ribbon is the mark here, so the repeating small-ribbon pattern steps aside. */
+body.theme-pink .rsvp-hero.pink-hero::before { display: none; }
