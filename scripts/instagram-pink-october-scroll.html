@@ -1,0 +1,29 @@
+<!doctype html>
+<!-- Instagram "scroll down" teaser for the Pink October post (assets/social/pink-october-scroll.png), 1080x1350 (4:5).
+     Rendered with: node scripts/instagram-pink-october-scroll.mjs  (needs playwright-core). -->
+<html><head><meta charset="utf-8"><style>
+  * { box-sizing: border-box; margin: 0; }
+  body { width: 1080px; height: 1350px; overflow: hidden; font-family: "Helvetica Neue", Arial, sans-serif; color: #f4eef1; position: relative;
+    background: radial-gradient(ellipse 70% 45% at 50% 70%, rgba(229,143,181,.34), transparent 70%), linear-gradient(170deg, #46142d 0%, #270e1a 52%, #140a10 100%); }
+  .pattern { position: absolute; inset: 0; opacity: .08; background-size: 120px 120px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'><g transform='translate(36 36) scale(2)' fill='none' stroke='%23E58FB5' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7'/></g></svg>"); }
+  .wrap { position: absolute; inset: 0; padding: 90px 76px 70px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .rib { width: 110px; height: 110px; color: #E58FB5; }
+  .label { margin-top: 26px; color: #E58FB5; font-size: 30px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+  h1 { margin-top: 40px; font-size: 222px; line-height: .86; font-weight: 900; letter-spacing: -.02em; text-transform: uppercase; }
+  h1 span { color: #E58FB5; }
+  .sub { margin-top: 40px; font-size: 42px; line-height: 1.28; font-weight: 700; color: #fbd3e3; max-width: 920px; }
+  .arrow { flex: none; margin-top: auto; width: 190px; height: 190px; border-radius: 50%; background: #E58FB5; color: #1a0b12; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 0 18px rgba(229,143,181,.18), 0 0 0 38px rgba(229,143,181,.08); }
+  .arrow svg { width: 110px; height: 110px; }
+  .brand { margin-top: 60px; font-size: 24px; letter-spacing: .24em; font-weight: 700; color: #b9a1ae; }
+</style></head><body>
+  <div class="pattern"></div>
+  <div class="wrap">
+    <svg class="rib" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7" fill="currentColor" fill-opacity=".18"/></svg>
+    <div class="label">Pink October</div>
+    <h1>Scroll<br><span>down</span></h1>
+    <div class="sub">Free training for moms, 50% off for women, and a free self defense seminar Oct 24.</div>
+    <div class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16M5 13l7 7 7-7"/></svg></div>
+    <div class="brand">LABYRINTH BJJ &middot; FULSHEAR, TX</div>
+  </div>
+</body></html>
