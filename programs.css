@@ -1450,3 +1450,22 @@ body.theme-pink main .prog-section--surface {
 @media (min-width: 760px) {
   .rsvp-give__amounts { grid-template-columns: repeat(8, 1fr); max-width: 760px; }
 }
+
+/* A real photo from the mat, tinted pink to sit with the page. The tint is an
+   overlay, so replacing the image keeps the look. */
+.rsvp-photo { position: relative; margin: var(--space-8) 0 0; border-radius: 16px; overflow: hidden; border: 1px solid var(--awareness-line); background: #1a0b12; }
+.rsvp-photo img { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; object-position: 50% 30%; filter: saturate(.9) contrast(1.02); }
+.rsvp-photo::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg, rgba(229, 143, 181, 0.22) 0%, rgba(229, 143, 181, 0.12) 55%, rgba(60, 14, 38, 0.55) 100%);
+  mix-blend-mode: multiply;
+}
+.rsvp-photo figcaption {
+  position: absolute; left: 0; right: 0; bottom: 0; z-index: 1;
+  padding: 28px 20px 16px; color: #fff; font-weight: 600; font-size: 15px; line-height: 1.4;
+  background: linear-gradient(180deg, transparent, rgba(26, 11, 18, 0.75));
+}
+@media (min-width: 760px) {
+  .rsvp-photo img { aspect-ratio: 16 / 9; object-position: 50% 8%; }
+  .rsvp-photo figcaption { padding: 40px 28px 20px; font-size: 17px; }
+}
