@@ -1027,6 +1027,10 @@ def render_event_rsvp():
         </span>
       </a>
     </div>
+    <figure class="rsvp-photo">
+      <picture><source srcset="/assets/strength-conditioning.webp" type="image/webp"><img src="/assets/strength-conditioning.jpg" alt="Labyrinth BJJ coaches, women, men and kids flexing together on the mat after class" width="1200" height="800" loading="lazy"></picture>
+      <figcaption>Part of the Labyrinth family. Beginners welcome.</figcaption>
+    </figure>
   </div>
 </section>
 
