@@ -791,6 +791,16 @@ def _event_when():
     return (d.strftime("%A, %B ") + str(d.day), d.strftime("%a, %b ") + str(d.day), time)
 
 
+def ribbon(size=18):
+    """The awareness ribbon, drawn once. It takes its color from CSS (`color` on
+    the element around it), so the same markup is pink on the event page and on
+    the homepage strip and would follow any other palette."""
+    return ('<svg class="ribbon" width="%d" height="%d" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+            'stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'
+            '<path d="M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7" '
+            'fill="currentColor" fill-opacity=".18"/></svg>') % (size, size)
+
+
 def event_strip():
     """The homepage's one-line pointer at the event. Hides itself the morning
     after, so nobody is invited to an event that has gone."""
@@ -798,14 +808,14 @@ def event_strip():
     return """<aside class="event-strip" id="eventStrip" aria-label="Upcoming event">
   <div class="container">
     <a class="event-strip__link" href="@@PATH@@">
-      <span class="event-strip__icon" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#e58fb5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 14C8 11 7.500 9 7.500 6.800 7.500 4.600 9.500 3 12 3s4.500 1.600 4.500 3.800C16.500 9 16 11 12 14zM12 14 8 21M12 14l4 7" fill="rgba(229,143,181,.18)"/></svg></span>
+      <span class="event-strip__icon">@@RIBBON@@</span>
       <span class="event-strip__text"><strong>Free event: @@NAME@@</strong><span>@@SHORT@@ &middot; @@TIME@@ &middot; Breast cancer awareness</span></span>
       <span class="event-strip__cta">RSVP</span>
     </a>
   </div>
 </aside>
 <script>if(Date.now()>Date.parse('@@CLOSES@@'))document.getElementById('eventStrip').hidden=true</script>""" \
-        .replace("@@PATH@@", EVENT["path"]).replace("@@NAME@@", EVENT["name"]) \
+        .replace("@@RIBBON@@", ribbon(26)).replace("@@PATH@@", EVENT["path"]).replace("@@NAME@@", EVENT["name"]) \
         .replace("@@SHORT@@", short).replace("@@TIME@@", time).replace("@@CLOSES@@", EVENT["closes_utc"])
 
 
@@ -848,14 +858,15 @@ def render_event_rsvp():
     }
 
     body = """
-<header class="prog-hero">
+<header class="prog-hero rsvp-hero">
+  <span class="rsvp-hero__mark" aria-hidden="true">@@MARK@@</span>
   <div class="container">
-    <p class="section-label rsvp-label">Community event &middot; Breast cancer awareness</p>
+    <p class="section-label rsvp-label">@@RIBBON16@@Community event &middot; Breast cancer awareness</p>
     <h1 class="prog-hero__title">@@NAME@@</h1>
     <p class="prog-hero__lead">A free, beginner-friendly self defense seminar for women, built on the jiu-jitsu we teach every day at Labyrinth. We are hosting it for breast cancer awareness: donations and merch sales at the event go directly to a family affected by breast cancer. Come on your own or bring a friend.</p>
     <div class="prog-hero__cta">
       <a href="#rsvp" class="btn btn--gold">RSVP Now</a>
-      <a href="@@DONATE@@" class="btn btn--ghost" target="_blank" rel="noopener noreferrer">Donate</a>
+      <a href="@@DONATE@@" class="btn btn--pink" target="_blank" rel="noopener noreferrer">Donate</a>
     </div>
     <div class="prog-facts">
       <div class="prog-fact"><div class="prog-fact__label">Date</div><div class="prog-fact__value">@@SHORT@@</div></div>
@@ -869,7 +880,7 @@ def render_event_rsvp():
 <section class="prog-section rsvp" id="rsvp">
   <div class="container">
     <div class="rsvp__intro">
-      <p class="section-label">RSVP</p>
+      <p class="section-label rsvp-label">RSVP</p>
       <h2 class="section-title section-title--lg">SAVE YOUR SPOT</h2>
       <p class="rsvp__note"><strong>The seminar is free, and no experience is needed.</strong> If you have never set foot on a mat, this is for you.</p>
     </div>
@@ -928,12 +939,13 @@ def render_event_rsvp():
     </form>
 
     <div class="rsvp__success" id="rsvp-success" tabindex="-1" hidden>
-      <p class="section-label">You are on the list</p>
+      @@RIBBON40@@
+      <p class="section-label rsvp-label">You are on the list</p>
       <h2 class="section-title section-title--lg" id="rsvp-success-title">SEE YOU THERE</h2>
       <p><span id="rsvp-success-name"></span>, we have you down for <span id="rsvp-success-party"></span> on <strong>@@LONG@@ at @@TIME@@</strong> at Labyrinth BJJ in Fulshear.</p>
       <p>A confirmation is on its way to <strong id="rsvp-success-email"></strong>. If you do not see it in a few minutes, check your spam folder. To change your RSVP, just submit this form again.</p>
       <div class="prog-hero__cta">
-        <a href="@@DONATE@@" class="btn btn--gold" target="_blank" rel="noopener noreferrer">Donate</a>
+        <a href="@@DONATE@@" class="btn btn--pink" target="_blank" rel="noopener noreferrer">Donate</a>
         <a href="/" class="btn btn--ghost">Back to the site</a>
       </div>
     </div>
@@ -945,7 +957,7 @@ def render_event_rsvp():
 <section class="prog-section prog-section--surface rsvp-give" id="donate">
   <div class="container">
     <div>
-      <p class="section-label rsvp-label">Donate</p>
+      <p class="section-label rsvp-label">@@RIBBON16@@Donate</p>
       <h2 class="section-title section-title--lg">HELP A FAMILY</h2>
     </div>
     <div class="prog-prose">
@@ -953,15 +965,16 @@ def render_event_rsvp():
       <p>We will also be selling merch at the event, and those sales go to the same family.</p>
     </div>
     <div class="prog-hero__cta">
-      <a href="@@DONATE@@" class="btn btn--gold" target="_blank" rel="noopener noreferrer">Donate</a>
+      <a href="@@DONATE@@" class="btn btn--pink" target="_blank" rel="noopener noreferrer">Donate</a>
     </div>
+    <p class="rsvp-give__thanks">@@RIBBON20@@<span>Thank you for standing with a family affected by breast cancer.</span></p>
   </div>
 </section>
 
 <section class="prog-section">
   <div class="container">
     <div>
-      <p class="section-label">Where</p>
+      <p class="section-label rsvp-label">Where</p>
       <h2 class="section-title section-title--lg">FINDING US</h2>
     </div>
     <div class="prog-prose">
@@ -974,6 +987,7 @@ def render_event_rsvp():
 <script src="/rsvp.js" defer></script>
 """
     for token, value in {
+        "@@RIBBON16@@": ribbon(16), "@@RIBBON20@@": ribbon(20), "@@RIBBON40@@": ribbon(40), "@@MARK@@": ribbon(320),
         "@@NAME@@": EVENT["name"], "@@DONATE@@": EVENT["donate_url"], "@@SHORT@@": short_date,
         "@@TIME@@": time, "@@LONG@@": long_date, "@@SLUG@@": EVENT["slug"],
         "@@ENDPOINT@@": EVENT["endpoint"], "@@CLOSES@@": EVENT["closes_utc"], "@@PHONE@@": PHONE,

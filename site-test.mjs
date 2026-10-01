@@ -457,6 +457,27 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
     !!ev && ev.startDate === '2026-10-21T11:00:00-05:00' && ev.isAccessibleForFree === true
       && ev.location?.address?.addressLocality === 'Fulshear', JSON.stringify(ev)?.slice(0, 120))
   check('L1x no em dashes in what a visitor reads', !/—/.test(text))
+  const pink = await rp.evaluate(() => {
+    const rgb = c => c.match(/\d+/g).slice(0, 3).map(Number)
+    const lin = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4 }
+    const lum = ([r, g, b]) => 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
+    const label = getComputedStyle(document.querySelector('.rsvp-label')).color
+    const bg = getComputedStyle(document.body).backgroundColor
+    const hi = Math.max(lum(rgb(label)), lum(rgb(bg))), lo = Math.min(lum(rgb(label)), lum(rgb(bg)))
+    const ribbons = [...document.querySelectorAll('svg.ribbon')]
+    return {
+      label,
+      ribbons: ribbons.length,
+      decorative: ribbons.every(r => r.getAttribute('aria-hidden') === 'true'),
+      donateBtns: [...document.querySelectorAll('a[href^="https://donate.stripe.com"]')].map(a => a.classList.contains('btn--pink')),
+      ratio: (hi + 0.05) / (lo + 0.05),
+    }
+  })
+  check('L1x the page wears the awareness pink: ribbons, pink labels, pink Donate buttons',
+    pink.label === 'rgb(229, 143, 181)' && pink.ribbons >= 4 && pink.donateBtns.length >= 3 && pink.donateBtns.every(Boolean),
+    JSON.stringify(pink))
+  check('L1x the ribbons are decoration, hidden from screen readers', pink.decorative)
+  check('L1x the pink is readable on the page background (WCAG AA, 4.5:1)', pink.ratio >= 4.5, pink.ratio.toFixed(1))
   check('L1x the page is indexable (an event is meant to be found)',
     (await rp.locator('meta[name="robots"][content*="noindex"]').count()) === 0
       && readFileSync(join(ROOT,'sitemap.xml'),'utf8').includes('labyrinth.vision/self-defense-for-women'))
@@ -588,6 +609,9 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   check('L1x the homepage links to the event page before the event',
     (await rp.locator('a.event-strip__link[href="/self-defense-for-women"]').count()) === 1
       && await rp.isVisible('#eventStrip'))
+  check('L1x the strip carries a pink ribbon',
+    (await rp.locator('#eventStrip svg.ribbon').count()) === 1
+      && await rp.evaluate(() => getComputedStyle(document.querySelector('.event-strip__icon')).color) === 'rgb(229, 143, 181)')
   check('L1x the strip names the event, the date and the cause',
     /BJJ for Self Defense for Women/.test(await rp.textContent('#eventStrip'))
       && /Oct 21/.test(await rp.textContent('#eventStrip')) && /Breast cancer/i.test(await rp.textContent('#eventStrip')))

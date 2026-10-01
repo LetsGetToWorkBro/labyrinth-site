@@ -17,6 +17,12 @@
   --red: #E74C3C;
   --red-hover: #EF6B5B;
   --success: #27AE60;
+  /* Breast cancer awareness pink: the event page and the homepage pointer to it.
+     8:1 against the page background, so it carries text as well as decoration. */
+  --awareness: #E58FB5;
+  --awareness-hover: #EEA6C5;
+  --awareness-soft: rgba(229, 143, 181, 0.10);
+  --awareness-line: rgba(229, 143, 181, 0.38);
 
   /* Typography */
   --font-display: 'Clash Display', sans-serif;
@@ -488,6 +494,17 @@ body {
   background: var(--gold-hover);
   transform: translateY(-2px);
   box-shadow: 0 4px 16px rgba(200, 162, 76, 0.35), 0 0 30px rgba(200, 162, 76, 0.15);
+}
+
+.btn--pink {
+  background: var(--awareness);
+  color: #0A0A0A;
+}
+
+.btn--pink:hover {
+  background: var(--awareness-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(229, 143, 181, 0.35), 0 0 30px rgba(229, 143, 181, 0.15);
 }
 
 .btn--ghost {
@@ -5091,15 +5108,15 @@ body {
   align-items: center;
   gap: var(--space-4);
   padding: 14px var(--space-5);
-  border: 1px solid rgba(229, 143, 181, 0.35);
-  background: rgba(229, 143, 181, 0.07);
+  border: 1px solid var(--awareness-line);
+  background: var(--awareness-soft);
   border-radius: var(--radius-md);
   color: var(--text);
   text-decoration: none;
   transition: border-color 0.2s, background 0.2s;
 }
-.event-strip__link:hover { border-color: rgba(229, 143, 181, 0.65); background: rgba(229, 143, 181, 0.12); }
-.event-strip__icon { font-size: 24px; flex-shrink: 0; }
+.event-strip__link:hover { border-color: var(--awareness); background: rgba(229, 143, 181, 0.14); }
+.event-strip__icon { display: flex; flex-shrink: 0; color: var(--awareness); }
 .event-strip__text {
   display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0;
   font-size: 14px; line-height: 1.4; color: var(--text-muted);
