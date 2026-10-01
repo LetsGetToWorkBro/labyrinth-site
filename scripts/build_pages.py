@@ -767,6 +767,8 @@ def render_support():
 # on a phone before somebody has finished reading the sentence that sent them.
 
 EVENT = {
+    # The slug is the key the RSVP rows are saved under, so it keeps the date the
+    # event was first planned for (Oct 21) even though it now runs on Oct 24.
     "slug": "self-defense-women-2026-10-21",
     # "Rolling for Ribbons" is the event; the descriptive line stays under it on
     # the page and in search results, so a stranger still knows what it is.
@@ -774,11 +776,11 @@ EVENT = {
     "subtitle": "BJJ for Self Defense for Women",
     "name": "Rolling for Ribbons: BJJ for Self Defense for Women",
     "path": "/self-defense-for-women",
-    # 11:00 AM on Oct 21 is CDT (UTC-5): Texas moves its clocks on Nov 1.
-    "start": "2026-10-21T11:00:00-05:00",
+    # 11:00 AM on Oct 24 is CDT (UTC-5): Texas moves its clocks on Nov 1.
+    "start": "2026-10-24T11:00:00-05:00",
     # After this the form says the event has passed (and the server refuses).
     # Matches closesAt in event-emails.ts: 5:00 AM Central the next morning.
-    "closes_utc": "2026-10-22T10:00:00Z",
+    "closes_utc": "2026-10-25T10:00:00Z",
     "donate_url": "https://donate.stripe.com/14AdRa0tL1Ea1Br3bJgjC0a",
     "endpoint": "https://jctufxvmuvobaggxcwfn.supabase.co/functions/v1/event-rsvp",
     "maps_url": "https://maps.google.com/?cid=7150744267965161030",
@@ -786,7 +788,7 @@ EVENT = {
 
 
 def _event_when():
-    """('Wednesday, October 21', 'Wed, Oct 21', '11:00 AM'), worked out from the
+    """('Saturday, October 24', 'Sat, Oct 24', '11:00 AM'), worked out from the
     start time rather than typed, so a weekday cannot be wrong."""
     import datetime
     d = datetime.datetime.fromisoformat(EVENT["start"])

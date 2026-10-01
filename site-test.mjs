@@ -442,7 +442,7 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   check('L1x the page leads with Rolling for Ribbons and keeps the descriptive name under it',
     /Rolling for Ribbons/i.test(await rp.textContent('h1')) && /BJJ for Self Defense for Women/.test(await rp.textContent('.rsvp-hero__sub')))
   check('L1x date, time and place are in the header',
-    /Wed, Oct 21/.test(text) && /11:00 AM/.test(text) && /Central/i.test(text) && /Fulshear, TX/.test(text), text.slice(0, 200))
+    /Sat, Oct 24/.test(text) && /11:00 AM/.test(text) && /Central/i.test(text) && /Fulshear, TX/.test(text), text.slice(0, 200))
   check('L1x it says the seminar is free and no experience is needed',
     /free, and no experience is needed/i.test(text) && (await rp.locator('.prog-fact__value em', { hasText: 'Free' }).count()) === 1)
   check('L1x it names the cause and where the money goes',
@@ -455,7 +455,7 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   const ld = await rp.$$eval('script[type="application/ld+json"]', ss => ss.map(s => JSON.parse(s.textContent)))
   const ev = ld.find(o => o['@type'] === 'Event')
   check('L1x structured data describes a free event at the right time',
-    !!ev && ev.startDate === '2026-10-21T11:00:00-05:00' && ev.isAccessibleForFree === true
+    !!ev && ev.startDate === '2026-10-24T11:00:00-05:00' && ev.isAccessibleForFree === true
       && ev.location?.address?.addressLocality === 'Fulshear', JSON.stringify(ev)?.slice(0, 120))
   check('L1x no em dashes in what a visitor reads', !/—/.test(text))
   const pink = await rp.evaluate(() => {
@@ -548,7 +548,7 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
     focus: document.activeElement.id,
   }))
   check('L1x the form gives way to a confirmation naming the date, party and email',
-    done.form && /Jane/.test(done.text) && /3 people/.test(done.text) && /Wednesday, October 21 at 11:00 AM/.test(done.text)
+    done.form && /Jane/.test(done.text) && /3 people/.test(done.text) && /Saturday, October 24 at 11:00 AM/.test(done.text)
       && /jane@example\.com/.test(done.text), done.text.slice(0, 160))
   check('L1x focus moves to the confirmation for screen readers', done.focus === 'rsvp-success')
 
@@ -616,10 +616,10 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
         && [...document.querySelectorAll('.event-strip__cta')].every(c => getComputedStyle(c).backgroundColor === 'rgb(229, 143, 181)')))
   check('L1x the strip names the event, the date and the cause',
     /Rolling for Ribbons/.test(await rp.textContent('#eventStrip'))
-      && /Oct 21/.test(await rp.textContent('#eventStrip')) && /Breast cancer/i.test(await rp.textContent('#eventStrip')))
+      && /Oct 24/.test(await rp.textContent('#eventStrip')) && /Breast cancer/i.test(await rp.textContent('#eventStrip')))
 
   // The morning after, the strip is gone and the page stops taking RSVPs.
-  await rp.clock.setFixedTime(new Date('2026-10-23T15:00:00Z'))
+  await rp.clock.setFixedTime(new Date('2026-10-26T15:00:00Z'))
   await rp.goto('http://localhost:4620/', { waitUntil: 'networkidle' })
   check('L1x the event link leaves the homepage after the event, the October offer stays until Oct 31',
     !(await rp.isVisible('a.event-strip__link[href="/self-defense-for-women"]'))
