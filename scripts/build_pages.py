@@ -858,7 +858,7 @@ def render_event_rsvp():
         "description": desc,
         "url": url,
         "og_title": "%s: Free Seminar, %s" % (EVENT["name"], long_date),
-        "image": SITE + "/assets/og-image.jpg",
+        "image": SITE + "/assets/og-self-defense.jpg",
         "schema": "\n".join([
             jsonld(crumb_schema([(EVENT["name"], EVENT["path"])])),
             jsonld({
@@ -868,7 +868,7 @@ def render_event_rsvp():
                 "eventStatus": "https://schema.org/EventScheduled",
                 "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
                 "isAccessibleForFree": True,
-                "image": [SITE + "/assets/og-image.jpg"],
+                "image": [SITE + "/assets/og-self-defense.jpg"],
                 "location": {
                     "@type": "Place", "name": "Labyrinth BJJ",
                     "address": {
@@ -886,8 +886,8 @@ def render_event_rsvp():
 
     body = """
 <header class="prog-hero rsvp-hero pink-hero">
-  <span class="rsvp-hero__mark pink-hero__mark" aria-hidden="true">@@MARK@@</span>
   <div class="container">
+    <img class="rsvp-hero__art" src="/assets/ribbon-labyrinth.svg" alt="" width="412" height="682" decoding="async">
     <p class="section-label rsvp-label">@@RIBBON16@@Community event &middot; Breast cancer awareness</p>
     <h1 class="prog-hero__title">@@NAME@@</h1>
     <p class="prog-hero__lead">A free, beginner-friendly self defense seminar for women, built on the jiu-jitsu we teach every day at Labyrinth. We are hosting it for breast cancer awareness: donations and merch sales at the event go directly to a family affected by breast cancer. Come on your own or bring a friend.</p>
@@ -966,7 +966,7 @@ def render_event_rsvp():
     </form>
 
     <div class="rsvp__success" id="rsvp-success" tabindex="-1" hidden>
-      @@RIBBON40@@
+      <img class="rsvp__success-art" src="/assets/ribbon-labyrinth.svg" alt="" width="412" height="682" loading="lazy" decoding="async">
       <p class="section-label rsvp-label">You are on the list</p>
       <h2 class="section-title section-title--lg" id="rsvp-success-title">SEE YOU THERE</h2>
       <p><span id="rsvp-success-name"></span>, we have you down for <span id="rsvp-success-party"></span> on <strong>@@LONG@@ at @@TIME@@</strong> at Labyrinth BJJ in Fulshear.</p>
