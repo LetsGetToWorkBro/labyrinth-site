@@ -400,7 +400,7 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   await page.unroute('**/spreadsheets/**')
 }
 
-// ── L1x: the RSVP page for BJJ for Self Defense for Women ──
+// ── L1x: the RSVP page for Rolling for Ribbons (BJJ for Self Defense for Women) ──
 // What the owner asked for, held in place: the facts on the page, a form that
 // asks for exactly the right things, validation that stops a bad RSVP before it
 // is sent, an RSVP that is sent once, and a failure that tells the person what
@@ -439,7 +439,8 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
 
   await fresh()
   const text = await rp.evaluate(() => document.body.innerText)
-  check('L1x the page leads with the event name', (await rp.textContent('h1')).includes('BJJ for Self Defense for Women'))
+  check('L1x the page leads with Rolling for Ribbons and keeps the descriptive name under it',
+    /Rolling for Ribbons/i.test(await rp.textContent('h1')) && /BJJ for Self Defense for Women/.test(await rp.textContent('.rsvp-hero__sub')))
   check('L1x date, time and place are in the header',
     /Wed, Oct 21/.test(text) && /11:00 AM/.test(text) && /Central/i.test(text) && /Fulshear, TX/.test(text), text.slice(0, 200))
   check('L1x it says the seminar is free and no experience is needed',
@@ -614,7 +615,7 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
       && await rp.evaluate(() => [...document.querySelectorAll('.event-strip__icon')].every(i => getComputedStyle(i).color === 'rgb(229, 143, 181)')
         && [...document.querySelectorAll('.event-strip__cta')].every(c => getComputedStyle(c).backgroundColor === 'rgb(229, 143, 181)')))
   check('L1x the strip names the event, the date and the cause',
-    /BJJ for Self Defense for Women/.test(await rp.textContent('#eventStrip'))
+    /Rolling for Ribbons/.test(await rp.textContent('#eventStrip'))
       && /Oct 21/.test(await rp.textContent('#eventStrip')) && /Breast cancer/i.test(await rp.textContent('#eventStrip')))
 
   // The morning after, the strip is gone and the page stops taking RSVPs.
@@ -696,25 +697,21 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   check('L1y the event page is fully pink too, and links to Pink October',
     ev.theme && ev.primary === PINK && ev.hero && ev.link, JSON.stringify(ev))
 
-  const art = await pp.evaluate(async () => {
-    const img = document.querySelector('.rsvp-hero__art')
-    await (img.decode ? img.decode().catch(() => {}) : Promise.resolve())
-    const r = img.getBoundingClientRect()
-    return { loaded: img.naturalWidth > 0, w: img.getAttribute('width'), h: img.getAttribute('height'),
-      alt: img.getAttribute('alt'), shown: r.width > 40 && r.height > 80,
-      og: document.querySelector('meta[property="og:image"]')?.content }
-  })
-  check('L1y the ribbon labyrinth shows in the header, with dimensions set and no alt noise',
-    art.loaded && art.shown && art.w === '412' && art.h === '682' && art.alt === '', JSON.stringify(art))
-  const svgFile = readFileSync(join(ROOT, 'assets/ribbon-labyrinth.svg'), 'utf8')
-  check('L1y the artwork is a self-contained pink SVG under 20 KB',
-    /^<svg/.test(svgFile) && /#E58FB5/.test(svgFile) && !/currentColor/.test(svgFile) && svgFile.length < 20 * 1024, svgFile.length + ' bytes')
+  const bg = await pp.evaluate(() => ({
+    mark: !!document.querySelector('.rsvp-hero__mark svg.ribbon'),
+    markDecor: document.querySelector('.rsvp-hero__mark')?.getAttribute('aria-hidden') === 'true',
+    pattern: getComputedStyle(document.querySelector('.rsvp-hero'), '::before').display !== 'none'
+      && getComputedStyle(document.querySelector('.rsvp-hero'), '::before').backgroundImage.includes('svg'),
+    og: document.querySelector('meta[property="og:image"]')?.content,
+  }))
+  check('L1y the header has the big background ribbon and the repeating ribbon pattern behind it',
+    bg.mark && bg.markDecor && bg.pattern, JSON.stringify(bg))
   const og = readFileSync(join(ROOT, 'assets/og-self-defense.jpg'))
   const ogSize = (() => { let i = 2; while (i < og.length) { if (og[i] !== 0xFF) { i++; continue } const m = og[i + 1]
     if (m >= 0xC0 && m <= 0xCF && m !== 0xC4 && m !== 0xC8 && m !== 0xCC) return [og.readUInt16BE(i + 7), og.readUInt16BE(i + 5)]
     i += 2 + og.readUInt16BE(i + 2) } return null })()
   check('L1y the share image is 1200x630 and is what the page advertises',
-    JSON.stringify(ogSize) === '[1200,630]' && art.og === 'https://labyrinth.vision/assets/og-self-defense.jpg', JSON.stringify(ogSize) + ' ' + art.og)
+    JSON.stringify(ogSize) === '[1200,630]' && bg.og === 'https://labyrinth.vision/assets/og-self-defense.jpg', JSON.stringify(ogSize) + ' ' + bg.og)
 
   // The offers end on October 31.
   await pp.clock.setFixedTime(new Date('2026-10-31T23:00:00Z'))

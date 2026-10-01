@@ -768,7 +768,11 @@ def render_support():
 
 EVENT = {
     "slug": "self-defense-women-2026-10-21",
-    "name": "BJJ for Self Defense for Women",
+    # "Rolling for Ribbons" is the event; the descriptive line stays under it on
+    # the page and in search results, so a stranger still knows what it is.
+    "title": "Rolling for Ribbons",
+    "subtitle": "BJJ for Self Defense for Women",
+    "name": "Rolling for Ribbons: BJJ for Self Defense for Women",
     "path": "/self-defense-for-women",
     # 11:00 AM on Oct 21 is CDT (UTC-5): Texas moves its clocks on Nov 1.
     "start": "2026-10-21T11:00:00-05:00",
@@ -842,7 +846,7 @@ def event_strip():
 </aside>
 <script>(function(){var s=document.getElementById('eventStrip'),n=0;s.querySelectorAll('a[data-closes]').forEach(function(a){if(Date.now()>Date.parse(a.getAttribute('data-closes')))a.hidden=true;else n++});if(!n)s.hidden=true})()</script>""" \
         .replace("@@RIBBON@@", ribbon(26)).replace("@@PINK@@", PINK["path"]).replace("@@PINKCLOSES@@", PINK["closes_utc"]) \
-        .replace("@@PATH@@", EVENT["path"]).replace("@@NAME@@", EVENT["name"]).replace("@@CLOSES@@", EVENT["closes_utc"]) \
+        .replace("@@PATH@@", EVENT["path"]).replace("@@NAME@@", EVENT["title"]).replace("@@CLOSES@@", EVENT["closes_utc"]) \
         .replace("@@SHORT@@", short).replace("@@TIME@@", time)
 
 
@@ -857,10 +861,10 @@ def render_event_rsvp():
         "title": "%s | Free Seminar, %s | Labyrinth BJJ Fulshear" % (EVENT["name"], short_date.split(", ")[1]),
         "description": desc,
         "url": url,
-        "og_title": "%s: Free Seminar, %s" % (EVENT["name"], long_date),
+        "og_title": "%s: Free Self Defense Seminar for Women, %s" % (EVENT["title"], long_date),
         "image": SITE + "/assets/og-self-defense.jpg",
         "schema": "\n".join([
-            jsonld(crumb_schema([(EVENT["name"], EVENT["path"])])),
+            jsonld(crumb_schema([(EVENT["title"], EVENT["path"])])),
             jsonld({
                 "@context": "https://schema.org", "@type": "Event",
                 "name": EVENT["name"], "description": desc, "url": url,
@@ -886,10 +890,11 @@ def render_event_rsvp():
 
     body = """
 <header class="prog-hero rsvp-hero pink-hero">
+  <span class="rsvp-hero__mark pink-hero__mark" aria-hidden="true">@@MARK@@</span>
   <div class="container">
-    <img class="rsvp-hero__art" src="/assets/ribbon-labyrinth.svg" alt="" width="412" height="682" decoding="async">
     <p class="section-label rsvp-label">@@RIBBON16@@Community event &middot; Breast cancer awareness</p>
-    <h1 class="prog-hero__title">@@NAME@@</h1>
+    <h1 class="prog-hero__title">@@TITLE@@</h1>
+    <p class="rsvp-hero__sub">@@SUBTITLE@@</p>
     <p class="prog-hero__lead">A free, beginner-friendly self defense seminar for women, built on the jiu-jitsu we teach every day at Labyrinth. We are hosting it for breast cancer awareness: donations and merch sales at the event go directly to a family affected by breast cancer. Come on your own or bring a friend.</p>
     <div class="prog-hero__cta">
       <a href="#rsvp" class="btn btn--gold">RSVP Now</a>
@@ -966,7 +971,7 @@ def render_event_rsvp():
     </form>
 
     <div class="rsvp__success" id="rsvp-success" tabindex="-1" hidden>
-      <img class="rsvp__success-art" src="/assets/ribbon-labyrinth.svg" alt="" width="412" height="682" loading="lazy" decoding="async">
+      @@RIBBON40@@
       <p class="section-label rsvp-label">You are on the list</p>
       <h2 class="section-title section-title--lg" id="rsvp-success-title">SEE YOU THERE</h2>
       <p><span id="rsvp-success-name"></span>, we have you down for <span id="rsvp-success-party"></span> on <strong>@@LONG@@ at @@TIME@@</strong> at Labyrinth BJJ in Fulshear.</p>
@@ -1032,7 +1037,7 @@ def render_event_rsvp():
 """
     for token, value in {
         "@@RIBBON16@@": ribbon(16), "@@RIBBON20@@": ribbon(20), "@@RIBBON40@@": ribbon(40), "@@MARK@@": ribbon(320),
-        "@@PINKPATH@@": PINK["path"], "@@NAME@@": EVENT["name"], "@@DONATE@@": EVENT["donate_url"], "@@SHORT@@": short_date,
+        "@@PINKPATH@@": PINK["path"], "@@TITLE@@": EVENT["title"], "@@SUBTITLE@@": EVENT["subtitle"], "@@NAME@@": EVENT["name"], "@@DONATE@@": EVENT["donate_url"], "@@SHORT@@": short_date,
         "@@TIME@@": time, "@@LONG@@": long_date, "@@SLUG@@": EVENT["slug"],
         "@@ENDPOINT@@": EVENT["endpoint"], "@@CLOSES@@": EVENT["closes_utc"], "@@PHONE@@": PHONE,
         "@@ADDRESS@@": ADDRESS, "@@MAPS@@": EVENT["maps_url"],
@@ -1041,7 +1046,7 @@ def render_event_rsvp():
     assert "@@" not in body, "an unreplaced token in the event page"
 
     head = head.replace("<body>", '<body class="theme-pink">', 1)
-    return "\n".join([head, NAV, crumbs([(EVENT["name"], EVENT["path"])]), body, TAIL % {"footer": FOOTER}])
+    return "\n".join([head, NAV, crumbs([(EVENT["title"], EVENT["path"])]), body, TAIL % {"footer": FOOTER}])
 
 
 def render_pink_october():
