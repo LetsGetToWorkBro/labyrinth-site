@@ -3,22 +3,27 @@
      Rendered with: node scripts/og-self-defense.mjs  (needs playwright-core). -->
 <html><head><meta charset="utf-8"><style>
   * { box-sizing: border-box; margin: 0; }
-  body { width: 1200px; height: 630px; overflow: hidden; font-family: "Helvetica Neue", Arial, sans-serif; color: #f4eef1;
-    background: radial-gradient(ellipse 60% 90% at 85% 40%, rgba(229,143,181,.30), transparent 70%), linear-gradient(135deg, #46142d 0%, #270e1a 55%, #140a10 100%); position: relative; }
-  .art { position: absolute; right: 70px; top: 50%; transform: translateY(-50%); height: 520px; filter: drop-shadow(0 0 30px rgba(229,143,181,.35)); }
-  .copy { position: absolute; left: 72px; top: 0; bottom: 0; width: 700px; display: flex; flex-direction: column; justify-content: center; }
+  body { width: 1200px; height: 630px; overflow: hidden; font-family: "Helvetica Neue", Arial, sans-serif; color: #f4eef1; position: relative;
+    background: radial-gradient(ellipse 60% 90% at 85% 40%, rgba(229,143,181,.32), transparent 70%), linear-gradient(135deg, #46142d 0%, #270e1a 55%, #140a10 100%); }
+  .pattern { position: absolute; inset: 0; opacity: .085; background-size: 120px 120px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'><g transform='translate(36 36) scale(2)' fill='none' stroke='%23E58FB5' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7'/></g></svg>"); }
+  .mark { position: absolute; right: 70px; top: 50%; transform: translateY(-50%) rotate(14deg); width: 400px; color: #E58FB5; opacity: .24; }
+  .copy { position: absolute; left: 72px; top: 0; bottom: 36px; width: 820px; display: flex; flex-direction: column; justify-content: center; }
   .badge { display: inline-flex; align-self: flex-start; padding: 9px 18px; border: 1.5px solid rgba(229,143,181,.5); border-radius: 999px; background: rgba(229,143,181,.12);
     color: #E58FB5; font-size: 19px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 26px; }
-  h1 { font-size: 78px; line-height: 1.02; font-weight: 800; letter-spacing: -.01em; text-transform: uppercase; }
+  h1 { font-size: 112px; line-height: .98; font-weight: 800; letter-spacing: -.015em; text-transform: uppercase; }
   h1 span { color: #E58FB5; }
-  .when { margin-top: 30px; font-size: 32px; font-weight: 600; color: #fbd3e3; }
-  .free { display: inline-block; margin-top: 22px; padding: 10px 22px; border-radius: 10px; background: #E58FB5; color: #1a0b12; font-size: 26px; font-weight: 800; align-self: flex-start; }
-  .brand { position: absolute; left: 72px; bottom: 44px; font-size: 22px; letter-spacing: .24em; font-weight: 700; color: #b9a1ae; }
+  .sub { margin-top: 20px; font-size: 38px; font-weight: 600; color: #fbd3e3; }
+  .when { margin-top: 26px; font-size: 30px; font-weight: 600; color: #d9bccb; }
+  .free { display: inline-block; margin-top: 24px; padding: 10px 22px; border-radius: 10px; background: #E58FB5; color: #1a0b12; font-size: 26px; font-weight: 800; align-self: flex-start; }
+  .brand { position: absolute; left: 72px; bottom: 40px; font-size: 21px; letter-spacing: .24em; font-weight: 700; color: #b9a1ae; }
 </style></head><body>
-  <img class="art" src="../assets/ribbon-labyrinth.svg" alt="">
+  <div class="pattern"></div>
+  <svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7" fill="currentColor" fill-opacity=".18"/></svg>
   <div class="copy">
     <div class="badge">Breast cancer awareness</div>
-    <h1>BJJ for Self Defense <span>for Women</span></h1>
+    <h1>Rolling for <span>Ribbons</span></h1>
+    <div class="sub">BJJ for Self Defense for Women</div>
     <div class="when">Wednesday, October 21 &middot; 11:00 AM</div>
     <div class="free">FREE &middot; No experience needed</div>
   </div>
