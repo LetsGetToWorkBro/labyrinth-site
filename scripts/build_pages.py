@@ -791,6 +791,26 @@ def _event_when():
     return (d.strftime("%A, %B ") + str(d.day), d.strftime("%a, %b ") + str(d.day), time)
 
 
+# ── /pink-october ────────────────────────────────────────────────────────────
+#
+# The October offers, in observance of Breast Cancer Awareness Month. Everything
+# time-bound is here so the page, the homepage strip and the tests agree.
+#
+#   • Moms of current and new students train free for the whole month.
+#   • Every woman gets 50% off her first month, with or without a child enrolled.
+#
+# The page makes no promise the academy has not made: the terms it states are
+# the two offers, the dates, and "tell us you are here for Pink October". How an
+# offer is verified and applied is the desk's call, and the page says to ask.
+
+PINK = {
+    "path": "/pink-october",
+    "starts": "2026-10-01",
+    # Midnight at the end of Oct 31, Central (CDT, UTC-5).
+    "closes_utc": "2026-11-01T05:00:00Z",
+}
+
+
 def ribbon(size=18):
     """The awareness ribbon, drawn once. It takes its color from CSS (`color` on
     the element around it), so the same markup is pink on the event page and on
@@ -802,21 +822,28 @@ def ribbon(size=18):
 
 
 def event_strip():
-    """The homepage's one-line pointer at the event. Hides itself the morning
-    after, so nobody is invited to an event that has gone."""
+    """The homepage's pointer at October: the offers and the event. Each link
+    hides itself after its own last day, and the strip after both, so nobody is
+    invited to something that has gone."""
     _, short, time = _event_when()
-    return """<aside class="event-strip" id="eventStrip" aria-label="Upcoming event">
+    return """<aside class="event-strip" id="eventStrip" aria-label="October at Labyrinth BJJ">
   <div class="container">
-    <a class="event-strip__link" href="@@PATH@@">
+    <a class="event-strip__link" href="@@PINK@@" data-closes="@@PINKCLOSES@@">
+      <span class="event-strip__icon">@@RIBBON@@</span>
+      <span class="event-strip__text"><strong>Pink October: moms train free, women get 50% off</strong><span>All of October &middot; Open to every woman</span></span>
+      <span class="event-strip__cta">See offers</span>
+    </a>
+    <a class="event-strip__link" href="@@PATH@@" data-closes="@@CLOSES@@">
       <span class="event-strip__icon">@@RIBBON@@</span>
       <span class="event-strip__text"><strong>Free event: @@NAME@@</strong><span>@@SHORT@@ &middot; @@TIME@@ &middot; Breast cancer awareness</span></span>
       <span class="event-strip__cta">RSVP</span>
     </a>
   </div>
 </aside>
-<script>if(Date.now()>Date.parse('@@CLOSES@@'))document.getElementById('eventStrip').hidden=true</script>""" \
-        .replace("@@RIBBON@@", ribbon(26)).replace("@@PATH@@", EVENT["path"]).replace("@@NAME@@", EVENT["name"]) \
-        .replace("@@SHORT@@", short).replace("@@TIME@@", time).replace("@@CLOSES@@", EVENT["closes_utc"])
+<script>(function(){var s=document.getElementById('eventStrip'),n=0;s.querySelectorAll('a[data-closes]').forEach(function(a){if(Date.now()>Date.parse(a.getAttribute('data-closes')))a.hidden=true;else n++});if(!n)s.hidden=true})()</script>""" \
+        .replace("@@RIBBON@@", ribbon(26)).replace("@@PINK@@", PINK["path"]).replace("@@PINKCLOSES@@", PINK["closes_utc"]) \
+        .replace("@@PATH@@", EVENT["path"]).replace("@@NAME@@", EVENT["name"]).replace("@@CLOSES@@", EVENT["closes_utc"]) \
+        .replace("@@SHORT@@", short).replace("@@TIME@@", time)
 
 
 def render_event_rsvp():
@@ -858,8 +885,8 @@ def render_event_rsvp():
     }
 
     body = """
-<header class="prog-hero rsvp-hero">
-  <span class="rsvp-hero__mark" aria-hidden="true">@@MARK@@</span>
+<header class="prog-hero rsvp-hero pink-hero">
+  <span class="rsvp-hero__mark pink-hero__mark" aria-hidden="true">@@MARK@@</span>
   <div class="container">
     <p class="section-label rsvp-label">@@RIBBON16@@Community event &middot; Breast cancer awareness</p>
     <h1 class="prog-hero__title">@@NAME@@</h1>
@@ -971,6 +998,23 @@ def render_event_rsvp():
   </div>
 </section>
 
+<section class="prog-section pink-more" id="october">
+  <div class="container">
+    <div>
+      <p class="section-label rsvp-label">@@RIBBON16@@All October</p>
+      <h2 class="section-title section-title--lg">MORE FOR WOMEN THIS MONTH</h2>
+    </div>
+    <a href="@@PINKPATH@@" class="pink-link-card">
+      <span class="pink-link-card__ribbon">@@RIBBON40@@</span>
+      <span class="pink-link-card__body">
+        <strong>Pink October at Labyrinth</strong>
+        <span>Moms of current and new students train free all month, and every woman gets 50% off her first month. Beginners welcome.</span>
+      </span>
+      <span class="pink-link-card__cta">See the offers &rarr;</span>
+    </a>
+  </div>
+</section>
+
 <section class="prog-section">
   <div class="container">
     <div>
@@ -988,7 +1032,7 @@ def render_event_rsvp():
 """
     for token, value in {
         "@@RIBBON16@@": ribbon(16), "@@RIBBON20@@": ribbon(20), "@@RIBBON40@@": ribbon(40), "@@MARK@@": ribbon(320),
-        "@@NAME@@": EVENT["name"], "@@DONATE@@": EVENT["donate_url"], "@@SHORT@@": short_date,
+        "@@PINKPATH@@": PINK["path"], "@@NAME@@": EVENT["name"], "@@DONATE@@": EVENT["donate_url"], "@@SHORT@@": short_date,
         "@@TIME@@": time, "@@LONG@@": long_date, "@@SLUG@@": EVENT["slug"],
         "@@ENDPOINT@@": EVENT["endpoint"], "@@CLOSES@@": EVENT["closes_utc"], "@@PHONE@@": PHONE,
         "@@ADDRESS@@": ADDRESS, "@@MAPS@@": EVENT["maps_url"],
@@ -996,7 +1040,145 @@ def render_event_rsvp():
         body = body.replace(token, value)
     assert "@@" not in body, "an unreplaced token in the event page"
 
+    head = head.replace("<body>", '<body class="theme-pink">', 1)
     return "\n".join([head, NAV, crumbs([(EVENT["name"], EVENT["path"])]), body, TAIL % {"footer": FOOTER}])
+
+
+def render_pink_october():
+    url = SITE + PINK["path"]
+    event_long, event_short, event_time = _event_when()
+    desc = ("Pink October at Labyrinth BJJ in Fulshear, TX: moms of current and new students train free all "
+            "October, and every woman gets 50% off her first month. In observance of Breast Cancer Awareness Month.")
+
+    head = HEAD % {
+        "title": "Pink October: Moms Train Free, 50% Off for Women | Labyrinth BJJ Fulshear",
+        "description": desc,
+        "url": url,
+        "og_title": "Pink October at Labyrinth BJJ: Moms Train Free, Women Get 50% Off",
+        "image": SITE + "/assets/og-image.jpg",
+        "schema": "\n".join([
+            jsonld(crumb_schema([("Pink October", PINK["path"])])),
+            jsonld({"@context": "https://schema.org", "@type": "WebPage", "name": "Pink October at Labyrinth BJJ",
+                    "url": url, "description": desc,
+                    "about": {"@type": "Thing", "name": "Breast Cancer Awareness Month"},
+                    "publisher": {"@type": "Organization", "name": "Labyrinth BJJ", "url": SITE}}),
+        ]),
+    }
+    head = head.replace("<body>", '<body class="theme-pink">', 1)
+
+    body = """
+<header class="prog-hero pink-hero">
+  <span class="pink-hero__mark" aria-hidden="true">@@MARK@@</span>
+  <div class="container">
+    <p class="pink-badge">@@RIBBON18@@Breast Cancer Awareness Month</p>
+    <h1 class="prog-hero__title">PINK <span>OCTOBER</span></h1>
+    <p class="prog-hero__lead">All month long, Labyrinth is training in pink. <strong>Moms train free</strong>, and <strong>every woman gets 50% off her first month</strong>. No experience needed, and no child required.</p>
+    <div class="prog-hero__cta">
+      <a data-book-trial href="/#book" class="btn btn--gold">Book a Free Class</a>
+      <a href="#offers" class="btn btn--ghost">See the Offers</a>
+    </div>
+    <div class="prog-facts">
+      <div class="prog-fact"><div class="prog-fact__label">Runs</div><div class="prog-fact__value">Oct 1 to 31</div></div>
+      <div class="prog-fact"><div class="prog-fact__label">Moms</div><div class="prog-fact__value"><em>Train free</em></div></div>
+      <div class="prog-fact"><div class="prog-fact__label">Every woman</div><div class="prog-fact__value"><em>50% off</em> month one</div></div>
+      <div class="prog-fact"><div class="prog-fact__label">Where</div><div class="prog-fact__value">Fulshear, TX</div></div>
+    </div>
+  </div>
+</header>
+
+<p class="pink-ended" id="pink-ended" hidden>These offers ended on October 31. Thank you to everyone who joined in. See what is on this week on the <a href="/schedule">schedule</a>.</p>
+
+<section class="prog-section" id="offers" data-live>
+  <div class="container">
+    <div>
+      <p class="section-label rsvp-label">@@RIBBON16@@Two ways to join in</p>
+      <h2 class="section-title section-title--lg">THIS MONTH ONLY</h2>
+    </div>
+    <div class="offer-grid">
+      <article class="offer-card">
+        <p class="offer-card__big">FREE</p>
+        <h3 class="offer-card__title">Moms train free all October</h3>
+        <p>If your child trains with us, or is about to start, you train free for the whole month. Already a student? New to jiu-jitsu? Either way, this is for you.</p>
+        <ul class="offer-card__list">
+          <li>Moms of current and new students</li>
+          <li>The whole month of October</li>
+          <li>No experience needed</li>
+        </ul>
+      </article>
+      <article class="offer-card">
+        <p class="offer-card__big">50% OFF</p>
+        <h3 class="offer-card__title">Half off her first month</h3>
+        <p>Every woman who joins in October gets 50% off her first month, whether or not she has a child enrolled. Bring a friend, a sister, a neighbor.</p>
+        <ul class="offer-card__list">
+          <li>Open to all women</li>
+          <li>No child enrolled? No problem</li>
+          <li>Your first class is free either way</li>
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="prog-section prog-section--surface" id="claim" data-live>
+  <div class="container">
+    <div>
+      <p class="section-label rsvp-label">@@RIBBON16@@How it works</p>
+      <h2 class="section-title section-title--lg">THREE EASY STEPS</h2>
+    </div>
+    <ol class="pink-steps">
+      <li><strong>Book a free class.</strong> Pick any class and a time that suits you. It takes a minute, and a coach will be expecting you.</li>
+      <li><strong>Tell us you are here for Pink October.</strong> Say so when you book, or at the front desk when you arrive.</li>
+      <li><strong>We take it from there.</strong> We will set up your offer with you in person. Questions first? Call <a href="tel:2813937983">@@PHONE@@</a>.</li>
+    </ol>
+    <div class="prog-hero__cta">
+      <a data-book-trial href="/#book" class="btn btn--gold">Book a Free Class</a>
+      <a href="tel:2813937983" class="btn btn--ghost">Call @@PHONE@@</a>
+    </div>
+  </div>
+</section>
+
+<section class="prog-section" id="why">
+  <div class="container">
+    <div>
+      <p class="section-label rsvp-label">@@RIBBON16@@Why pink</p>
+      <h2 class="section-title section-title--lg">BREAST CANCER AWARENESS MONTH</h2>
+    </div>
+    <div class="prog-prose">
+      <p>October is Breast Cancer Awareness Month, and we want the women in our community to have a reason to show up for themselves this month: to move, to get stronger, and to meet people who will cheer for them.</p>
+      <p>We are also hosting a free self defense seminar on <strong>@@EVENT_LONG@@ at @@EVENT_TIME@@</strong>. Donations and merch sales at the event go directly to a family affected by breast cancer.</p>
+    </div>
+    <a href="@@EVENTPATH@@" class="pink-link-card">
+      <span class="pink-link-card__ribbon">@@RIBBON40@@</span>
+      <span class="pink-link-card__body">
+        <strong>@@EVENT_NAME@@</strong>
+        <span>@@EVENT_SHORT@@ at @@EVENT_TIME@@ &middot; Free, no experience needed &middot; RSVP and donate</span>
+      </span>
+      <span class="pink-link-card__cta">RSVP &rarr;</span>
+    </a>
+  </div>
+</section>
+
+<section class="pink-band" id="start" data-live>
+  <div class="container">
+    <p class="pink-band__ribbon" aria-hidden="true">@@RIBBON40@@</p>
+    <h2 class="pink-band__title">READY TO START?</h2>
+    <p>Your first class is free. October is the month to try it.</p>
+    <a data-book-trial href="/#book" class="btn btn--dark">Book a Free Class</a>
+  </div>
+</section>
+
+<script>(function(){if(Date.now()>Date.parse('@@CLOSES@@')){document.getElementById('pink-ended').hidden=false;document.querySelectorAll('[data-live]').forEach(function(e){e.hidden=true})}})()</script>
+"""
+    for token, value in {
+        "@@RIBBON16@@": ribbon(16), "@@RIBBON18@@": ribbon(18), "@@RIBBON40@@": ribbon(40), "@@MARK@@": ribbon(320),
+        "@@PHONE@@": PHONE, "@@CLOSES@@": PINK["closes_utc"], "@@EVENTPATH@@": EVENT["path"],
+        "@@EVENT_NAME@@": EVENT["name"], "@@EVENT_LONG@@": event_long, "@@EVENT_SHORT@@": event_short,
+        "@@EVENT_TIME@@": event_time,
+    }.items():
+        body = body.replace(token, value)
+    assert "@@" not in body, "an unreplaced token on the October page"
+
+    return "\n".join([head, NAV, crumbs([("Pink October", PINK["path"])]), body, TAIL % {"footer": FOOTER}])
 
 
 # ── /ennova ──────────────────────────────────────────────────────────────────
@@ -2126,6 +2308,9 @@ def main():
     with open(os.path.join(ROOT, "self-defense-for-women.html"), "w", encoding="utf-8") as fh:
         fh.write(stamp(render_event_rsvp()))
     print("wrote self-defense-for-women.html")
+    with open(os.path.join(ROOT, "pink-october.html"), "w", encoding="utf-8") as fh:
+        fh.write(stamp(render_pink_october()))
+    print("wrote pink-october.html")
     with open(os.path.join(ROOT, "pricing.html"), "w", encoding="utf-8") as fh:
         fh.write(stamp(render_pricing()))
     print("wrote pricing.html")

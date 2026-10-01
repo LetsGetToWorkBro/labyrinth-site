@@ -33,7 +33,7 @@ const programs = readdirSync(join(ROOT,'programs')).filter(f=>f.endsWith('.html'
 const areas = readdirSync(join(ROOT,'areas')).filter(f=>f.endsWith('.html')&&f!=='index.html').map(f=>'/areas/'+f.replace('.html',''))
 const coaches = readdirSync(join(ROOT,'coaches')).filter(f=>f.endsWith('.html')&&f!=='index.html').map(f=>'/coaches/'+f.replace('.html',''))
 const pages = ['/', '/blog/', '/programs/', '/areas/', '/coaches/', '/schedule', '/pricing',
-  '/support', '/privacy-policy', '/ennova', '/self-defense-for-women', '/legacy/', '/legacy/transfer',
+  '/support', '/privacy-policy', '/ennova', '/self-defense-for-women', '/pink-october', '/legacy/', '/legacy/transfer',
   ...posts, ...programs, ...areas, ...coaches]
 const broken = []
 for (const path of pages) {
@@ -48,7 +48,7 @@ for (const path of pages) {
   }
 }
 check('L1 no broken internal links', broken.length === 0, '\n    ' + broken.slice(0,8).join('\n    '))
-check('L1 all 48 pages served 200', pages.length === 48, 'pages: ' + pages.length)
+check('L1 all 49 pages served 200', pages.length === 49, 'pages: ' + pages.length)
 
 // ── L1b: every program page carries the schema and the canonical it exists for ──
 // A program page whose Service block is missing is still a page, and still
@@ -126,7 +126,7 @@ const fakeAddress = areas.filter(p => {
 check('L1g no area page invents a location', fakeAddress.length === 0, fakeAddress.join(', '))
 
 // ── L1h: the generated pages match their generator ──
-const generated = ['schedule.html','pricing.html','support.html','ennova.html','self-defense-for-women.html',
+const generated = ['schedule.html','pricing.html','support.html','ennova.html','self-defense-for-women.html','pink-october.html',
   'legacy/index.html','legacy/transfer.html','coaches/index.html',
   ...coaches.map(c=>c.slice(1)+'.html')]
 const genBefore = generated.map(f=>readFileSync(join(ROOT,f),'utf8'))
@@ -609,9 +609,10 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   check('L1x the homepage links to the event page before the event',
     (await rp.locator('a.event-strip__link[href="/self-defense-for-women"]').count()) === 1
       && await rp.isVisible('#eventStrip'))
-  check('L1x the strip carries a pink ribbon',
-    (await rp.locator('#eventStrip svg.ribbon').count()) === 1
-      && await rp.evaluate(() => getComputedStyle(document.querySelector('.event-strip__icon')).color) === 'rgb(229, 143, 181)')
+  check('L1x each strip link carries a pink ribbon and a pink button',
+    (await rp.locator('#eventStrip svg.ribbon').count()) === 2
+      && await rp.evaluate(() => [...document.querySelectorAll('.event-strip__icon')].every(i => getComputedStyle(i).color === 'rgb(229, 143, 181)')
+        && [...document.querySelectorAll('.event-strip__cta')].every(c => getComputedStyle(c).backgroundColor === 'rgb(229, 143, 181)')))
   check('L1x the strip names the event, the date and the cause',
     /BJJ for Self Defense for Women/.test(await rp.textContent('#eventStrip'))
       && /Oct 21/.test(await rp.textContent('#eventStrip')) && /Breast cancer/i.test(await rp.textContent('#eventStrip')))
@@ -619,10 +620,90 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   // The morning after, the strip is gone and the page stops taking RSVPs.
   await rp.clock.setFixedTime(new Date('2026-10-23T15:00:00Z'))
   await rp.goto('http://localhost:4620/', { waitUntil: 'networkidle' })
-  check('L1x the homepage strip is gone once the event has passed', !(await rp.isVisible('#eventStrip')))
+  check('L1x the event link leaves the homepage after the event, the October offer stays until Oct 31',
+    !(await rp.isVisible('a.event-strip__link[href="/self-defense-for-women"]'))
+      && await rp.isVisible('a.event-strip__link[href="/pink-october"]'))
+  await rp.clock.setFixedTime(new Date('2026-11-02T15:00:00Z'))
+  await rp.goto('http://localhost:4620/', { waitUntil: 'networkidle' })
+  check('L1x the whole strip is gone once October is over', !(await rp.isVisible('#eventStrip')))
   await rp.goto(URL, { waitUntil: 'networkidle' })
   check('L1x the page says the event has passed and offers no form',
     (await rp.isVisible('#rsvp-over')) && !(await rp.isVisible('#rsvp-form')))
+  await ctx.close()
+}
+
+// ── L1y: Pink October, and the pink theme on both awareness pages ──
+// The two offers exactly as the owner stated them and nothing more, the pages
+// linking to each other, the theme actually applied (not just promised in a
+// class name), the booking buttons working, and the offers ending on schedule.
+{
+  const ctx = await browser.newContext()
+  const pp = await ctx.newPage()
+  await pp.clock.setFixedTime(new Date('2026-10-05T15:00:00Z'))
+  const PINK = 'rgb(229, 143, 181)', GOLD = 'rgb(200, 162, 76)'
+
+  await pp.goto('http://localhost:4620/pink-october', { waitUntil: 'networkidle' })
+  const t = await pp.evaluate(() => document.body.innerText)
+  check('L1y the page leads with Pink October and the awareness month',
+    /PINK\s*OCTOBER/i.test(await pp.textContent('h1')) && /Breast Cancer Awareness Month/i.test(t))
+  check('L1y moms of current and new students train free all October',
+    /moms train free/i.test(t) && /current and new students/i.test(t) && /whole month of October/i.test(t))
+  check('L1y every woman gets 50% off her first month, child enrolled or not',
+    /50% off/i.test(t) && /every woman/i.test(t) && /first month/i.test(t) && /whether or not she has a child enrolled/i.test(t))
+  check('L1y it runs Oct 1 to 31 and needs no experience', /Oct 1 to 31/.test(t) && /No experience needed/i.test(t))
+  check('L1y no em dashes, and American spelling', !/—/.test(t) && !/\b(colour|programme|centre|neighbour)\b/i.test(t))
+  check('L1y it links to the self defense event, and the event links back',
+    (await pp.locator('a[href="/self-defense-for-women"]').count()) >= 1)
+  const inPage = await pp.evaluate(() => ({
+    cta: [...document.querySelectorAll('[data-book-trial]')].length,
+    theme: document.body.classList.contains('theme-pink'),
+    primary: getComputedStyle(document.querySelector('main .btn--gold')).backgroundColor,
+    nav: getComputedStyle(document.querySelector('.nav__cta')).backgroundColor,
+    ribbons: document.querySelectorAll('svg.ribbon').length,
+    band: getComputedStyle(document.querySelector('.pink-band')).backgroundImage.includes('rgb(229, 143, 181)'),
+    heroBg: getComputedStyle(document.querySelector('.pink-hero')).backgroundImage.includes('gradient'),
+    mainBg: getComputedStyle(document.querySelector('main')).backgroundColor,
+  }))
+  check('L1y the page is fully pink: pink primary buttons, a pink hero, a pink band, rose-black ground',
+    inPage.theme && inPage.primary === PINK && inPage.band && inPage.heroBg && inPage.mainBg !== 'rgb(10, 10, 10)', JSON.stringify(inPage))
+  check('L1y the site nav keeps its gold, so it is still the same academy', inPage.nav === GOLD, inPage.nav)
+  check('L1y ribbons are used throughout', inPage.ribbons >= 6, 'ribbons: ' + inPage.ribbons)
+  check('L1y Book a Free Class buttons are wired to the booking form', inPage.cta >= 3, 'cta: ' + inPage.cta)
+  await pp.click('main .pink-band [data-book-trial]')
+  await pp.waitForTimeout(400)
+  check('L1y tapping one opens the booking form', await pp.evaluate(() => !!document.querySelector('.booking-overlay.open')))
+  const muted = await pp.evaluate(() => {
+    const rgb = c => c.match(/\d+/g).slice(0, 3).map(Number)
+    const lin = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4 }
+    const lum = ([r, g, b]) => 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
+    const fg = getComputedStyle(document.querySelector('.offer-card p:not(.offer-card__big)')).color
+    const bg = getComputedStyle(document.querySelector('main')).backgroundColor
+    const a = lum(rgb(fg)), b = lum(rgb(bg))
+    return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)
+  })
+  check('L1y body text is readable on the rose-black (WCAG AA, 4.5:1)', muted >= 4.5, muted.toFixed(1))
+  const big = await pp.evaluate(() => getComputedStyle(document.querySelector('.offer-card__big')).color)
+  check('L1y the FREE and 50% OFF numerals are the bright pink, not washed out', big === PINK, big)
+
+  // The event page wears the same theme and points at the offers.
+  await pp.goto('http://localhost:4620/self-defense-for-women', { waitUntil: 'networkidle' })
+  const ev = await pp.evaluate(() => ({
+    theme: document.body.classList.contains('theme-pink'),
+    primary: getComputedStyle(document.querySelector('main .btn--gold')).backgroundColor,
+    hero: getComputedStyle(document.querySelector('.rsvp-hero')).backgroundImage.includes('gradient'),
+    link: !!document.querySelector('a.pink-link-card[href="/pink-october"]'),
+  }))
+  check('L1y the event page is fully pink too, and links to Pink October',
+    ev.theme && ev.primary === PINK && ev.hero && ev.link, JSON.stringify(ev))
+
+  // The offers end on October 31.
+  await pp.clock.setFixedTime(new Date('2026-10-31T23:00:00Z'))
+  await pp.goto('http://localhost:4620/pink-october', { waitUntil: 'networkidle' })
+  check('L1y the offers are still up on October 31 (6:00 PM Central)', !(await pp.isVisible('#pink-ended')) && await pp.isVisible('#offers'))
+  await pp.clock.setFixedTime(new Date('2026-11-01T06:00:00Z'))
+  await pp.goto('http://localhost:4620/pink-october', { waitUntil: 'networkidle' })
+  check('L1y after October the page says the offers ended and shows none',
+    (await pp.isVisible('#pink-ended')) && !(await pp.isVisible('#offers')) && !(await pp.isVisible('#start')))
   await ctx.close()
 }
 

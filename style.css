@@ -5115,6 +5115,8 @@ body {
   text-decoration: none;
   transition: border-color 0.2s, background 0.2s;
 }
+.event-strip__link + .event-strip__link { margin-top: 10px; }
+.event-strip__link[hidden] { display: none; }
 .event-strip__link:hover { border-color: var(--awareness); background: rgba(229, 143, 181, 0.14); }
 .event-strip__icon { display: flex; flex-shrink: 0; color: var(--awareness); }
 .event-strip__text {
@@ -5126,7 +5128,7 @@ body {
   flex-shrink: 0;
   padding: 8px 16px;
   border-radius: 8px;
-  background: var(--gold);
+  background: var(--awareness);
   color: #0a0a0a;
   font-weight: 600;
   font-size: 14px;
