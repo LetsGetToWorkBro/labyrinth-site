@@ -1094,27 +1094,55 @@
 /* ── /self-defense-for-women ───────────────────────────────────────────────
    The RSVP page reuses the booking form's fields (booking.css) and the program
    page chrome above; what is here is only what those do not already cover. */
-.rsvp-label { color: #e58fb5; }
+.rsvp-label { display: flex; align-items: center; gap: 8px; color: var(--awareness); }
+.ribbon { flex-shrink: 0; }
+
+/* A pink wash from the corner and, on a wide screen, a ribbon behind the header. */
+.rsvp-hero {
+  position: relative;
+  overflow: hidden;
+  background: radial-gradient(ellipse 70% 80% at 88% 45%, rgba(229, 143, 181, 0.10), transparent 72%);
+}
+.rsvp-hero .container { position: relative; z-index: 1; }
+.rsvp-hero .prog-fact__value em { color: var(--awareness); }
+.rsvp-hero__mark {
+  display: none;
+  position: absolute;
+  right: max(3vw, 24px);
+  top: 50%;
+  width: min(30vw, 380px);
+  height: auto;
+  color: var(--awareness);
+  opacity: 0.1;
+  transform: translateY(-50%) rotate(14deg);
+  pointer-events: none;
+}
+@media (min-width: 900px) { .rsvp-hero__mark { display: block; } }
 .rsvp [hidden], .rsvp-give [hidden] { display: none !important; }
 
 .rsvp__intro { max-width: 640px; }
 .rsvp__note {
   margin-top: var(--space-4);
   padding: var(--space-4) var(--space-5);
-  border-left: 3px solid var(--gold);
-  background: rgba(200, 162, 76, 0.08);
+  border-left: 3px solid var(--awareness);
+  background: var(--awareness-soft);
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
   color: var(--text);
   line-height: 1.6;
 }
-.rsvp__note strong { color: var(--gold); }
+.rsvp__note strong { color: var(--awareness); }
 
 .rsvp__form, .rsvp__success, .rsvp__thanks, .rsvp__over { max-width: 560px; margin-top: var(--space-8); }
 .rsvp__form {
   padding: var(--space-6);
   background: var(--surface-elevated);
   border: 1px solid var(--border);
+  border-top: 3px solid var(--awareness);
   border-radius: var(--radius-md);
+}
+.rsvp__form .booking-form__input:focus {
+  border-color: var(--awareness);
+  box-shadow: 0 0 0 3px rgba(229, 143, 181, 0.18);
 }
 /* 16px or larger: iOS Safari zooms the whole page into any field set smaller. */
 .rsvp__form .booking-form__input { font-size: 16px; }
@@ -1144,16 +1172,21 @@
 
 .rsvp__thanks {
   padding: var(--space-4) var(--space-5);
-  border: 1px solid rgba(200, 162, 76, 0.35);
-  background: rgba(200, 162, 76, 0.08);
+  border: 1px solid var(--awareness-line);
+  background: var(--awareness-soft);
   border-radius: var(--radius-sm);
   color: var(--text);
 }
 .rsvp__success:focus { outline: none; }
+.rsvp__success .ribbon { display: block; margin-bottom: var(--space-3); color: var(--awareness); }
 .rsvp__success p { color: var(--text-muted); line-height: 1.6; margin: var(--space-3) 0; }
+.rsvp__success .rsvp-label { color: var(--awareness); margin: 0; }
 .rsvp__success .prog-hero__cta { margin-top: var(--space-5); }
 .rsvp__over { color: var(--text-muted); line-height: 1.6; }
 
 @media (min-width: 900px) {
   .rsvp__form { padding: var(--space-8); }
 }
+
+.rsvp-give { border-top: 1px solid var(--awareness-line); }
+.rsvp-give__thanks { display: flex; align-items: center; gap: var(--space-3); margin-top: var(--space-6); color: var(--awareness); font-weight: 500; }
