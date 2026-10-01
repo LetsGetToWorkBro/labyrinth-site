@@ -1,0 +1,51 @@
+<!doctype html>
+<!-- Paid ad creative for the 50%-off-for-women offer: feed 1080x1350 (#feed) and stories/reels 1080x1920 (#story).
+     assets/social/pink-october-ad-feed.png and pink-october-ad-story.png.
+     Rendered with: node scripts/ad-pink-october-50.mjs  (needs playwright-core). -->
+<html><head><meta charset="utf-8"><style>
+  * { box-sizing: border-box; margin: 0; }
+  body { background: #000; font-family: "Helvetica Neue", Arial, sans-serif; color: #f4eef1; }
+  .ad { position: relative; width: 1080px; overflow: hidden;
+    background: radial-gradient(ellipse 70% 25% at 50% 78%, rgba(229,143,181,.22), transparent 70%), linear-gradient(180deg, #270e1a 0%, #270e1a 45%, #140a10 100%); }
+  #feed { height: 1350px; } #story { height: 1920px; }
+  .photo { position: absolute; left: 0; top: 0; width: 1080px; height: 720px; background: url("../assets/strength-conditioning.jpg") center/cover; }
+  .photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(229,143,181,.26) 0%, rgba(229,143,181,.12) 50%, rgba(39,14,26,.4) 80%, #270e1a 100%); mix-blend-mode: multiply; }
+  .photo::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 240px; z-index: 1; background: linear-gradient(180deg, transparent, #270e1a 94%); }
+  .body { position: absolute; left: 76px; right: 76px; z-index: 2; }
+  #feed .body { top: 600px; } #story .body { top: 640px; }
+  .tag { display: flex; align-items: center; gap: 14px; color: #E58FB5; font-size: 26px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+  .tag svg { width: 38px; height: 38px; }
+  .big { margin-top: 14px; font-size: 230px; line-height: .9; font-weight: 900; letter-spacing: -.03em; color: #E58FB5; }
+  .big small { font-size: 96px; letter-spacing: -.01em; color: #f4eef1; margin-left: 14px; }
+  .line { margin-top: 10px; font-size: 62px; line-height: 1.05; font-weight: 900; text-transform: uppercase; letter-spacing: -.01em; }
+  .sub { margin-top: 26px; font-size: 38px; line-height: 1.3; font-weight: 600; color: #fbd3e3; }
+  .cta { margin-top: 36px; display: inline-block; padding: 24px 46px; border-radius: 16px; background: #E58FB5; color: #1a0b12; font-size: 40px; font-weight: 900; }
+  .url { margin-top: 22px; font-size: 30px; font-weight: 800; color: #E58FB5; }
+  .brand { position: absolute; left: 76px; font-size: 22px; letter-spacing: .24em; font-weight: 700; color: #b9a1ae; z-index: 2; }
+  #feed .brand { bottom: 44px; } #story .brand { bottom: 400px; }
+</style></head><body>
+<svg width="0" height="0" style="position:absolute"><defs><symbol id="rib" viewBox="0 0 24 24"><path d="M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7" fill="currentColor" fill-opacity=".18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol></defs></svg>
+
+<div class="ad" id="feed"><div class="photo"></div>
+  <div class="body">
+    <div class="tag"><svg><use href="#rib"/></svg>Pink October</div>
+    <div class="big">50%<small>OFF</small></div>
+    <div class="line">Your first month</div>
+    <div class="sub">Every woman. No child required. No experience needed.</div>
+    <div class="cta">Book a free class</div>
+  </div>
+  <div class="brand">LABYRINTH BJJ &middot; FULSHEAR, TX</div>
+</div>
+
+<div class="ad" id="story"><div class="photo" style="top:150px"></div>
+  <div class="body" style="top:790px">
+    <div class="tag"><svg><use href="#rib"/></svg>Pink October</div>
+    <div class="big">50%<small>OFF</small></div>
+    <div class="line">Your first month</div>
+    <div class="sub">Every woman. No child required. No experience needed.</div>
+    <div class="cta">Book a free class</div>
+    <div class="url">labyrinth.vision/pink-october</div>
+  </div>
+  <div class="brand">LABYRINTH BJJ &middot; FULSHEAR, TX</div>
+</div>
+</body></html>
