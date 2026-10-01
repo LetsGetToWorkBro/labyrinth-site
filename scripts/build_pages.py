@@ -781,7 +781,20 @@ EVENT = {
     # After this the form says the event has passed (and the server refuses).
     # Matches closesAt in event-emails.ts: 5:00 AM Central the next morning.
     "closes_utc": "2026-10-25T10:00:00Z",
+    # "Other amount": a Payment Link where the donor types any amount ($1 minimum).
     "donate_url": "https://donate.stripe.com/14AdRa0tL1Ea1Br3bJgjC0a",
+    # One fixed-amount Payment Link per button, so a tap goes straight to a
+    # checkout for exactly that amount. Each sends the donor back to
+    # /self-defense-for-women?donated=1 for the thank-you.
+    "donate_amounts": [
+        (1, "https://donate.stripe.com/7sY14ob8pgz44NDdQngjC0b"),
+        (3, "https://donate.stripe.com/4gMaEY1xPfv05RH7rZgjC0c"),
+        (5, "https://donate.stripe.com/4gM14o0tL82yeod3bJgjC0d"),
+        (10, "https://donate.stripe.com/28E6oIb8p4Qm0xn5jRgjC0e"),
+        (25, "https://donate.stripe.com/7sYfZi5O55Uq4ND3bJgjC0f"),
+        (50, "https://donate.stripe.com/28E8wQ90hciO0xnh2zgjC0g"),
+        (100, "https://donate.stripe.com/3cI7sMfoFgz43Jz5jRgjC0h"),
+    ],
     "endpoint": "https://jctufxvmuvobaggxcwfn.supabase.co/functions/v1/event-rsvp",
     "maps_url": "https://maps.google.com/?cid=7150744267965161030",
 }
@@ -902,7 +915,7 @@ def render_event_rsvp():
     <p class="prog-hero__lead">A free, beginner-friendly self defense seminar for women, built on the jiu-jitsu we teach every day at Labyrinth. We are hosting it for breast cancer awareness: donations and merch sales at the event go directly to a family affected by breast cancer. Come on your own or bring a friend.</p>
     <div class="prog-hero__cta">
       <a href="#rsvp" class="btn btn--gold">RSVP Now</a>
-      <a href="@@DONATE@@" class="btn btn--pink" target="_blank" rel="noopener noreferrer">Donate</a>
+      <a href="#donate" class="btn btn--pink">Donate</a>
     </div>
     <div class="prog-facts">
       <div class="prog-fact"><div class="prog-fact__label">Date</div><div class="prog-fact__value">@@SHORT@@</div></div>
@@ -981,7 +994,7 @@ def render_event_rsvp():
       <p><span id="rsvp-success-name"></span>, we have you down for <span id="rsvp-success-party"></span> on <strong>@@LONG@@ at @@TIME@@</strong> at Labyrinth BJJ in Fulshear.</p>
       <p>A confirmation is on its way to <strong id="rsvp-success-email"></strong>. If you do not see it in a few minutes, check your spam folder. To change your RSVP, just submit this form again.</p>
       <div class="prog-hero__cta">
-        <a href="@@DONATE@@" class="btn btn--pink" target="_blank" rel="noopener noreferrer">Donate</a>
+        <a href="#donate" class="btn btn--pink">Donate</a>
         <a href="/" class="btn btn--ghost">Back to the site</a>
       </div>
     </div>
@@ -1027,9 +1040,12 @@ def render_event_rsvp():
       <p>Donations are welcome and never expected. They go directly to a family affected by breast cancer. You choose the amount, and payment is handled securely by Stripe.</p>
       <p>We will also be selling merch at the event, and those sales go to the same family.</p>
     </div>
-    <div class="prog-hero__cta">
-      <a href="@@DONATE@@" class="btn btn--pink" target="_blank" rel="noopener noreferrer">Donate</a>
+    <p class="rsvp-give__pick" id="donate-pick">Choose an amount</p>
+    <div class="rsvp-give__amounts" role="group" aria-labelledby="donate-pick">
+@@AMOUNTS@@
+      <a href="@@DONATE@@" class="rsvp-give__amt rsvp-give__amt--other" target="_blank" rel="noopener noreferrer">Other amount</a>
     </div>
+    <p class="rsvp-give__fine">Each button opens Stripe's secure checkout in a new tab for that amount. Other lets you type your own.</p>
     <p class="rsvp-give__thanks">@@RIBBON20@@<span>Thank you for standing with a family affected by breast cancer.</span></p>
   </div>
 </section>
@@ -1068,7 +1084,9 @@ def render_event_rsvp():
 """
     for token, value in {
         "@@RIBBON16@@": ribbon(16), "@@RIBBON20@@": ribbon(20), "@@RIBBON40@@": ribbon(40), "@@MARK@@": ribbon(320),
-        "@@PINKPATH@@": PINK["path"], "@@TITLE@@": EVENT["title"], "@@SUBTITLE@@": EVENT["subtitle"], "@@NAME@@": EVENT["name"], "@@DONATE@@": EVENT["donate_url"], "@@SHORT@@": short_date,
+        "@@PINKPATH@@": PINK["path"], "@@TITLE@@": EVENT["title"], "@@SUBTITLE@@": EVENT["subtitle"], "@@NAME@@": EVENT["name"], "@@DONATE@@": EVENT["donate_url"], "@@AMOUNTS@@": "\n".join(
+            '      <a href="%s" class="rsvp-give__amt" target="_blank" rel="noopener noreferrer">$%d</a>' % (u, d)
+            for d, u in EVENT["donate_amounts"]), "@@SHORT@@": short_date,
         "@@TIME@@": time, "@@LONG@@": long_date, "@@SLUG@@": EVENT["slug"],
         "@@ENDPOINT@@": EVENT["endpoint"], "@@CLOSES@@": EVENT["closes_utc"], "@@PHONE@@": PHONE,
         "@@ADDRESS@@": ADDRESS, "@@MAPS@@": EVENT["maps_url"],
