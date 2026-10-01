@@ -1,47 +1,93 @@
 <!doctype html>
-<!-- Instagram post for Pink October (assets/social/pink-october-instagram.png), 1080x1350 (4:5).
+<!-- Instagram carousel for Pink October, three 1080x1350 (4:5) slides:
+     assets/social/pink-october-1-photo.png, -2-offers.png, -3-event.png.
      Rendered with: node scripts/instagram-pink-october.mjs  (needs playwright-core). -->
 <html><head><meta charset="utf-8"><style>
   * { box-sizing: border-box; margin: 0; }
-  body { width: 1080px; height: 1350px; overflow: hidden; font-family: "Helvetica Neue", Arial, sans-serif; color: #f4eef1; position: relative;
+  body { background: #000; font-family: "Helvetica Neue", Arial, sans-serif; color: #f4eef1; }
+  .slide { position: relative; width: 1080px; height: 1350px; overflow: hidden;
     background: radial-gradient(ellipse 70% 40% at 50% 8%, rgba(229,143,181,.34), transparent 70%), linear-gradient(170deg, #46142d 0%, #270e1a 52%, #140a10 100%); }
   .pattern { position: absolute; inset: 0; opacity: .08; background-size: 120px 120px;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'><g transform='translate(36 36) scale(2)' fill='none' stroke='%23E58FB5' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7'/></g></svg>"); }
-  .mark { position: absolute; right: -90px; top: 150px; width: 560px; color: #E58FB5; opacity: .16; transform: rotate(14deg); }
   .wrap { position: absolute; inset: 0; padding: 78px 76px 70px; display: flex; flex-direction: column; }
   .top { display: flex; align-items: center; gap: 18px; color: #E58FB5; font-size: 26px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
-  .top svg { width: 46px; height: 46px; }
-  h1 { margin-top: 34px; font-size: 182px; line-height: .88; font-weight: 900; letter-spacing: -.02em; text-transform: uppercase; }
-  h1 span { display: block; color: #E58FB5; }
-  .lead { margin-top: 34px; font-size: 40px; line-height: 1.25; font-weight: 600; color: #fbd3e3; max-width: 820px; }
-  .offers { margin-top: 44px; display: grid; gap: 22px; }
-  .offer { display: flex; align-items: center; gap: 30px; padding: 28px 34px; border-radius: 24px; border: 2px solid rgba(229,143,181,.5); background: rgba(229,143,181,.1); }
-  .big { flex: none; width: 250px; font-size: 92px; line-height: 1; font-weight: 900; color: #E58FB5; letter-spacing: -.02em; }
-  .offer b { display: block; font-size: 38px; line-height: 1.12; font-weight: 800; }
-  .offer span { display: block; margin-top: 8px; font-size: 27px; line-height: 1.25; color: #d9bccb; }
-  .event { margin-top: 26px; padding: 26px 34px; border-radius: 24px; background: #E58FB5; color: #1a0b12; }
-  .event small { display: block; font-size: 22px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
-  .event b { display: block; margin-top: 6px; font-size: 44px; line-height: 1.1; font-weight: 900; }
-  .event span { display: block; margin-top: 6px; font-size: 28px; font-weight: 700; }
-  .event .led { margin-top: 4px; font-size: 25px; font-weight: 600; }
-  .foot { margin-top: auto; padding-top: 24px; display: flex; justify-content: space-between; align-items: flex-end; }
+  .top svg { width: 46px; height: 46px; flex: none; }
+  .pg { margin-left: auto; font-size: 22px; letter-spacing: .1em; color: #b9a1ae; }
+  h2 { margin-top: 30px; font-size: 104px; line-height: .95; font-weight: 900; letter-spacing: -.02em; text-transform: uppercase; }
+  h2 span { color: #E58FB5; }
+  .offers { margin-top: 56px; display: grid; gap: 30px; }
+  .offer { display: flex; align-items: center; gap: 30px; padding: 56px 40px; border-radius: 28px; border: 2px solid rgba(229,143,181,.5); background: rgba(229,143,181,.1); }
+  .big { flex: none; width: 270px; font-size: 104px; line-height: 1; font-weight: 900; color: #E58FB5; letter-spacing: -.02em; }
+  .offer b { display: block; font-size: 44px; line-height: 1.12; font-weight: 800; }
+  .offer span { display: block; margin-top: 10px; font-size: 30px; line-height: 1.25; color: #d9bccb; }
+  .note { margin-top: 50px; font-size: 42px; line-height: 1.3; font-weight: 600; color: #fbd3e3; }
+  .foot { margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end; }
   .brand { font-size: 24px; letter-spacing: .24em; font-weight: 700; color: #b9a1ae; line-height: 1.5; }
   .link { font-size: 30px; font-weight: 800; color: #E58FB5; text-align: right; line-height: 1.4; }
+  .swipe { font-size: 30px; font-weight: 800; color: #E58FB5; }
+
+  /* Slide 1: the photo first. 1200x800 fits a 1080x720 frame without cropping. */
+  .s1 .photo { position: absolute; left: 0; top: 0; width: 1080px; height: 720px; background: url("../assets/strength-conditioning.jpg") center/cover; }
+  .s1 .photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(229,143,181,.26) 0%, rgba(229,143,181,.12) 50%, rgba(39,14,26,.35) 78%, #270e1a 100%); mix-blend-mode: multiply; }
+  .s1 .photo::before { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 260px; z-index: 1; background: linear-gradient(180deg, transparent, #270e1a 92%); }
+  .s1 .tag { position: absolute; left: 76px; top: 612px; z-index: 2; display: inline-flex; align-items: center; gap: 14px; color: #E58FB5; font-size: 26px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+  .s1 .tag svg { width: 34px; height: 34px; }
+  .s1 .below { position: absolute; left: 76px; right: 76px; top: 664px; z-index: 2; }
+  .s1 h1 { font-size: 196px; line-height: .86; font-weight: 900; letter-spacing: -.02em; text-transform: uppercase; }
+  .s1 h1 span { color: #E58FB5; }
+  .s1 .lead { margin-top: 34px; font-size: 42px; line-height: 1.25; font-weight: 700; color: #fbd3e3; }
+  .s1 .swipe { position: absolute; right: 76px; bottom: 70px; }
+  .s1 .brand { position: absolute; left: 76px; bottom: 70px; }
+
+  /* Slide 3 */
+  .event { margin-top: 44px; padding: 46px 44px; border-radius: 26px; background: #E58FB5; color: #1a0b12; }
+  .event small { display: block; font-size: 24px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+  .event b { display: block; margin-top: 12px; font-size: 104px; line-height: 1; font-weight: 900; letter-spacing: -.01em; }
+  .event span { display: block; margin-top: 18px; font-size: 44px; font-weight: 700; line-height: 1.2; }
+  .led { margin-top: 28px; padding: 34px 40px; border-radius: 24px; border: 2px solid rgba(229,143,181,.5); background: rgba(229,143,181,.1); font-size: 40px; line-height: 1.3; font-weight: 600; }
+  .bigrib { margin: auto; width: 250px; height: 250px; color: #E58FB5; opacity: .3; transform: rotate(14deg); }
+  .led b { color: #E58FB5; font-weight: 800; }
+  .led i { display: block; margin-top: 12px; font-size: 32px; line-height: 1.35; font-style: normal; font-weight: 500; color: #d9bccb; }
 </style></head><body>
-  <div class="pattern"></div>
-  <svg class="mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7" fill="currentColor" fill-opacity=".18"/></svg>
+<svg width="0" height="0" style="position:absolute"><defs><symbol id="rib" viewBox="0 0 24 24"><path d="M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7" fill="currentColor" fill-opacity=".18" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol></defs></svg>
+
+<div class="slide s1" id="s1">
+  <div class="photo"></div>
+  <div class="tag"><svg><use href="#rib"/></svg>Breast Cancer Awareness Month</div>
+  <div class="below">
+    <h1>Pink<br><span>October</span></h1>
+    <div class="lead">Moms train free. Every woman gets 50% off her first month.</div>
+  </div>
+  <div class="brand">LABYRINTH BJJ<br>FULSHEAR, TX</div>
+  <div class="swipe">Swipe &rarr;</div>
+</div>
+
+<div class="slide s2" id="s2"><div class="pattern"></div>
   <div class="wrap">
-    <div class="top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7" fill="currentColor" fill-opacity=".18"/></svg>Breast Cancer Awareness Month</div>
-    <h1>Pink<span>October</span></h1>
-    <div class="lead">All month long, Labyrinth is training in pink. No experience needed.</div>
+    <div class="top"><svg><use href="#rib"/></svg>Pink October<span class="pg">2 / 3</span></div>
+    <h2>Two ways<br>to <span>join in</span></h2>
     <div class="offers">
       <div class="offer"><div class="big">FREE</div><div><b>Moms train free all October</b><span>Moms of current and new students</span></div></div>
       <div class="offer"><div class="big">50%</div><div><b>Off her first month</b><span>Every woman, no child required</span></div></div>
     </div>
-    <div class="event"><small>Free event &middot; Donations welcome</small><b>Rolling for Ribbons</b><span>Self defense for women &middot; Saturday, Oct 24 &middot; 11 AM</span><span class="led">Led by Coach Scott and Professor Tony</span></div>
+    <div class="note">No experience needed.<br>Your first class is free.</div>
     <div class="foot">
       <div class="brand">LABYRINTH BJJ<br>FULSHEAR, TX</div>
-      <div class="link">Book a free class<br>labyrinth.vision/pink-october</div>
+      <div class="swipe">Swipe &rarr;</div>
     </div>
   </div>
+</div>
+
+<div class="slide s3" id="s3"><div class="pattern"></div>
+  <div class="wrap">
+    <div class="top"><svg><use href="#rib"/></svg>Free event<span class="pg">3 / 3</span></div>
+    <div class="event"><small>Donations welcome</small><b>Rolling for Ribbons</b><span>Self defense for women<br>Saturday, October 24 &middot; 11 AM</span></div>
+    <div class="led">Led by <b>Coach Scott</b> and <b>Professor Tony</b>.<i>No experience needed. Donations and merch sales go directly to a family affected by breast cancer.</i></div>
+    <svg class="bigrib"><use href="#rib"/></svg>
+    <div class="foot">
+      <div class="brand">LABYRINTH BJJ<br>FULSHEAR, TX</div>
+      <div class="link">RSVP and book a free class<br>labyrinth.vision/pink-october</div>
+    </div>
+  </div>
+</div>
 </body></html>
