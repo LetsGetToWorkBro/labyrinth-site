@@ -448,10 +448,14 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   check('L1x it names the cause and where the money goes',
     /breast cancer/i.test(text) && /directly to a family affected by breast cancer/i.test(text))
   check('L1x it says merch will be sold at the event', /selling merch at the event/i.test(text))
-  const donate = await rp.$$eval(`a[href="${'https://donate.stripe.com/14AdRa0tL1Ea1Br3bJgjC0a'}"]`,
-    as => as.map(a => [a.target, a.rel]))
-  check('L1x the Donate buttons go to the Stripe link and open safely',
-    donate.length >= 2 && donate.every(([t, r]) => t === '_blank' && /noopener/.test(r)), JSON.stringify(donate))
+  const OTHER = 'https://donate.stripe.com/14AdRa0tL1Ea1Br3bJgjC0a'
+  const amts = await rp.$$eval('#donate a.rsvp-give__amt', as => as.map(a => [a.textContent.trim(), a.getAttribute('href'), a.target, a.rel]))
+  check('L1x donation buttons: $1, $3, $5, $10, $25, $50, $100 and Other, each its own Stripe link that opens safely',
+    amts.map(a => a[0]).join() === '$1,$3,$5,$10,$25,$50,$100,Other amount'
+      && amts.every(([, h, t, r]) => /^https:\/\/donate\.stripe\.com\/\w+$/.test(h) && t === '_blank' && /noopener/.test(r))
+      && new Set(amts.map(a => a[1])).size === 8 && amts[7][1] === OTHER, JSON.stringify(amts).slice(0, 200))
+  check('L1x the Donate buttons in the header and after RSVPing lead to the amount picker',
+    (await rp.$$eval('a.btn--pink[href="#donate"]', as => as.length)) >= 2 && (await rp.locator('#donate-pick').count()) === 1)
   const ld = await rp.$$eval('script[type="application/ld+json"]', ss => ss.map(s => JSON.parse(s.textContent)))
   const ev = ld.find(o => o['@type'] === 'Event')
   check('L1x structured data describes a free event at the right time',
@@ -476,7 +480,7 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
       label,
       ribbons: ribbons.length,
       decorative: ribbons.every(r => r.getAttribute('aria-hidden') === 'true'),
-      donateBtns: [...document.querySelectorAll('a[href^="https://donate.stripe.com"]')].map(a => a.classList.contains('btn--pink')),
+      donateBtns: [...document.querySelectorAll('a[href="#donate"], .rsvp-give__amt')].map(a => a.classList.contains('btn--pink') || a.classList.contains('rsvp-give__amt')),
       ratio: (hi + 0.05) / (lo + 0.05),
     }
   })

@@ -1432,3 +1432,21 @@ body.theme-pink main .prog-section--surface {
   .rsvp-led__card { grid-template-columns: 96px 1fr; }
   .rsvp-led__card img { width: 96px; height: 96px; }
 }
+
+/* Donation amounts: one tap, straight to Stripe for that amount. */
+.rsvp-give__pick { margin-top: var(--space-6); font-weight: 600; color: var(--text); }
+.rsvp-give__amounts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 12px; }
+.rsvp-give__amt {
+  display: flex; align-items: center; justify-content: center;
+  min-height: 56px; padding: 0 8px;
+  border: 1.5px solid var(--awareness-line); border-radius: 12px;
+  background: var(--awareness-soft); color: var(--text);
+  font-size: 20px; font-weight: 700; text-decoration: none;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
+}
+.rsvp-give__amt:hover, .rsvp-give__amt:focus-visible { border-color: var(--awareness); background: var(--awareness); color: #1a0b12; transform: translateY(-2px); }
+.rsvp-give__amt--other { grid-column: span 1; font-size: 15px; text-align: center; line-height: 1.2; }
+.rsvp-give__fine { margin-top: 12px; color: var(--text-muted); font-size: 13.5px; line-height: 1.5; }
+@media (min-width: 760px) {
+  .rsvp-give__amounts { grid-template-columns: repeat(8, 1fr); max-width: 760px; }
+}
