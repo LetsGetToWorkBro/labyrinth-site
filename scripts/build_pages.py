@@ -36,7 +36,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import schedule_data  # noqa: E402
 import schedule_component  # noqa: E402
 import jits_data  # noqa: E402
-from build_programs import NAV, FOOTER, HEAD, TAIL, PHONE, SITE, jsonld  # noqa: E402
+from build_programs import NAV, FOOTER, HEAD, TAIL, PHONE, SITE, ADDRESS, jsonld  # noqa: E402
 
 # Every page this file writes goes through stamp() so the shared CSS and JS are
 # requested with a content hash. Without it a returning visitor gets new markup
@@ -750,6 +750,239 @@ def render_support():
   </div>
 </section>""" % {"cards": cards, "faqs": faq_block(SUPPORT_FAQS)},
         TAIL % {"footer": FOOTER}])
+
+
+# ── /self-defense-for-women ──────────────────────────────────────────────────
+#
+# An RSVP page for a one-off community event. Everything about the event is in
+# EVENT below, so the page, the homepage strip, the structured data and the
+# tests cannot disagree about when it is. The same facts exist once more, on the
+# server, in supabase/functions/_shared/event-emails.ts (in the labyrinth-app
+# repo): that is what validates an RSVP and words the two emails, so the slug,
+# the time and the donation link have to be changed in both places.
+#
+# The form posts to the `event-rsvp` edge function, which saves the RSVP to
+# Supabase and emails the academy and the guest. rsvp.js does the rest in the
+# browser. The page needs no framework and ships no image: it is built to load
+# on a phone before somebody has finished reading the sentence that sent them.
+
+EVENT = {
+    "slug": "self-defense-women-2026-10-21",
+    "name": "BJJ for Self Defense for Women",
+    "path": "/self-defense-for-women",
+    # 11:00 AM on Oct 21 is CDT (UTC-5): Texas moves its clocks on Nov 1.
+    "start": "2026-10-21T11:00:00-05:00",
+    # After this the form says the event has passed (and the server refuses).
+    # Matches closesAt in event-emails.ts: 5:00 AM Central the next morning.
+    "closes_utc": "2026-10-22T10:00:00Z",
+    "donate_url": "https://donate.stripe.com/14AdRa0tL1Ea1Br3bJgjC0a",
+    "endpoint": "https://jctufxvmuvobaggxcwfn.supabase.co/functions/v1/event-rsvp",
+    "maps_url": "https://maps.google.com/?cid=7150744267965161030",
+}
+
+
+def _event_when():
+    """('Wednesday, October 21', 'Wed, Oct 21', '11:00 AM'), worked out from the
+    start time rather than typed, so a weekday cannot be wrong."""
+    import datetime
+    d = datetime.datetime.fromisoformat(EVENT["start"])
+    hour12 = d.hour % 12 or 12
+    time = "%d:%02d %s" % (hour12, d.minute, "AM" if d.hour < 12 else "PM")
+    return (d.strftime("%A, %B ") + str(d.day), d.strftime("%a, %b ") + str(d.day), time)
+
+
+def event_strip():
+    """The homepage's one-line pointer at the event. Hides itself the morning
+    after, so nobody is invited to an event that has gone."""
+    _, short, time = _event_when()
+    return """<aside class="event-strip" id="eventStrip" aria-label="Upcoming event">
+  <div class="container">
+    <a class="event-strip__link" href="@@PATH@@">
+      <span class="event-strip__icon" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#e58fb5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 14C8 11 7.500 9 7.500 6.800 7.500 4.600 9.500 3 12 3s4.500 1.600 4.500 3.800C16.500 9 16 11 12 14zM12 14 8 21M12 14l4 7" fill="rgba(229,143,181,.18)"/></svg></span>
+      <span class="event-strip__text"><strong>Free event: @@NAME@@</strong><span>@@SHORT@@ &middot; @@TIME@@ &middot; Breast cancer awareness</span></span>
+      <span class="event-strip__cta">RSVP</span>
+    </a>
+  </div>
+</aside>
+<script>if(Date.now()>Date.parse('@@CLOSES@@'))document.getElementById('eventStrip').hidden=true</script>""" \
+        .replace("@@PATH@@", EVENT["path"]).replace("@@NAME@@", EVENT["name"]) \
+        .replace("@@SHORT@@", short).replace("@@TIME@@", time).replace("@@CLOSES@@", EVENT["closes_utc"])
+
+
+def render_event_rsvp():
+    url = SITE + EVENT["path"]
+    long_date, short_date, time = _event_when()
+    desc = ("Free BJJ self defense seminar for women on %s at %s at Labyrinth BJJ in Fulshear, TX. "
+            "No experience needed. RSVP now. Donations go to a family affected by breast cancer."
+            % (long_date, time))
+
+    head = HEAD % {
+        "title": "%s | Free Seminar, %s | Labyrinth BJJ Fulshear" % (EVENT["name"], short_date.split(", ")[1]),
+        "description": desc,
+        "url": url,
+        "og_title": "%s: Free Seminar, %s" % (EVENT["name"], long_date),
+        "image": SITE + "/assets/og-image.jpg",
+        "schema": "\n".join([
+            jsonld(crumb_schema([(EVENT["name"], EVENT["path"])])),
+            jsonld({
+                "@context": "https://schema.org", "@type": "Event",
+                "name": EVENT["name"], "description": desc, "url": url,
+                "startDate": EVENT["start"],
+                "eventStatus": "https://schema.org/EventScheduled",
+                "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+                "isAccessibleForFree": True,
+                "image": [SITE + "/assets/og-image.jpg"],
+                "location": {
+                    "@type": "Place", "name": "Labyrinth BJJ",
+                    "address": {
+                        "@type": "PostalAddress",
+                        "streetAddress": "6615 West Cross Creek Bend Lane, Suite #400",
+                        "addressLocality": "Fulshear", "addressRegion": "TX",
+                        "postalCode": "77441", "addressCountry": "US"},
+                },
+                "organizer": {"@type": "Organization", "name": "Labyrinth BJJ", "url": SITE},
+                "offers": {"@type": "Offer", "url": url, "price": "0", "priceCurrency": "USD",
+                           "availability": "https://schema.org/InStock"},
+            }),
+        ]),
+    }
+
+    body = """
+<header class="prog-hero">
+  <div class="container">
+    <p class="section-label rsvp-label">Community event &middot; Breast cancer awareness</p>
+    <h1 class="prog-hero__title">@@NAME@@</h1>
+    <p class="prog-hero__lead">A free, beginner-friendly self defense seminar for women, built on the jiu-jitsu we teach every day at Labyrinth. We are hosting it for breast cancer awareness: donations and merch sales at the event go directly to a family affected by breast cancer. Come on your own or bring a friend.</p>
+    <div class="prog-hero__cta">
+      <a href="#rsvp" class="btn btn--gold">RSVP Now</a>
+      <a href="@@DONATE@@" class="btn btn--ghost" target="_blank" rel="noopener noreferrer">Donate</a>
+    </div>
+    <div class="prog-facts">
+      <div class="prog-fact"><div class="prog-fact__label">Date</div><div class="prog-fact__value">@@SHORT@@</div></div>
+      <div class="prog-fact"><div class="prog-fact__label">Time (Central)</div><div class="prog-fact__value">@@TIME@@</div></div>
+      <div class="prog-fact"><div class="prog-fact__label">Where</div><div class="prog-fact__value">Labyrinth BJJ, Fulshear, TX</div></div>
+      <div class="prog-fact"><div class="prog-fact__label">Cost</div><div class="prog-fact__value"><em>Free</em></div></div>
+    </div>
+  </div>
+</header>
+
+<section class="prog-section rsvp" id="rsvp">
+  <div class="container">
+    <div class="rsvp__intro">
+      <p class="section-label">RSVP</p>
+      <h2 class="section-title section-title--lg">SAVE YOUR SPOT</h2>
+      <p class="rsvp__note"><strong>The seminar is free, and no experience is needed.</strong> If you have never set foot on a mat, this is for you.</p>
+    </div>
+
+    <p class="rsvp__thanks" id="rsvp-donated" hidden>Thank you for your donation. It goes directly to a family affected by breast cancer.</p>
+
+    <form class="booking-form rsvp__form" id="rsvp-form" novalidate
+          data-event="@@SLUG@@" data-endpoint="@@ENDPOINT@@" data-closes="@@CLOSES@@">
+      <div class="booking-form__group">
+        <label class="booking-form__label" for="rsvp-name">Full name</label>
+        <input class="booking-form__input" id="rsvp-name" name="name" type="text" autocomplete="name" required minlength="2" maxlength="100" aria-describedby="rsvp-name-err">
+        <p class="booking-form__error" id="rsvp-name-err"></p>
+      </div>
+
+      <div class="booking-form__group">
+        <label class="booking-form__label" for="rsvp-email">Email</label>
+        <input class="booking-form__input" id="rsvp-email" name="email" type="email" inputmode="email" autocomplete="email" required maxlength="160" aria-describedby="rsvp-email-err">
+        <p class="booking-form__error" id="rsvp-email-err"></p>
+      </div>
+
+      <div class="booking-form__group">
+        <label class="booking-form__label" for="rsvp-phone">Phone <span class="rsvp__opt">(optional)</span></label>
+        <input class="booking-form__input" id="rsvp-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="40" aria-describedby="rsvp-phone-err">
+        <p class="booking-form__error" id="rsvp-phone-err"></p>
+      </div>
+
+      <div class="booking-form__group">
+        <label class="booking-form__label" for="rsvp-party">How many people are coming?</label>
+        <select class="booking-form__input booking-form__select" id="rsvp-party" name="party" required aria-describedby="rsvp-party-err">
+          <option value="1" selected>Just me (1)</option>
+          <option value="2">2 people</option>
+          <option value="3">3 people</option>
+          <option value="4">4 people</option>
+          <option value="5">5 people</option>
+        </select>
+        <p class="booking-form__error" id="rsvp-party-err"></p>
+      </div>
+
+      <div class="booking-form__group">
+        <label class="booking-form__label" for="rsvp-notes">Any questions, or your experience level? <span class="rsvp__opt">(optional)</span></label>
+        <textarea class="booking-form__input booking-form__area" id="rsvp-notes" name="notes" rows="3" maxlength="600" aria-describedby="rsvp-notes-err"></textarea>
+        <p class="booking-form__error" id="rsvp-notes-err"></p>
+      </div>
+
+      <!-- Honeypot. People never see or tab to this; a bot filling every input
+           does, and the server then saves nothing. -->
+      <div class="rsvp__hp" aria-hidden="true">
+        <label>Leave this field empty<input type="text" name="hp_leave_empty" id="rsvp-hp" tabindex="-1" autocomplete="off"></label>
+      </div>
+
+      <p class="rsvp__status" id="rsvp-status" role="alert" hidden></p>
+
+      <button class="booking-submit-btn" id="rsvp-submit" type="submit">RSVP</button>
+      <p class="booking-form__consent">We will email you a confirmation. Your details are used only to run this event.</p>
+      <noscript><p class="rsvp__status">RSVPing needs JavaScript. Please call us on @@PHONE@@ instead, or email <a href="mailto:info@labyrinth.vision">info@labyrinth.vision</a>.</p></noscript>
+    </form>
+
+    <div class="rsvp__success" id="rsvp-success" tabindex="-1" hidden>
+      <p class="section-label">You are on the list</p>
+      <h2 class="section-title section-title--lg" id="rsvp-success-title">SEE YOU THERE</h2>
+      <p><span id="rsvp-success-name"></span>, we have you down for <span id="rsvp-success-party"></span> on <strong>@@LONG@@ at @@TIME@@</strong> at Labyrinth BJJ in Fulshear.</p>
+      <p>A confirmation is on its way to <strong id="rsvp-success-email"></strong>. If you do not see it in a few minutes, check your spam folder. To change your RSVP, just submit this form again.</p>
+      <div class="prog-hero__cta">
+        <a href="@@DONATE@@" class="btn btn--gold" target="_blank" rel="noopener noreferrer">Donate</a>
+        <a href="/" class="btn btn--ghost">Back to the site</a>
+      </div>
+    </div>
+
+    <p class="rsvp__over" id="rsvp-over" hidden>This event has passed. Thank you to everyone who came. See what is coming up on the <a href="/schedule">schedule</a>.</p>
+  </div>
+</section>
+
+<section class="prog-section prog-section--surface rsvp-give" id="donate">
+  <div class="container">
+    <div>
+      <p class="section-label rsvp-label">Donate</p>
+      <h2 class="section-title section-title--lg">HELP A FAMILY</h2>
+    </div>
+    <div class="prog-prose">
+      <p>Donations are welcome and never expected. They go directly to a family affected by breast cancer. You choose the amount, and payment is handled securely by Stripe.</p>
+      <p>We will also be selling merch at the event, and those sales go to the same family.</p>
+    </div>
+    <div class="prog-hero__cta">
+      <a href="@@DONATE@@" class="btn btn--gold" target="_blank" rel="noopener noreferrer">Donate</a>
+    </div>
+  </div>
+</section>
+
+<section class="prog-section">
+  <div class="container">
+    <div>
+      <p class="section-label">Where</p>
+      <h2 class="section-title section-title--lg">FINDING US</h2>
+    </div>
+    <div class="prog-prose">
+      <p><strong>Labyrinth BJJ</strong><br>@@ADDRESS@@</p>
+      <p><a href="@@MAPS@@" target="_blank" rel="noopener noreferrer">Get directions</a> &middot; Questions? Call <a href="tel:2813937983">@@PHONE@@</a>.</p>
+    </div>
+  </div>
+</section>
+
+<script src="/rsvp.js" defer></script>
+"""
+    for token, value in {
+        "@@NAME@@": EVENT["name"], "@@DONATE@@": EVENT["donate_url"], "@@SHORT@@": short_date,
+        "@@TIME@@": time, "@@LONG@@": long_date, "@@SLUG@@": EVENT["slug"],
+        "@@ENDPOINT@@": EVENT["endpoint"], "@@CLOSES@@": EVENT["closes_utc"], "@@PHONE@@": PHONE,
+        "@@ADDRESS@@": ADDRESS, "@@MAPS@@": EVENT["maps_url"],
+    }.items():
+        body = body.replace(token, value)
+    assert "@@" not in body, "an unreplaced token in the event page"
+
+    return "\n".join([head, NAV, crumbs([(EVENT["name"], EVENT["path"])]), body, TAIL % {"footer": FOOTER}])
 
 
 # ── /ennova ──────────────────────────────────────────────────────────────────
@@ -1874,6 +2107,11 @@ def main():
     splice(index, "JITS-METERS", jits_data.meters())
     splice(index, "JITS-ATHLETES", jits_data.athletes())
     print("wrote the jits.gg numbers and top athletes into index.html")
+    splice(index, "EVENT-STRIP", event_strip())
+    print("wrote the event strip into index.html")
+    with open(os.path.join(ROOT, "self-defense-for-women.html"), "w", encoding="utf-8") as fh:
+        fh.write(stamp(render_event_rsvp()))
+    print("wrote self-defense-for-women.html")
     with open(os.path.join(ROOT, "pricing.html"), "w", encoding="utf-8") as fh:
         fh.write(stamp(render_pricing()))
     print("wrote pricing.html")

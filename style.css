@@ -5080,3 +5080,37 @@ body {
   .sc__name { grid-area: name; font-size: 15px; }
   .sc__tags { grid-area: tags; }
 }
+
+
+/* The homepage's pointer at the next event (scripts/build_pages.py, event_strip).
+   Pink is the awareness color, used only here and on the event page. */
+.event-strip { padding: var(--space-4) 0; }
+.event-strip[hidden] { display: none; }
+.event-strip__link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: 14px var(--space-5);
+  border: 1px solid rgba(229, 143, 181, 0.35);
+  background: rgba(229, 143, 181, 0.07);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+.event-strip__link:hover { border-color: rgba(229, 143, 181, 0.65); background: rgba(229, 143, 181, 0.12); }
+.event-strip__icon { font-size: 24px; flex-shrink: 0; }
+.event-strip__text {
+  display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0;
+  font-size: 14px; line-height: 1.4; color: var(--text-muted);
+}
+.event-strip__text strong { color: var(--text); font-size: 15px; }
+.event-strip__cta {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: var(--gold);
+  color: #0a0a0a;
+  font-weight: 600;
+  font-size: 14px;
+}

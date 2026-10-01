@@ -1089,3 +1089,71 @@
 @media (max-width: 560px) {
   .ennova-quote__shot img { width: 140px; height: 140px; }
 }
+
+
+/* ── /self-defense-for-women ───────────────────────────────────────────────
+   The RSVP page reuses the booking form's fields (booking.css) and the program
+   page chrome above; what is here is only what those do not already cover. */
+.rsvp-label { color: #e58fb5; }
+.rsvp [hidden], .rsvp-give [hidden] { display: none !important; }
+
+.rsvp__intro { max-width: 640px; }
+.rsvp__note {
+  margin-top: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  border-left: 3px solid var(--gold);
+  background: rgba(200, 162, 76, 0.08);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--text);
+  line-height: 1.6;
+}
+.rsvp__note strong { color: var(--gold); }
+
+.rsvp__form, .rsvp__success, .rsvp__thanks, .rsvp__over { max-width: 560px; margin-top: var(--space-8); }
+.rsvp__form {
+  padding: var(--space-6);
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+/* 16px or larger: iOS Safari zooms the whole page into any field set smaller. */
+.rsvp__form .booking-form__input { font-size: 16px; }
+.rsvp__opt { color: var(--text-faint); font-weight: 400; }
+
+.booking-form__area { height: auto; min-height: 104px; padding: 12px 14px; line-height: 1.5; resize: vertical; }
+.booking-form__select {
+  padding-right: 40px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1.5l5 5 5-5' fill='none' stroke='%23999' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+}
+
+/* Off-screen rather than display:none, which bots know to skip. */
+.rsvp__hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+.rsvp__status {
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid rgba(231, 76, 60, 0.4);
+  background: rgba(231, 76, 60, 0.08);
+  border-radius: 10px;
+  color: #f1a89f;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.rsvp__status a { color: inherit; text-decoration: underline; }
+
+.rsvp__thanks {
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid rgba(200, 162, 76, 0.35);
+  background: rgba(200, 162, 76, 0.08);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+}
+.rsvp__success:focus { outline: none; }
+.rsvp__success p { color: var(--text-muted); line-height: 1.6; margin: var(--space-3) 0; }
+.rsvp__success .prog-hero__cta { margin-top: var(--space-5); }
+.rsvp__over { color: var(--text-muted); line-height: 1.6; }
+
+@media (min-width: 900px) {
+  .rsvp__form { padding: var(--space-8); }
+}

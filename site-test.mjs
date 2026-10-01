@@ -33,7 +33,7 @@ const programs = readdirSync(join(ROOT,'programs')).filter(f=>f.endsWith('.html'
 const areas = readdirSync(join(ROOT,'areas')).filter(f=>f.endsWith('.html')&&f!=='index.html').map(f=>'/areas/'+f.replace('.html',''))
 const coaches = readdirSync(join(ROOT,'coaches')).filter(f=>f.endsWith('.html')&&f!=='index.html').map(f=>'/coaches/'+f.replace('.html',''))
 const pages = ['/', '/blog/', '/programs/', '/areas/', '/coaches/', '/schedule', '/pricing',
-  '/support', '/privacy-policy', '/ennova', '/legacy/', '/legacy/transfer',
+  '/support', '/privacy-policy', '/ennova', '/self-defense-for-women', '/legacy/', '/legacy/transfer',
   ...posts, ...programs, ...areas, ...coaches]
 const broken = []
 for (const path of pages) {
@@ -48,7 +48,7 @@ for (const path of pages) {
   }
 }
 check('L1 no broken internal links', broken.length === 0, '\n    ' + broken.slice(0,8).join('\n    '))
-check('L1 all 47 pages served 200', pages.length === 47, 'pages: ' + pages.length)
+check('L1 all 48 pages served 200', pages.length === 48, 'pages: ' + pages.length)
 
 // ── L1b: every program page carries the schema and the canonical it exists for ──
 // A program page whose Service block is missing is still a page, and still
@@ -126,7 +126,7 @@ const fakeAddress = areas.filter(p => {
 check('L1g no area page invents a location', fakeAddress.length === 0, fakeAddress.join(', '))
 
 // ── L1h: the generated pages match their generator ──
-const generated = ['schedule.html','pricing.html','support.html','ennova.html',
+const generated = ['schedule.html','pricing.html','support.html','ennova.html','self-defense-for-women.html',
   'legacy/index.html','legacy/transfer.html','coaches/index.html',
   ...coaches.map(c=>c.slice(1)+'.html')]
 const genBefore = generated.map(f=>readFileSync(join(ROOT,f),'utf8'))
@@ -398,6 +398,208 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
     home.h1.includes('TOP 1% IN THE NATION') && !/#3|#2 IN TEXAS/.test(home.h1), home.h1)
   check('L1q no sheet number reaches the page', !/\b(999|888)\b/.test(home.all))
   await page.unroute('**/spreadsheets/**')
+}
+
+// ── L1x: the RSVP page for BJJ for Self Defense for Women ──
+// What the owner asked for, held in place: the facts on the page, a form that
+// asks for exactly the right things, validation that stops a bad RSVP before it
+// is sent, an RSVP that is sent once, and a failure that tells the person what
+// to do instead of nothing. The endpoint is mocked: no real RSVP, and no real
+// email, is created by a test run.
+//
+// Its own browser context with a pinned clock. The page hides itself after the
+// event, so a test that read the real date would start failing on October 22
+// for a reason that has nothing to do with the code.
+{
+  const ctx = await browser.newContext()
+  const rp = await ctx.newPage()
+  await rp.clock.setFixedTime(new Date('2026-10-05T15:00:00Z'))
+  const URL = 'http://localhost:4620/self-defense-for-women'
+  const DONATE = 'https://donate.stripe.com/14AdRa0tL1Ea1Br3bJgjC0a'
+
+  let posts = []
+  let reply = { status: 200, body: { ok: true }, delay: 0, abort: false }
+  await rp.route('**/functions/v1/event-rsvp', async route => {
+    posts.push(JSON.parse(route.request().postData() || '{}'))
+    if (reply.delay) await new Promise(r => setTimeout(r, reply.delay))
+    if (reply.abort) return route.abort()
+    return route.fulfill({ status: reply.status, contentType: 'application/json', body: JSON.stringify(reply.body) })
+  })
+  const fresh = async () => {
+    posts = []; reply = { status: 200, body: { ok: true }, delay: 0, abort: false }
+    await rp.goto(URL, { waitUntil: 'networkidle' })
+  }
+  const fillValid = async (extra = {}) => {
+    await rp.fill('#rsvp-name', extra.name ?? 'Jane Q Doe')
+    await rp.fill('#rsvp-email', extra.email ?? 'Jane@Example.com')
+    if (extra.phone !== undefined) await rp.fill('#rsvp-phone', extra.phone)
+    if (extra.party) await rp.selectOption('#rsvp-party', extra.party)
+    if (extra.notes) await rp.fill('#rsvp-notes', extra.notes)
+  }
+
+  await fresh()
+  const text = await rp.evaluate(() => document.body.innerText)
+  check('L1x the page leads with the event name', (await rp.textContent('h1')).includes('BJJ for Self Defense for Women'))
+  check('L1x date, time and place are in the header',
+    /Wed, Oct 21/.test(text) && /11:00 AM/.test(text) && /Central/i.test(text) && /Fulshear, TX/.test(text), text.slice(0, 200))
+  check('L1x it says the seminar is free and no experience is needed',
+    /free, and no experience is needed/i.test(text) && (await rp.locator('.prog-fact__value em', { hasText: 'Free' }).count()) === 1)
+  check('L1x it names the cause and where the money goes',
+    /breast cancer/i.test(text) && /directly to a family affected by breast cancer/i.test(text))
+  check('L1x it says merch will be sold at the event', /selling merch at the event/i.test(text))
+  const donate = await rp.$$eval(`a[href="${'https://donate.stripe.com/14AdRa0tL1Ea1Br3bJgjC0a'}"]`,
+    as => as.map(a => [a.target, a.rel]))
+  check('L1x the Donate buttons go to the Stripe link and open safely',
+    donate.length >= 2 && donate.every(([t, r]) => t === '_blank' && /noopener/.test(r)), JSON.stringify(donate))
+  const ld = await rp.$$eval('script[type="application/ld+json"]', ss => ss.map(s => JSON.parse(s.textContent)))
+  const ev = ld.find(o => o['@type'] === 'Event')
+  check('L1x structured data describes a free event at the right time',
+    !!ev && ev.startDate === '2026-10-21T11:00:00-05:00' && ev.isAccessibleForFree === true
+      && ev.location?.address?.addressLocality === 'Fulshear', JSON.stringify(ev)?.slice(0, 120))
+  check('L1x no em dashes in what a visitor reads', !/—/.test(text))
+  check('L1x the page is indexable (an event is meant to be found)',
+    (await rp.locator('meta[name="robots"][content*="noindex"]').count()) === 0
+      && readFileSync(join(ROOT,'sitemap.xml'),'utf8').includes('labyrinth.vision/self-defense-for-women'))
+
+  // The form asks for exactly what was specified, and nothing else.
+  const fields = await rp.evaluate(() => {
+    const f = document.getElementById('rsvp-form')
+    const el = id => document.getElementById(id)
+    return {
+      names: [...f.querySelectorAll('input:not(#rsvp-hp), select, textarea')].map(e => e.name),
+      required: ['rsvp-name', 'rsvp-email', 'rsvp-phone', 'rsvp-party', 'rsvp-notes'].map(id => el(id).required),
+      party: [...el('rsvp-party').options].map(o => o.value),
+      notesMax: el('rsvp-notes').maxLength,
+      emailType: el('rsvp-email').type, phoneType: el('rsvp-phone').type,
+      labels: [...f.querySelectorAll('label')].map(l => l.textContent.trim().replace(/\s+/g, ' ')),
+    }
+  })
+  check('L1x the form has name, email, phone, number attending and a notes box',
+    JSON.stringify(fields.names) === JSON.stringify(['name', 'email', 'phone', 'party', 'notes']), fields.names.join(','))
+  check('L1x name, email and number attending are required; phone and notes are not',
+    JSON.stringify(fields.required) === JSON.stringify([true, true, false, true, false]), fields.required.join(','))
+  check('L1x number attending offers 1 to 5 and nothing else', fields.party.join(',') === '1,2,3,4,5', fields.party.join(','))
+  check('L1x email and phone use the right keyboards, and the notes box is capped',
+    fields.emailType === 'email' && fields.phoneType === 'tel' && fields.notesMax === 600)
+  check('L1x phone and notes are labeled optional',
+    fields.labels.filter(l => /\(optional\)/.test(l)).length === 2, fields.labels.join(' | '))
+  const hp = await rp.evaluate(() => {
+    const i = document.getElementById('rsvp-hp'); const r = i.getBoundingClientRect()
+    return { off: r.right < 0 || r.left < -1000, tab: i.tabIndex, hidden: i.closest('[aria-hidden="true"]') !== null }
+  })
+  check('L1x the honeypot is there but invisible and unreachable', hp.off && hp.tab === -1 && hp.hidden, JSON.stringify(hp))
+
+  // Validation stops a bad RSVP before anything is sent.
+  await fresh()
+  await rp.click('#rsvp-submit')
+  check('L1x an empty form sends nothing and says what is missing',
+    posts.length === 0
+      && /full name/i.test(await rp.textContent('#rsvp-name-err'))
+      && /email/i.test(await rp.textContent('#rsvp-email-err')))
+  check('L1x focus goes to the first thing to fix', await rp.evaluate(() => document.activeElement.id) === 'rsvp-name')
+  await fillValid({ email: 'not-an-email', phone: '123' })
+  await rp.click('#rsvp-submit')
+  check('L1x a bad email and a short phone number are caught, and nothing is sent',
+    posts.length === 0 && /email/i.test(await rp.textContent('#rsvp-email-err'))
+      && /phone/i.test(await rp.textContent('#rsvp-phone-err')))
+  await rp.fill('#rsvp-email', 'jane@example.com')
+  check('L1x fixing a field clears its message at once',
+    (await rp.textContent('#rsvp-email-err')) === '' && !(await rp.getAttribute('#rsvp-email', 'aria-invalid')))
+  await fillValid({ name: 'A', phone: '' })
+  await rp.click('#rsvp-submit')
+  check('L1x a one-letter name is refused', posts.length === 0 && /full name/i.test(await rp.textContent('#rsvp-name-err')))
+
+  // A good RSVP goes once, with the right shape, and ends on a confirmation.
+  await fresh()
+  await fillValid({ phone: '(281) 555-0100', party: '3', notes: 'First time. A little nervous.' })
+  await rp.click('#rsvp-submit')
+  await rp.waitForSelector('#rsvp-success:not([hidden])')
+  check('L1x a valid RSVP is sent exactly once', posts.length === 1, 'posts: ' + posts.length)
+  check('L1x it carries the event, the details, the party size as a number and an empty honeypot',
+    posts[0].event === 'self-defense-women-2026-10-21' && posts[0].name === 'Jane Q Doe'
+      && posts[0].email === 'jane@example.com' && posts[0].phone === '(281) 555-0100'
+      && posts[0].party === 3 && posts[0].notes === 'First time. A little nervous.' && posts[0].website === '',
+    JSON.stringify(posts[0]))
+  const done = await rp.evaluate(() => ({
+    form: document.getElementById('rsvp-form').hidden,
+    text: document.getElementById('rsvp-success').innerText,
+    focus: document.activeElement.id,
+  }))
+  check('L1x the form gives way to a confirmation naming the date, party and email',
+    done.form && /Jane/.test(done.text) && /3 people/.test(done.text) && /Wednesday, October 21 at 11:00 AM/.test(done.text)
+      && /jane@example\.com/.test(done.text), done.text.slice(0, 160))
+  check('L1x focus moves to the confirmation for screen readers', done.focus === 'rsvp-success')
+
+  // A bot that fills the honeypot is still posted as written: the server drops it.
+  await fresh()
+  await fillValid()
+  await rp.evaluate(() => { document.getElementById('rsvp-hp').value = 'http://spam.example' })
+  await rp.click('#rsvp-submit')
+  await rp.waitForSelector('#rsvp-success:not([hidden])')
+  check('L1x the honeypot value reaches the server under the key it checks', posts[0]?.website === 'http://spam.example')
+
+  // A double tap is one RSVP.
+  await fresh()
+  reply.delay = 500
+  await fillValid()
+  await rp.click('#rsvp-submit'); await rp.click('#rsvp-submit', { force: true }).catch(() => {})
+  await rp.waitForSelector('#rsvp-success:not([hidden])')
+  check('L1x tapping RSVP twice sends it once', posts.length === 1, 'posts: ' + posts.length)
+
+  // Things going wrong tell the person what to do.
+  await fresh()
+  reply.status = 429
+  reply.body = { error: 'Too many RSVPs from this connection today. Please call us on (281) 393-7983.' }
+  await fillValid()
+  await rp.click('#rsvp-submit')
+  await rp.waitForSelector('#rsvp-status:not([hidden])')
+  const busy = await rp.evaluate(() => ({
+    tel: [...document.querySelectorAll('#rsvp-status a')].map(a => a.getAttribute('href')),
+    formShown: !document.getElementById('rsvp-form').hidden,
+    enabled: !document.getElementById('rsvp-submit').disabled,
+    kept: document.getElementById('rsvp-name').value,
+  }))
+  check('L1x a refusal shows the server\'s words with a tap-to-call number, and keeps what was typed',
+    busy.tel.includes('tel:2813937983') && busy.formShown && busy.enabled && busy.kept === 'Jane Q Doe', JSON.stringify(busy))
+  await fresh()
+  reply.abort = true
+  await fillValid()
+  await rp.click('#rsvp-submit')
+  await rp.waitForSelector('#rsvp-status:not([hidden])')
+  check('L1x no connection says so, offers the phone, and lets them try again',
+    /could not reach/i.test(await rp.textContent('#rsvp-status'))
+      && (await rp.locator('#rsvp-status a[href="tel:2813937983"]').count()) === 1
+      && !(await rp.evaluate(() => document.getElementById('rsvp-submit').disabled)))
+  await fresh()
+  reply.status = 400
+  reply.body = { error: 'That email address does not look right', field: 'email' }
+  await fillValid()
+  await rp.click('#rsvp-submit')
+  await rp.waitForFunction(() => document.getElementById('rsvp-email-err').textContent !== '')
+  check('L1x a field the server rejects is marked on that field',
+    /email/i.test(await rp.textContent('#rsvp-email-err')) && (await rp.getAttribute('#rsvp-email', 'aria-invalid')) === 'true')
+
+  // After a donation Stripe sends people back with ?donated=1.
+  await rp.goto(URL + '?donated=1', { waitUntil: 'networkidle' })
+  check('L1x a returning donor is thanked', await rp.isVisible('#rsvp-donated'))
+
+  // Homepage: the strip is there before the event, and gone after it.
+  await rp.goto('http://localhost:4620/', { waitUntil: 'networkidle' })
+  check('L1x the homepage links to the event page before the event',
+    (await rp.locator('a.event-strip__link[href="/self-defense-for-women"]').count()) === 1
+      && await rp.isVisible('#eventStrip'))
+  check('L1x the strip names the event, the date and the cause',
+    /BJJ for Self Defense for Women/.test(await rp.textContent('#eventStrip'))
+      && /Oct 21/.test(await rp.textContent('#eventStrip')) && /Breast cancer/i.test(await rp.textContent('#eventStrip')))
+
+  // The morning after, the strip is gone and the page stops taking RSVPs.
+  await rp.clock.setFixedTime(new Date('2026-10-23T15:00:00Z'))
+  await rp.goto('http://localhost:4620/', { waitUntil: 'networkidle' })
+  check('L1x the homepage strip is gone once the event has passed', !(await rp.isVisible('#eventStrip')))
+  await rp.goto(URL, { waitUntil: 'networkidle' })
+  check('L1x the page says the event has passed and offers no form',
+    (await rp.isVisible('#rsvp-over')) && !(await rp.isVisible('#rsvp-form')))
+  await ctx.close()
 }
 
 // ── L1r: every page asks for the stylesheet it was built against ──
