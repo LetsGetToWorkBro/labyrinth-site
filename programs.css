@@ -1406,3 +1406,29 @@ body.theme-pink main .prog-section--surface {
   letter-spacing: 0.01em;
   color: #fbd3e3;
 }
+
+/* Who leads the seminar: two cards, each linking to the coach's page. */
+.rsvp-led__grid { display: grid; gap: 16px; margin-top: var(--space-6); }
+.rsvp-led__card {
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  gap: 16px;
+  align-items: start;
+  padding: 18px 20px;
+  border: 1px solid var(--awareness-line);
+  border-radius: 14px;
+  background: var(--awareness-soft);
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color 0.2s, transform 0.2s, background 0.2s;
+}
+.rsvp-led__card:hover { border-color: var(--awareness); background: rgba(229, 143, 181, 0.16); transform: translateY(-2px); }
+.rsvp-led__card img { width: 76px; height: 76px; border-radius: 50%; object-fit: cover; border: 2px solid var(--awareness-line); display: block; }
+.rsvp-led__body { display: flex; flex-direction: column; gap: 4px; color: var(--text-muted); font-size: 14.5px; line-height: 1.5; }
+.rsvp-led__body strong { color: var(--text); font-size: 17px; }
+.rsvp-led__body em { color: var(--awareness); font-style: normal; font-weight: 600; font-size: 13.5px; }
+@media (min-width: 760px) {
+  .rsvp-led__grid { grid-template-columns: 1fr 1fr; }
+  .rsvp-led__card { grid-template-columns: 96px 1fr; }
+  .rsvp-led__card img { width: 96px; height: 96px; }
+}
