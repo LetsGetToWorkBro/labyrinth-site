@@ -1190,3 +1190,209 @@
 
 .rsvp-give { border-top: 1px solid var(--awareness-line); }
 .rsvp-give__thanks { display: flex; align-items: center; gap: var(--space-3); margin-top: var(--space-6); color: var(--awareness); font-weight: 500; }
+
+
+/* ══ Pink theme ═════════════════════════════════════════════════════════════
+   Breast Cancer Awareness Month, for the pages that are about it: the October
+   offers and the self defense event. A page opts in with <body class="theme-pink">.
+
+   It is a theme, not a set of accents: inside <main> the site's gold becomes
+   the awareness pink and the surfaces turn rose-black, so every component the
+   page already uses (buttons, facts, cards, links, form fields) comes along
+   without being restyled one by one. The nav and footer stay as they are, so
+   it is still obviously the same academy. */
+body.theme-pink main {
+  --gold: var(--awareness);
+  --gold-hover: var(--awareness-hover);
+  --surface: #1a0e14;
+  --surface-elevated: #22121b;
+  --border: rgba(229, 143, 181, 0.16);
+  --border-strong: rgba(229, 143, 181, 0.32);
+  --text-muted: #b9a1ae;
+  --text-faint: #8f7584;
+  background: #120a0e;
+}
+body.theme-pink main .btn--gold:hover {
+  box-shadow: 0 4px 16px rgba(229, 143, 181, 0.35), 0 0 30px rgba(229, 143, 181, 0.15);
+}
+body.theme-pink main .btn--ghost { color: #fbd3e3; border-color: var(--awareness-line); }
+body.theme-pink main .btn--ghost:hover { border-color: var(--awareness); background: var(--awareness-soft); box-shadow: none; }
+/* Donate is the other primary action: a lighter blush beside the solid pink. */
+body.theme-pink main .btn--pink { background: #fbd3e3; color: #1a0b12; }
+body.theme-pink main .btn--pink:hover { background: #fde3ee; box-shadow: 0 4px 16px rgba(251, 211, 227, 0.3); }
+.btn--dark { background: #1a0b12; color: #fff; }
+.btn--dark:hover { background: #2a1220; transform: translateY(-2px); }
+
+[data-live][hidden] { display: none !important; }
+body.theme-pink main .prog-prose { margin-top: var(--space-4); }
+
+/* The hero: a deep rose gradient, a repeating ribbon, and a big ribbon behind the title. */
+body.theme-pink .pink-hero, body.theme-pink .rsvp-hero {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 70% 90% at 88% 25%, rgba(229, 143, 181, 0.30), transparent 70%),
+    linear-gradient(135deg, #46142d 0%, #270e1a 52%, #140a10 100%);
+  border-bottom: 1px solid var(--awareness-line);
+}
+body.theme-pink .pink-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'><g transform='translate(36 36) scale(2)' fill='none' stroke='%23E58FB5' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'><path d='M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7'/></g></svg>");
+  background-size: 120px 120px;
+  opacity: 0.085;
+  pointer-events: none;
+}
+.pink-hero .container { position: relative; z-index: 1; }
+.pink-hero__mark {
+  display: none;
+  position: absolute;
+  right: max(3vw, 24px);
+  top: 50%;
+  width: min(30vw, 380px);
+  height: auto;
+  color: var(--awareness);
+  opacity: 0.16;
+  transform: translateY(-50%) rotate(14deg);
+  pointer-events: none;
+}
+@media (min-width: 900px) { .pink-hero__mark { display: block; } }
+.pink-hero .prog-hero__title { text-shadow: 0 2px 30px rgba(0, 0, 0, 0.35); }
+.pink-hero .prog-hero__title span { color: var(--awareness); }
+.pink-hero .prog-hero__lead strong { color: #fbd3e3; }
+.pink-hero .prog-facts { background: rgba(18, 10, 14, 0.55); backdrop-filter: blur(4px); }
+.pink-hero .prog-fact__value em { color: var(--awareness); }
+
+.pink-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 var(--space-4);
+  padding: 7px 14px 7px 10px;
+  border: 1px solid var(--awareness-line);
+  border-radius: 999px;
+  background: var(--awareness-soft);
+  color: var(--awareness);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+/* Bands: the surface sections get a pink rule top and bottom. */
+body.theme-pink main .prog-section--surface {
+  background: linear-gradient(180deg, #1c0f16, #170c12);
+  border-top: 1px solid var(--awareness-line);
+  border-bottom: 1px solid var(--awareness-line);
+}
+
+/* The offers */
+.offer-grid { display: grid; gap: 20px; margin-top: var(--space-8); }
+@media (min-width: 760px) { .offer-grid { grid-template-columns: 1fr 1fr; } }
+.offer-card {
+  position: relative;
+  overflow: hidden;
+  padding: 28px 26px 30px;
+  border: 1px solid var(--awareness-line);
+  border-radius: 16px;
+  background: linear-gradient(160deg, rgba(229, 143, 181, 0.18), rgba(229, 143, 181, 0.04) 70%);
+}
+.offer-card__big {
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-size: clamp(46px, 11vw, 68px);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--awareness);
+}
+.offer-card__title { margin: 0 0 12px; font-size: 21px; color: var(--text); }
+.offer-card p:not(.offer-card__big) { color: var(--text-muted); line-height: 1.6; }
+.offer-card__list { list-style: none; margin: 18px 0 0; padding: 0; display: grid; gap: 9px; }
+.offer-card__list li { position: relative; padding-left: 26px; color: var(--text); font-size: 15px; }
+.offer-card__list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 4px;
+  width: 16px;
+  height: 16px;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23E58FB5' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'><path d='M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7'/></svg>") center / contain no-repeat;
+}
+
+/* Steps */
+.pink-steps { list-style: none; counter-reset: step; margin: var(--space-8) 0; padding: 0; display: grid; gap: 14px; max-width: 720px; }
+.pink-steps li {
+  counter-increment: step;
+  position: relative;
+  padding: 18px 18px 18px 66px;
+  border: 1px solid var(--awareness-line);
+  border-radius: 12px;
+  background: var(--awareness-soft);
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+.pink-steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--awareness);
+  color: #1a0b12;
+  font-weight: 700;
+}
+.pink-steps strong { color: var(--text); }
+.pink-steps a { color: var(--awareness); }
+
+/* A card that points at the other page. */
+.pink-link-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 16px;
+  align-items: center;
+  margin-top: var(--space-6);
+  padding: 20px 22px;
+  border: 1px solid var(--awareness-line);
+  border-radius: 14px;
+  background: var(--awareness-soft);
+  color: var(--text);
+  text-decoration: none;
+  transition: border-color 0.2s, transform 0.2s, background 0.2s;
+}
+.pink-link-card:hover { border-color: var(--awareness); background: rgba(229, 143, 181, 0.16); transform: translateY(-2px); }
+.pink-link-card__ribbon { display: flex; color: var(--awareness); }
+.pink-link-card__body { display: flex; flex-direction: column; gap: 4px; color: var(--text-muted); font-size: 14.5px; line-height: 1.5; }
+.pink-link-card__body strong { color: var(--text); font-size: 17px; }
+.pink-link-card__cta { grid-column: 1 / -1; color: var(--awareness); font-weight: 600; }
+@media (min-width: 760px) {
+  .pink-link-card { grid-template-columns: auto 1fr auto; }
+  .pink-link-card__cta { grid-column: auto; }
+}
+
+/* The closing call to action: solid pink, edge to edge. */
+.pink-band {
+  padding: clamp(48px, 7vw, 84px) 0;
+  background: linear-gradient(135deg, #e58fb5, #f3abc9);
+  color: #1a0b12;
+  text-align: center;
+}
+.pink-band__ribbon { display: flex; justify-content: center; margin: 0 0 8px; color: #1a0b12; opacity: 0.85; }
+.pink-band__title { margin: 0 0 8px; font-family: var(--font-display); font-size: clamp(32px, 6vw, 52px); color: #1a0b12; }
+.pink-band p { margin: 0 0 24px; font-size: 17px; color: rgba(26, 11, 18, 0.82); }
+
+.pink-ended {
+  max-width: 720px;
+  margin: var(--space-8) auto;
+  padding: 18px 22px;
+  border: 1px solid var(--awareness-line);
+  border-radius: 12px;
+  background: var(--awareness-soft);
+  color: var(--text);
+}
+.pink-ended a { color: var(--awareness); text-decoration: underline; }
