@@ -1488,3 +1488,67 @@ body.theme-pink main .prog-section--surface {
 .fund__note { margin: 16px 0 0; color: var(--text-muted); font-size: 13px; line-height: 1.5; }
 .fund [hidden] { display: none !important; }
 @media (min-width: 760px) { .fund__lists { grid-template-columns: 1fr 1fr; gap: 32px; } .fund { max-width: 760px; } }
+
+/* ── RSVP: make it feel worth doing ───────────────────────────────────────── */
+.rsvp__countdown { display: inline-flex; align-items: center; gap: 8px; margin: 14px 0 0; padding: 8px 16px; border-radius: 999px; background: var(--awareness); color: #1a0b12; font-weight: 800; font-size: 15px; }
+.rsvp-perks { list-style: none; margin: 22px 0 0; padding: 0; display: grid; grid-template-columns: 1fr; gap: 12px; }
+.rsvp-perks li { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border: 1px solid var(--awareness-line); border-radius: 12px; background: var(--awareness-soft); color: var(--text-muted); font-size: 14px; line-height: 1.45; }
+.rsvp-perks .ribbon { flex: none; color: var(--awareness); margin-top: 2px; }
+.rsvp-perks strong { display: block; color: var(--text); font-size: 15.5px; margin-bottom: 2px; }
+.rsvp__form { padding: 24px 20px; border: 1.5px solid var(--awareness-line); border-radius: 18px; background: linear-gradient(180deg, rgba(229, 143, 181, 0.12), rgba(229, 143, 181, 0.04)); box-shadow: 0 18px 50px rgba(229, 143, 181, 0.08); }
+.rsvp__form-title { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 0 0 18px; color: var(--text); font-weight: 800; font-size: 20px; }
+.rsvp__form-title .ribbon { color: var(--awareness); }
+.rsvp__form-title span { margin-left: auto; color: var(--awareness); font-size: 13px; font-weight: 700; letter-spacing: 0.04em; }
+.rsvp__form .booking-submit-btn { background: var(--awareness); color: #1a0b12; font-size: 18px; font-weight: 800; min-height: 58px; border-radius: 14px; box-shadow: 0 10px 30px rgba(229, 143, 181, 0.35); }
+.rsvp__form .booking-submit-btn:hover:not(:disabled) { background: var(--awareness-hover, #f0a3c6); transform: translateY(-1px); }
+.rsvp__next { margin-top: var(--space-6); }
+.rsvp__shared { margin: 10px 0 0; color: var(--awareness); font-weight: 600; }
+.rsvp-sticky {
+  position: fixed; left: 12px; right: 12px; bottom: 12px; z-index: 900;
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px 10px 16px;
+  border-radius: 16px; background: #270e1a; border: 1.5px solid var(--awareness);
+  color: #fbd3e3; text-decoration: none; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+}
+.rsvp-sticky .ribbon { color: var(--awareness); flex: none; }
+.rsvp-sticky span { flex: 1; font-size: 13.5px; line-height: 1.3; }
+.rsvp-sticky strong { color: #fff; }
+.rsvp-sticky b { flex: none; padding: 11px 16px; border-radius: 10px; background: var(--awareness); color: #1a0b12; font-size: 14px; }
+.rsvp-sticky[hidden] { display: none; }
+@media (min-width: 760px) {
+  .rsvp-perks { grid-template-columns: 1fr 1fr; }
+  .rsvp__form { padding: 32px; max-width: 640px; }
+  .rsvp-sticky { left: auto; right: 24px; bottom: 24px; max-width: 460px; }
+}
+
+/* ── Pink October: pick a class in one tap ────────────────────────────────── */
+.pink-pick__lead { margin: 12px 0 0; max-width: 640px; color: var(--text-muted); line-height: 1.6; }
+.pick { margin-top: var(--space-6); }
+.pick__pills { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 10px; margin: 0 -2px; scrollbar-width: none; }
+.pick__pills::-webkit-scrollbar { display: none; }
+.pick__pill {
+  flex: none; display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+  min-width: 64px; min-height: 52px; padding: 6px 14px; border: 1.5px solid var(--awareness-line); border-radius: 12px;
+  background: transparent; color: var(--text); font: inherit; font-weight: 700; cursor: pointer;
+}
+.pick__pill small { font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--awareness); font-weight: 800; }
+.pick__pill.is-on { background: var(--awareness); border-color: var(--awareness); color: #1a0b12; }
+.pick__pill.is-on small { color: #1a0b12; }
+.pick__day { margin-top: 14px; }
+.pick__day-title { margin: 0 0 8px; font-size: 18px; color: var(--text); }
+.pick.is-js .pick__day { display: none; }
+.pick.is-js .pick__day.is-on { display: block; }
+.pick.is-js .pick__day-title { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.pick__times { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pick__time {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 3px; min-height: 68px; padding: 12px 14px;
+  border: 1.5px solid var(--awareness-line); border-radius: 14px; background: var(--awareness-soft);
+  color: var(--text); font: inherit; text-align: left; cursor: pointer;
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
+}
+.pick__time strong { font-size: 19px; color: var(--awareness); }
+.pick__time span { font-size: 13px; color: var(--text-muted); line-height: 1.3; }
+.pick__time:hover, .pick__time:focus-visible { border-color: var(--awareness); background: rgba(229, 143, 181, 0.2); transform: translateY(-2px); }
+.pick__time[hidden] { display: none; }
+.pink-pick__more { margin: 20px 0 0; color: var(--text-muted); font-size: 14.5px; }
+.pink-pick__more a { color: var(--awareness); }
+@media (min-width: 760px) { .pick__times { grid-template-columns: repeat(4, 1fr); } }

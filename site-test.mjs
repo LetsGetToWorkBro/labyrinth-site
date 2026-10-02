@@ -41,7 +41,7 @@ for (const path of pages) {
   if (r.status() !== 200) { broken.push(path + ' -> ' + r.status()); continue }
   const hrefs = await page.$$eval('a[href]', as => as.map(a => a.getAttribute('href')))
   for (const h of hrefs) {
-    if (!h || h.startsWith('http') || h.startsWith('#') || h.startsWith('mailto:') || h.startsWith('tel:') || h.startsWith('sms:')) continue
+    if (!h || h.startsWith('http') || h.startsWith('#') || h.startsWith('mailto:') || h.startsWith('tel:') || h.startsWith('sms:') || h.startsWith('data:')) continue
     const url = new URL(h, 'http://localhost:4620' + path)
     const res = await page.request.get(url.href)
     if (res.status() !== 200) broken.push(`${path}  ->  ${h}  (${res.status()})`)
@@ -467,6 +467,35 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
       && led[1][0] === '/coaches/anthony-curry' && /Anthony Curry/.test(led[1][1]) && /Professor/.test(led[1][1]), JSON.stringify(led).slice(0, 160))
   check('L1x structured data lists both instructors as performers',
     !!ev && Array.isArray(ev.performer) && ev.performer.map(p => p.name).join() === 'Scott Jones,Anthony Curry')
+  // Making the RSVP worth doing: what to expect, a real countdown, a button that follows on a phone, and next steps.
+  await rp.clock.setFixedTime(new Date('2026-10-14T15:00:00Z'))
+  await rp.goto(URL, { waitUntil: 'networkidle' })
+  const wow = await rp.evaluate(() => ({
+    perks: [...document.querySelectorAll('.rsvp-perks li strong')].map(e => e.textContent),
+    count: document.getElementById('rsvp-countdown').textContent,
+    button: document.getElementById('rsvp-submit').textContent,
+    party: document.getElementById('rsvp-party').options[1].textContent,
+    title: document.querySelector('.rsvp__form-title')?.textContent,
+  }))
+  check('L1x the RSVP says what to expect: free, come as you are, real instructors, bring a friend',
+    wow.perks.length === 4 && /Free/.test(wow.perks[0]) && /Come as you are/.test(wow.perks[1]) && /Coach Scott and Professor Tony/.test(wow.perks[2]) && /Bring a friend/.test(wow.perks[3]), JSON.stringify(wow))
+  check('L1x a real countdown (ten days before the 24th) and a button that says what it does',
+    wow.count === '10 days to go' && wow.button === 'Save My Spot' && /friend/.test(wow.party) && /Save your spot/.test(wow.title), JSON.stringify(wow))
+  await rp.setViewportSize({ width: 390, height: 800 })
+  const stickyTop = await rp.evaluate(() => !document.getElementById('rsvp-sticky').hidden)
+  await rp.evaluate(() => document.getElementById('donate').scrollIntoView({ behavior: 'instant' })); await rp.waitForTimeout(500)
+  const stickyMid = await rp.evaluate(() => !document.getElementById('rsvp-sticky').hidden)
+  await rp.evaluate(() => document.getElementById('rsvp').scrollIntoView({ behavior: 'instant' })); await rp.waitForTimeout(500)
+  const stickyAtForm = await rp.evaluate(() => !document.getElementById('rsvp-sticky').hidden)
+  check('L1x on a phone the RSVP button waits at the top, appears once you have scrolled past the form, and gets out of the way at the form',
+    stickyTop === false && stickyMid === true && stickyAtForm === false, JSON.stringify({ stickyTop, stickyMid, stickyAtForm }))
+  await rp.setViewportSize({ width: 1200, height: 900 })
+  const cal = await rp.evaluate(() => ({
+    g: document.getElementById('rsvp-cal-google').href, ics: decodeURIComponent(document.getElementById('rsvp-cal-ics').href),
+  }))
+  check('L1x the calendar links carry the real time (11:00 AM Central is 16:00 UTC) and the place',
+    /dates=20261024T160000Z\/20261024T170000Z/.test(cal.g) && /DTSTART:20261024T160000Z/.test(cal.ics) && /Fulshear/.test(cal.ics) && /SUMMARY:Rolling for Ribbons/.test(cal.ics), cal.g.slice(0, 160))
+
   // The fundraiser: honest at $0, and the real feed rendered when there is one.
   let feed = { raised: 0, count: 0, goal: 500, top: [], recent: [] }, feedFail = false
   await rp.route('**/functions/v1/event-donations**', route => feedFail
@@ -708,10 +737,39 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
     inPage.theme && inPage.primary === PINK && inPage.band && inPage.heroBg && inPage.mainBg !== 'rgb(10, 10, 10)', JSON.stringify(inPage))
   check('L1y the site nav keeps its gold, so it is still the same academy', inPage.nav === GOLD, inPage.nav)
   check('L1y ribbons are used throughout', inPage.ribbons >= 6, 'ribbons: ' + inPage.ribbons)
-  check('L1y Book a Free Class buttons are wired to the booking form', inPage.cta >= 3, 'cta: ' + inPage.cta)
-  await pp.click('main .pink-band [data-book-trial]')
-  await pp.waitForTimeout(400)
-  check('L1y tapping one opens the booking form', await pp.evaluate(() => !!document.querySelector('.booking-overlay.open')))
+  check('L1y the page has a "see kids times" link that opens the class picker', inPage.cta >= 1, 'cta: ' + inPage.cta)
+  // The one-tap picker: pinned to Friday 10:00 AM Central so the test does not depend on the day it runs.
+  await pp.clock.setFixedTime(new Date('2026-10-09T15:00:00Z'))
+  await pp.goto('http://localhost:4620/pink-october', { waitUntil: 'networkidle' })
+  const pk = await pp.evaluate(() => ({
+    pills: [...document.querySelectorAll('[data-pick-pill]')].map(b => b.dataset.pickPill).join(),
+    on: document.querySelector('.pick__pill.is-on')?.dataset.pickPill,
+    todayTag: document.querySelector('.pick__pill.is-on small')?.textContent,
+    shown: [...document.querySelectorAll('.pick__day.is-on .pick__time:not([hidden])')].map(b => b.dataset.time + '|' + b.dataset.name).join(),
+    all: document.querySelectorAll('.pick__time').length,
+    noComp: ![...document.querySelectorAll('.pick__time')].some(b => /Comp|Grappling|Kids|Open Mat/.test(b.dataset.name)),
+  }))
+  check('L1y the picker offers adult classes only, a pill per day, from Monday to Saturday',
+    pk.pills === 'Mon,Tue,Wed,Thu,Fri,Sat' && pk.noComp && pk.all >= 14, JSON.stringify(pk))
+  check('L1y on a Friday morning it opens on Friday and offers the 11:00 AM and nothing earlier',
+    pk.on === 'Fri' && pk.todayTag === 'Today' && pk.shown === '11:00 AM|Adult BJJ', JSON.stringify(pk))
+  await pp.click('.pick__pill[data-pick-pill="Tue"]')
+  check('L1y tapping a day shows that day\'s classes',
+    (await pp.$$eval('.pick__day.is-on .pick__time', bs => bs.map(b => b.dataset.time).join())) === '6:30 AM,4:15 PM,6:30 PM')
+  await pp.click('.pick__day.is-on .pick__time >> nth=0')
+  await pp.waitForTimeout(500)
+  const form = await pp.evaluate(() => ({ open: !!document.querySelector('.booking-overlay.open'), text: document.querySelector('.booking-overlay.open')?.innerText || '' }))
+  check('L1y tapping a time opens the booking form already filled in for that class',
+    form.open && /Adult BJJ/.test(form.text) && /Tue/i.test(form.text) && /6:30 AM/.test(form.text), form.text.slice(0, 120))
+  await pp.evaluate(() => window.LabyrinthBooking.close())
+  // A Friday evening: the day's classes are gone, so it opens on the next day that has some.
+  await pp.clock.setFixedTime(new Date('2026-10-10T02:00:00Z'))
+  await pp.goto('http://localhost:4620/pink-october', { waitUntil: 'networkidle' })
+  check('L1y when a day has no classes left it opens on the next day that does',
+    (await pp.evaluate(() => document.querySelector('.pick__pill.is-on')?.dataset.pickPill)) === 'Sat')
+  await pp.click('main .pink-band a[href="#pick-class"]')
+  check('L1y the page buttons lead to the picker', (await pp.locator('a[href="#pick-class"]').count()) >= 3)
+  await pp.goto('http://localhost:4620/pink-october', { waitUntil: 'networkidle' })
   const muted = await pp.evaluate(() => {
     const rgb = c => c.match(/\d+/g).slice(0, 3).map(Number)
     const lin = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4 }
