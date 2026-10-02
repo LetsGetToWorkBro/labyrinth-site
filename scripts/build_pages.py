@@ -28,6 +28,7 @@ credentials are extensive but not what they are, and a page that says
 `credentials` on a coach and they render; leave it out and the page does not
 gesture at them.
 """
+import html
 import os
 import re
 import sys
@@ -936,12 +937,21 @@ def render_event_rsvp():
       <p class="section-label rsvp-label">RSVP</p>
       <h2 class="section-title section-title--lg">SAVE YOUR SPOT</h2>
       <p class="rsvp__note"><strong>The seminar is free, and no experience is needed.</strong> If you have never set foot on a mat, this is for you.</p>
+      <p class="rsvp__countdown" id="rsvp-countdown" hidden></p>
+      <ul class="rsvp-perks" aria-label="What to expect">
+        <li>@@RIBBON16@@<span><strong>Free</strong>Nothing to pay, ever</span></li>
+        <li>@@RIBBON16@@<span><strong>Come as you are</strong>No experience, no gear needed</span></li>
+        <li>@@RIBBON16@@<span><strong>Led by Coach Scott and Professor Tony</strong>Real instructors, beginner pace</span></li>
+        <li>@@RIBBON16@@<span><strong>Bring a friend</strong>Up to 5 people on one RSVP</span></li>
+      </ul>
     </div>
 
     <p class="rsvp__thanks" id="rsvp-donated" hidden>Thank you for your donation. It goes directly to a family affected by breast cancer.</p>
 
     <form class="booking-form rsvp__form" id="rsvp-form" novalidate
-          data-event="@@SLUG@@" data-endpoint="@@ENDPOINT@@" data-closes="@@CLOSES@@">
+          data-event="@@SLUG@@" data-endpoint="@@ENDPOINT@@" data-closes="@@CLOSES@@"
+          data-start="@@STARTISO@@" data-title="@@NAME@@" data-where="@@WHERE@@" data-url="@@PAGEURL@@">
+      <p class="rsvp__form-title">@@RIBBON18@@Save your spot <span>Takes 30 seconds</span></p>
       <div class="booking-form__group">
         <label class="booking-form__label" for="rsvp-name">Full name</label>
         <input class="booking-form__input" id="rsvp-name" name="name" type="text" autocomplete="name" required minlength="2" maxlength="100" aria-describedby="rsvp-name-err">
@@ -961,10 +971,10 @@ def render_event_rsvp():
       </div>
 
       <div class="booking-form__group">
-        <label class="booking-form__label" for="rsvp-party">How many people are coming?</label>
+        <label class="booking-form__label" for="rsvp-party">Who is coming? <span class="rsvp__opt">(bring a friend, sister or mom)</span></label>
         <select class="booking-form__input booking-form__select" id="rsvp-party" name="party" required aria-describedby="rsvp-party-err">
-          <option value="1" selected>Just me (1)</option>
-          <option value="2">2 people</option>
+          <option value="1" selected>Just me</option>
+          <option value="2">Me and a friend (2)</option>
           <option value="3">3 people</option>
           <option value="4">4 people</option>
           <option value="5">5 people</option>
@@ -986,8 +996,8 @@ def render_event_rsvp():
 
       <p class="rsvp__status" id="rsvp-status" role="alert" hidden></p>
 
-      <button class="booking-submit-btn" id="rsvp-submit" type="submit">RSVP</button>
-      <p class="booking-form__consent">We will email you a confirmation. Your details are used only to run this event.</p>
+      <button class="booking-submit-btn" id="rsvp-submit" type="submit">Save My Spot</button>
+      <p class="booking-form__consent">Free. We will email you a confirmation. Your details are used only to run this event.</p>
       <noscript><p class="rsvp__status">RSVPing needs JavaScript. Please call us on @@PHONE@@ instead, or email <a href="mailto:info@labyrinth.vision">info@labyrinth.vision</a>.</p></noscript>
     </form>
 
@@ -997,6 +1007,12 @@ def render_event_rsvp():
       <h2 class="section-title section-title--lg" id="rsvp-success-title">SEE YOU THERE</h2>
       <p><span id="rsvp-success-name"></span>, we have you down for <span id="rsvp-success-party"></span> on <strong>@@LONG@@ at @@TIME@@</strong> at Labyrinth BJJ in Fulshear.</p>
       <p>A confirmation is on its way to <strong id="rsvp-success-email"></strong>. If you do not see it in a few minutes, check your spam folder. To change your RSVP, just submit this form again.</p>
+      <div class="prog-hero__cta rsvp__next">
+        <a href="#" class="btn btn--gold" id="rsvp-cal-google" target="_blank" rel="noopener noreferrer">Add to Google Calendar</a>
+        <a href="#" class="btn btn--ghost" id="rsvp-cal-ics" download="rolling-for-ribbons.ics">Apple / Outlook calendar</a>
+        <button type="button" class="btn btn--pink" id="rsvp-share">Bring a friend</button>
+      </div>
+      <p class="rsvp__shared" id="rsvp-shared" role="status" hidden></p>
       <div class="prog-hero__cta">
         <a href="#donate" class="btn btn--pink">Donate</a>
         <a href="/" class="btn btn--ghost">Back to the site</a>
@@ -1101,11 +1117,12 @@ def render_event_rsvp():
   </div>
 </section>
 
+<a href="#rsvp" class="rsvp-sticky" id="rsvp-sticky" hidden>@@RIBBON16@@<span><strong>RSVP free</strong> &middot; @@SHORT@@ &middot; @@TIME@@</span><b>Save My Spot</b></a>
 <script src="/rsvp.js" defer></script>
 """
     for token, value in {
-        "@@RIBBON16@@": ribbon(16), "@@RIBBON20@@": ribbon(20), "@@RIBBON40@@": ribbon(40), "@@MARK@@": ribbon(320),
-        "@@PINKPATH@@": PINK["path"], "@@TITLE@@": EVENT["title"], "@@SUBTITLE@@": EVENT["subtitle"], "@@NAME@@": EVENT["name"], "@@DONATE@@": EVENT["donate_url"], "@@DONATIONS@@": EVENT["donations_endpoint"], "@@GOAL@@": str(EVENT["goal"]), "@@AMOUNTS@@": "\n".join(
+        "@@RIBBON16@@": ribbon(16), "@@RIBBON18@@": ribbon(18), "@@RIBBON20@@": ribbon(20), "@@RIBBON40@@": ribbon(40), "@@MARK@@": ribbon(320),
+        "@@PINKPATH@@": PINK["path"], "@@TITLE@@": EVENT["title"], "@@SUBTITLE@@": EVENT["subtitle"], "@@NAME@@": EVENT["name"], "@@STARTISO@@": EVENT["start"], "@@WHERE@@": "Labyrinth BJJ, " + ADDRESS, "@@PAGEURL@@": url, "@@DONATE@@": EVENT["donate_url"], "@@DONATIONS@@": EVENT["donations_endpoint"], "@@GOAL@@": str(EVENT["goal"]), "@@AMOUNTS@@": "\n".join(
             '      <a href="%s" class="rsvp-give__amt" target="_blank" rel="noopener noreferrer">$%d</a>' % (u, d)
             for d, u in EVENT["donate_amounts"]), "@@SHORT@@": short_date,
         "@@TIME@@": time, "@@LONG@@": long_date, "@@SLUG@@": EVENT["slug"],
@@ -1117,6 +1134,43 @@ def render_event_rsvp():
 
     head = head.replace("<body>", '<body class="theme-pink">', 1)
     return "\n".join([head, NAV, crumbs([(EVENT["title"], EVENT["path"])]), body, TAIL % {"footer": FOOTER}])
+
+
+def _pink_picker():
+    """The adult classes a woman can book as a first class, one tap each.
+
+    Straight from the timetable the whole site is built from, so it cannot
+    drift: adult and all-ages classes, minus the competition room, the advanced
+    classes (they need a belt or wrestling experience) and open mat. Each button
+    opens the booking form already filled in for that class."""
+    short = schedule_component.SHORT
+    days = []
+    for day in schedule_data.DAYS:
+        rows = []
+        for (d, time, name, ages, style, aud, flags) in schedule_data.for_day(day):
+            if aud not in ("adult", "all") or flags & {"comp", "adv"} or name == "Open Mat":
+                continue
+            mode, book_name = schedule_component._booking(name, ages, aud, flags)
+            if mode != "form":
+                continue
+            h, rest = time.split(":")
+            mins = (int(h) % 12 + (12 if rest.endswith("PM") else 0)) * 60 + int(rest[:2])
+            label = name + (" &middot; " + style if style else "")
+            rows.append(
+                '<button type="button" class="pick__time" data-name="%s" data-type="%s" data-day="%s" '
+                'data-time="%s" data-mins="%d"><strong>%s</strong><span>%s</span></button>'
+                % (html.escape(book_name, quote=True), html.escape(style, quote=True), short[day], time, mins,
+                   time, label.replace("&", "&amp;").replace("&amp;middot;", "&middot;")))
+        if rows:
+            days.append((short[day], day, rows))
+    pills = "".join('<button type="button" class="pick__pill" data-pick-pill="%s" aria-pressed="false">%s</button>' % (s_, s_)
+                    for s_, _, _ in days)
+    panels = "\n".join(
+        '      <div class="pick__day" data-pick-day="%s" role="group" aria-label="%s classes">\n'
+        '        <h3 class="pick__day-title">%s</h3>\n        <div class="pick__times">%s</div>\n      </div>'
+        % (s_, full, full, "".join(rows)) for s_, full, rows in days)
+    return ('<div class="pick" id="pick" data-pick>\n      <div class="pick__pills" role="group" aria-label="Choose a day">%s</div>\n%s\n    </div>'
+            % (pills, panels))
 
 
 def render_pink_october():
@@ -1149,7 +1203,7 @@ def render_pink_october():
     <h1 class="prog-hero__title">PINK <span>OCTOBER</span></h1>
     <p class="prog-hero__lead">All month long, Labyrinth is training in pink. <strong>Moms train free</strong>, and <strong>every woman gets 50% off her first month</strong>. No experience needed, and no child required.</p>
     <div class="prog-hero__cta">
-      <a data-book-trial href="/#book" class="btn btn--gold">Book a Free Class</a>
+      <a href="#pick-class" class="btn btn--gold">Pick a Class Time</a>
       <a href="#offers" class="btn btn--ghost">See the Offers</a>
     </div>
     <div class="prog-facts">
@@ -1194,6 +1248,18 @@ def render_pink_october():
   </div>
 </section>
 
+<section class="prog-section pink-pick" id="pick-class" data-live>
+  <div class="container">
+    <div>
+      <p class="section-label rsvp-label">@@RIBBON16@@Book in one tap</p>
+      <h2 class="section-title section-title--lg">PICK YOUR FIRST CLASS</h2>
+      <p class="pink-pick__lead">Choose a day, tap a time, and we will hold your spot. Every class here is open to beginners, and your first class is free. Mention Pink October when you book, or at the front desk.</p>
+    </div>
+    @@PICKER@@
+    <p class="pink-pick__more">Need a kids class too? <a data-book-trial href="/#book">See kids times</a> &middot; Prefer to talk first? <a href="tel:2813937983">Call @@PHONE@@</a></p>
+  </div>
+</section>
+
 <section class="prog-section prog-section--surface" id="claim" data-live>
   <div class="container">
     <div>
@@ -1201,12 +1267,12 @@ def render_pink_october():
       <h2 class="section-title section-title--lg">THREE EASY STEPS</h2>
     </div>
     <ol class="pink-steps">
-      <li><strong>Book a free class.</strong> Pick any class and a time that suits you. It takes a minute, and a coach will be expecting you.</li>
+      <li><strong>Book a free class.</strong> <a href="#pick-class">Pick a day and time</a> that suits you. It takes a minute, and a coach will be expecting you.</li>
       <li><strong>Tell us you are here for Pink October.</strong> Say so when you book, or at the front desk when you arrive.</li>
       <li><strong>We take it from there.</strong> We will set up your offer with you in person. Questions first? Call <a href="tel:2813937983">@@PHONE@@</a>.</li>
     </ol>
     <div class="prog-hero__cta">
-      <a data-book-trial href="/#book" class="btn btn--gold">Book a Free Class</a>
+      <a href="#pick-class" class="btn btn--gold">Pick a Class Time</a>
       <a href="tel:2813937983" class="btn btn--ghost">Call @@PHONE@@</a>
     </div>
   </div>
@@ -1238,13 +1304,55 @@ def render_pink_october():
     <p class="pink-band__ribbon" aria-hidden="true">@@RIBBON40@@</p>
     <h2 class="pink-band__title">READY TO START?</h2>
     <p>Your first class is free. October is the month to try it.</p>
-    <a data-book-trial href="/#book" class="btn btn--dark">Book a Free Class</a>
+    <a href="#pick-class" class="btn btn--dark">Pick a Class Time</a>
   </div>
 </section>
 
+<script>(function(){
+  var root = document.getElementById('pick'); if (!root) return;
+  var days = [].slice.call(root.querySelectorAll('[data-pick-day]'));
+  var pills = [].slice.call(root.querySelectorAll('[data-pick-pill]'));
+  var ORDER = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  root.classList.add('is-js');
+  // "Now" on the academy's clock, wherever the visitor is.
+  var parts = {};
+  new Intl.DateTimeFormat('en-US', {timeZone:'America/Chicago', weekday:'short', hour:'numeric', minute:'numeric', hour12:false})
+    .formatToParts(new Date()).forEach(function(p){ parts[p.type] = p.value; });
+  var today = parts.weekday, nowMins = (parseInt(parts.hour,10) % 24) * 60 + parseInt(parts.minute,10);
+  function has(d){ return days.some(function(x){ return x.getAttribute('data-pick-day') === d; }); }
+  function show(d){
+    days.forEach(function(x){ x.classList.toggle('is-on', x.getAttribute('data-pick-day') === d); });
+    pills.forEach(function(b){ var on = b.getAttribute('data-pick-pill') === d; b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+  }
+  // Classes that have already started today are not offered.
+  days.forEach(function(x){
+    if (x.getAttribute('data-pick-day') !== today) return;
+    [].slice.call(x.querySelectorAll('.pick__time')).forEach(function(b){ if (parseInt(b.getAttribute('data-mins'),10) <= nowMins) b.hidden = true; });
+  });
+  function left(x){ return x.querySelectorAll('.pick__time:not([hidden])').length > 0; }
+  var start = null, i = ORDER.indexOf(today);
+  for (var n = 0; n < 7 && !start; n++) {
+    var d = ORDER[(i + n) % 7];
+    var panel = days.filter(function(x){ return x.getAttribute('data-pick-day') === d; })[0];
+    if (panel && left(panel)) start = d;
+  }
+  pills.forEach(function(b){
+    var d = b.getAttribute('data-pick-pill');
+    if (d === today) b.insertAdjacentHTML('beforeend', '<small>Today</small>');
+    b.addEventListener('click', function(){ show(d); });
+  });
+  show(start || (days[0] && days[0].getAttribute('data-pick-day')));
+  root.addEventListener('click', function(e){
+    var t = e.target.closest('.pick__time'); if (!t) return;
+    var B = window.LabyrinthBooking;
+    if (!B) { window.location.href = '/#book'; return; }
+    B.openForm(t.getAttribute('data-name'), t.getAttribute('data-type'), t.getAttribute('data-day'), t.getAttribute('data-time'));
+  });
+})();</script>
 <script>(function(){if(Date.now()>Date.parse('@@CLOSES@@')){document.getElementById('pink-ended').hidden=false;document.querySelectorAll('[data-live]').forEach(function(e){e.hidden=true})}})()</script>
 """
     for token, value in {
+        "@@PICKER@@": _pink_picker(),
         "@@RIBBON16@@": ribbon(16), "@@RIBBON18@@": ribbon(18), "@@RIBBON40@@": ribbon(40), "@@MARK@@": ribbon(320),
         "@@PHONE@@": PHONE, "@@CLOSES@@": PINK["closes_utc"], "@@EVENTPATH@@": EVENT["path"],
         "@@EVENT_NAME@@": EVENT["name"], "@@EVENT_LONG@@": event_long, "@@EVENT_SHORT@@": event_short,

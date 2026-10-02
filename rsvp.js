@@ -81,6 +81,78 @@
     return;
   }
 
+  // ── Making it worth doing ──────────────────────────────────────────────────
+  // A real countdown, a button that follows you down the page on a phone, and,
+  // once you have RSVPed, a one-tap calendar entry and a way to bring a friend.
+  var startAt = Date.parse(form.getAttribute('data-start'));
+  var pageTitle = form.getAttribute('data-title') || 'Rolling for Ribbons';
+  var where = form.getAttribute('data-where') || 'Labyrinth BJJ, Fulshear, TX';
+  var pageUrl = form.getAttribute('data-url') || window.location.href.split('?')[0];
+  var EVENT_MINUTES = 60;  // a default for calendar entries; the page does not promise a length
+
+  function centralDay(ms) {
+    return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Chicago', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(ms));
+  }
+
+  (function countdown() {
+    var el = $('rsvp-countdown');
+    if (!el || !startAt) return;
+    var today = Date.parse(centralDay(Date.now()) + 'T00:00:00Z');
+    var day = Date.parse(centralDay(startAt) + 'T00:00:00Z');
+    var n = Math.round((day - today) / 86400000);
+    var text = n > 1 ? n + ' days to go' : (n === 1 ? 'Tomorrow' : (n === 0 && Date.now() < startAt ? 'Today' : ''));
+    if (!text) return;
+    el.textContent = text;
+    el.hidden = false;
+  })();
+
+  (function sticky() {
+    var bar = $('rsvp-sticky');
+    var zone = document.getElementById('rsvp');
+    if (!bar || !zone || !window.IntersectionObserver) return;
+    var inView = false;
+    function update() {
+      bar.hidden = inView || form.hidden || window.scrollY < 320;
+    }
+    new IntersectionObserver(function (entries) { inView = entries[0].isIntersecting; update(); }).observe(zone);
+    window.addEventListener('scroll', update, { passive: true });
+    update();
+  })();
+
+  function stamp(ms) { return new Date(ms).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, ''); }
+  function icsText(t) { return String(t).replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n'); }
+
+  (function calendar() {
+    var g = $('rsvp-cal-google'), ics = $('rsvp-cal-ics');
+    if (!g || !ics || !startAt) return;
+    var endAt = startAt + EVENT_MINUTES * 60000;
+    var note = 'Free self defense seminar for women, for breast cancer awareness. ' + pageUrl;
+    g.href = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent(pageTitle)
+      + '&dates=' + stamp(startAt) + '/' + stamp(endAt) + '&details=' + encodeURIComponent(note)
+      + '&location=' + encodeURIComponent(where);
+    var body = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Labyrinth BJJ//RSVP//EN', 'BEGIN:VEVENT',
+      'UID:' + stamp(startAt) + '-rolling-for-ribbons@labyrinth.vision', 'DTSTAMP:' + stamp(Date.now()),
+      'DTSTART:' + stamp(startAt), 'DTEND:' + stamp(endAt), 'SUMMARY:' + icsText(pageTitle),
+      'LOCATION:' + icsText(where), 'DESCRIPTION:' + icsText(note), 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+    ics.href = 'data:text/calendar;charset=utf-8,' + encodeURIComponent(body);
+  })();
+
+  (function share() {
+    var btn = $('rsvp-share'), msg = $('rsvp-shared');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var text = 'Free self defense seminar for women, Saturday, October 24 at 11 AM at Labyrinth BJJ in Fulshear. No experience needed. Come with me?';
+      if (navigator.share) {
+        navigator.share({ title: pageTitle, text: text, url: pageUrl }).catch(function () { /* closed the sheet */ });
+        return;
+      }
+      function say(m) { if (msg) { msg.textContent = m; msg.hidden = false; } }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text + ' ' + pageUrl).then(function () { say('Link copied. Send it to a friend.'); }, function () { say(pageUrl); });
+      } else { say(pageUrl); }
+    });
+  })();
+
   // Stripe sends donors back here with ?donated=1 (set on the Payment Link).
   try {
     if (/[?&]donated=1\b/.test(window.location.search)) $('rsvp-donated').hidden = false;
@@ -194,6 +266,7 @@
     $('rsvp-success-party').textContent = Number(v.party) === 1 ? '1 person' : v.party + ' people';
     $('rsvp-success-email').textContent = v.email;
     form.hidden = true;
+    var st = $('rsvp-sticky'); if (st) st.hidden = true;
     successEl.hidden = false;
     successEl.focus();
     if (successEl.scrollIntoView) successEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
