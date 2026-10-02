@@ -832,6 +832,22 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   check('L1y when a day has no classes left it opens on the next day that does',
     (await pp.evaluate(() => document.querySelector('.pick__d.is-on')?.textContent)) === '10')
   await pp.click('main .pink-band a[href="#pick-class"]')
+  {
+    // The booking is the first thing on both women's pages: in the hero, beside the headline.
+    await pp.setViewportSize({ width: 1280, height: 900 })
+    await pp.goto('http://localhost:4620/pink-october', { waitUntil: 'load' })
+    const pk2 = await pp.evaluate(() => ({ inHero: !!document.getElementById('pick-class').closest('header.pink-hero'), top: Math.round(document.getElementById('pick-class').getBoundingClientRect().top), days: document.querySelectorAll('#pick-class .pick__d.is-open').length, h1top: Math.round(document.querySelector('h1').getBoundingClientRect().top) }))
+    check('L1y on Pink October the class calendar is in the hero, beside the headline and in view without scrolling',
+      pk2.inHero && pk2.top < 300 && pk2.days > 5 && Math.abs(pk2.top - pk2.h1top) < 160, JSON.stringify(pk2))
+    await pp.goto('http://localhost:4620/self-defense-for-women', { waitUntil: 'load' })
+    const sd2 = await pp.evaluate(() => ({ inHero: !!document.getElementById('rsvp-form').closest('header.rsvp-hero'), top: Math.round(document.getElementById('rsvp').getBoundingClientRect().top) }))
+    check('L1y on the seminar page the RSVP form is in the hero, in view without scrolling', sd2.inHero && sd2.top < 300, JSON.stringify(sd2))
+    await pp.setViewportSize({ width: 390, height: 844 })
+    await pp.goto('http://localhost:4620/pink-october', { waitUntil: 'load' })
+    check('L1y on a phone the Pink October calendar is within the first screen and a half',
+      (await pp.evaluate(() => Math.round(document.getElementById('pick-class').getBoundingClientRect().top))) < 1300)
+    await pp.setViewportSize({ width: 1200, height: 900 })
+  }
   check('L1y the page buttons lead to the picker', (await pp.locator('a[href="#pick-class"]').count()) >= 3)
   await pp.goto('http://localhost:4620/pink-october', { waitUntil: 'networkidle' })
   const muted = await pp.evaluate(() => {
