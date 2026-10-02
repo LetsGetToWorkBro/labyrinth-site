@@ -1579,7 +1579,7 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
     return { n: imgs.length, srcs: imgs.map(i => i.getAttribute('src')), broken: imgs.filter(i => !i.naturalWidth).map(i => i.src), alts: imgs.every(i => i.alt.length > 5) }
   })
   check('L1z real academy photos load, have alt text, and are not the group photo used on the Pink October and seminar pages',
-    pics.n === 4 && pics.broken.length === 0 && pics.alts && !pics.srcs.some(x => /strength-conditioning/.test(x)), JSON.stringify(pics))
+    pics.n === 4 && pics.broken.length === 0 && pics.alts && !pics.srcs.some(x => /strength-conditioning|gallery-2|gallery-4/.test(x)), JSON.stringify(pics))
   check('L1z the coaches are Professor Shaun Lawler and Coach Scott Jones, each linking to their page',
     (await hp.locator('.hx-coach[href="/coaches/shaun-lawler"]:has-text("Professor Shaun Lawler")').count()) === 1 &&
     (await hp.locator('.hx-coach[href="/coaches/scott-jones"]:has-text("Coach Scott Jones")').count()) === 1)
