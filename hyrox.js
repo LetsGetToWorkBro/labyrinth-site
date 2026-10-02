@@ -70,6 +70,7 @@
 
   // ── One row per child ──────────────────────────────────────────────────────
   var ageOptions = $('hx-kid-age-1').innerHTML;
+  var sizeOptions = $('hx-kid-size-1').innerHTML;
 
   function rows() { return kidsBox.querySelectorAll('.hx-kid'); }
 
@@ -83,7 +84,8 @@
       row.setAttribute('data-kid', String(n));
       row.innerHTML =
         '<input class="booking-form__input" type="text" id="hx-kid-name-' + n + '" aria-label="Child ' + n + ' name" placeholder="Child’s first name" maxlength="40" autocomplete="off">' +
-        '<select class="booking-form__input booking-form__select" id="hx-kid-age-' + n + '" aria-label="Child ' + n + ' age on race day">' + ageOptions + '</select>';
+        '<select class="booking-form__input booking-form__select" id="hx-kid-age-' + n + '" aria-label="Child ' + n + ' age on race day">' + ageOptions + '</select>' +
+        '<select class="booking-form__input booking-form__select" id="hx-kid-size-' + n + '" aria-label="Child ' + n + ' rash guard size">' + sizeOptions + '</select>';
       kidsBox.insertBefore(row, anchor);
     }
     for (var m = have; m > want; m--) kidsBox.removeChild(rows()[m - 1]);
@@ -98,12 +100,17 @@
 
   function squash(s) { return String(s || '').replace(/\s+/g, ' ').trim(); }
   // Parentheses are how the server finds an age, so they cannot be part of a name.
-  function nameOnly(s) { return squash(String(s || '').replace(/[()]/g, ' ')); }
+  function nameOnly(s) { return squash(String(s || '').replace(/[(),:]/g, ' ')); }
+
+  // "Emma: Youth M, Jack: Adult S", only for the kids who gave a size.
+  function sizesFor(v) {
+    return v.kids.filter(function (k) { return k.size; }).map(function (k) { return k.name + ': ' + k.size; }).join(', ');
+  }
 
   function read() {
     var kids = [];
     [].forEach.call(rows(), function (r, i) {
-      kids.push({ name: nameOnly($('hx-kid-name-' + (i + 1)).value), age: $('hx-kid-age-' + (i + 1)).value });
+      kids.push({ name: nameOnly($('hx-kid-name-' + (i + 1)).value), age: $('hx-kid-age-' + (i + 1)).value, size: $('hx-kid-size-' + (i + 1)).value });
     });
     return {
       name: squash($('hx-name').value),
@@ -229,7 +236,7 @@
       signal: ctrl ? ctrl.signal : undefined,
       body: JSON.stringify({
         event: eventSlug,
-        name: v.name, email: v.email, phone: v.phone, party: Number(v.party), notes: notesFor(v),
+        name: v.name, email: v.email, phone: v.phone, party: Number(v.party), notes: notesFor(v), sizes: sizesFor(v),
         website: $('hx-hp').value
       })
     })

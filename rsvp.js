@@ -189,13 +189,40 @@
 
   function squash(s) { return String(s || '').replace(/\s+/g, ' ').trim(); }
 
+  // ── T-shirt sizes: one optional row per person coming ──────────────────────
+  var shirtBox = $('rsvp-shirts');
+  var shirtOptions = $('rsvp-shirt-1') ? $('rsvp-shirt-1').innerHTML : '';
+  function shirtRows() { return shirtBox ? shirtBox.querySelectorAll('.rsvp-shirt') : []; }
+  function syncShirts() {
+    if (!shirtBox) return;
+    var want = Math.max(1, Math.min(5, parseInt($('rsvp-party').value, 10) || 1));
+    var have = shirtRows().length, anchor = $('rsvp-sizes-err');
+    for (var n = have + 1; n <= want; n++) {
+      var row = document.createElement('div');
+      row.className = 'rsvp-shirt';
+      row.setAttribute('data-shirt', String(n));
+      row.innerHTML = '<label for="rsvp-shirt-' + n + '">Guest ' + n + '</label>' +
+        '<select class="booking-form__input booking-form__select" id="rsvp-shirt-' + n + '" aria-label="T-shirt size for guest ' + n + '">' + shirtOptions + '</select>';
+      shirtBox.insertBefore(row, anchor);
+    }
+    for (var m = have; m > want; m--) shirtBox.removeChild(shirtRows()[m - 1]);
+  }
+  if (shirtBox) { $('rsvp-party').addEventListener('change', syncShirts); syncShirts(); }
+  // "M, L": only the people who asked for a shirt.
+  function shirtSizes() {
+    var out = [];
+    [].forEach.call(shirtRows(), function (r) { var v = r.querySelector('select').value; if (v) out.push(v); });
+    return out.join(', ');
+  }
+
   function read() {
     return {
       name: squash($('rsvp-name').value),
       email: squash($('rsvp-email').value).toLowerCase(),
       phone: squash($('rsvp-phone').value),
       party: $('rsvp-party').value,
-      notes: squash($('rsvp-notes').value)
+      notes: squash($('rsvp-notes').value),
+      sizes: shirtSizes()
     };
   }
 
@@ -289,6 +316,11 @@
     $('rsvp-success-name').textContent = v.name.split(' ')[0];
     $('rsvp-success-party').textContent = Number(v.party) === 1 ? '1 person' : v.party + ' people';
     $('rsvp-success-email').textContent = v.email;
+    var shirtLine = $('rsvp-success-shirt');
+    if (shirtLine) {
+      shirtLine.textContent = v.sizes ? 'We are setting aside ' + (v.sizes.indexOf(',') === -1 ? 'a T-shirt' : 'T-shirts') + ' for you (' + v.sizes + '). Pick ' + (v.sizes.indexOf(',') === -1 ? 'it' : 'them') + ' up at the event.' : '';
+      shirtLine.hidden = !v.sizes;
+    }
     form.hidden = true;
     var st = $('rsvp-sticky'); if (st) st.hidden = true;
     successEl.hidden = false;
@@ -315,7 +347,7 @@
       signal: ctrl ? ctrl.signal : undefined,
       body: JSON.stringify({
         event: eventSlug,
-        name: v.name, email: v.email, phone: v.phone, party: Number(v.party), notes: v.notes,
+        name: v.name, email: v.email, phone: v.phone, party: Number(v.party), notes: v.notes, sizes: v.sizes,
         // The honeypot goes along as the key the server looks for.
         website: $('rsvp-hp').value
       })

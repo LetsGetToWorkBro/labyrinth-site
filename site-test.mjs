@@ -575,7 +575,7 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
     const f = document.getElementById('rsvp-form')
     const el = id => document.getElementById(id)
     return {
-      names: [...f.querySelectorAll('input:not(#rsvp-hp), select, textarea')].map(e => e.name),
+      names: [...f.querySelectorAll('input:not(#rsvp-hp), select:not(#rsvp-shirts select), textarea')].map(e => e.name),
       required: ['rsvp-name', 'rsvp-email', 'rsvp-phone', 'rsvp-party', 'rsvp-notes'].map(id => el(id).required),
       party: [...el('rsvp-party').options].map(o => o.value),
       notesMax: el('rsvp-notes').maxLength,
@@ -621,9 +621,15 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   // A good RSVP goes once, with the right shape, and ends on a confirmation.
   await fresh()
   await fillValid({ phone: '(281) 555-0100', party: '3', notes: 'First time. A little nervous.' })
+  check('L1x the form offers an optional T-shirt size per person coming (3 people, 3 size boxes, none chosen)',
+    (await rp.locator('.rsvp-shirt select').count()) === 3 && (await rp.$$eval('.rsvp-shirt select', ss => ss.every(x => x.value === ''))) &&
+    /Reserve a T-shirt/.test(await rp.textContent('#rsvp-shirts')))
+  await rp.selectOption('#rsvp-shirt-1', 'M'); await rp.selectOption('#rsvp-shirt-3', 'L')
   await rp.click('#rsvp-submit')
   await rp.waitForSelector('#rsvp-success:not([hidden])')
   check('L1x a valid RSVP is sent exactly once', posts.length === 1, 'posts: ' + posts.length)
+  check('L1x only the shirts asked for are sent, and the confirmation says a shirt is being set aside',
+    posts[0].sizes === 'M, L' && /T-shirts/.test(await rp.textContent('#rsvp-success-shirt')) && /M, L/.test(await rp.textContent('#rsvp-success-shirt')), JSON.stringify(posts[0]))
   check('L1x it carries the event, the details, the party size as a number and an empty honeypot',
     posts[0].event === 'self-defense-women-2026-10-21' && posts[0].name === 'Jane Q Doe'
       && posts[0].email === 'jane@example.com' && posts[0].phone === '(281) 555-0100'
@@ -1640,6 +1646,7 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
   await hp.click('.hx-more summary')
   await hp.fill('#hx-name', 'Dana Reyes'); await hp.fill('#hx-email', 'Dana@Example.com'); await hp.fill('#hx-phone', '281 555 0100')
   await hp.fill('#hx-kid-name-1', 'Emma (the) Reyes'); await hp.selectOption('#hx-kid-age-1', '9')
+  await hp.selectOption('#hx-kid-size-1', 'Youth M'); await hp.selectOption('#hx-kid-size-2', 'Adult S')
   await hp.fill('#hx-kid-name-2', 'Jack'); await hp.fill('#hx-note', 'Jack has done two seasons of cross country')
   await hp.click('#hx-submit')
   check('L1z a child without an age is caught', posts.length === 0 && /each child/.test(await hp.textContent('#hx-notes-err')))
@@ -1649,7 +1656,8 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
   await hp.waitForSelector('#hx-success:not([hidden])')
   check('L1z it posts once to the RSVP function with the event, the parent, the count and each kid in the notes',
     posts.length === 1 && posts[0].event === 'hyrox-youngstars-houston-2027' && posts[0].name === 'Dana Reyes' && posts[0].email === 'dana@example.com' &&
-    posts[0].party === 2 && posts[0].notes === 'Kids: Emma the Reyes (9), Jack (12). Note: Jack has done two seasons of cross country', JSON.stringify(posts))
+    posts[0].party === 2 && posts[0].notes === 'Kids: Emma the Reyes (9), Jack (12). Note: Jack has done two seasons of cross country' &&
+    posts[0].sizes === 'Emma the Reyes: Youth M, Jack: Adult S', JSON.stringify(posts))
   check('L1z and then confirms to the parent by name, kids and email, and says what is next',
     /Dana/.test(await hp.textContent('#hx-success')) && /Emma the Reyes, Jack/.test(await hp.textContent('#hx-success-kids')) &&
     /dana@example\.com/.test(await hp.textContent('#hx-success-email')) && /November/.test(await hp.textContent('#hx-success')) && await hp.isHidden('#hx-form'))

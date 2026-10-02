@@ -1783,3 +1783,17 @@ body.theme-hyrox main .faq-item__question:hover { color: var(--volt); }
 .hx-form .booking-form__consent { margin-top: 12px; }
 @media (min-width: 900px) { .hx-coaches { grid-template-columns: repeat(3, 1fr); } }
 @media (min-width: 760px) { .hx-coach { align-content: start; } }
+
+/* Sizes: a shirt to reserve (seminar) and a rash guard per child (HYROX). */
+.rsvp-shirts { margin: 0 0 18px; padding: 0; border: 0; min-width: 0; }
+.rsvp-shirts legend { padding: 0; margin-bottom: 6px; }
+.rsvp-shirts__hint { margin: 0 0 10px; font-size: 13.5px; line-height: 1.5; color: var(--text-muted); }
+.rsvp-shirt { display: grid; grid-template-columns: 84px 1fr; gap: 10px; align-items: center; margin-bottom: 10px; }
+.rsvp-shirt label { font-size: 14px; color: var(--text-muted); }
+.rsvp-shirts .booking-form__input { font-size: 16px; }
+.hx-kids__hint { margin: 0 0 10px; font-size: 13.5px; line-height: 1.5; color: var(--text-muted); }
+.hx-kid { grid-template-columns: 1fr 1fr; grid-template-areas: "name name" "age size"; }
+.hx-kid > :nth-child(1) { grid-area: name; }
+.hx-kid > :nth-child(2) { grid-area: age; }
+.hx-kid > :nth-child(3) { grid-area: size; }
+@media (min-width: 520px) { .hx-kid { grid-template-columns: 1fr 96px 150px; grid-template-areas: "name age size"; } }

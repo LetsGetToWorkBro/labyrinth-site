@@ -1008,6 +1008,16 @@ def render_event_rsvp():
         <p class="booking-form__error" id="rsvp-party-err"></p>
       </div>
 
+      <fieldset class="rsvp-shirts" id="rsvp-shirts">
+        <legend class="booking-form__label">Reserve a T-shirt? <span class="rsvp__opt">(optional)</span></legend>
+        <p class="rsvp-shirts__hint">Choose a size and we will set a Rolling for Ribbons shirt aside for you to pick up at the event. Leave it on &ldquo;No shirt&rdquo; if you do not want one.</p>
+        <div class="rsvp-shirt" data-shirt="1">
+          <label for="rsvp-shirt-1">You</label>
+          <select class="booking-form__input booking-form__select" id="rsvp-shirt-1" aria-label="T-shirt size for you">@@SHIRTOPTS@@</select>
+        </div>
+        <p class="booking-form__error" id="rsvp-sizes-err"></p>
+      </fieldset>
+
       <div class="booking-form__group">
         <label class="booking-form__label" for="rsvp-notes">Any questions, or your experience level? <span class="rsvp__opt">(optional)</span></label>
         <textarea class="booking-form__input booking-form__area" id="rsvp-notes" name="notes" rows="3" maxlength="600" aria-describedby="rsvp-notes-err"></textarea>
@@ -1032,6 +1042,7 @@ def render_event_rsvp():
       <p class="section-label rsvp-label">You are on the list</p>
       <h2 class="section-title section-title--lg" id="rsvp-success-title">SEE YOU THERE</h2>
       <p><span id="rsvp-success-name"></span>, we have you down for <span id="rsvp-success-party"></span> on <strong>@@LONG@@, @@RANGE@@</strong> at Labyrinth BJJ in Fulshear.</p>
+      <p id="rsvp-success-shirt" hidden></p>
       <p>A confirmation is on its way to <strong id="rsvp-success-email"></strong>. If you do not see it in a few minutes, check your spam folder. To change your RSVP, just submit this form again.</p>
       <div class="prog-hero__cta rsvp__next">
         <a href="#" class="btn btn--gold" id="rsvp-cal-google" target="_blank" rel="noopener noreferrer">Add to Google Calendar</a>
@@ -1148,7 +1159,7 @@ def render_event_rsvp():
 """
     for token, value in {
         "@@RIBBON16@@": ribbon(16), "@@RIBBON18@@": ribbon(18), "@@RIBBON20@@": ribbon(20), "@@RIBBON40@@": ribbon(40), "@@MARK@@": ribbon(320),
-        "@@PINKPATH@@": PINK["path"], "@@TITLE@@": EVENT["title"], "@@SUBTITLE@@": EVENT["subtitle"], "@@NAME@@": EVENT["name"], "@@STARTISO@@": EVENT["start"], "@@MINUTES@@": str(EVENT["minutes"]), "@@RANGE@@": _event_range()[0], "@@WHERE@@": "Labyrinth BJJ, " + ADDRESS, "@@PAGEURL@@": url, "@@DONATE@@": EVENT["donate_url"], "@@DONATIONS@@": EVENT["donations_endpoint"], "@@GOAL@@": str(EVENT["goal"]), "@@AMOUNTS@@": "\n".join(
+        "@@PINKPATH@@": PINK["path"], "@@TITLE@@": EVENT["title"], "@@SUBTITLE@@": EVENT["subtitle"], "@@SHIRTOPTS@@": _size_options(SHIRT_SIZES, "No shirt"), "@@NAME@@": EVENT["name"], "@@STARTISO@@": EVENT["start"], "@@MINUTES@@": str(EVENT["minutes"]), "@@RANGE@@": _event_range()[0], "@@WHERE@@": "Labyrinth BJJ, " + ADDRESS, "@@PAGEURL@@": url, "@@DONATE@@": EVENT["donate_url"], "@@DONATIONS@@": EVENT["donations_endpoint"], "@@GOAL@@": str(EVENT["goal"]), "@@AMOUNTS@@": "\n".join(
             '      <a href="%s" class="rsvp-give__amt" target="_blank" rel="noopener noreferrer">$%d</a>' % (u, d)
             for d, u in EVENT["donate_amounts"]), "@@SHORT@@": short_date,
         "@@TIME@@": time, "@@LONG@@": long_date, "@@SLUG@@": EVENT["slug"],
@@ -1466,6 +1477,18 @@ def render_pink_october():
 # The sign-up posts to the same event-rsvp function as the seminar (event
 # 'hyrox-youngstars-houston-2027'); its notes carry each child's name and age.
 
+# Sizes offered on the sign-up forms. Kept in one place so a size can be added or
+# taken out without touching the markup or the script.
+SHIRT_SIZES = ["Youth L", "XS", "S", "M", "L", "XL", "2XL", "3XL"]
+RASH_GUARD_SIZES = ["Youth XS", "Youth S", "Youth M", "Youth L", "Youth XL", "Adult S", "Adult M", "Adult L", "Adult XL"]
+
+
+def _size_options(sizes, blank, extra=()):
+    opts = ['<option value="">%s</option>' % blank]
+    opts += ['<option value="%s">%s</option>' % (x, x) for x in list(sizes) + list(extra)]
+    return "".join(opts)
+
+
 HYROX = {
     "path": "/hyrox-youngstars",
     "slug": "hyrox-youngstars-houston-2027",
@@ -1577,12 +1600,14 @@ def render_hyrox():
       </div>
 
       <fieldset class="hx-kids" id="hx-kids">
-        <legend class="booking-form__label">Each child&rsquo;s name and age <span class="hx-opt">(age on April 3, 2027)</span></legend>
+        <legend class="booking-form__label">Each child&rsquo;s name, age and rash guard size <span class="hx-opt">(age on April 3, 2027)</span></legend>
+        <p class="hx-kids__hint">The rash guard size is optional. Pick &ldquo;Not sure yet&rdquo; if you want to check first, and we will follow up about the team rash guards.</p>
         <div class="hx-kid" data-kid="1">
           <input class="booking-form__input" type="text" id="hx-kid-name-1" aria-label="Child 1 name" placeholder="Child&rsquo;s first name" maxlength="40" autocomplete="off">
           <select class="booking-form__input booking-form__select" id="hx-kid-age-1" aria-label="Child 1 age on race day">
             <option value="">Age</option>@@AGES@@
           </select>
+          <select class="booking-form__input booking-form__select" id="hx-kid-size-1" aria-label="Child 1 rash guard size">@@GUARDOPTS@@</select>
         </div>
         <p class="booking-form__error" id="hx-notes-err"></p>
       </fieldset>
@@ -1796,7 +1821,7 @@ def render_hyrox():
     ages = "".join('<option value="%d">%d</option>' % (n, n) for n in range(8, 16))
     for token, value in {
         "@@BOLT@@": _hyrox_bolt(20), "@@BOLT16@@": _hyrox_bolt(16), "@@BOLT40@@": _hyrox_bolt(44),
-        "@@CHIPS@@": chips, "@@STATIONS@@": stations, "@@RUNNING@@": running, "@@AGES@@": ages,
+        "@@GUARDOPTS@@": _size_options(RASH_GUARD_SIZES, "Rash guard size", ["Not sure yet"]), "@@CHIPS@@": chips, "@@STATIONS@@": stations, "@@RUNNING@@": running, "@@AGES@@": ages,
         "@@FAQ@@": faq_block(faqs), "@@SLUG@@": HYROX["slug"], "@@ENDPOINT@@": HYROX["endpoint"],
         "@@CLOSES@@": HYROX["closes_utc"], "@@OFFICIAL@@": HYROX["official"], "@@HOUSTON@@": HYROX["houston"],
         "@@PHONE@@": PHONE, "@@ADDRESS@@": ADDRESS,
