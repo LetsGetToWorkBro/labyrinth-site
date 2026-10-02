@@ -5133,3 +5133,9 @@ body {
   font-weight: 600;
   font-size: 14px;
 }
+
+/* The HYROX Youngstars row in the same strip: volt yellow on black. */
+.event-strip__link--hyrox { border-color: rgba(227, 255, 46, 0.4); background: rgba(227, 255, 46, 0.06); }
+.event-strip__link--hyrox:hover { border-color: #e3ff2e; background: rgba(227, 255, 46, 0.12); }
+.event-strip__link--hyrox .event-strip__icon { color: #e3ff2e; }
+.event-strip__link--hyrox .event-strip__cta { background: #e3ff2e; color: #0a0b08; }

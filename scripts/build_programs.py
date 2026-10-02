@@ -808,6 +808,23 @@ def render(p):
     price_inner += '  <p class="prog-week__note fade-in">%s</p>' % p["prices_note"]
     parts.append(section("Membership", "WHAT IT COSTS", narrow=False, inner=price_inner))
 
+    # A pointer at the kids' HYROX race list, on the kids page only.
+    if p["slug"] == "kids-bjj-fulshear":
+        parts.append("""
+<section class="prog-section">
+  <div class="container">
+    <a href="/hyrox-youngstars" class="hx-link-card fade-in">
+      <span class="hx-link-card__bolt"><svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M13.2 2 4.5 13.4h6L9.3 22l9.2-12.2h-6.1z"/></svg></span>
+      <span class="hx-link-card__body">
+        <span class="hx-link-card__eyebrow">New &middot; Ages 8&ndash;15 &middot; April 3&ndash;4, 2027</span>
+        <strong>HYROX Youngstars Houston</strong>
+        <span>We are putting together a Labyrinth group to train for the kids&rsquo; fitness race: running, sleds, rowing and carries. Add your child to the interest list.</span>
+      </span>
+      <span class="hx-link-card__cta">Join the list &rarr;</span>
+    </a>
+  </div>
+</section>""")
+
     # FAQ
     faq_items = "\n".join("""      <div class="faq-item">
         <button class="faq-item__question" aria-expanded="false">

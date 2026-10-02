@@ -697,10 +697,10 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   check('L1x the homepage links to the event page before the event',
     (await rp.locator('a.event-strip__link[href="/self-defense-for-women"]').count()) === 1
       && await rp.isVisible('#eventStrip'))
-  check('L1x each strip link carries a pink ribbon and a pink button',
+  check('L1x each October strip link carries a pink ribbon and a pink button (the HYROX row has its own volt look)',
     (await rp.locator('#eventStrip svg.ribbon').count()) === 2
-      && await rp.evaluate(() => [...document.querySelectorAll('.event-strip__icon')].every(i => getComputedStyle(i).color === 'rgb(229, 143, 181)')
-        && [...document.querySelectorAll('.event-strip__cta')].every(c => getComputedStyle(c).backgroundColor === 'rgb(229, 143, 181)')))
+      && await rp.evaluate(() => [...document.querySelectorAll('.event-strip__link:not(.event-strip__link--hyrox) .event-strip__icon')].every(i => getComputedStyle(i).color === 'rgb(229, 143, 181)')
+        && [...document.querySelectorAll('.event-strip__link:not(.event-strip__link--hyrox) .event-strip__cta')].every(c => getComputedStyle(c).backgroundColor === 'rgb(229, 143, 181)')))
   check('L1x the strip names the event, the date and the cause',
     /Rolling for Ribbons/.test(await rp.textContent('#eventStrip'))
       && /Oct 24/.test(await rp.textContent('#eventStrip')) && /Breast cancer/i.test(await rp.textContent('#eventStrip')))
@@ -713,7 +713,9 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
       && await rp.isVisible('a.event-strip__link[href="/pink-october"]'))
   await rp.clock.setFixedTime(new Date('2026-11-02T15:00:00Z'))
   await rp.goto('http://localhost:4620/', { waitUntil: 'networkidle' })
-  check('L1x the whole strip is gone once October is over', !(await rp.isVisible('#eventStrip')))
+  check('L1x once October is over both pink links are gone and only the HYROX row is left',
+    !(await rp.isVisible('a.event-strip__link[href="/pink-october"]')) && !(await rp.isVisible('a.event-strip__link[href="/self-defense-for-women"]'))
+      && await rp.isVisible('a.event-strip__link--hyrox'))
   await rp.goto(URL, { waitUntil: 'networkidle' })
   check('L1x the page says the event has passed and offers no form',
     (await rp.isVisible('#rsvp-over')) && !(await rp.isVisible('#rsvp-form')))
@@ -1570,7 +1572,27 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
   }))
   check('L1z it has its own look: volt yellow on near-black, not the academy gold or the awareness pink',
     look.theme && look.primary === 'rgb(227, 255, 46)' && look.title === 'rgb(227, 255, 46)' && look.mainBg === 'rgb(10, 11, 8)', JSON.stringify(look))
+  const pics = await hp.evaluate(async () => {
+    const imgs = [...document.querySelectorAll('.hx-photo img, .hx-coach img')]
+    imgs.forEach(i => { i.loading = 'eager' })
+    await Promise.all(imgs.map(i => i.complete ? 0 : new Promise(r => { i.onload = i.onerror = r })))
+    return { n: imgs.length, srcs: imgs.map(i => i.getAttribute('src')), broken: imgs.filter(i => !i.naturalWidth).map(i => i.src), alts: imgs.every(i => i.alt.length > 5) }
+  })
+  check('L1z real academy photos load, have alt text, and are not the group photo used on the Pink October and seminar pages',
+    pics.n === 4 && pics.broken.length === 0 && pics.alts && !pics.srcs.some(x => /strength-conditioning/.test(x)), JSON.stringify(pics))
+  check('L1z the coaches are Professor Shaun Lawler and Coach Scott Jones, each linking to their page',
+    (await hp.locator('.hx-coach[href="/coaches/shaun-lawler"]:has-text("Professor Shaun Lawler")').count()) === 1 &&
+    (await hp.locator('.hx-coach[href="/coaches/scott-jones"]:has-text("Coach Scott Jones")').count()) === 1)
   check('L1z no em dashes, no pink, and American spelling', !/\u2014/.test(t) && (await hp.locator('.ribbon').count()) === 0)
+
+  // Pointers from the rest of the site.
+  await hp.goto('http://localhost:4620/', { waitUntil: 'networkidle' })
+  check('L1z the homepage strip points at the HYROX page',
+    (await hp.locator('#eventStrip a.event-strip__link--hyrox[href="/hyrox-youngstars"]').count()) === 1 && await hp.isVisible('#eventStrip a.event-strip__link--hyrox'))
+  await hp.goto('http://localhost:4620/programs/kids-bjj-fulshear', { waitUntil: 'networkidle' })
+  check('L1z the kids program page has a HYROX Youngstars card that links to the page',
+    (await hp.locator('a.hx-link-card[href="/hyrox-youngstars"]:has-text("HYROX Youngstars Houston")').count()) === 1)
+  await hp.goto(URL, { waitUntil: 'networkidle' })
 
   // The form.
   check('L1z the form starts with one child row and grows with the count',
