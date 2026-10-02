@@ -1748,3 +1748,36 @@ body.theme-hyrox main .faq-item__question:hover { color: var(--volt); }
 .hx-link-card__eyebrow { font-size: 11.5px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #e3ff2e; }
 .hx-link-card__cta { grid-column: 1 / -1; color: #e3ff2e; font-weight: 700; }
 @media (min-width: 760px) { .hx-link-card { grid-template-columns: auto 1fr auto; } .hx-link-card__cta { grid-column: auto; } }
+
+/* HYROX page, revised: the countdown and the sign-up live in the hero. */
+.hx-hero__grid { grid-template-columns: 1fr; gap: 28px; }
+.hx-hero__grid .hx-facts, .hx-hero__grid .hx-signup { margin-top: 0; }
+.hx-signup .hx-form { margin-top: 0; max-width: none; }
+.hx-signup .hx-success { margin-top: 0; max-width: none; padding: 24px 20px; border: 1.5px solid var(--volt-line); border-top: 4px solid var(--volt); border-radius: 14px; background: #0d0f09; }
+.hx-signup .hx-note { margin-top: 0; }
+.hx-cd { margin: 26px 0 0; padding: 18px 14px 16px; max-width: 600px; text-align: center; border: 2px solid var(--volt); border-radius: 18px;
+  background: linear-gradient(160deg, rgba(227, 255, 46, 0.16), rgba(227, 255, 46, 0.03)); box-shadow: 0 18px 50px rgba(227, 255, 46, 0.12); }
+.hx-cd[hidden], .hx-cd__tiles[hidden], .hx-cd__when[hidden] { display: none; }
+.hx-cd__label { margin: 0 0 12px; font-size: 12.5px; font-weight: 900; letter-spacing: 0.16em; text-transform: uppercase; color: var(--volt); }
+.hx-cd[data-state] .hx-cd__label { margin: 4px 0; font-size: 19px; letter-spacing: 0.03em; text-transform: none; color: #f6f8ee; }
+.hx-cd__tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.hx-cd__tile { padding: 12px 2px 10px; border-radius: 12px; background: rgba(5, 6, 3, 0.7); border: 1px solid var(--volt-line); }
+.hx-cd__tile b { display: block; font-size: clamp(30px, 9.5vw, 56px); line-height: 1; font-weight: 900; font-style: italic; color: var(--volt); font-variant-numeric: tabular-nums; }
+.hx-cd__tile span { display: block; margin-top: 6px; font-size: 10.5px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); }
+.hx-cd__when { margin: 12px 0 0; font-size: 14px; color: var(--text-muted); }
+.hx-more-link { margin: 18px 0 0; }
+.hx-more-link a { color: var(--volt); font-weight: 800; letter-spacing: 0.04em; text-decoration: none; }
+.hx-more-link a:hover { text-decoration: underline; }
+.hx-more { margin: 0 0 18px; }
+.hx-more summary { cursor: pointer; color: var(--volt); font-weight: 700; font-size: 14.5px; padding: 6px 0; }
+.hx-more[open] summary { margin-bottom: 12px; }
+.hx-what { display: grid; grid-template-columns: 1fr; gap: 28px; align-items: center; }
+.hx-what .hx-photo { transform: rotate(1deg); }
+@media (min-width: 900px) {
+  .hx-hero__grid { grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); align-items: start; gap: 32px 48px; }
+  .hx-hero__text { grid-column: 1; }
+  .hx-signup { grid-column: 2; grid-row: 1; }
+  .hx-hero__grid .hx-facts { grid-column: 1 / -1; }
+  .hx-what { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 48px; }
+}
+.hx-form .booking-form__consent { margin-top: 12px; }
