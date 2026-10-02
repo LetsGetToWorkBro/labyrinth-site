@@ -861,7 +861,7 @@ def event_strip():
     hides itself after its own last day, and the strip after both, so nobody is
     invited to something that has gone."""
     _, short, time = _event_when()
-    return """<aside class="event-strip" id="eventStrip" aria-label="October at Labyrinth BJJ">
+    return """<aside class="event-strip" id="eventStrip" aria-label="Coming up at Labyrinth BJJ">
   <div class="container">
     <a class="event-strip__link" href="@@PINK@@" data-closes="@@PINKCLOSES@@">
       <span class="event-strip__icon">@@RIBBON@@</span>
@@ -873,12 +873,17 @@ def event_strip():
       <span class="event-strip__text"><strong>Free event: @@NAME@@</strong><span>@@SHORT@@ &middot; @@TIME@@ &middot; Breast cancer awareness</span></span>
       <span class="event-strip__cta">RSVP</span>
     </a>
+    <a class="event-strip__link event-strip__link--hyrox" href="/hyrox-youngstars" data-closes="2027-04-02T05:00:00Z">
+      <span class="event-strip__icon">@@BOLT@@</span>
+      <span class="event-strip__text"><strong>Kids: train for HYROX Youngstars Houston</strong><span>Ages 8&ndash;15 &middot; April 3&ndash;4, 2027 &middot; Join the interest list</span></span>
+      <span class="event-strip__cta">Join</span>
+    </a>
   </div>
 </aside>
 <script>(function(){var s=document.getElementById('eventStrip'),n=0;s.querySelectorAll('a[data-closes]').forEach(function(a){if(Date.now()>Date.parse(a.getAttribute('data-closes')))a.hidden=true;else n++});if(!n)s.hidden=true})()</script>""" \
         .replace("@@RIBBON@@", ribbon(26)).replace("@@PINK@@", PINK["path"]).replace("@@PINKCLOSES@@", PINK["closes_utc"]) \
         .replace("@@PATH@@", EVENT["path"]).replace("@@NAME@@", EVENT["title"]).replace("@@CLOSES@@", EVENT["closes_utc"]) \
-        .replace("@@SHORT@@", short).replace("@@TIME@@", time)
+        .replace("@@SHORT@@", short).replace("@@TIME@@", time).replace("@@BOLT@@", _hyrox_bolt(26))
 
 
 def render_event_rsvp():
@@ -1526,7 +1531,8 @@ def render_hyrox():
 
     body = """
 <header class="hx-hero">
-  <div class="container">
+  <div class="container hx-hero__grid">
+   <div class="hx-hero__text">
     <p class="hx-tag">@@BOLT@@Kids fitness race &middot; Houston</p>
     <h1 class="hx-title">HYROX<br><span>YOUNGSTARS</span></h1>
     <p class="hx-sub">Houston &middot; April 3&ndash;4, 2027</p>
@@ -1535,12 +1541,19 @@ def render_hyrox():
       <a href="#join" class="hx-btn hx-btn--volt">Join the Interest List</a>
       <a href="#race" class="hx-btn hx-btn--line">See the Race</a>
     </div>
-    <div class="hx-facts">
+   </div>
+   <figure class="hx-photo hx-photo--hero">
+     <picture>
+       <source srcset="/assets/gallery-2.webp" type="image/webp">
+       <img src="/assets/gallery-2.jpg" width="800" height="533" alt="Two Labyrinth kids competing at a jiu-jitsu tournament" fetchpriority="high">
+     </picture>
+   </figure>
+   <div class="hx-facts">
       <div class="hx-fact"><span>Race weekend</span><strong>Apr 3&ndash;4, 2027</strong></div>
       <div class="hx-fact"><span>Ages</span><strong>8&ndash;15</strong></div>
       <div class="hx-fact"><span>Where</span><strong>Houston, TX</strong></div>
       <div class="hx-fact"><span>To join the list</span><strong>Free</strong></div>
-    </div>
+   </div>
   </div>
 </header>
 
@@ -1574,7 +1587,38 @@ def render_hyrox():
   </div>
 </section>
 
-<section class="prog-section" id="training" data-live>
+<section class="prog-section" id="coaches" data-live>
+  <div class="container">
+    <p class="hx-label">@@BOLT16@@Your coaches</p>
+    <h2 class="hx-h2">WHO YOU TRAIN WITH</h2>
+    <div class="hx-coaches">
+      <a class="hx-coach" href="/coaches/shaun-lawler">
+        <picture>
+          <source srcset="/assets/coach-shaun.webp" type="image/webp">
+          <img src="/assets/coach-shaun.jpg" width="400" height="400" loading="lazy" alt="Professor Shaun Lawler">
+        </picture>
+        <span class="hx-coach__body">
+          <strong>Professor Shaun Lawler</strong>
+          <em>Black belt professor</em>
+          <span>Leads our Strength &amp; Conditioning classes, where the HYROX movements start, and keeps the interest list.</span>
+        </span>
+      </a>
+      <a class="hx-coach" href="/coaches/scott-jones">
+        <picture>
+          <source srcset="/assets/coach-scott.webp" type="image/webp">
+          <img src="/assets/coach-scott.jpg" width="400" height="400" loading="lazy" alt="Coach Scott Jones">
+        </picture>
+        <span class="hx-coach__body">
+          <strong>Coach Scott Jones</strong>
+          <em>7th dan Taekwondo black belt &middot; 30+ years teaching</em>
+          <span>Founded Team Legacy Martial Arts, now coaches full time at Labyrinth, and runs Saturday MMA Conditioning.</span>
+        </span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="prog-section hx-alt" id="training" data-live>
   <div class="container">
     <p class="hx-label">@@BOLT16@@How we train</p>
     <h2 class="hx-h2">THE PLAN</h2>
@@ -1596,10 +1640,17 @@ def render_hyrox():
         <div><h3>Race weekend</h3><p>Several months to build strength, endurance and familiarity with the format, then we race together in Houston.</p></div>
       </li>
     </ol>
+    <figure class="hx-photo hx-photo--wide">
+      <picture>
+        <source srcset="/assets/gallery-4.webp" type="image/webp">
+        <img src="/assets/gallery-4.jpg" width="800" height="533" loading="lazy" alt="A Labyrinth kid in a black gi flexing and smiling at a tournament">
+      </picture>
+      <figcaption>Our kids already work hard on the mat. HYROX gives them something new to build toward together.</figcaption>
+    </figure>
   </div>
 </section>
 
-<section class="prog-section hx-alt" id="race" data-live>
+<section class="prog-section" id="race" data-live>
   <div class="container">
     <p class="hx-label">@@BOLT16@@What the race looks like</p>
     <h2 class="hx-h2">STATION BY STATION</h2>
@@ -1719,7 +1770,7 @@ def render_hyrox():
     <p class="hx-label">@@BOLT16@@Where</p>
     <h2 class="hx-h2">LABYRINTH BJJ</h2>
     <div class="hx-prose">
-      <p>@@ADDRESS@@<br>Questions? Call <a href="tel:2813937983">@@PHONE@@</a> or ask Professor Shaun at the front desk.</p>
+      <p>@@ADDRESS@@<br>Questions? Call <a href="tel:2813937983">@@PHONE@@</a> or ask Professor Shaun or Coach Scott at the gym.</p>
       <p class="hx-fine">Labyrinth BJJ is an independent academy training its own students for this race. We are not affiliated with or endorsed by HYROX. HYROX and HYROX Youngstars are trademarks of their owners.</p>
     </div>
   </div>
