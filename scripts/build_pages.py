@@ -1602,7 +1602,7 @@ def render_pink_october():
     var t = e.target.closest('.pick__time'); if (!t) return;
     var B = window.LabyrinthBooking;
     if (!B) { window.location.href = '/#book'; return; }
-    B.openForm(t.getAttribute('data-name'), t.getAttribute('data-type'), t.getAttribute('data-day'), t.getAttribute('data-time'), t.getAttribute('data-date'));
+    B.openForm(t.getAttribute('data-name'), t.getAttribute('data-type'), t.getAttribute('data-day'), t.getAttribute('data-time'), t.getAttribute('data-date'), 'Pink October');
   });
 })();</script>
 <script>(function(){if(Date.now()>Date.parse('@@CLOSES@@')){document.getElementById('pink-ended').hidden=false;document.querySelectorAll('[data-live]').forEach(function(e){e.hidden=true})}})()</script>

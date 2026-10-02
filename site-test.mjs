@@ -805,6 +805,27 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   check('L1y tapping a class opens the booking form for that class on the date picked',
     form.open && /Adult BJJ/.test(form.text) && /Wed/i.test(form.text) && /6:30 AM/.test(form.text) && form.date === 'bookingDate-2026-10-21', JSON.stringify(form).slice(0, 200))
   await pp.evaluate(() => window.LabyrinthBooking.close())
+  // A booking from the Pink October calendar says so in the lead's note; one from anywhere else does not.
+  {
+    const leads = []
+    await pp.route('**/functions/v1/book-trial', async route => {
+      leads.push(JSON.parse(route.request().postData() || '{}'))
+      await route.fulfill({ status: 200, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: '{"ok":true}' })
+    })
+    const book = async () => {
+      await pp.fill('#bookingName', 'Test Person'); await pp.fill('#bookingEmail', 'test@example.com'); await pp.fill('#bookingPhone', '(281) 555-0100')
+      await pp.click('#bookingSubmitBtn'); await pp.waitForSelector('.booking-success'); await pp.evaluate(() => window.LabyrinthBooking.close())
+    }
+    await pp.goto('http://localhost:4620/pink-october', { waitUntil: 'load' })
+    await pp.click('[data-pick-date="2026-10-14"]'); await pp.click('#pick-panel .pick__time >> nth=0'); await pp.waitForSelector('#bookingForm')
+    await book()
+    await pp.evaluate(() => window.LabyrinthBooking.openForm('Adult BJJ', 'Gi', 'Tue', '6:30 AM'))
+    await pp.waitForSelector('#bookingForm'); await book()
+    check('L1y a booking from the Pink October calendar is tagged PINK OCTOBER at the front of the lead note, on the date picked',
+      /^PINK OCTOBER: Adult BJJ, Gi, Wednesday 6:30 AM, booked from the website$/.test(leads[0]?.note) && /2026-10-14T06:30/.test(leads[0]?.trialAt), JSON.stringify(leads[0]))
+    check('L1y a booking from anywhere else carries no Pink October tag', leads.length === 2 && !/PINK/i.test(leads[1].note), JSON.stringify(leads[1]))
+    await pp.unroute('**/functions/v1/book-trial')
+  }
   // A Friday evening: the day's classes are gone, so it opens on the next day that has some.
   await pp.clock.setFixedTime(new Date('2026-10-10T02:00:00Z'))
   await pp.goto('http://localhost:4620/pink-october', { waitUntil: 'load' })
