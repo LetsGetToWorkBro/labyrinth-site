@@ -1797,3 +1797,41 @@ body.theme-hyrox main .faq-item__question:hover { color: var(--volt); }
 .hx-kid > :nth-child(2) { grid-area: age; }
 .hx-kid > :nth-child(3) { grid-area: size; }
 @media (min-width: 520px) { .hx-kid { grid-template-columns: 1fr 96px 150px; grid-template-areas: "name age size"; } }
+
+/* ══ The women's pages: the booking sits in the hero ═════════════════════════
+   Pink October puts its class calendar there and the seminar its RSVP form, in a card
+   beside the headline (under it on a phone), so the thing to do is the first thing seen. */
+.hero-split { display: grid; grid-template-columns: 1fr; gap: 28px; }
+.hero-split .prog-facts { margin-top: 0; }
+.hero-split__card {
+  position: relative; z-index: 1; padding: 24px 20px; border: 2px solid var(--awareness); border-radius: 22px;
+  background: linear-gradient(160deg, rgba(229, 143, 181, 0.2), rgba(229, 143, 181, 0.06)), rgba(20, 8, 14, 0.7);
+  box-shadow: 0 22px 64px rgba(229, 143, 181, 0.22), 0 0 0 6px rgba(229, 143, 181, 0.07);
+  scroll-margin-top: 90px;
+}
+.hero-split__card[hidden] { display: none; }
+@media (min-width: 960px) {
+  .hero-split { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; gap: 32px 52px; }
+  .hero-split__text { grid-column: 1; }
+  .hero-split__card { grid-column: 2; grid-row: 1; padding: 30px 28px; }
+  .hero-split .prog-facts { grid-column: 1 / -1; }
+  .hero-split__jump { display: none; }
+}
+
+/* Seminar: the form fills the card instead of framing itself. */
+.hero-split__card .rsvp__form, .hero-split__card .rsvp__success, .hero-split__card .rsvp__thanks, .hero-split__card .rsvp__over { max-width: none; margin-top: 0; }
+.hero-split__card .rsvp__form { padding: 0; border: 0; background: none; box-shadow: none; }
+.hero-split__card .rsvp__thanks { margin-bottom: 16px; }
+.hero-split__card .rsvp__success h2 { font-size: clamp(32px, 4vw, 44px); }
+
+/* Pink October: the calendar fills the card, one column. */
+.pick-card__eyebrow { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 12.5px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--awareness); }
+.pick-card__title { margin: 6px 0 0; font-size: clamp(28px, 4vw, 40px); line-height: 1; font-weight: 900; letter-spacing: -0.01em; color: var(--text); }
+.pick-card__lead { margin: 10px 0 0; font-size: 15px; line-height: 1.55; color: #e4cbd8; }
+.pick-card .pick { display: block; margin-top: 18px; }
+.pick-card .pick__grid { max-width: none; }
+.pick-card .pick__panel { margin-top: 18px; }
+.pick-card .pick__times { grid-template-columns: repeat(2, 1fr); }
+.pick-card .pink-pick__more { margin: 18px 0 0; font-size: 14px; }
+.pick-card .pick__d { aspect-ratio: 1 / 0.82; min-height: 44px; }
+.hero-split__card [hidden] { display: none !important; }

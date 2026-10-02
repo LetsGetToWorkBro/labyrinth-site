@@ -1083,7 +1083,8 @@ def render_event_rsvp():
     body = """
 <header class="prog-hero rsvp-hero pink-hero">
   <span class="rsvp-hero__mark pink-hero__mark" aria-hidden="true">@@MARK@@</span>
-  <div class="container">
+  <div class="container hero-split">
+   <div class="hero-split__text">
     <p class="section-label rsvp-label">@@RIBBON16@@Community event &middot; Breast cancer awareness</p>
     <h1 class="prog-hero__title">@@TITLE@@</h1>
     <p class="rsvp-hero__sub">@@SUBTITLE@@</p>
@@ -1102,29 +1103,8 @@ def render_event_rsvp():
       <a href="#rsvp" class="btn btn--gold">RSVP Now</a>
       <a href="#donate" class="btn btn--pink">Donate</a>
     </div>
-    <div class="prog-facts">
-      <div class="prog-fact"><div class="prog-fact__label">Date</div><div class="prog-fact__value">@@SHORT@@</div></div>
-      <div class="prog-fact"><div class="prog-fact__label">Time (Central)</div><div class="prog-fact__value">@@RANGE@@</div></div>
-      <div class="prog-fact"><div class="prog-fact__label">Where</div><div class="prog-fact__value">Labyrinth BJJ, Fulshear, TX</div></div>
-      <div class="prog-fact"><div class="prog-fact__label">Cost</div><div class="prog-fact__value"><em>Free</em></div></div>
-    </div>
-  </div>
-</header>
-
-<section class="prog-section rsvp" id="rsvp">
-  <div class="container">
-    <div class="rsvp__intro">
-      <p class="section-label rsvp-label">RSVP</p>
-      <h2 class="section-title section-title--lg">SAVE YOUR SPOT</h2>
-      <p class="rsvp__note"><strong>The seminar is free, and no experience is needed.</strong> If you have never set foot on a mat, this is for you.</p>
-      <ul class="rsvp-perks" aria-label="What to expect">
-        <li>@@RIBBON16@@<span><strong>Free</strong>Nothing to pay, ever</span></li>
-        <li>@@RIBBON16@@<span><strong>Come as you are</strong>No experience, no gear needed</span></li>
-        <li>@@RIBBON16@@<span><strong>Led by Coach Scott and Professor Tony</strong>Real instructors, beginner pace</span></li>
-        <li>@@RIBBON16@@<span><strong>Bring a friend</strong>Up to 5 people on one RSVP</span></li>
-      </ul>
-    </div>
-
+   </div>
+   <div class="hero-split__card" id="rsvp">
     <p class="rsvp__thanks" id="rsvp-donated" hidden>Thank you for your donation. It goes directly to a family affected by breast cancer.</p>
 
     <form class="booking-form rsvp__form" id="rsvp-form" novalidate
@@ -1210,6 +1190,29 @@ def render_event_rsvp():
     </div>
 
     <p class="rsvp__over" id="rsvp-over" hidden>This event has passed. Thank you to everyone who came. See what is coming up on the <a href="/schedule">schedule</a>.</p>
+   </div>
+    <div class="prog-facts">
+      <div class="prog-fact"><div class="prog-fact__label">Date</div><div class="prog-fact__value">@@SHORT@@</div></div>
+      <div class="prog-fact"><div class="prog-fact__label">Time (Central)</div><div class="prog-fact__value">@@RANGE@@</div></div>
+      <div class="prog-fact"><div class="prog-fact__label">Where</div><div class="prog-fact__value">Labyrinth BJJ, Fulshear, TX</div></div>
+      <div class="prog-fact"><div class="prog-fact__label">Cost</div><div class="prog-fact__value"><em>Free</em></div></div>
+    </div>
+  </div>
+</header>
+
+<section class="prog-section rsvp" id="expect">
+  <div class="container">
+    <div class="rsvp__intro">
+      <p class="section-label rsvp-label">@@RIBBON16@@What to expect</p>
+      <h2 class="section-title section-title--lg">COME AS YOU ARE</h2>
+      <p class="rsvp__note"><strong>The seminar is free, and no experience is needed.</strong> If you have never set foot on a mat, this is for you.</p>
+      <ul class="rsvp-perks" aria-label="What to expect">
+        <li>@@RIBBON16@@<span><strong>Free</strong>Nothing to pay, ever</span></li>
+        <li>@@RIBBON16@@<span><strong>Come as you are</strong>No experience, no gear needed</span></li>
+        <li>@@RIBBON16@@<span><strong>Led by Coach Scott and Professor Tony</strong>Real instructors, beginner pace</span></li>
+        <li>@@RIBBON16@@<span><strong>Bring a friend</strong>Up to 5 people on one RSVP</span></li>
+      </ul>
+    </div>
   </div>
 </section>
 
@@ -1404,14 +1407,23 @@ def render_pink_october():
     body = """
 <header class="prog-hero pink-hero">
   <span class="pink-hero__mark" aria-hidden="true">@@MARK@@</span>
-  <div class="container">
+  <div class="container hero-split">
+   <div class="hero-split__text">
     <p class="pink-badge">@@RIBBON18@@Breast Cancer Awareness Month</p>
     <h1 class="prog-hero__title">PINK <span>OCTOBER</span></h1>
     <p class="prog-hero__lead">All month long, Labyrinth is training in pink. <strong>Moms train free</strong>, and <strong>every woman gets 50% off her first month</strong>. No experience needed, and no child required.</p>
     <div class="prog-hero__cta">
-      <a href="#pick-class" class="btn btn--gold">Pick a Class Time</a>
+      <a href="#pick-class" class="btn btn--gold hero-split__jump">Pick a Class Time</a>
       <a href="#offers" class="btn btn--ghost">See the Offers</a>
     </div>
+   </div>
+   <div class="hero-split__card pick-card" id="pick-class" data-live>
+     <p class="pick-card__eyebrow">@@RIBBON16@@Book in one tap</p>
+     <h2 class="pick-card__title">PICK YOUR FIRST CLASS</h2>
+     <p class="pick-card__lead">Tap a day, then a class, and we will hold your spot. Beginners are welcome in every class except the competition team, and your first class is free. Mention Pink October when you book, or at the front desk.</p>
+     @@PICKER@@
+     <p class="pink-pick__more">Need a kids class too? <a data-book-trial href="/#book">See kids times</a> &middot; Prefer to talk first? <a href="tel:2813937983">Call @@PHONE@@</a></p>
+   </div>
     <div class="prog-facts">
       <div class="prog-fact"><div class="prog-fact__label">Runs</div><div class="prog-fact__value">Oct 1 to 31</div></div>
       <div class="prog-fact"><div class="prog-fact__label">Moms</div><div class="prog-fact__value"><em>Train free</em></div></div>
@@ -1451,18 +1463,6 @@ def render_pink_october():
         </ul>
       </article>
     </div>
-  </div>
-</section>
-
-<section class="prog-section pink-pick" id="pick-class" data-live>
-  <div class="container">
-    <div>
-      <p class="section-label rsvp-label">@@RIBBON16@@Book in one tap</p>
-      <h2 class="section-title section-title--lg">PICK YOUR FIRST CLASS</h2>
-      <p class="pink-pick__lead">Tap a day on the calendar to see what is on, then tap a class and we will hold your spot. Beginners are welcome in every class except the competition team, and your first class is free. Mention Pink October when you book, or at the front desk.</p>
-    </div>
-    @@PICKER@@
-    <p class="pink-pick__more">Need a kids class too? <a data-book-trial href="/#book">See kids times</a> &middot; Prefer to talk first? <a href="tel:2813937983">Call @@PHONE@@</a></p>
   </div>
 </section>
 
