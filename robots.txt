@@ -7,6 +7,7 @@ Allow: /
 # Block admin/API paths
 Disallow: /admin/
 Disallow: /api/
+Disallow: /assets/email/
 
 # Sitemap
 Sitemap: https://labyrinth.vision/sitemap.xml
@@ -36,6 +37,3 @@ Disallow: /api/
 # A plain-text summary of the academy for language models: hours, prices, ages,
 # class times. See https://llmstxt.org
 # https://labyrinth.vision/llms.txt
-
-User-agent: *
-Disallow: /assets/email/
