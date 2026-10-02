@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<style>
+  /* One design, two sizes: the email banner (1200x630) and the Facebook event cover (1920x1005).
+     Rendered by hyrox-art.mjs. Black with volt yellow, a hazard stripe, and a real team photo. */
+  html,body{margin:0;padding:0;background:#0a0b08}
+  .art{position:relative;overflow:hidden;font-family:Arial Black,Arial,Helvetica,sans-serif;color:#f6f8ee;
+    background:radial-gradient(ellipse 60% 90% at 88% 18%,rgba(227,255,46,.22),transparent 65%),
+      repeating-linear-gradient(115deg,transparent 0 56px,rgba(227,255,46,.05) 56px 112px),linear-gradient(160deg,#171a0e 0%,#0a0b08 62%)}
+  .art::after{content:"";position:absolute;left:0;right:0;bottom:0;height:calc(var(--u)*1.8);
+    background:repeating-linear-gradient(-45deg,#e3ff2e 0 calc(var(--u)*2.6),#0a0b08 calc(var(--u)*2.6) calc(var(--u)*5.2))}
+  .copy{position:absolute;left:calc(var(--u)*7);top:calc(var(--u)*13);width:calc(var(--u)*84)}
+  .tag{font:800 calc(var(--u)*2.5)/1 Arial,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#e3ff2e;display:flex;align-items:center;gap:calc(var(--u)*1.2)}
+  .tag svg{width:calc(var(--u)*3);height:calc(var(--u)*3)}
+  h1{margin:calc(var(--u)*2.4) 0 0;font-size:calc(var(--u)*11.5);line-height:.9;font-style:italic;text-transform:uppercase;letter-spacing:-.02em;font-weight:900}
+  h1 span{color:#e3ff2e;display:block}
+  .when{margin-top:calc(var(--u)*3);font:900 calc(var(--u)*3.6)/1.1 Arial,sans-serif;letter-spacing:.04em;text-transform:uppercase}
+  .sub{margin-top:calc(var(--u)*1.6);font:700 calc(var(--u)*2.6)/1.3 Arial,sans-serif;color:#adb3a2}
+  .cta{display:inline-block;margin-top:calc(var(--u)*3.6);padding:calc(var(--u)*1.7) calc(var(--u)*3.4);background:#e3ff2e;color:#0a0b08;
+    font:900 calc(var(--u)*2.5)/1 Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;clip-path:polygon(calc(var(--u)*1.2) 0,100% 0,calc(100% - var(--u)*1.2) 100%,0 100%)}
+  .photo{position:absolute;right:calc(var(--u)*6);top:calc(var(--u)*14);width:calc(var(--u)*52);transform:rotate(2deg);border:calc(var(--u)*.45) solid #e3ff2e;border-radius:calc(var(--u)*1.6);overflow:hidden;box-shadow:0 0 calc(var(--u)*6) rgba(227,255,46,.25)}
+  .photo img{display:block;width:100%;height:calc(var(--u)*40);object-fit:cover;object-position:60% 40%}
+  .brand{position:absolute;right:calc(var(--u)*6);bottom:calc(var(--u)*3.4);font:800 calc(var(--u)*2.3)/1 Arial,sans-serif;letter-spacing:.2em;text-transform:uppercase;color:#f6f8ee}
+  .brand b{color:#e3ff2e}
+</style></head>
+<body>
+<div class="art" id="art">
+  <div class="copy">
+    <div class="tag"><svg viewBox="0 0 24 24" fill="#e3ff2e"><path d="M13.2 2 4.5 13.4h6L9.3 22l9.2-12.2h-6.1z"/></svg>Kids fitness race</div>
+    <h1>HYROX<span>YOUNGSTARS</span></h1>
+    <div class="when">Houston &middot; April 3&ndash;4, 2027</div>
+    <div class="sub">Labyrinth kids ages 8&ndash;15 are training for it together.</div>
+    <div class="cta">Join the interest list</div>
+  </div>
+  <div class="photo"><img src="../assets/kids-nogi.jpg" alt=""></div>
+  <div class="brand"><b>Labyrinth</b> BJJ &middot; Fulshear</div>
+</div>
+<script>
+  // ?w=1200 or ?w=1920 sets the unit (1 unit = width/150) so the layout scales exactly.
+  const w = Number(new URLSearchParams(location.search).get('w')) || 1200;
+  const h = Math.round(w * (w === 1920 ? 1005 / 1920 : 630 / 1200));
+  const art = document.getElementById('art');
+  art.style.cssText = `--u:${w / 150}px;width:${w}px;height:${h}px`;
+</script>
+</body></html>
