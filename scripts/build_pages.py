@@ -857,33 +857,186 @@ def ribbon(size=18):
 
 
 def event_strip():
-    """The homepage's pointer at October: the offers and the event. Each link
-    hides itself after its own last day, and the strip after both, so nobody is
-    invited to something that has gone."""
+    """The homepage's "This month at Labyrinth" block: Pink October, the free
+    self defense seminar and the kids' HYROX list, as three cards right under the
+    hero. Each card hides itself after its own last day, and the whole block after
+    the last of them, so nobody is invited to something that has gone. The same
+    script fills the seminar's "N days to go" badge and the hero chip (the one
+    line under the hero buttons that jumps here), both from the cards that are
+    still showing."""
     _, short, time = _event_when()
-    return """<aside class="event-strip" id="eventStrip" aria-label="Coming up at Labyrinth BJJ">
+    rng, _ = _event_range()
+    return """<section class="event-strip" id="eventStrip" aria-labelledby="tm-title">
   <div class="container">
-    <a class="event-strip__link" href="@@PINK@@" data-closes="@@PINKCLOSES@@">
+    <div class="event-strip__head">
+      <p class="event-strip__kicker">What&rsquo;s happening</p>
+      <h2 class="event-strip__title" id="tm-title">THIS MONTH AT LABYRINTH</h2>
+    </div>
+    <a class="event-strip__link event-strip__link--pink" href="@@PINK@@" data-closes="@@PINKCLOSES@@" data-short="Pink October">
       <span class="event-strip__icon">@@RIBBON@@</span>
-      <span class="event-strip__text"><strong>Pink October: moms train free, women get 50% off</strong><span>All of October &middot; Open to every woman</span></span>
-      <span class="event-strip__cta">See offers</span>
+      <span class="event-strip__text">
+        <span class="event-strip__eyebrow">All October &middot; Breast cancer awareness</span>
+        <strong>Pink October</strong>
+        <span>Moms train free all month, and every woman gets 50% off her first month. No experience needed.</span>
+      </span>
+      <span class="event-strip__cta">See the offers</span>
     </a>
-    <a class="event-strip__link" href="@@PATH@@" data-closes="@@CLOSES@@">
+    <a class="event-strip__link event-strip__link--event" href="@@PATH@@" data-closes="@@CLOSES@@" data-start="@@START@@" data-short="Free self defense seminar">
       <span class="event-strip__icon">@@RIBBON@@</span>
-      <span class="event-strip__text"><strong>Free event: @@NAME@@</strong><span>@@SHORT@@ &middot; @@TIME@@ &middot; Breast cancer awareness</span></span>
-      <span class="event-strip__cta">RSVP</span>
+      <span class="event-strip__text">
+        <span class="event-strip__eyebrow">@@SHORT@@ &middot; @@RANGE@@ &middot; Free</span>
+        <strong>@@NAME@@</strong>
+        <span>A beginner-friendly self defense seminar for women, led by Coach Scott and Professor Tony. For breast cancer awareness.</span>
+        <span class="event-strip__badge" hidden></span>
+      </span>
+      <span class="event-strip__cta">RSVP free</span>
     </a>
-    <a class="event-strip__link event-strip__link--hyrox" href="/hyrox-youngstars" data-closes="2027-04-02T05:00:00Z">
+    <a class="event-strip__link event-strip__link--hyrox" href="/hyrox-youngstars" data-closes="2027-04-02T05:00:00Z" data-short="Kids HYROX race">
       <span class="event-strip__icon">@@BOLT@@</span>
-      <span class="event-strip__text"><strong>Kids: train for HYROX Youngstars Houston</strong><span>Ages 8&ndash;15 &middot; April 3&ndash;4, 2027 &middot; Join the interest list</span></span>
-      <span class="event-strip__cta">Join</span>
+      <span class="event-strip__text">
+        <span class="event-strip__eyebrow">Kids 8&ndash;15 &middot; April 3&ndash;4, 2027</span>
+        <strong>HYROX Youngstars</strong>
+        <span>Train with Labyrinth for the kids&rsquo; fitness race in Houston. Join the interest list.</span>
+      </span>
+      <span class="event-strip__cta">Join the list</span>
     </a>
   </div>
-</aside>
-<script>(function(){var s=document.getElementById('eventStrip'),n=0;s.querySelectorAll('a[data-closes]').forEach(function(a){if(Date.now()>Date.parse(a.getAttribute('data-closes')))a.hidden=true;else n++});if(!n)s.hidden=true})()</script>""" \
-        .replace("@@RIBBON@@", ribbon(26)).replace("@@PINK@@", PINK["path"]).replace("@@PINKCLOSES@@", PINK["closes_utc"]) \
+</section>
+<script>(function(){
+  var s=document.getElementById('eventStrip'),n=0,names=[];
+  s.querySelectorAll('a[data-closes]').forEach(function(a){
+    if(Date.now()>Date.parse(a.getAttribute('data-closes')))a.hidden=true;else{n++;names.push(a.getAttribute('data-short'));}
+  });
+  if(!n)s.hidden=true;
+  // "5 days to go" on the seminar card, on the academy's clock (Central).
+  var ev=s.querySelector('a[data-start]'),b=ev&&ev.querySelector('.event-strip__badge');
+  if(ev&&!ev.hidden&&b){
+    var day=function(ms){return Date.parse(new Intl.DateTimeFormat('en-CA',{timeZone:'America/Chicago'}).format(new Date(ms))+'T00:00:00Z')};
+    var d=Math.round((day(Date.parse(ev.getAttribute('data-start')))-day(Date.now()))/864e5);
+    var t=d>1?d+' days to go':d===1?'Tomorrow':(d===0?'Today':'');
+    if(t){b.textContent=t;b.hidden=false}
+  }
+  // The hero chip: one line under the hero buttons that jumps to this block.
+  var chip=document.getElementById('heroChip');
+  if(chip){
+    if(!n||s.hidden){chip.hidden=true}
+    else{chip.querySelector('span').textContent='This month: '+names.join(' \u00b7 ');chip.hidden=false}
+  }
+})()</script>""" \
+        .replace("@@RIBBON@@", ribbon(30)).replace("@@BOLT@@", _hyrox_bolt(30)) \
+        .replace("@@PINK@@", PINK["path"]).replace("@@PINKCLOSES@@", PINK["closes_utc"]) \
         .replace("@@PATH@@", EVENT["path"]).replace("@@NAME@@", EVENT["title"]).replace("@@CLOSES@@", EVENT["closes_utc"]) \
-        .replace("@@SHORT@@", short).replace("@@TIME@@", time).replace("@@BOLT@@", _hyrox_bolt(26))
+        .replace("@@START@@", EVENT["start"]).replace("@@RANGE@@", rng) \
+        .replace("@@SHORT@@", short).replace("@@TIME@@", time)
+
+
+def hero_chip():
+    """The line under the hero buttons. Hidden until the strip script has filled
+    it from the cards that are still live (see event_strip)."""
+    return ('<a class="hero__chip" id="heroChip" href="#eventStrip" hidden>'
+            + ribbon(16) + '<span></span><b aria-hidden="true">&darr;</b></a>')
+
+
+# ── Seasonal themes (the homepage) ───────────────────────────────────────────
+#
+# The homepage dresses for the holiday. season.js (inline in <head>) looks at the
+# date on the academy's clock and sets <html data-season="halloween">; season.css
+# does everything else, and only under that attribute, so outside the season the
+# page is exactly the page it always was and a new holiday is a new block in that
+# file plus a window in season.js. The decoration markup below is always in the
+# page but display:none until a season is on.
+
+def season_defs():
+    """Shapes drawn once and reused with <use>: pumpkin, ghost, bat, tombstone."""
+    return """<svg class="season-defs" width="0" height="0" aria-hidden="true" focusable="false"><defs>
+  <symbol id="s-pumpkin" viewBox="0 0 100 90">
+    <path d="M50 14c-4-7-4-11 2-13 1 4 1 8-2 13z" fill="#4e7a1e"/>
+    <path d="M50 18c-30-8-46 8-46 30 0 24 20 38 46 38s46-14 46-38c0-22-16-38-46-30z" fill="#ff7a00"/>
+    <path d="M50 18c-14 6-20 22-20 34s6 30 20 34c14-4 20-22 20-34S64 24 50 18z" fill="#ff9a2e"/>
+    <path d="M50 18v68M30 24c-10 10-12 38 0 56M70 24c10 10 12 38 0 56" fill="none" stroke="#c75a00" stroke-width="2" stroke-linecap="round" opacity=".7"/>
+    <path d="M28 42l12 6-12 4zM72 42l-12 6 12 4z" fill="#2a0f00"/>
+    <path d="M46 56l4-6 4 6z" fill="#2a0f00"/>
+    <path d="M30 64c6 10 14 12 20 8 6 4 14 2 20-8-4 2-8 3-12 0l-4 5-4-5-4 5-4-5c-4 3-8 2-12 0z" fill="#2a0f00"/>
+    <path d="M28 42l12 6-12 4zM72 42l-12 6 12 4z" fill="#ffd54a" opacity=".55"/>
+  </symbol>
+  <symbol id="s-ghost" viewBox="0 0 100 120">
+    <path d="M12 112V48C12 22 28 6 50 6s38 16 38 42v64l-12-10-13 10-13-10-13 10-13-10z" fill="#f1f1ff"/>
+    <path d="M12 112V48C12 22 28 6 50 6c-14 8-20 24-20 44v52l-8 4z" fill="#d6d6f2" opacity=".6"/>
+    <ellipse cx="37" cy="46" rx="7" ry="10" fill="#1a1030"/><ellipse cx="63" cy="46" rx="7" ry="10" fill="#1a1030"/>
+    <ellipse cx="50" cy="72" rx="9" ry="12" fill="#1a1030"/>
+    <ellipse cx="25" cy="64" rx="6" ry="4" fill="#ffb3d1" opacity=".55"/><ellipse cx="75" cy="64" rx="6" ry="4" fill="#ffb3d1" opacity=".55"/>
+  </symbol>
+  <symbol id="s-bat" viewBox="0 0 100 60">
+    <path d="M50 22c-6-10-16-14-30-12 6 3 8 8 8 14-8-2-16 0-24 8 8-2 14 0 18 6 4-6 10-8 16-4l6 8 6-8c6-4 12-2 16 4 4-6 10-8 18-6-8-8-16-10-24-8 0-6 2-11 8-14-14-2-24 2-30 12z" fill="#0b0612"/>
+    <path d="M44 22l-3-9 6 5h6l6-5-3 9z" fill="#0b0612"/>
+    <circle cx="46" cy="25" r="1.6" fill="#ffd54a"/><circle cx="54" cy="25" r="1.6" fill="#ffd54a"/>
+  </symbol>
+  <symbol id="s-web" viewBox="0 0 120 120">
+    <g fill="none" stroke="#d9d4ee" stroke-width="1.2" stroke-linecap="round" opacity=".75">
+      <path d="M0 0L120 0M0 0L0 120M0 0L100 100M0 0L120 55M0 0L55 120"/>
+      <path d="M22 0Q18 18 0 22M44 0Q38 38 0 44M66 0Q58 58 0 66M88 0Q78 78 0 88M110 0Q98 98 0 110"/>
+    </g>
+  </symbol>
+  <symbol id="s-tree" viewBox="0 0 160 220">
+    <path d="M78 220c2-40 0-70-4-96-10-4-24-12-34-30-4 8-2 18 2 26-10-6-20-18-22-34 6 0 12 4 16 10-2-12 0-26 8-38 2 12 6 22 14 30-2-12-2-24 4-36 4 12 8 22 16 30 2-10 8-22 18-28-2 12-2 22 2 32 6-8 14-12 24-12-4 10-10 16-18 20 4 4 10 6 18 6-8 8-20 10-30 8-4 6-6 14-6 26 4 28 6 56 8 86z" fill="#07040d"/>
+  </symbol>
+</defs></svg>"""
+
+
+def season_hero():
+    """Halloween over the hero photo: web, moon, bats, ghosts, fog, and a graveyard
+    along the bottom edge. Decoration only (aria-hidden); the ghosts say boo."""
+    def stone(x, w, h, kind):
+        top = 'M{x} {y}v{h2}h{w}v-{h2}a{r} {r} 0 0 0-{w} 0z'
+        r = w / 2
+        y = 200 - h
+        if kind == "cross":
+            return ('<path d="M{cx} {y}h10v14h14v10h-14v{rest}h-10v-{rest}h-14v-10h14z" fill="#07040d"/>'
+                    ).format(cx=x + w / 2 - 5, y=y, rest=h - 34)
+        return '<path d="M{x} 200V{y2}a{r} {r} 0 0 1 {w} 0V200z" fill="#07040d"/>'.format(x=x, y2=y + r, r=r, w=w)
+    stones = "".join([
+        stone(120, 54, 78, "arch"), stone(190, 40, 56, "arch"), stone(250, 14, 12, "arch") if False else "",
+        stone(330, 48, 70, "cross"), stone(560, 56, 84, "arch"), stone(640, 44, 60, "arch"),
+        stone(900, 52, 76, "arch"), stone(980, 42, 58, "cross"), stone(1180, 58, 88, "arch"), stone(1264, 44, 62, "arch"),
+    ])
+    return season_defs() + """
+<div class="season-deco season-hero" aria-hidden="true">
+  <svg class="season-web" viewBox="0 0 120 120"><use href="#s-web"/></svg>
+  <svg class="season-web season-web--r" viewBox="0 0 120 120"><use href="#s-web"/></svg>
+  <div class="season-moon"></div>
+  <svg class="season-bat season-bat--1" viewBox="0 0 100 60"><use href="#s-bat"/></svg>
+  <svg class="season-bat season-bat--2" viewBox="0 0 100 60"><use href="#s-bat"/></svg>
+  <svg class="season-bat season-bat--3" viewBox="0 0 100 60"><use href="#s-bat"/></svg>
+  <button type="button" class="season-ghost season-ghost--1" tabindex="-1" data-boo><svg viewBox="0 0 100 120"><use href="#s-ghost"/></svg><span class="season-boo">Boo!</span></button>
+  <button type="button" class="season-ghost season-ghost--2" tabindex="-1" data-boo><svg viewBox="0 0 100 120"><use href="#s-ghost"/></svg><span class="season-boo">Boo!</span></button>
+  <button type="button" class="season-ghost season-ghost--3" tabindex="-1" data-boo><svg viewBox="0 0 100 120"><use href="#s-ghost"/></svg><span class="season-boo">Boo!</span></button>
+  <div class="season-fog season-fog--1"></div><div class="season-fog season-fog--2"></div>
+  <div class="season-yard">
+    <svg viewBox="0 0 1440 200" preserveAspectRatio="xMidYMax slice">
+      <use href="#s-tree" x="20" y="-20" width="150" height="220"/>
+      <use href="#s-tree" x="1290" y="0" width="130" height="200" transform="translate(2740 0) scale(-1 1)"/>
+      <g>""" + stones + """</g>
+      <path d="M0 200V186Q120 176 260 186T520 184T800 188T1080 182T1440 186V200z" fill="#07040d"/>
+      <use class="season-pump season-pump--a" href="#s-pumpkin" x="430" y="132" width="74" height="66"/>
+      <use class="season-pump season-pump--b" href="#s-pumpkin" x="760" y="148" width="54" height="48"/>
+      <use class="season-pump season-pump--c" href="#s-pumpkin" x="1060" y="126" width="84" height="76"/>
+      <use class="season-pump season-pump--d" href="#s-pumpkin" x="1120" y="158" width="44" height="40"/>
+    </svg>
+  </div>
+</div>"""
+
+
+def season_footer():
+    """The graveyard above the footer: pumpkins, and tombstones with epitaphs
+    for the things jiu-jitsu kills."""
+    epitaphs = ["Here lies my ego", "R.I.P. Excuses", "Missed class, 2026", "Tapped early, often"]
+    stones = "".join('<div class="season-stone"><span>R.I.P.</span><em>%s</em></div>' % e for e in epitaphs)
+    return """<div class="season-deco season-footer" aria-hidden="true">
+  <svg class="season-pump season-pump--f1" viewBox="0 0 100 90"><use href="#s-pumpkin"/></svg>
+  <div class="season-stones">""" + stones + """</div>
+  <svg class="season-pump season-pump--f2" viewBox="0 0 100 90"><use href="#s-pumpkin"/></svg>
+  <svg class="season-ghost season-ghost--f" viewBox="0 0 100 120"><use href="#s-ghost"/></svg>
+</div>"""
 
 
 def render_event_rsvp():
@@ -2955,7 +3108,10 @@ def main():
     splice(index, "JITS-ATHLETES", jits_data.athletes())
     print("wrote the jits.gg numbers and top athletes into index.html")
     splice(index, "EVENT-STRIP", event_strip())
-    print("wrote the event strip into index.html")
+    splice(index, "HERO-CHIP", hero_chip())
+    splice(index, "SEASON-HERO", season_hero())
+    splice(index, "SEASON-FOOTER", season_footer())
+    print("wrote the this-month cards, hero chip and seasonal decoration into index.html")
     with open(os.path.join(ROOT, "self-defense-for-women.html"), "w", encoding="utf-8") as fh:
         fh.write(stamp(render_event_rsvp()))
     print("wrote self-defense-for-women.html")

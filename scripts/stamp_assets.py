@@ -33,7 +33,7 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 # The files whose URLs get a version. Anything not listed here is left alone:
 # third-party URLs, the font CDN, and per-page assets that are already unique.
-ASSETS = ["base.css", "style.css", "programs.css", "booking.css", "blog/blog.css",
+ASSETS = ["base.css", "style.css", "season.css", "programs.css", "booking.css", "blog/blog.css",
           "app.js", "booking.js", "schedule.js", "rsvp.js", "hyrox.js"]
 
 # href="/style.css"  href="./style.css"  href="../booking.css"  href="blog.css"

@@ -1,0 +1,160 @@
+/* ══ Seasonal themes for the homepage ═══════════════════════════════════════
+   season.js (inline in index.html <head>) sets <html data-season="halloween"> from the
+   date on the academy's clock. Everything here is under that attribute, so outside the
+   season the page is untouched. The decoration markup (ghosts, bats, graveyard) is
+   generated into index.html by scripts/build_pages.py and is display:none until a
+   season is on. To add a holiday: a window in season.js and a block like this one.
+   Preview any time with ?season=halloween (or ?season=off). */
+
+.season-deco { display: none; }
+.season-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+/* ── Halloween ───────────────────────────────────────────────────────────── */
+:root[data-season="halloween"] {
+  --bg: #0c0714;
+  --surface: #150d22;
+  --surface-elevated: #1c122d;
+  --border: rgba(255, 150, 40, 0.14);
+  --border-strong: rgba(255, 150, 40, 0.3);
+  --text-muted: #aaa0bf;
+  --gold: #ff8a1f;
+  --gold-hover: #ffa347;
+}
+[data-season="halloween"] body {
+  background:
+    radial-gradient(ellipse 70% 40% at 12% 0%, rgba(120, 60, 200, 0.2), transparent 70%),
+    radial-gradient(ellipse 60% 50% at 95% 45%, rgba(255, 120, 0, 0.07), transparent 70%),
+    var(--bg);
+}
+[data-season="halloween"] .season-deco { display: block; }
+
+/* The hero photo goes moonlit and purple; the headline glows like a jack-o'-lantern. */
+[data-season="halloween"] .hero__still img { filter: saturate(0.8) brightness(0.82) hue-rotate(-6deg); }
+[data-season="halloween"] .hero__bg::after {
+  background: linear-gradient(to bottom, rgba(22, 8, 44, 0.72) 0%, rgba(26, 8, 48, 0.58) 40%, rgba(16, 6, 30, 0.82) 72%, #0c0714 100%);
+}
+[data-season="halloween"] .hero { padding-bottom: clamp(130px, 19vw, 230px); }
+[data-season="halloween"] .hero__h1-visual span { color: var(--gold); text-shadow: 0 0 30px rgba(255, 138, 31, 0.55), 0 0 4px rgba(255, 190, 90, 0.4); }
+[data-season="halloween"] .hero__badge { border-color: rgba(255, 138, 31, 0.5); }
+
+.season-hero { position: absolute; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
+.season-web { position: absolute; left: 0; top: var(--nav-height, 70px); width: clamp(110px, 17vw, 210px); height: auto; }
+.season-web--r { left: auto; right: 0; width: clamp(80px, 10vw, 140px); transform: scaleX(-1); }
+.season-moon {
+  position: absolute; top: calc(var(--nav-height, 70px) + 34px); right: clamp(40px, 13vw, 240px);
+  width: clamp(64px, 10vw, 140px); aspect-ratio: 1; border-radius: 50%;
+  background:
+    radial-gradient(circle at 30% 32%, rgba(190, 170, 110, 0.5) 0 9%, transparent 10%),
+    radial-gradient(circle at 62% 58%, rgba(190, 170, 110, 0.4) 0 12%, transparent 13%),
+    radial-gradient(circle at 44% 76%, rgba(190, 170, 110, 0.35) 0 6%, transparent 7%),
+    radial-gradient(circle at 35% 35%, #fffbe8, #f6e9b8 55%, #d9c48a);
+  box-shadow: 0 0 60px 18px rgba(255, 236, 170, 0.25), 0 0 170px 60px rgba(255, 200, 90, 0.12);
+}
+
+/* Bats cross the hero: translate carries them, scale flaps the wings. */
+.season-bat { position: absolute; left: -90px; width: clamp(34px, 5vw, 64px); height: auto; opacity: 0.95; filter: drop-shadow(0 0 4px rgba(200, 160, 255, 0.75)); }
+.season-bat--1 { top: 22%; animation: bat-fly 17s linear infinite, bat-flap 0.32s ease-in-out infinite alternate; }
+.season-bat--2 { top: 14%; width: clamp(26px, 3.6vw, 46px); animation: bat-fly 23s linear -8s infinite, bat-flap 0.26s ease-in-out infinite alternate; }
+.season-bat--3 { top: 34%; width: clamp(22px, 3vw, 38px); animation: bat-fly 29s linear -15s infinite, bat-flap 0.22s ease-in-out infinite alternate; }
+@keyframes bat-fly {
+  0% { translate: 0 0; }
+  25% { translate: 30vw -26px; }
+  50% { translate: 62vw 22px; }
+  75% { translate: 88vw -18px; }
+  100% { translate: calc(100vw + 120px) 10px; }
+}
+@keyframes bat-flap { from { scale: 1 1; } to { scale: 1 0.55; } }
+
+/* Ghosts bob at the edges and say Boo! when tapped. */
+.season-ghost {
+  position: absolute; width: clamp(44px, 7vw, 92px); height: auto; padding: 0; border: 0; background: none;
+  pointer-events: auto; cursor: pointer; opacity: 0.72; -webkit-tap-highlight-color: transparent;
+  filter: drop-shadow(0 0 16px rgba(190, 170, 255, 0.55));
+  animation: ghost-float 6.5s ease-in-out infinite;
+}
+.season-ghost svg { display: block; width: 100%; height: auto; }
+.season-ghost--1 { left: 1%; top: 40%; }
+.season-ghost--2 { right: 1.5%; top: 54%; width: clamp(36px, 5.5vw, 72px); animation-delay: -2.4s; }
+.season-ghost--3 { left: 46%; top: 17%; width: clamp(30px, 4vw, 54px); opacity: 0.45; animation-delay: -4s; }
+@keyframes ghost-float {
+  0%, 100% { transform: translate(0, 0) rotate(-3deg); }
+  50% { transform: translate(14px, -22px) rotate(4deg); }
+}
+.season-boo {
+  position: absolute; left: 50%; bottom: 100%; transform: translate(-50%, 6px) scale(0.6); opacity: 0; pointer-events: none;
+  padding: 4px 12px; border-radius: 999px; background: #f1f1ff; color: #1a1030;
+  font: 400 20px/1 'Creepster', var(--font-display), sans-serif; letter-spacing: 0.06em; white-space: nowrap;
+  transition: opacity 0.15s, transform 0.15s;
+}
+.season-ghost.is-boo { opacity: 1; animation: ghost-float 6.5s ease-in-out infinite, ghost-shake 0.4s 2; }
+.season-ghost.is-boo .season-boo { opacity: 1; transform: translate(-50%, 0) scale(1); }
+@keyframes ghost-shake { 0%, 100% { rotate: 0deg; } 25% { rotate: -9deg; } 75% { rotate: 9deg; } }
+
+.season-fog {
+  position: absolute; left: -20%; bottom: 0; width: 140%; height: 42%; filter: blur(10px); opacity: 0.9;
+  background:
+    radial-gradient(ellipse 30% 60% at 25% 100%, rgba(190, 170, 235, 0.22), transparent 70%),
+    radial-gradient(ellipse 28% 50% at 70% 100%, rgba(190, 170, 235, 0.16), transparent 70%);
+  animation: fog-drift 26s ease-in-out infinite alternate;
+}
+.season-fog--2 { height: 30%; opacity: 0.7; animation-duration: 38s; animation-direction: alternate-reverse; }
+@keyframes fog-drift { from { transform: translateX(-6%); } to { transform: translateX(8%); } }
+
+.season-yard { position: absolute; left: 0; right: 0; bottom: -1px; height: clamp(96px, 15.5vw, 210px); }
+.season-yard svg { display: block; width: 100%; height: 100%; }
+.season-pump { filter: drop-shadow(0 0 10px rgba(255, 150, 30, 0.85)); animation: pumpkin-flicker 3.4s infinite; }
+.season-pump--b { animation-delay: -1.1s; }
+.season-pump--c { animation-delay: -2.2s; }
+.season-pump--d { animation-delay: -0.6s; }
+@keyframes pumpkin-flicker {
+  0%, 100% { opacity: 1; } 8% { opacity: 0.82; } 12% { opacity: 1; } 55% { opacity: 0.9; } 60% { opacity: 1; } 83% { opacity: 0.86; }
+}
+
+/* ── This month: the three cards under the hero ─────────────────────────── */
+[data-season="halloween"] .event-strip { background: linear-gradient(to bottom, #0c0714, rgba(21, 13, 34, 0.7)); }
+[data-season="halloween"] .event-strip::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 7px;
+  background: repeating-linear-gradient(90deg, #ff8a1f 0 26px, #7a3bd1 26px 52px, #0c0714 52px 78px);
+}
+[data-season="halloween"] .event-strip__title,
+[data-season="halloween"] .season-stone span { font-family: 'Creepster', var(--font-display), sans-serif; font-weight: 400; letter-spacing: 0.05em; }
+[data-season="halloween"] .event-strip__title { font-size: clamp(36px, 6vw, 60px); text-shadow: 0 0 24px rgba(255, 138, 31, 0.45); }
+[data-season="halloween"] .event-strip__title::after { content: " \1F383"; }
+[data-season="halloween"] .event-strip__link { box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45); }
+
+/* ── Footer graveyard ───────────────────────────────────────────────────── */
+.season-footer {
+  position: relative; overflow: hidden; display: none; align-items: flex-end; justify-content: center; gap: clamp(8px, 2vw, 22px);
+  margin-top: var(--space-12, 48px); padding: 70px 16px 0;
+  background: linear-gradient(to bottom, transparent, rgba(255, 120, 0, 0.07) 70%, rgba(255, 120, 0, 0.12));
+}
+[data-season="halloween"] .season-footer { display: flex; }
+.season-footer .season-pump { position: static; width: clamp(54px, 9vw, 96px); height: auto; margin-bottom: -4px; flex-shrink: 0; }
+.season-stones { display: flex; align-items: flex-end; justify-content: center; gap: clamp(8px, 2vw, 22px); }
+.season-stone {
+  width: clamp(74px, 14vw, 132px); padding: 24px 6px 14px; text-align: center; border-radius: 70px 70px 0 0;
+  background: linear-gradient(#4b4664, #2c2740); box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.06), 0 -6px 26px rgba(0, 0, 0, 0.4);
+}
+.season-stone span { display: block; font-size: clamp(18px, 2.6vw, 26px); color: #cfc8e6; line-height: 1; }
+.season-stone em { display: block; margin-top: 8px; font-style: normal; font-size: clamp(10.5px, 1.4vw, 13px); line-height: 1.25; color: #b3acc9; }
+.season-stone:nth-child(1) { min-height: 118px; transform: rotate(-2deg); }
+.season-stone:nth-child(2) { min-height: 98px; }
+.season-stone:nth-child(3) { min-height: 126px; transform: rotate(1.5deg); }
+.season-stone:nth-child(4) { min-height: 104px; transform: rotate(-1deg); }
+.season-ghost--f { position: absolute; right: 4%; top: 22px; width: clamp(40px, 6vw, 72px); opacity: 0.6; animation: ghost-float 7s ease-in-out infinite; pointer-events: none; filter: drop-shadow(0 0 14px rgba(190, 170, 255, 0.5)); }
+
+[data-season="halloween"] .footer { background: #08050f; }
+
+/* Phones: fewer things flying about, nothing wider than the screen. */
+@media (max-width: 700px) {
+  .season-bat--3, .season-ghost--3 { display: none; }
+  .season-ghost--1 { top: 62%; left: 2%; opacity: 0.5; }
+  .season-ghost--2 { top: 70%; right: 3%; opacity: 0.5; }
+  .season-moon { top: 70px; right: 6px; width: 40px; box-shadow: 0 0 30px 8px rgba(255, 236, 170, 0.25); }
+  .season-web--r { display: none; }
+  .season-footer .season-pump--f2 { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .season-deco, .season-deco * { animation: none !important; }
+  .season-bat { left: 12%; }
+}
