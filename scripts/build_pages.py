@@ -1530,41 +1530,125 @@ def render_hyrox():
                     ["SkiErg", "Sled push", "Sled pull", "Jumps", "Rowing", "Farmers carry", "Lunges", "Weighted squats"])
 
     body = """
-<header class="hx-hero">
+<header class="hx-hero" id="join">
   <div class="container hx-hero__grid">
-   <div class="hx-hero__text">
-    <p class="hx-tag">@@BOLT@@Kids fitness race &middot; Houston</p>
-    <h1 class="hx-title">HYROX<br><span>YOUNGSTARS</span></h1>
-    <p class="hx-sub">Houston &middot; April 3&ndash;4, 2027</p>
-    <p class="hx-lead">We are putting together a group of Labyrinth kids to train for the race together. Running, sleds, rowing, carries and lunges, scaled for ages 8 to 15. Tell us who is interested and we will build the training around you.</p>
-    <div class="hx-cta">
-      <a href="#join" class="hx-btn hx-btn--volt">Join the Interest List</a>
-      <a href="#race" class="hx-btn hx-btn--line">See the Race</a>
+    <div class="hx-hero__text">
+      <p class="hx-tag">@@BOLT@@Kids fitness race &middot; Houston</p>
+      <h1 class="hx-title">HYROX<br><span>YOUNGSTARS</span></h1>
+      <p class="hx-sub">Houston &middot; April 3&ndash;4, 2027</p>
+      <p class="hx-lead">We are putting together a group of Labyrinth kids to train for the race together. Running, sleds, rowing, carries and lunges, scaled for ages 8 to 15. Tell us who is interested and we will build the training around you.</p>
+      <div class="hx-cd" id="hx-cd" role="timer" aria-label="Time until race weekend" data-start="2027-04-03T00:00:00-05:00" data-end="2027-04-05T00:00:00-05:00" hidden>
+        <p class="hx-cd__label" id="hx-cd-label">Race weekend starts in</p>
+        <div class="hx-cd__tiles" id="hx-cd-tiles">
+          <div class="hx-cd__tile"><b id="hx-cd-d">0</b><span>Days</span></div>
+          <div class="hx-cd__tile"><b id="hx-cd-h">00</b><span>Hours</span></div>
+          <div class="hx-cd__tile"><b id="hx-cd-m">00</b><span>Minutes</span></div>
+          <div class="hx-cd__tile"><b id="hx-cd-s">00</b><span>Seconds</span></div>
+        </div>
+        <p class="hx-cd__when" id="hx-cd-when">Saturday, April 3, 2027 &middot; exact start times to be announced</p>
+      </div>
+      <p class="hx-more-link"><a href="#race">See the race details &darr;</a></p>
     </div>
-   </div>
-   <figure class="hx-photo hx-photo--hero">
-     <picture>
-       <source srcset="/assets/gallery-2.webp" type="image/webp">
-       <img src="/assets/gallery-2.jpg" width="800" height="533" alt="Two Labyrinth kids competing at a jiu-jitsu tournament" fetchpriority="high">
-     </picture>
-   </figure>
-   <div class="hx-facts">
+    <div class="hx-signup" data-live>
+    <form class="hx-form" id="hx-form" novalidate
+          data-event="@@SLUG@@" data-endpoint="@@ENDPOINT@@" data-closes="@@CLOSES@@">
+      <p class="hx-form__title">@@BOLT@@Count your kid in <span>Free &middot; takes a minute</span></p>
+
+      <div class="booking-form__group">
+        <label class="booking-form__label" for="hx-name">Your name (parent or guardian)</label>
+        <input class="booking-form__input" id="hx-name" name="name" type="text" autocomplete="name" required minlength="2" maxlength="100" aria-describedby="hx-name-err">
+        <p class="booking-form__error" id="hx-name-err"></p>
+      </div>
+      <div class="booking-form__group">
+        <label class="booking-form__label" for="hx-email">Email</label>
+        <input class="booking-form__input" id="hx-email" name="email" type="email" inputmode="email" autocomplete="email" required maxlength="160" aria-describedby="hx-email-err">
+        <p class="booking-form__error" id="hx-email-err"></p>
+      </div>
+      <div class="booking-form__group">
+        <label class="booking-form__label" for="hx-count">How many kids?</label>
+        <select class="booking-form__input booking-form__select" id="hx-count" name="party" aria-describedby="hx-party-err">
+          <option value="1" selected>1 child</option>
+          <option value="2">2 kids</option>
+          <option value="3">3 kids</option>
+          <option value="4">4 kids</option>
+          <option value="5">5 kids</option>
+        </select>
+        <p class="booking-form__error" id="hx-party-err"></p>
+      </div>
+
+      <fieldset class="hx-kids" id="hx-kids">
+        <legend class="booking-form__label">Each child&rsquo;s name and age <span class="hx-opt">(age on April 3, 2027)</span></legend>
+        <div class="hx-kid" data-kid="1">
+          <input class="booking-form__input" type="text" id="hx-kid-name-1" aria-label="Child 1 name" placeholder="Child&rsquo;s first name" maxlength="40" autocomplete="off">
+          <select class="booking-form__input booking-form__select" id="hx-kid-age-1" aria-label="Child 1 age on race day">
+            <option value="">Age</option>@@AGES@@
+          </select>
+        </div>
+        <p class="booking-form__error" id="hx-notes-err"></p>
+      </fieldset>
+
+      <details class="hx-more">
+        <summary>Add a phone number or a note <span class="hx-opt">(optional)</span></summary>
+      <div class="booking-form__group">
+        <label class="booking-form__label" for="hx-phone">Phone <span class="hx-opt">(optional)</span></label>
+        <input class="booking-form__input" id="hx-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="40" aria-describedby="hx-phone-err">
+        <p class="booking-form__error" id="hx-phone-err"></p>
+      </div>
+      <div class="booking-form__group">
+        <label class="booking-form__label" for="hx-note">Anything we should know? <span class="hx-opt">(optional)</span></label>
+        <textarea class="booking-form__input booking-form__area" id="hx-note" name="note" rows="3" maxlength="250"></textarea>
+      </div>
+      </details>
+
+      <div class="rsvp__hp" aria-hidden="true">
+        <label>Leave this field empty<input type="text" name="hp_leave_empty" id="hx-hp" tabindex="-1" autocomplete="off"></label>
+      </div>
+
+      <p class="hx-status" id="hx-status" role="alert" hidden></p>
+      <button class="hx-submit" id="hx-submit" type="submit">Add Us to the List</button>
+      <p class="booking-form__consent">Free, and no commitment. We will email you a confirmation. Your details are used only to plan this training group.</p>
+      <noscript><p class="hx-status">The form needs JavaScript. Please call us on @@PHONE@@ or email <a href="mailto:info@labyrinth.vision">info@labyrinth.vision</a>.</p></noscript>
+    </form>
+
+    <div class="hx-success" id="hx-success" tabindex="-1" hidden>
+      @@BOLT40@@
+      <p class="hx-label">You are on the list</p>
+      <h2 class="hx-h2">GOT IT</h2>
+      <p><span id="hx-success-name"></span>, we have <strong id="hx-success-kids"></strong> down for HYROX Youngstars Houston.</p>
+      <p>A confirmation is on its way to <strong id="hx-success-email"></strong>. If you do not see it in a few minutes, check your spam folder. To change anything, just submit this form again with the same email.</p>
+      <p>We will email the training schedule as soon as it is set. Structured training starts after tickets drop in November.</p>
+      <div class="hx-cta">
+        <a href="@@OFFICIAL@@" class="hx-btn hx-btn--volt" target="_blank" rel="noopener noreferrer">Read the age-group manuals</a>
+        <a href="/" class="hx-btn hx-btn--line">Back to the site</a>
+      </div>
+    </div>
+    <p class="hx-note" id="hx-over" hidden>The interest list has closed. Thank you to everyone who joined. See what is on this week on the <a href="/schedule">schedule</a>.</p>
+    </div>
+    <div class="hx-facts">
       <div class="hx-fact"><span>Race weekend</span><strong>Apr 3&ndash;4, 2027</strong></div>
       <div class="hx-fact"><span>Ages</span><strong>8&ndash;15</strong></div>
       <div class="hx-fact"><span>Where</span><strong>Houston, TX</strong></div>
       <div class="hx-fact"><span>To join the list</span><strong>Free</strong></div>
-   </div>
+    </div>
   </div>
 </header>
 
 <section class="prog-section" id="what" data-live>
-  <div class="container">
-    <p class="hx-label">@@BOLT16@@What it is</p>
-    <h2 class="hx-h2">A RACE BUILT FOR KIDS</h2>
-    <div class="hx-prose">
-      <p>HYROX is a worldwide fitness race that combines running with functional fitness stations. <strong>HYROX Youngstars is the kids&rsquo; version</strong>, with running distances, movements and weights that fit each age group.</p>
+  <div class="container hx-what">
+    <div class="hx-what__text">
+      <p class="hx-label">@@BOLT16@@What it is</p>
+      <h2 class="hx-h2">A RACE BUILT FOR KIDS</h2>
+      <div class="hx-prose">
+        <p>HYROX is a worldwide fitness race that combines running with functional fitness stations. <strong>HYROX Youngstars is the kids&rsquo; version</strong>, with running distances, movements and weights that fit each age group.</p>
+      </div>
+      <ul class="hx-chips" aria-label="Race stations">@@CHIPS@@</ul>
     </div>
-    <ul class="hx-chips" aria-label="Race stations">@@CHIPS@@</ul>
+    <figure class="hx-photo">
+      <picture>
+        <source srcset="/assets/gallery-2.webp" type="image/webp">
+        <img src="/assets/gallery-2.jpg" width="800" height="533" loading="lazy" alt="Two Labyrinth kids competing at a jiu-jitsu tournament">
+      </picture>
+    </figure>
   </div>
 </section>
 
@@ -1673,85 +1757,6 @@ def render_hyrox():
       <a href="@@OFFICIAL@@" class="hx-btn hx-btn--line" target="_blank" rel="noopener noreferrer">HYROX Youngstars site</a>
       <a href="@@HOUSTON@@" class="hx-btn hx-btn--line" target="_blank" rel="noopener noreferrer">Houston event page</a>
     </div>
-  </div>
-</section>
-
-<section class="prog-section hx-join" id="join" data-live>
-  <div class="container">
-    <p class="hx-label">@@BOLT16@@Interest list</p>
-    <h2 class="hx-h2">COUNT YOUR KID IN</h2>
-    <p class="hx-note hx-note--lead">This is just a list for now: nothing to pay and nothing to decide. Knowing how many kids are interested, and how old they are, helps us plan the training schedule. Professor Shaun keeps the list.</p>
-
-    <form class="hx-form" id="hx-form" novalidate
-          data-event="@@SLUG@@" data-endpoint="@@ENDPOINT@@" data-closes="@@CLOSES@@">
-      <p class="hx-form__title">@@BOLT@@Join the list <span>Takes a minute</span></p>
-
-      <div class="booking-form__group">
-        <label class="booking-form__label" for="hx-name">Your name (parent or guardian)</label>
-        <input class="booking-form__input" id="hx-name" name="name" type="text" autocomplete="name" required minlength="2" maxlength="100" aria-describedby="hx-name-err">
-        <p class="booking-form__error" id="hx-name-err"></p>
-      </div>
-      <div class="booking-form__group">
-        <label class="booking-form__label" for="hx-email">Email</label>
-        <input class="booking-form__input" id="hx-email" name="email" type="email" inputmode="email" autocomplete="email" required maxlength="160" aria-describedby="hx-email-err">
-        <p class="booking-form__error" id="hx-email-err"></p>
-      </div>
-      <div class="booking-form__group">
-        <label class="booking-form__label" for="hx-phone">Phone <span class="hx-opt">(optional)</span></label>
-        <input class="booking-form__input" id="hx-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="40" aria-describedby="hx-phone-err">
-        <p class="booking-form__error" id="hx-phone-err"></p>
-      </div>
-      <div class="booking-form__group">
-        <label class="booking-form__label" for="hx-count">How many kids?</label>
-        <select class="booking-form__input booking-form__select" id="hx-count" name="party" aria-describedby="hx-party-err">
-          <option value="1" selected>1 child</option>
-          <option value="2">2 kids</option>
-          <option value="3">3 kids</option>
-          <option value="4">4 kids</option>
-          <option value="5">5 kids</option>
-        </select>
-        <p class="booking-form__error" id="hx-party-err"></p>
-      </div>
-
-      <fieldset class="hx-kids" id="hx-kids">
-        <legend class="booking-form__label">Each child&rsquo;s name and age <span class="hx-opt">(age on April 3, 2027)</span></legend>
-        <div class="hx-kid" data-kid="1">
-          <input class="booking-form__input" type="text" id="hx-kid-name-1" aria-label="Child 1 name" placeholder="Child&rsquo;s first name" maxlength="40" autocomplete="off">
-          <select class="booking-form__input booking-form__select" id="hx-kid-age-1" aria-label="Child 1 age on race day">
-            <option value="">Age</option>@@AGES@@
-          </select>
-        </div>
-        <p class="booking-form__error" id="hx-notes-err"></p>
-      </fieldset>
-
-      <div class="booking-form__group">
-        <label class="booking-form__label" for="hx-note">Anything we should know? <span class="hx-opt">(optional)</span></label>
-        <textarea class="booking-form__input booking-form__area" id="hx-note" name="note" rows="3" maxlength="250"></textarea>
-      </div>
-
-      <div class="rsvp__hp" aria-hidden="true">
-        <label>Leave this field empty<input type="text" name="hp_leave_empty" id="hx-hp" tabindex="-1" autocomplete="off"></label>
-      </div>
-
-      <p class="hx-status" id="hx-status" role="alert" hidden></p>
-      <button class="hx-submit" id="hx-submit" type="submit">Add Us to the List</button>
-      <p class="booking-form__consent">Free, and no commitment. We will email you a confirmation. Your details are used only to plan this training group.</p>
-      <noscript><p class="hx-status">The form needs JavaScript. Please call us on @@PHONE@@ or email <a href="mailto:info@labyrinth.vision">info@labyrinth.vision</a>.</p></noscript>
-    </form>
-
-    <div class="hx-success" id="hx-success" tabindex="-1" hidden>
-      @@BOLT40@@
-      <p class="hx-label">You are on the list</p>
-      <h2 class="hx-h2">GOT IT</h2>
-      <p><span id="hx-success-name"></span>, we have <strong id="hx-success-kids"></strong> down for HYROX Youngstars Houston.</p>
-      <p>A confirmation is on its way to <strong id="hx-success-email"></strong>. If you do not see it in a few minutes, check your spam folder. To change anything, just submit this form again with the same email.</p>
-      <p>We will email the training schedule as soon as it is set. Structured training starts after tickets drop in November.</p>
-      <div class="hx-cta">
-        <a href="@@OFFICIAL@@" class="hx-btn hx-btn--volt" target="_blank" rel="noopener noreferrer">Read the age-group manuals</a>
-        <a href="/" class="hx-btn hx-btn--line">Back to the site</a>
-      </div>
-    </div>
-    <p class="hx-note" id="hx-over" hidden>The interest list has closed. Thank you to everyone who joined. See what is on this week on the <a href="/schedule">schedule</a>.</p>
   </div>
 </section>
 

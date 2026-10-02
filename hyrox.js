@@ -10,7 +10,47 @@
 (function () {
   'use strict';
 
-  var form = document.getElementById('hx-form');
+  function $(id) { return document.getElementById(id); }
+
+  // ── Live countdown to race weekend ──────────────────────────────────────────
+  // Counts to midnight Central at the start of Saturday, April 3 (the exact wave
+  // times are not out yet), then says the weekend is on, then thanks people.
+  // Worked out from Date.now() on every tick, so a phone that slept catches up.
+  (function countdown() {
+    var box = $('hx-cd');
+    if (!box) return;
+    var startAt = Date.parse(box.getAttribute('data-start')), endAt = Date.parse(box.getAttribute('data-end'));
+    if (!startAt || !endAt) return;
+    var label = $('hx-cd-label'), tiles = $('hx-cd-tiles'), when = $('hx-cd-when');
+    var parts = { d: $('hx-cd-d'), h: $('hx-cd-h'), m: $('hx-cd-m'), s: $('hx-cd-s') };
+    var two = function (n) { return (n < 10 ? '0' : '') + n; };
+    var timer;
+    function tick() {
+      var now = Date.now(), left = startAt - now;
+      if (left > 0) {
+        var secs = Math.floor(left / 1000);
+        parts.d.textContent = Math.floor(secs / 86400);
+        parts.h.textContent = two(Math.floor(secs % 86400 / 3600));
+        parts.m.textContent = two(Math.floor(secs % 3600 / 60));
+        parts.s.textContent = two(secs % 60);
+        label.textContent = 'Race weekend starts in';
+      } else if (now < endAt) {
+        tiles.hidden = true; when.hidden = true;
+        label.textContent = 'Race weekend is here. Go get it!';
+        box.setAttribute('data-state', 'live');
+      } else {
+        tiles.hidden = true; when.hidden = true;
+        label.textContent = 'Thank you to everyone who raced.';
+        box.setAttribute('data-state', 'over');
+        clearInterval(timer);
+      }
+      box.hidden = false;
+    }
+    timer = setInterval(tick, 1000);
+    tick();
+  })();
+
+  var form = $('hx-form');
   if (!form) return;
 
   var endpoint = form.getAttribute('data-endpoint');
@@ -18,7 +58,6 @@
   var closes = Date.parse(form.getAttribute('data-closes'));
   var PHONE_TEXT = '(281) 393-7983';
 
-  function $(id) { return document.getElementById(id); }
   var statusEl = $('hx-status'), submitBtn = $('hx-submit'), successEl = $('hx-success');
   var countEl = $('hx-count'), kidsBox = $('hx-kids');
 

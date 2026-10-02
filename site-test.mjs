@@ -1594,6 +1594,36 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
     (await hp.locator('a.hx-link-card[href="/hyrox-youngstars"]:has-text("HYROX Youngstars Houston")').count()) === 1)
   await hp.goto(URL, { waitUntil: 'networkidle' })
 
+  // The live countdown to race weekend, right under the headline.
+  const cd = await hp.evaluate(() => ({
+    t: ['hx-cd-d', 'hx-cd-h', 'hx-cd-m', 'hx-cd-s'].map(i => document.getElementById(i).textContent).join(':'),
+    label: document.getElementById('hx-cd-label').textContent,
+    vis: !document.getElementById('hx-cd').hidden,
+    above: document.getElementById('hx-cd').getBoundingClientRect().top < document.getElementById('hx-form').getBoundingClientRect().bottom,
+    big: parseFloat(getComputedStyle(document.getElementById('hx-cd-d')).fontSize),
+  }))
+  // 2026-10-20 10:00 CDT to 2027-04-03 00:00 CDT = 164 days 14 hours.
+  check('L1z a big live countdown to Saturday April 3 sits in the hero (164 days 14 hours from Oct 20 10:00 AM)',
+    cd.vis && cd.t === '164:14:00:00' && /Race weekend starts in/.test(cd.label) && cd.big >= 30, JSON.stringify(cd))
+  check('L1z the sign-up form is in the hero too, in view without scrolling past the page',
+    await hp.evaluate(() => document.getElementById('hx-form').closest('header.hx-hero') !== null))
+  {
+    const cx = await browser.newContext(); const cp = await cx.newPage()
+    await cp.clock.install({ time: new Date('2027-04-02T05:00:00Z') })
+    await cp.goto(URL, { waitUntil: 'load' })
+    const rd = () => cp.evaluate(() => ({ t: ['hx-cd-d', 'hx-cd-h', 'hx-cd-m', 'hx-cd-s'].map(i => document.getElementById(i).textContent).join(':'), label: document.getElementById('hx-cd-label').textContent, state: document.getElementById('hx-cd').dataset.state || '' }))
+    const sec = t => t.split(':').reduce((n, v, i) => n + (+v) * [86400, 3600, 60, 1][i], 0)
+    const a0 = await rd(); await cp.clock.runFor(3000); const a1 = await rd()
+    check('L1z the HYROX countdown really ticks down by the second', sec(a0.t) - sec(a1.t) === 3 && sec(a0.t) <= 86400, JSON.stringify({ a0, a1 }))
+    await cp.clock.setFixedTime(new Date('2027-04-03T15:00:00Z')); await cp.clock.runFor(1500)
+    const live = await rd()
+    check('L1z on race weekend it says so', live.state === 'live' && /Race weekend is here/.test(live.label), JSON.stringify(live))
+    await cp.clock.setFixedTime(new Date('2027-04-05T15:00:00Z')); await cp.clock.runFor(1500)
+    const over = await rd()
+    check('L1z afterwards it thanks people', over.state === 'over' && /Thank you/.test(over.label), JSON.stringify(over))
+    await cx.close()
+  }
+
   // The form.
   check('L1z the form starts with one child row and grows with the count',
     (await hp.locator('.hx-kid').count()) === 1)
@@ -1604,6 +1634,8 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
   await hp.click('#hx-submit')
   check('L1z sending it empty is stopped, with messages, and nothing is posted',
     posts.length === 0 && /full name/.test(await hp.textContent('#hx-name-err')) && /email/.test(await hp.textContent('#hx-email-err')) && /each child/.test(await hp.textContent('#hx-notes-err')))
+  check('L1z phone and note are tucked under an optional "Add a phone number or a note" line', !(await hp.locator('.hx-more').evaluate(d => d.open)))
+  await hp.click('.hx-more summary')
   await hp.fill('#hx-name', 'Dana Reyes'); await hp.fill('#hx-email', 'Dana@Example.com'); await hp.fill('#hx-phone', '281 555 0100')
   await hp.fill('#hx-kid-name-1', 'Emma (the) Reyes'); await hp.selectOption('#hx-kid-age-1', '9')
   await hp.fill('#hx-kid-name-2', 'Jack'); await hp.fill('#hx-note', 'Jack has done two seasons of cross country')
