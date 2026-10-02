@@ -1732,7 +1732,7 @@ body.theme-hyrox main .faq-item__question:hover { color: var(--volt); }
 .hx-coach__body em { font-style: normal; font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--volt); }
 @media (min-width: 760px) { .hx-coaches { grid-template-columns: 1fr 1fr; } .hx-coach { grid-template-columns: 1fr; text-align: left; align-items: start; } .hx-coach img { width: 100%; height: auto; aspect-ratio: 1 / 1; } }
 @media (min-width: 900px) { .hx-hero__grid .hx-title { font-size: clamp(40px, 6vw, 84px); } }
-.hx-coaches { max-width: 720px; }
+.hx-coaches { max-width: 1000px; }
 
 /* Pointers at the HYROX Youngstars page: a card on the kids page, a row in the homepage strip. */
 .hx-link-card {
@@ -1781,3 +1781,5 @@ body.theme-hyrox main .faq-item__question:hover { color: var(--volt); }
   .hx-what { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 48px; }
 }
 .hx-form .booking-form__consent { margin-top: 12px; }
+@media (min-width: 900px) { .hx-coaches { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 760px) { .hx-coach { align-content: start; } }
