@@ -493,8 +493,8 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   const cal = await rp.evaluate(() => ({
     g: document.getElementById('rsvp-cal-google').href, ics: decodeURIComponent(document.getElementById('rsvp-cal-ics').href),
   }))
-  check('L1x the calendar links carry the real time (11:00 AM Central is 16:00 UTC) and the place',
-    /dates=20261024T160000Z\/20261024T170000Z/.test(cal.g) && /DTSTART:20261024T160000Z/.test(cal.ics) && /Fulshear/.test(cal.ics) && /SUMMARY:Rolling for Ribbons/.test(cal.ics), cal.g.slice(0, 160))
+  check('L1x the calendar links carry the real time (11:00 AM to 12:30 PM Central is 16:00 to 17:30 UTC) and the place',
+    /dates=20261024T160000Z\/20261024T173000Z/.test(cal.g) && /DTSTART:20261024T160000Z/.test(cal.ics) && /Fulshear/.test(cal.ics) && /SUMMARY:Rolling for Ribbons/.test(cal.ics), cal.g.slice(0, 160))
 
   // The fundraiser: honest at $0, and the real feed rendered when there is one.
   let feed = { raised: 0, count: 0, goal: 500, top: [], recent: [] }, feedFail = false
@@ -616,7 +616,7 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
     focus: document.activeElement.id,
   }))
   check('L1x the form gives way to a confirmation naming the date, party and email',
-    done.form && /Jane/.test(done.text) && /3 people/.test(done.text) && /Saturday, October 24 at 11:00 AM/.test(done.text)
+    done.form && /Jane/.test(done.text) && /3 people/.test(done.text) && /Saturday, October 24, 11:00 AM to 12:30 PM/.test(done.text)
       && /jane@example\.com/.test(done.text), done.text.slice(0, 160))
   check('L1x focus moves to the confirmation for screen readers', done.focus === 'rsvp-success')
 

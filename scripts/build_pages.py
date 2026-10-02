@@ -779,6 +779,8 @@ EVENT = {
     "path": "/self-defense-for-women",
     # 11:00 AM on Oct 24 is CDT (UTC-5): Texas moves its clocks on Nov 1.
     "start": "2026-10-24T11:00:00-05:00",
+    # 11:00 AM to 12:30 PM.
+    "minutes": 90,
     # After this the form says the event has passed (and the server refuses).
     # Matches closesAt in event-emails.ts: 5:00 AM Central the next morning.
     "closes_utc": "2026-10-25T10:00:00Z",
@@ -813,6 +815,15 @@ def _event_when():
     hour12 = d.hour % 12 or 12
     time = "%d:%02d %s" % (hour12, d.minute, "AM" if d.hour < 12 else "PM")
     return (d.strftime("%A, %B ") + str(d.day), d.strftime("%a, %b ") + str(d.day), time)
+
+
+def _event_range():
+    """'11:00 AM to 12:30 PM', and the end as an ISO instant for the structured data."""
+    import datetime
+    d = datetime.datetime.fromisoformat(EVENT["start"])
+    e = d + datetime.timedelta(minutes=EVENT["minutes"])
+    fmt = lambda t: "%d:%02d %s" % (t.hour % 12 or 12, t.minute, "AM" if t.hour < 12 else "PM")
+    return "%s to %s" % (fmt(d), fmt(e)), e.isoformat()
 
 
 # ── /pink-october ────────────────────────────────────────────────────────────
@@ -889,6 +900,7 @@ def render_event_rsvp():
                 "@context": "https://schema.org", "@type": "Event",
                 "name": EVENT["name"], "description": desc, "url": url,
                 "startDate": EVENT["start"],
+                "endDate": _event_range()[1],
                 "eventStatus": "https://schema.org/EventScheduled",
                 "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
                 "isAccessibleForFree": True,
@@ -924,7 +936,7 @@ def render_event_rsvp():
     </div>
     <div class="prog-facts">
       <div class="prog-fact"><div class="prog-fact__label">Date</div><div class="prog-fact__value">@@SHORT@@</div></div>
-      <div class="prog-fact"><div class="prog-fact__label">Time (Central)</div><div class="prog-fact__value">@@TIME@@</div></div>
+      <div class="prog-fact"><div class="prog-fact__label">Time (Central)</div><div class="prog-fact__value">@@RANGE@@</div></div>
       <div class="prog-fact"><div class="prog-fact__label">Where</div><div class="prog-fact__value">Labyrinth BJJ, Fulshear, TX</div></div>
       <div class="prog-fact"><div class="prog-fact__label">Cost</div><div class="prog-fact__value"><em>Free</em></div></div>
     </div>
@@ -950,7 +962,7 @@ def render_event_rsvp():
 
     <form class="booking-form rsvp__form" id="rsvp-form" novalidate
           data-event="@@SLUG@@" data-endpoint="@@ENDPOINT@@" data-closes="@@CLOSES@@"
-          data-start="@@STARTISO@@" data-title="@@NAME@@" data-where="@@WHERE@@" data-url="@@PAGEURL@@">
+          data-start="@@STARTISO@@" data-minutes="@@MINUTES@@" data-title="@@NAME@@" data-where="@@WHERE@@" data-url="@@PAGEURL@@">
       <p class="rsvp__form-title">@@RIBBON18@@Save your spot <span>Takes 30 seconds</span></p>
       <div class="booking-form__group">
         <label class="booking-form__label" for="rsvp-name">Full name</label>
@@ -1005,7 +1017,7 @@ def render_event_rsvp():
       @@RIBBON40@@
       <p class="section-label rsvp-label">You are on the list</p>
       <h2 class="section-title section-title--lg" id="rsvp-success-title">SEE YOU THERE</h2>
-      <p><span id="rsvp-success-name"></span>, we have you down for <span id="rsvp-success-party"></span> on <strong>@@LONG@@ at @@TIME@@</strong> at Labyrinth BJJ in Fulshear.</p>
+      <p><span id="rsvp-success-name"></span>, we have you down for <span id="rsvp-success-party"></span> on <strong>@@LONG@@, @@RANGE@@</strong> at Labyrinth BJJ in Fulshear.</p>
       <p>A confirmation is on its way to <strong id="rsvp-success-email"></strong>. If you do not see it in a few minutes, check your spam folder. To change your RSVP, just submit this form again.</p>
       <div class="prog-hero__cta rsvp__next">
         <a href="#" class="btn btn--gold" id="rsvp-cal-google" target="_blank" rel="noopener noreferrer">Add to Google Calendar</a>
@@ -1122,7 +1134,7 @@ def render_event_rsvp():
 """
     for token, value in {
         "@@RIBBON16@@": ribbon(16), "@@RIBBON18@@": ribbon(18), "@@RIBBON20@@": ribbon(20), "@@RIBBON40@@": ribbon(40), "@@MARK@@": ribbon(320),
-        "@@PINKPATH@@": PINK["path"], "@@TITLE@@": EVENT["title"], "@@SUBTITLE@@": EVENT["subtitle"], "@@NAME@@": EVENT["name"], "@@STARTISO@@": EVENT["start"], "@@WHERE@@": "Labyrinth BJJ, " + ADDRESS, "@@PAGEURL@@": url, "@@DONATE@@": EVENT["donate_url"], "@@DONATIONS@@": EVENT["donations_endpoint"], "@@GOAL@@": str(EVENT["goal"]), "@@AMOUNTS@@": "\n".join(
+        "@@PINKPATH@@": PINK["path"], "@@TITLE@@": EVENT["title"], "@@SUBTITLE@@": EVENT["subtitle"], "@@NAME@@": EVENT["name"], "@@STARTISO@@": EVENT["start"], "@@MINUTES@@": str(EVENT["minutes"]), "@@RANGE@@": _event_range()[0], "@@WHERE@@": "Labyrinth BJJ, " + ADDRESS, "@@PAGEURL@@": url, "@@DONATE@@": EVENT["donate_url"], "@@DONATIONS@@": EVENT["donations_endpoint"], "@@GOAL@@": str(EVENT["goal"]), "@@AMOUNTS@@": "\n".join(
             '      <a href="%s" class="rsvp-give__amt" target="_blank" rel="noopener noreferrer">$%d</a>' % (u, d)
             for d, u in EVENT["donate_amounts"]), "@@SHORT@@": short_date,
         "@@TIME@@": time, "@@LONG@@": long_date, "@@SLUG@@": EVENT["slug"],
