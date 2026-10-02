@@ -1687,6 +1687,17 @@ def render_hyrox():
           <span>Leads our Strength &amp; Conditioning classes, where the HYROX movements start, and keeps the interest list.</span>
         </span>
       </a>
+      <a class="hx-coach" href="/coaches/malik-pickett">
+        <picture>
+          <source srcset="/assets/coach-malik.webp" type="image/webp">
+          <img src="/assets/coach-malik.jpg" width="400" height="400" loading="lazy" alt="Coach Malik Pickett">
+        </picture>
+        <span class="hx-coach__body">
+          <strong>Coach Malik Pickett</strong>
+          <em>Texas National Team wrestler</em>
+          <span>Coaches our youth wrestling program for ages 7 to 17.</span>
+        </span>
+      </a>
       <a class="hx-coach" href="/coaches/scott-jones">
         <picture>
           <source srcset="/assets/coach-scott.webp" type="image/webp">
