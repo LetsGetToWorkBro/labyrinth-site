@@ -275,7 +275,23 @@ button {
   border-width: 0;
 }
 </style>
-<link rel="stylesheet" href="./style.css?v=e138caea">
+<!-- Seasonal theme: sets <html data-season="…"> from the date on the academy's clock (Central).
+     season.css dresses the page under that attribute and does nothing without it.
+     Add a holiday here and a block in season.css. Preview: ?season=halloween (or ?season=off). -->
+<script>(function(){
+  var SEASONS=[{name:'halloween',from:[10,1],to:[11,1]}];
+  var q=/[?&]season=([a-z]+)/.exec(location.search),name=null;
+  if(q){name=q[1]==='off'?null:q[1]}
+  else{
+    var p={};new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',month:'numeric',day:'numeric'}).formatToParts(new Date()).forEach(function(x){p[x.type]=+x.value});
+    var v=p.month*100+p.day;
+    SEASONS.forEach(function(s){if(v>=s.from[0]*100+s.from[1]&&v<s.to[0]*100+s.to[1])name=s.name});
+  }
+  if(name){document.documentElement.setAttribute('data-season',name);
+    if(name==='halloween'){var l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Creepster&display=swap';document.head.appendChild(l)}}
+})()</script>
+<link rel="stylesheet" href="./style.css?v=f5642a4d">
+<link rel="stylesheet" href="./season.css?v=4c7217fc">
 <link rel="stylesheet" href="./booking.css?v=6073b089">
 
 <!-- JSON-LD Structured Data -->
@@ -576,6 +592,66 @@ button {
     <picture class="hero__still"><source srcset="./assets/hero-team.webp" type="image/webp"><img src="./assets/hero-team.jpg" alt="Labyrinth BJJ team celebrating with medals and trophies" loading="eager" fetchpriority="high" width="1600" height="900"></picture>
   </div>
 
+  <!-- SEASON-HERO:START generated from scripts/build_pages.py; do not edit -->
+  <svg class="season-defs" width="0" height="0" aria-hidden="true" focusable="false"><defs>
+  <symbol id="s-pumpkin" viewBox="0 0 100 90">
+    <path d="M50 14c-4-7-4-11 2-13 1 4 1 8-2 13z" fill="#4e7a1e"/>
+    <path d="M50 18c-30-8-46 8-46 30 0 24 20 38 46 38s46-14 46-38c0-22-16-38-46-30z" fill="#ff7a00"/>
+    <path d="M50 18c-14 6-20 22-20 34s6 30 20 34c14-4 20-22 20-34S64 24 50 18z" fill="#ff9a2e"/>
+    <path d="M50 18v68M30 24c-10 10-12 38 0 56M70 24c10 10 12 38 0 56" fill="none" stroke="#c75a00" stroke-width="2" stroke-linecap="round" opacity=".7"/>
+    <path d="M28 42l12 6-12 4zM72 42l-12 6 12 4z" fill="#2a0f00"/>
+    <path d="M46 56l4-6 4 6z" fill="#2a0f00"/>
+    <path d="M30 64c6 10 14 12 20 8 6 4 14 2 20-8-4 2-8 3-12 0l-4 5-4-5-4 5-4-5c-4 3-8 2-12 0z" fill="#2a0f00"/>
+    <path d="M28 42l12 6-12 4zM72 42l-12 6 12 4z" fill="#ffd54a" opacity=".55"/>
+  </symbol>
+  <symbol id="s-ghost" viewBox="0 0 100 120">
+    <path d="M12 112V48C12 22 28 6 50 6s38 16 38 42v64l-12-10-13 10-13-10-13 10-13-10z" fill="#f1f1ff"/>
+    <path d="M12 112V48C12 22 28 6 50 6c-14 8-20 24-20 44v52l-8 4z" fill="#d6d6f2" opacity=".6"/>
+    <ellipse cx="37" cy="46" rx="7" ry="10" fill="#1a1030"/><ellipse cx="63" cy="46" rx="7" ry="10" fill="#1a1030"/>
+    <ellipse cx="50" cy="72" rx="9" ry="12" fill="#1a1030"/>
+    <ellipse cx="25" cy="64" rx="6" ry="4" fill="#ffb3d1" opacity=".55"/><ellipse cx="75" cy="64" rx="6" ry="4" fill="#ffb3d1" opacity=".55"/>
+  </symbol>
+  <symbol id="s-bat" viewBox="0 0 100 60">
+    <path d="M50 22c-6-10-16-14-30-12 6 3 8 8 8 14-8-2-16 0-24 8 8-2 14 0 18 6 4-6 10-8 16-4l6 8 6-8c6-4 12-2 16 4 4-6 10-8 18-6-8-8-16-10-24-8 0-6 2-11 8-14-14-2-24 2-30 12z" fill="#0b0612"/>
+    <path d="M44 22l-3-9 6 5h6l6-5-3 9z" fill="#0b0612"/>
+    <circle cx="46" cy="25" r="1.6" fill="#ffd54a"/><circle cx="54" cy="25" r="1.6" fill="#ffd54a"/>
+  </symbol>
+  <symbol id="s-web" viewBox="0 0 120 120">
+    <g fill="none" stroke="#d9d4ee" stroke-width="1.2" stroke-linecap="round" opacity=".75">
+      <path d="M0 0L120 0M0 0L0 120M0 0L100 100M0 0L120 55M0 0L55 120"/>
+      <path d="M22 0Q18 18 0 22M44 0Q38 38 0 44M66 0Q58 58 0 66M88 0Q78 78 0 88M110 0Q98 98 0 110"/>
+    </g>
+  </symbol>
+  <symbol id="s-tree" viewBox="0 0 160 220">
+    <path d="M78 220c2-40 0-70-4-96-10-4-24-12-34-30-4 8-2 18 2 26-10-6-20-18-22-34 6 0 12 4 16 10-2-12 0-26 8-38 2 12 6 22 14 30-2-12-2-24 4-36 4 12 8 22 16 30 2-10 8-22 18-28-2 12-2 22 2 32 6-8 14-12 24-12-4 10-10 16-18 20 4 4 10 6 18 6-8 8-20 10-30 8-4 6-6 14-6 26 4 28 6 56 8 86z" fill="#07040d"/>
+  </symbol>
+</defs></svg>
+<div class="season-deco season-hero" aria-hidden="true">
+  <svg class="season-web" viewBox="0 0 120 120"><use href="#s-web"/></svg>
+  <svg class="season-web season-web--r" viewBox="0 0 120 120"><use href="#s-web"/></svg>
+  <div class="season-moon"></div>
+  <svg class="season-bat season-bat--1" viewBox="0 0 100 60"><use href="#s-bat"/></svg>
+  <svg class="season-bat season-bat--2" viewBox="0 0 100 60"><use href="#s-bat"/></svg>
+  <svg class="season-bat season-bat--3" viewBox="0 0 100 60"><use href="#s-bat"/></svg>
+  <button type="button" class="season-ghost season-ghost--1" tabindex="-1" data-boo><svg viewBox="0 0 100 120"><use href="#s-ghost"/></svg><span class="season-boo">Boo!</span></button>
+  <button type="button" class="season-ghost season-ghost--2" tabindex="-1" data-boo><svg viewBox="0 0 100 120"><use href="#s-ghost"/></svg><span class="season-boo">Boo!</span></button>
+  <button type="button" class="season-ghost season-ghost--3" tabindex="-1" data-boo><svg viewBox="0 0 100 120"><use href="#s-ghost"/></svg><span class="season-boo">Boo!</span></button>
+  <div class="season-fog season-fog--1"></div><div class="season-fog season-fog--2"></div>
+  <div class="season-yard">
+    <svg viewBox="0 0 1440 200" preserveAspectRatio="xMidYMax slice">
+      <use href="#s-tree" x="20" y="-20" width="150" height="220"/>
+      <use href="#s-tree" x="1290" y="0" width="130" height="200" transform="translate(2740 0) scale(-1 1)"/>
+      <g><path d="M120 200V149.0a27.0 27.0 0 0 1 54 0V200z" fill="#07040d"/><path d="M190 200V164.0a20.0 20.0 0 0 1 40 0V200z" fill="#07040d"/><path d="M349.0 130h10v14h14v10h-14v36h-10v-36h-14v-10h14z" fill="#07040d"/><path d="M560 200V144.0a28.0 28.0 0 0 1 56 0V200z" fill="#07040d"/><path d="M640 200V162.0a22.0 22.0 0 0 1 44 0V200z" fill="#07040d"/><path d="M900 200V150.0a26.0 26.0 0 0 1 52 0V200z" fill="#07040d"/><path d="M996.0 142h10v14h14v10h-14v24h-10v-24h-14v-10h14z" fill="#07040d"/><path d="M1180 200V141.0a29.0 29.0 0 0 1 58 0V200z" fill="#07040d"/><path d="M1264 200V160.0a22.0 22.0 0 0 1 44 0V200z" fill="#07040d"/></g>
+      <path d="M0 200V186Q120 176 260 186T520 184T800 188T1080 182T1440 186V200z" fill="#07040d"/>
+      <use class="season-pump season-pump--a" href="#s-pumpkin" x="430" y="132" width="74" height="66"/>
+      <use class="season-pump season-pump--b" href="#s-pumpkin" x="760" y="148" width="54" height="48"/>
+      <use class="season-pump season-pump--c" href="#s-pumpkin" x="1060" y="126" width="84" height="76"/>
+      <use class="season-pump season-pump--d" href="#s-pumpkin" x="1120" y="158" width="44" height="40"/>
+    </svg>
+  </div>
+</div>
+  <!-- SEASON-HERO:END -->
+
   <div class="hero__content">
     <div class="hero__badge">
       <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor"><path d="M7 0l1.76 4.58L14 5.24l-3.82 3.18L11.36 14 7 11.08 2.64 14l1.18-5.58L0 5.24l5.24-.66z"/></svg>
@@ -590,6 +666,10 @@ button {
       <a data-book-trial href="/#book" class="btn btn--gold">Try a Free Class</a>
       <a href="https://jits.gg/academy/labyrinth-bjj-4377" target="_blank" rel="noopener noreferrer" class="btn btn--ghost">View Our Stats →</a>
     </div>
+
+    <!-- HERO-CHIP:START generated from scripts/build_pages.py; do not edit -->
+    <a class="hero__chip" id="heroChip" href="#eventStrip" hidden><svg class="ribbon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7" fill="currentColor" fill-opacity=".18"/></svg><span></span><b aria-hidden="true">&darr;</b></a>
+    <!-- HERO-CHIP:END -->
 
     <div class="hero__stats stagger" id="heroStats">
       <!-- HERO-STATS:START generated from scripts/jits_data.py; do not edit -->
@@ -615,26 +695,63 @@ button {
 </section>
 
 <!-- EVENT-STRIP:START generated from scripts/build_pages.py; do not edit -->
-<aside class="event-strip" id="eventStrip" aria-label="Coming up at Labyrinth BJJ">
+<section class="event-strip" id="eventStrip" aria-labelledby="tm-title">
   <div class="container">
-    <a class="event-strip__link" href="/pink-october" data-closes="2026-11-01T05:00:00Z">
-      <span class="event-strip__icon"><svg class="ribbon" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7" fill="currentColor" fill-opacity=".18"/></svg></span>
-      <span class="event-strip__text"><strong>Pink October: moms train free, women get 50% off</strong><span>All of October &middot; Open to every woman</span></span>
-      <span class="event-strip__cta">See offers</span>
+    <div class="event-strip__head">
+      <p class="event-strip__kicker">What&rsquo;s happening</p>
+      <h2 class="event-strip__title" id="tm-title">THIS MONTH AT LABYRINTH</h2>
+    </div>
+    <a class="event-strip__link event-strip__link--pink" href="/pink-october" data-closes="2026-11-01T05:00:00Z" data-short="Pink October">
+      <span class="event-strip__icon"><svg class="ribbon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7" fill="currentColor" fill-opacity=".18"/></svg></span>
+      <span class="event-strip__text">
+        <span class="event-strip__eyebrow">All October &middot; Breast cancer awareness</span>
+        <strong>Pink October</strong>
+        <span>Moms train free all month, and every woman gets 50% off her first month. No experience needed.</span>
+      </span>
+      <span class="event-strip__cta">See the offers</span>
     </a>
-    <a class="event-strip__link" href="/self-defense-for-women" data-closes="2026-10-25T10:00:00Z">
-      <span class="event-strip__icon"><svg class="ribbon" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7" fill="currentColor" fill-opacity=".18"/></svg></span>
-      <span class="event-strip__text"><strong>Free event: Rolling for Ribbons</strong><span>Sat, Oct 24 &middot; 11:00 AM &middot; Breast cancer awareness</span></span>
-      <span class="event-strip__cta">RSVP</span>
+    <a class="event-strip__link event-strip__link--event" href="/self-defense-for-women" data-closes="2026-10-25T10:00:00Z" data-start="2026-10-24T11:00:00-05:00" data-short="Free self defense seminar">
+      <span class="event-strip__icon"><svg class="ribbon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7" fill="currentColor" fill-opacity=".18"/></svg></span>
+      <span class="event-strip__text">
+        <span class="event-strip__eyebrow">Sat, Oct 24 &middot; 11:00 AM to 12:30 PM &middot; Free</span>
+        <strong>Rolling for Ribbons</strong>
+        <span>A beginner-friendly self defense seminar for women, led by Coach Scott and Professor Tony. For breast cancer awareness.</span>
+        <span class="event-strip__badge" hidden></span>
+      </span>
+      <span class="event-strip__cta">RSVP free</span>
     </a>
-    <a class="event-strip__link event-strip__link--hyrox" href="/hyrox-youngstars" data-closes="2027-04-02T05:00:00Z">
-      <span class="event-strip__icon"><svg class="bolt" width="26" height="26" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M13.2 2 4.5 13.4h6L9.3 22l9.2-12.2h-6.1z"/></svg></span>
-      <span class="event-strip__text"><strong>Kids: train for HYROX Youngstars Houston</strong><span>Ages 8&ndash;15 &middot; April 3&ndash;4, 2027 &middot; Join the interest list</span></span>
-      <span class="event-strip__cta">Join</span>
+    <a class="event-strip__link event-strip__link--hyrox" href="/hyrox-youngstars" data-closes="2027-04-02T05:00:00Z" data-short="Kids HYROX race">
+      <span class="event-strip__icon"><svg class="bolt" width="30" height="30" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M13.2 2 4.5 13.4h6L9.3 22l9.2-12.2h-6.1z"/></svg></span>
+      <span class="event-strip__text">
+        <span class="event-strip__eyebrow">Kids 8&ndash;15 &middot; April 3&ndash;4, 2027</span>
+        <strong>HYROX Youngstars</strong>
+        <span>Train with Labyrinth for the kids&rsquo; fitness race in Houston. Join the interest list.</span>
+      </span>
+      <span class="event-strip__cta">Join the list</span>
     </a>
   </div>
-</aside>
-<script>(function(){var s=document.getElementById('eventStrip'),n=0;s.querySelectorAll('a[data-closes]').forEach(function(a){if(Date.now()>Date.parse(a.getAttribute('data-closes')))a.hidden=true;else n++});if(!n)s.hidden=true})()</script>
+</section>
+<script>(function(){
+  var s=document.getElementById('eventStrip'),n=0,names=[];
+  s.querySelectorAll('a[data-closes]').forEach(function(a){
+    if(Date.now()>Date.parse(a.getAttribute('data-closes')))a.hidden=true;else{n++;names.push(a.getAttribute('data-short'));}
+  });
+  if(!n)s.hidden=true;
+  // "5 days to go" on the seminar card, on the academy's clock (Central).
+  var ev=s.querySelector('a[data-start]'),b=ev&&ev.querySelector('.event-strip__badge');
+  if(ev&&!ev.hidden&&b){
+    var day=function(ms){return Date.parse(new Intl.DateTimeFormat('en-CA',{timeZone:'America/Chicago'}).format(new Date(ms))+'T00:00:00Z')};
+    var d=Math.round((day(Date.parse(ev.getAttribute('data-start')))-day(Date.now()))/864e5);
+    var t=d>1?d+' days to go':d===1?'Tomorrow':(d===0?'Today':'');
+    if(t){b.textContent=t;b.hidden=false}
+  }
+  // The hero chip: one line under the hero buttons that jumps to this block.
+  var chip=document.getElementById('heroChip');
+  if(chip){
+    if(!n||s.hidden){chip.hidden=true}
+    else{chip.querySelector('span').textContent='This month: '+names.join(' · ');chip.hidden=false}
+  }
+})()</script>
 <!-- EVENT-STRIP:END -->
 
 <!-- ======== PROGRAMS ======== -->
@@ -2024,6 +2141,15 @@ button {
 
 
 
+<!-- SEASON-FOOTER:START generated from scripts/build_pages.py; do not edit -->
+<div class="season-deco season-footer" aria-hidden="true">
+  <svg class="season-pump season-pump--f1" viewBox="0 0 100 90"><use href="#s-pumpkin"/></svg>
+  <div class="season-stones"><div class="season-stone"><span>R.I.P.</span><em>Here lies my ego</em></div><div class="season-stone"><span>R.I.P.</span><em>R.I.P. Excuses</em></div><div class="season-stone"><span>R.I.P.</span><em>Missed class, 2026</em></div><div class="season-stone"><span>R.I.P.</span><em>Tapped early, often</em></div></div>
+  <svg class="season-pump season-pump--f2" viewBox="0 0 100 90"><use href="#s-pumpkin"/></svg>
+  <svg class="season-ghost season-ghost--f" viewBox="0 0 100 120"><use href="#s-ghost"/></svg>
+</div>
+<!-- SEASON-FOOTER:END -->
+
 <!-- ======== FOOTER ======== -->
 </main>
 
@@ -2160,7 +2286,7 @@ button {
 
 <!-- App JS -->
 <script src="./booking.js?v=e658dbc8"></script>
-<script src="./app.js?v=8cf1101b"></script>
+<script src="./app.js?v=2aed9ee9"></script>
 <script src="./schedule.js?v=418a5570"></script>
 
 <script data-pplx-inline-edit>

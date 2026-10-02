@@ -1675,3 +1675,11 @@
   }
 
 })();
+
+/* Halloween: tap a ghost and it says Boo! (the decoration is only on the page in season). */
+document.addEventListener('click', function (e) {
+  var g = e.target.closest && e.target.closest('[data-boo]');
+  if (!g) return;
+  g.classList.add('is-boo');
+  setTimeout(function () { g.classList.remove('is-boo'); }, 1400);
+});

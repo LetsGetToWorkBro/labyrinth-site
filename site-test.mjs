@@ -1685,6 +1685,83 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
   await ctx.close()
 }
 
+// ── L2h: the homepage dresses for the holiday (Halloween) ──
+// season.js turns it on from the date on the academy's clock, so each case pins the clock.
+// Pink October, the seminar and the kids' HYROX race stay the loudest things on the page.
+{
+  const URLH = 'http://localhost:4620/'
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } })
+  const hh = await ctx.newPage()
+  await hh.clock.setFixedTime(new Date('2026-10-14T15:00:00Z'))
+  await hh.goto(URLH, { waitUntil: 'load' })
+  const h1 = await hh.evaluate(() => {
+    const vis = sel => [...document.querySelectorAll(sel)].filter(e => getComputedStyle(e).display !== 'none').length
+    const strip = document.getElementById('eventStrip')
+    return {
+      season: document.documentElement.dataset.season,
+      ghosts: vis('.season-hero .season-ghost'), bats: vis('.season-bat'), moon: vis('.season-moon'), yard: vis('.season-yard'),
+      stones: vis('.season-stone'), pumpkins: vis('.season-pump'),
+      gold: getComputedStyle(document.documentElement).getPropertyValue('--gold').trim(),
+      cards: [...strip.querySelectorAll('a.event-strip__link')].filter(a => !a.hidden).map(a => a.getAttribute('href')),
+      stripTop: Math.round(strip.getBoundingClientRect().top + window.scrollY),
+      badge: strip.querySelector('.event-strip__badge').textContent,
+      chip: document.getElementById('heroChip').hidden ? '' : document.getElementById('heroChip').textContent,
+      title: strip.querySelector('.event-strip__title').textContent,
+    }
+  })
+  check('L2h in October the homepage is Halloween: moon, bats, ghosts, a graveyard, and tombstones with epitaphs above the footer',
+    h1.season === 'halloween' && h1.ghosts === 3 && h1.bats === 3 && h1.moon === 1 && h1.yard === 1 && h1.stones === 4 && h1.pumpkins >= 6, JSON.stringify(h1))
+  check('L2h the gold turns pumpkin orange', h1.gold === '#ff8a1f', h1.gold)
+  check('L2h Pink October, the seminar and HYROX are three cards right under the hero, in that order',
+    JSON.stringify(h1.cards) === JSON.stringify(['/pink-october', '/self-defense-for-women', '/hyrox-youngstars']) && h1.stripTop < 1000 && /THIS MONTH AT LABYRINTH/i.test(h1.title), JSON.stringify(h1))
+  check('L2h the seminar card counts down the days and the hero has a line that jumps to the cards',
+    h1.badge === '10 days to go' && /Pink October/.test(h1.chip) && /self defense/i.test(h1.chip) && /HYROX/.test(h1.chip), JSON.stringify(h1))
+  const colors = await hh.evaluate(() => [...document.querySelectorAll('#eventStrip .event-strip__cta')].map(c => getComputedStyle(c).backgroundColor))
+  check('L2h each card keeps its own color on the dark page: pink, pink, volt yellow',
+    colors.join('|') === 'rgb(229, 143, 181)|rgb(229, 143, 181)|rgb(227, 255, 46)', colors.join('|'))
+  await hh.dispatchEvent('.season-ghost--1', 'click')
+  check('L2h tapping a ghost makes it say Boo', await hh.evaluate(() => document.querySelector('.season-ghost--1').classList.contains('is-boo')))
+  check('L2h the hero chip leads to the cards', (await hh.getAttribute('#heroChip', 'href')) === '#eventStrip')
+
+  const mp = await (await browser.newContext({ viewport: { width: 390, height: 844 } })).newPage()
+  await mp.clock.setFixedTime(new Date('2026-10-14T15:00:00Z'))
+  await mp.goto(URLH, { waitUntil: 'load' })
+  check('L2h on a phone nothing sticks out sideways and the cards stack',
+    !(await mp.evaluate(() => document.documentElement.scrollWidth > innerWidth)) &&
+    (await mp.evaluate(() => { const c = [...document.querySelectorAll('#eventStrip a.event-strip__link')]; return c[1].getBoundingClientRect().top > c[0].getBoundingClientRect().bottom })))
+
+  const rm = await (await browser.newContext({ reducedMotion: 'reduce' })).newPage()
+  await rm.clock.setFixedTime(new Date('2026-10-14T15:00:00Z'))
+  await rm.goto(URLH, { waitUntil: 'load' })
+  check('L2h with reduced motion on, nothing flies, floats or flickers',
+    (await rm.evaluate(() => ['.season-bat--1', '.season-ghost--1', '.season-pump--a', '.season-fog--1'].every(sel => getComputedStyle(document.querySelector(sel)).animationName === 'none'))))
+
+  // After October: the page is itself again and only the kids' race is left.
+  await hh.clock.setFixedTime(new Date('2026-11-02T15:00:00Z'))
+  await hh.goto(URLH, { waitUntil: 'load' })
+  const h2 = await hh.evaluate(() => ({
+    season: document.documentElement.dataset.season || '',
+    deco: [...document.querySelectorAll('.season-hero, .season-footer')].every(e => getComputedStyle(e).display === 'none'),
+    gold: getComputedStyle(document.documentElement).getPropertyValue('--gold').trim(),
+    cards: [...document.querySelectorAll('#eventStrip a.event-strip__link')].filter(a => !a.hidden).map(a => a.getAttribute('href')),
+    chip: document.getElementById('heroChip').textContent,
+    title: getComputedStyle(document.querySelector('.event-strip__title')).fontFamily,
+  }))
+  check('L2h on November 2 the decorations are gone and the gold is back',
+    h2.season === '' && h2.deco && h2.gold === '#C8A24C', JSON.stringify(h2))
+  check('L2h and only the HYROX card (and its chip) are left of the October block',
+    JSON.stringify(h2.cards) === JSON.stringify(['/hyrox-youngstars']) && /HYROX/.test(h2.chip) && !/Pink/.test(h2.chip), JSON.stringify(h2))
+
+  // The preview switches work any time of year.
+  await hh.clock.setFixedTime(new Date('2026-07-10T15:00:00Z'))
+  await hh.goto(URLH + '?season=halloween', { waitUntil: 'load' })
+  check('L2h ?season=halloween previews the theme in July', (await hh.evaluate(() => document.documentElement.dataset.season)) === 'halloween')
+  await hh.clock.setFixedTime(new Date('2026-10-14T15:00:00Z'))
+  await hh.goto(URLH + '?season=off', { waitUntil: 'load' })
+  check('L2h ?season=off turns it off in October', (await hh.evaluate(() => document.documentElement.dataset.season || '')) === '')
+  await ctx.close()
+}
+
 // ── L1v: the academy is in Texas, so the spelling is American ──
 // This kept coming back — colour, programme, grey, sceptical, organised — and
 // "remember not to" is not a mechanism. Checked against what a visitor

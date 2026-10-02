@@ -5099,43 +5099,65 @@ body {
 }
 
 
-/* The homepage's pointer at the next event (scripts/build_pages.py, event_strip).
-   Pink is the awareness color, used only here and on the event page. */
-.event-strip { padding: var(--space-4) 0; }
+/* "This month at Labyrinth" (scripts/build_pages.py, event_strip): three cards right
+   under the hero. Pink is the awareness color and volt yellow is the kids' HYROX race;
+   each card keeps its own color so they read as three different things. */
+.event-strip { padding: var(--space-12) 0 var(--space-10); position: relative; z-index: 2; }
 .event-strip[hidden] { display: none; }
+.event-strip .container { display: grid; grid-template-columns: 1fr; gap: var(--space-4); }
+.event-strip__head { margin-bottom: var(--space-2); }
+.event-strip__kicker { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); }
+.event-strip__title { margin: 6px 0 0; font-family: var(--font-display); font-size: clamp(30px, 5vw, 48px); line-height: 1; letter-spacing: 0.01em; color: var(--text); }
 .event-strip__link {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   gap: var(--space-4);
-  padding: 14px var(--space-5);
-  border: 1px solid var(--awareness-line);
-  background: var(--awareness-soft);
-  border-radius: var(--radius-md);
+  padding: 22px 22px 20px;
+  border: 1.5px solid var(--awareness-line);
+  background: linear-gradient(160deg, rgba(229, 143, 181, 0.16), rgba(229, 143, 181, 0.04));
+  border-radius: 18px;
   color: var(--text);
   text-decoration: none;
-  transition: border-color 0.2s, background 0.2s;
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
 }
-.event-strip__link + .event-strip__link { margin-top: 10px; }
 .event-strip__link[hidden] { display: none; }
-.event-strip__link:hover { border-color: var(--awareness); background: rgba(229, 143, 181, 0.14); }
+.event-strip__link:hover, .event-strip__link:focus-visible { border-color: var(--awareness); transform: translateY(-3px); box-shadow: 0 14px 40px rgba(229, 143, 181, 0.18); }
 .event-strip__icon { display: flex; flex-shrink: 0; color: var(--awareness); }
-.event-strip__text {
-  display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0;
-  font-size: 14px; line-height: 1.4; color: var(--text-muted);
-}
-.event-strip__text strong { color: var(--text); font-size: 15px; }
+.event-strip__text { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; font-size: 15px; line-height: 1.5; color: var(--text-muted); }
+.event-strip__text strong { color: var(--text); font-family: var(--font-display); font-size: 26px; line-height: 1.1; letter-spacing: 0.01em; }
+.event-strip__eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--awareness); }
+.event-strip__badge { align-self: flex-start; margin-top: 4px; padding: 5px 12px; border-radius: 999px; background: var(--awareness); color: #1a0b12; font-size: 13px; font-weight: 800; }
+.event-strip__badge[hidden] { display: none; }
 .event-strip__cta {
-  flex-shrink: 0;
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: 11px 20px;
+  border-radius: 10px;
   background: var(--awareness);
   color: #0a0a0a;
-  font-weight: 600;
-  font-size: 14px;
+  font-weight: 700;
+  font-size: 15px;
+}
+.event-strip__cta::after { content: " \2192"; }
+
+/* The HYROX Youngstars card: volt yellow on black. */
+.event-strip__link--hyrox { border-color: rgba(227, 255, 46, 0.4); background: linear-gradient(160deg, rgba(227, 255, 46, 0.12), rgba(227, 255, 46, 0.03)); }
+.event-strip__link--hyrox:hover, .event-strip__link--hyrox:focus-visible { border-color: #e3ff2e; box-shadow: 0 14px 40px rgba(227, 255, 46, 0.14); }
+.event-strip__link--hyrox .event-strip__icon, .event-strip__link--hyrox .event-strip__eyebrow { color: #e3ff2e; }
+.event-strip__link--hyrox .event-strip__cta { background: #e3ff2e; color: #0a0b08; }
+@media (min-width: 900px) {
+  .event-strip .container { grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
+  .event-strip__head { grid-column: 1 / -1; }
 }
 
-/* The HYROX Youngstars row in the same strip: volt yellow on black. */
-.event-strip__link--hyrox { border-color: rgba(227, 255, 46, 0.4); background: rgba(227, 255, 46, 0.06); }
-.event-strip__link--hyrox:hover { border-color: #e3ff2e; background: rgba(227, 255, 46, 0.12); }
-.event-strip__link--hyrox .event-strip__icon { color: #e3ff2e; }
-.event-strip__link--hyrox .event-strip__cta { background: #e3ff2e; color: #0a0b08; }
+/* The line under the hero buttons that jumps to the block above (filled by its script). */
+.hero__chip {
+  display: inline-flex; align-items: center; gap: 10px; margin-top: var(--space-5); padding: 9px 16px;
+  border: 1.5px solid var(--awareness-line); border-radius: 999px; background: rgba(10, 10, 10, 0.55);
+  color: var(--text); font-size: 14px; font-weight: 600; text-decoration: none; backdrop-filter: blur(6px);
+  transition: border-color 0.2s, background 0.2s;
+}
+.hero__chip[hidden] { display: none; }
+.hero__chip .ribbon { color: var(--awareness); flex-shrink: 0; }
+.hero__chip b { color: var(--awareness); }
+.hero__chip:hover { border-color: var(--awareness); background: rgba(229, 143, 181, 0.14); }
+@media (max-width: 600px) { .hero__chip { border-radius: 16px; align-items: flex-start; } }
