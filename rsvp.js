@@ -88,7 +88,7 @@
   var pageTitle = form.getAttribute('data-title') || 'Rolling for Ribbons';
   var where = form.getAttribute('data-where') || 'Labyrinth BJJ, Fulshear, TX';
   var pageUrl = form.getAttribute('data-url') || window.location.href.split('?')[0];
-  var EVENT_MINUTES = 60;  // a default for calendar entries; the page does not promise a length
+  var EVENT_MINUTES = parseInt(form.getAttribute('data-minutes'), 10) || 90;  // 11:00 AM to 12:30 PM
 
   function centralDay(ms) {
     return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Chicago', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(ms));
@@ -141,7 +141,7 @@
     var btn = $('rsvp-share'), msg = $('rsvp-shared');
     if (!btn) return;
     btn.addEventListener('click', function () {
-      var text = 'Free self defense seminar for women, Saturday, October 24 at 11 AM at Labyrinth BJJ in Fulshear. No experience needed. Come with me?';
+      var text = 'Free self defense seminar for women, Saturday, October 24, 11 AM to 12:30 PM, at Labyrinth BJJ in Fulshear. No experience needed. Come with me?';
       if (navigator.share) {
         navigator.share({ title: pageTitle, text: text, url: pageUrl }).catch(function () { /* closed the sheet */ });
         return;
