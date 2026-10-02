@@ -1529,6 +1529,98 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
   await page.setViewportSize({ width:1280, height:800 })
 }
 
+// ── L1z: the HYROX Youngstars interest-list page ──
+// Its own look (black and volt yellow, not the academy gold or awareness pink), the
+// facts exactly as the academy announced them, and a form that writes each child
+// into the notes the edge function reads. The endpoint is mocked.
+{
+  const ctx = await browser.newContext()
+  const hp = await ctx.newPage()
+  await hp.clock.setFixedTime(new Date('2026-10-20T15:00:00Z'))
+  const URL = 'http://localhost:4620/hyrox-youngstars'
+  let posts = []
+  let reply = { status: 200, body: { ok: true }, delay: 0 }
+  await hp.route('**/functions/v1/event-rsvp', async route => {
+    posts.push(JSON.parse(route.request().postData() || '{}'))
+    if (reply.delay) await new Promise(r => setTimeout(r, reply.delay))
+    await route.fulfill({ status: reply.status, contentType: 'application/json', headers: { 'access-control-allow-origin': '*' }, body: JSON.stringify(reply.body) })
+  })
+  await hp.goto(URL, { waitUntil: 'networkidle' })
+  const t = await hp.evaluate(() => document.body.innerText)
+  check('L1z the page leads with HYROX Youngstars, Houston, April 3 to 4, 2027',
+    /HYROX\s*YOUNGSTARS/i.test(await hp.textContent('h1')) && /Houston/i.test(t) && /April 3.4, 2027/i.test(t))
+  check('L1z ages 8 to 15, Saturday for 8 to 11 and Sunday for 12 to 15, times still to come',
+    /8.15/.test(t) && /Saturday, April 3\s*Ages 8.11/.test(t) && /Sunday, April 4\s*Ages 12.15/.test(t) && /still to be announced/i.test(t))
+  check('L1z the plan: keep BJJ, S&C classes introduce the movements, structured training after November tickets',
+    /Strength & Conditioning/.test(t) && /November/.test(t) && /at least one Strength & Conditioning class a week/i.test(t) && /one HYROX workout a week/i.test(t))
+  const cells = await hp.$$eval('.hx-table tbody tr', rs => rs.map(r => [...r.children].map(c => c.textContent.replace(/\s+/g, ' ').trim()).join('|')))
+  check('L1z the station table matches the announcement for ages 8-9 and 10-11',
+    cells.length === 8 && cells[0] === 'SkiErg|300 m|400 m' && cells[1] === 'Sled Push|15 m \u00b7 35 kg|15 m \u00b7 50 kg' &&
+    cells[2] === 'Sled Pull|15 m \u00b7 25 kg|15 m \u00b7 40 kg' && cells[4] === 'Row|200 m|300 m' && cells[5] === 'Farmers Carry|50 m \u00b7 4 kg|50 m \u00b7 6 kg' &&
+    /Frogger/.test(cells[3]) && /Burpee broad/.test(cells[3]) && cells[7] === 'Weighted Squats|50 \u00b7 1 kg|50 \u00b7 2 kg', JSON.stringify(cells))
+  check('L1z the running distances by age group', /400.550 m total/.test(t) && /800.1,100 m total/.test(t) && /1\.6.2\.2 km total/.test(t))
+  const links = await hp.$$eval('a[href*="hyrox.com"]', as => as.map(a => a.href))
+  check('L1z it links to the official Youngstars and Houston pages, and says it is not affiliated',
+    links.includes('https://hyrox.com/hyrox-youngstars/') && links.includes('https://hyrox.com/event/hyrox-youngstars-houston/') && /not affiliated with or endorsed by HYROX/.test(t))
+  const look = await hp.evaluate(() => ({
+    theme: document.body.classList.contains('theme-hyrox'),
+    primary: getComputedStyle(document.querySelector('.hx-btn--volt')).backgroundColor,
+    mainBg: getComputedStyle(document.querySelector('main')).backgroundColor,
+    title: getComputedStyle(document.querySelector('.hx-title span')).color,
+  }))
+  check('L1z it has its own look: volt yellow on near-black, not the academy gold or the awareness pink',
+    look.theme && look.primary === 'rgb(227, 255, 46)' && look.title === 'rgb(227, 255, 46)' && look.mainBg === 'rgb(10, 11, 8)', JSON.stringify(look))
+  check('L1z no em dashes, no pink, and American spelling', !/\u2014/.test(t) && (await hp.locator('.ribbon').count()) === 0)
+
+  // The form.
+  check('L1z the form starts with one child row and grows with the count',
+    (await hp.locator('.hx-kid').count()) === 1)
+  await hp.selectOption('#hx-count', '3')
+  check('L1z choosing 3 kids shows three name-and-age rows', (await hp.locator('.hx-kid').count()) === 3)
+  await hp.selectOption('#hx-count', '2')
+  check('L1z and choosing 2 takes one away', (await hp.locator('.hx-kid').count()) === 2)
+  await hp.click('#hx-submit')
+  check('L1z sending it empty is stopped, with messages, and nothing is posted',
+    posts.length === 0 && /full name/.test(await hp.textContent('#hx-name-err')) && /email/.test(await hp.textContent('#hx-email-err')) && /each child/.test(await hp.textContent('#hx-notes-err')))
+  await hp.fill('#hx-name', 'Dana Reyes'); await hp.fill('#hx-email', 'Dana@Example.com'); await hp.fill('#hx-phone', '281 555 0100')
+  await hp.fill('#hx-kid-name-1', 'Emma (the) Reyes'); await hp.selectOption('#hx-kid-age-1', '9')
+  await hp.fill('#hx-kid-name-2', 'Jack'); await hp.fill('#hx-note', 'Jack has done two seasons of cross country')
+  await hp.click('#hx-submit')
+  check('L1z a child without an age is caught', posts.length === 0 && /each child/.test(await hp.textContent('#hx-notes-err')))
+  await hp.selectOption('#hx-kid-age-2', '12')
+  reply = { status: 200, body: { ok: true }, delay: 300 }
+  await hp.dblclick('#hx-submit')
+  await hp.waitForSelector('#hx-success:not([hidden])')
+  check('L1z it posts once to the RSVP function with the event, the parent, the count and each kid in the notes',
+    posts.length === 1 && posts[0].event === 'hyrox-youngstars-houston-2027' && posts[0].name === 'Dana Reyes' && posts[0].email === 'dana@example.com' &&
+    posts[0].party === 2 && posts[0].notes === 'Kids: Emma the Reyes (9), Jack (12). Note: Jack has done two seasons of cross country', JSON.stringify(posts))
+  check('L1z and then confirms to the parent by name, kids and email, and says what is next',
+    /Dana/.test(await hp.textContent('#hx-success')) && /Emma the Reyes, Jack/.test(await hp.textContent('#hx-success-kids')) &&
+    /dana@example\.com/.test(await hp.textContent('#hx-success-email')) && /November/.test(await hp.textContent('#hx-success')) && await hp.isHidden('#hx-form'))
+
+  // The server's own refusal comes back next to the field; a failure says to call.
+  await hp.goto(URL, { waitUntil: 'networkidle' })
+  posts = []
+  await hp.fill('#hx-name', 'Dana Reyes'); await hp.fill('#hx-email', 'dana@example.com')
+  await hp.fill('#hx-kid-name-1', 'Emma'); await hp.selectOption('#hx-kid-age-1', '8')
+  reply = { status: 400, body: { error: 'HYROX Youngstars is for ages 8 to 15 on race day', field: 'notes' }, delay: 0 }
+  await hp.click('#hx-submit')
+  await hp.waitForFunction(() => document.getElementById('hx-notes-err').textContent.length > 0)
+  check('L1z a refusal from the server appears beside the kids', /ages 8 to 15/.test(await hp.textContent('#hx-notes-err')) && (await hp.isVisible('#hx-form')))
+  reply = { status: 500, body: { error: 'Could not save your RSVP. Please call us on (281) 393-7983.' }, delay: 0 }
+  await hp.click('#hx-submit')
+  await hp.waitForSelector('#hx-status:not([hidden])')
+  check('L1z a failed save keeps the form and gives a tap-to-call number',
+    (await hp.locator('#hx-status a[href="tel:2813937983"]').count()) === 1 && await hp.isVisible('#hx-form'))
+
+  // After the weekend the list is closed.
+  await hp.clock.setFixedTime(new Date('2027-04-03T15:00:00Z'))
+  await hp.goto(URL, { waitUntil: 'networkidle' })
+  check('L1z once the race weekend arrives the form is replaced by a closed notice',
+    await hp.isHidden('#hx-form') && await hp.isVisible('#hx-over'))
+  await ctx.close()
+}
+
 // ── L1v: the academy is in Texas, so the spelling is American ──
 // This kept coming back — colour, programme, grey, sceptical, organised — and
 // "remember not to" is not a mechanism. Checked against what a visitor

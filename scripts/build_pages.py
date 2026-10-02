@@ -1450,6 +1450,295 @@ def render_pink_october():
 
     return "\n".join([head, NAV, crumbs([("Pink October", PINK["path"])]), body, TAIL % {"footer": FOOTER}])
 
+# ── /hyrox-youngstars ────────────────────────────────────────────────────────
+#
+# A parents' interest list for the kids' HYROX Youngstars Houston race (April
+# 3 and 4, 2027), in its own black-and-volt-yellow theme. It collects who and
+# how old, not a payment: tickets are bought from HYROX, and the academy only
+# needs a head count to plan the training group. Every number below is from the
+# announcement the academy sent; nothing is added to it.
+#
+# The sign-up posts to the same event-rsvp function as the seminar (event
+# 'hyrox-youngstars-houston-2027'); its notes carry each child's name and age.
+
+HYROX = {
+    "path": "/hyrox-youngstars",
+    "slug": "hyrox-youngstars-houston-2027",
+    "endpoint": "https://jctufxvmuvobaggxcwfn.supabase.co/functions/v1/event-rsvp",
+    # The list closes the day before the race weekend (Central, CDT).
+    "closes_utc": "2027-04-02T05:00:00Z",
+    "official": "https://hyrox.com/hyrox-youngstars/",
+    "houston": "https://hyrox.com/event/hyrox-youngstars-houston/",
+}
+
+# Station by station, as published for the two younger divisions.
+HYROX_STATIONS = [
+    ("SkiErg", "300 m", "400 m"),
+    ("Sled Push", "15 m &middot; 35 kg", "15 m &middot; 50 kg"),
+    ("Sled Pull", "15 m &middot; 25 kg", "15 m &middot; 40 kg"),
+    ("Jumps", "Frogger jumps &middot; 20 m", "Burpee broad jumps &middot; 20 m"),
+    ("Row", "200 m", "300 m"),
+    ("Farmers Carry", "50 m &middot; 4 kg", "50 m &middot; 6 kg"),
+    ("Lunges", "20 m", "20 m"),
+    ("Weighted Squats", "50 &middot; 1 kg", "50 &middot; 2 kg"),
+]
+HYROX_RUNNING = [("8&ndash;9", "400&ndash;550 m total"), ("10&ndash;11", "400&ndash;550 m total"),
+                 ("12&ndash;13", "800&ndash;1,100 m total"), ("14&ndash;15", "1.6&ndash;2.2 km total, running between stations")]
+
+
+def _hyrox_bolt(size=20):
+    """A lightning bolt, drawn once; colored by CSS like the ribbon."""
+    return ('<svg class="bolt" width="%d" height="%d" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">'
+            '<path d="M13.2 2 4.5 13.4h6L9.3 22l9.2-12.2h-6.1z"/></svg>') % (size, size)
+
+
+def render_hyrox():
+    url = SITE + HYROX["path"]
+    desc = ("Kids 8 to 15: train with Labyrinth BJJ in Fulshear, TX for HYROX Youngstars Houston, April 3 to 4, 2027. "
+            "Join the interest list and we will build the training group around you.")
+    faqs = [
+        ("Does my child need to do BJJ to join?", "Our training group is built around our own students, so kids keep up their regular BJJ classes alongside the HYROX work. If your child is not a student yet, call us and we will talk it through."),
+        ("What does it cost to join the list?", "Nothing. This is only an interest list so we can plan the training schedule. Race tickets are bought from HYROX when they are released in November."),
+        ("How old does my child have to be?", "8 to 15 on race day, April 3 or 4, 2027. The age groups are 8&ndash;9, 10&ndash;11, 12&ndash;13 and 14&ndash;15."),
+        ("When do we find out the schedule?", "Exact wave and start times are not out yet. We will send the training schedule to everyone on the list as soon as it is set, and structured training starts after tickets drop in November."),
+    ]
+    head = HEAD % {
+        "title": "HYROX Youngstars Houston Training for Kids | Labyrinth BJJ Fulshear",
+        "description": desc,
+        "url": url,
+        "og_title": "HYROX Youngstars Houston, April 3 to 4, 2027: Kids Training Group at Labyrinth BJJ",
+        "image": SITE + "/assets/og-image.jpg",
+        "schema": "\n".join([
+            jsonld(crumb_schema([("HYROX Youngstars", HYROX["path"])])),
+            jsonld({"@context": "https://schema.org", "@type": "WebPage", "name": "HYROX Youngstars Houston training group",
+                    "url": url, "description": desc,
+                    "publisher": {"@type": "Organization", "name": "Labyrinth BJJ", "url": SITE}}),
+            jsonld(faq_schema(faqs)),
+        ]),
+    }
+    head = head.replace("<body>", '<body class="theme-hyrox">', 1)
+
+    stations = "\n".join(
+        "          <tr><th scope=\"row\">%s</th><td>%s</td><td>%s</td></tr>" % r for r in HYROX_STATIONS)
+    running = "\n".join("        <li><strong>Ages %s</strong><span>%s</span></li>" % r for r in HYROX_RUNNING)
+    chips = "".join("<li>%s</li>" % n for n in
+                    ["SkiErg", "Sled push", "Sled pull", "Jumps", "Rowing", "Farmers carry", "Lunges", "Weighted squats"])
+
+    body = """
+<header class="hx-hero">
+  <div class="container">
+    <p class="hx-tag">@@BOLT@@Kids fitness race &middot; Houston</p>
+    <h1 class="hx-title">HYROX<br><span>YOUNGSTARS</span></h1>
+    <p class="hx-sub">Houston &middot; April 3&ndash;4, 2027</p>
+    <p class="hx-lead">We are putting together a group of Labyrinth kids to train for the race together. Running, sleds, rowing, carries and lunges, scaled for ages 8 to 15. Tell us who is interested and we will build the training around you.</p>
+    <div class="hx-cta">
+      <a href="#join" class="hx-btn hx-btn--volt">Join the Interest List</a>
+      <a href="#race" class="hx-btn hx-btn--line">See the Race</a>
+    </div>
+    <div class="hx-facts">
+      <div class="hx-fact"><span>Race weekend</span><strong>Apr 3&ndash;4, 2027</strong></div>
+      <div class="hx-fact"><span>Ages</span><strong>8&ndash;15</strong></div>
+      <div class="hx-fact"><span>Where</span><strong>Houston, TX</strong></div>
+      <div class="hx-fact"><span>To join the list</span><strong>Free</strong></div>
+    </div>
+  </div>
+</header>
+
+<section class="prog-section" id="what" data-live>
+  <div class="container">
+    <p class="hx-label">@@BOLT16@@What it is</p>
+    <h2 class="hx-h2">A RACE BUILT FOR KIDS</h2>
+    <div class="hx-prose">
+      <p>HYROX is a worldwide fitness race that combines running with functional fitness stations. <strong>HYROX Youngstars is the kids&rsquo; version</strong>, with running distances, movements and weights that fit each age group.</p>
+    </div>
+    <ul class="hx-chips" aria-label="Race stations">@@CHIPS@@</ul>
+  </div>
+</section>
+
+<section class="prog-section hx-alt" id="who" data-live>
+  <div class="container">
+    <p class="hx-label">@@BOLT16@@Who can race</p>
+    <h2 class="hx-h2">AGES 8 TO 15</h2>
+    <p class="hx-note">Kids must be 8 to 15 years old on race day.</p>
+    <div class="hx-ages" role="list">
+      <div class="hx-age" role="listitem"><strong>8&ndash;9</strong><span>Saturday</span></div>
+      <div class="hx-age" role="listitem"><strong>10&ndash;11</strong><span>Saturday</span></div>
+      <div class="hx-age" role="listitem"><strong>12&ndash;13</strong><span>Sunday</span></div>
+      <div class="hx-age" role="listitem"><strong>14&ndash;15</strong><span>Sunday</span></div>
+    </div>
+    <div class="hx-days">
+      <div><strong>Saturday, April 3</strong><span>Ages 8&ndash;11</span></div>
+      <div><strong>Sunday, April 4</strong><span>Ages 12&ndash;15</span></div>
+    </div>
+    <p class="hx-note">Exact wave and start times are still to be announced.</p>
+  </div>
+</section>
+
+<section class="prog-section" id="training" data-live>
+  <div class="container">
+    <p class="hx-label">@@BOLT16@@How we train</p>
+    <h2 class="hx-h2">THE PLAN</h2>
+    <ol class="hx-steps">
+      <li>
+        <span class="hx-steps__when">Now</span>
+        <div><h3>Keep training BJJ</h3><p>Kids carry on with their regular classes. We will also start working HYROX movements into our Strength &amp; Conditioning classes.</p></div>
+      </li>
+      <li>
+        <span class="hx-steps__when">November</span>
+        <div><h3>Tickets drop, training gets structured</h3><p>Kids planning to race are encouraged to join <strong>at least one Strength &amp; Conditioning class a week</strong> and <strong>one HYROX workout a week</strong> that combines running with the race movements and stations.</p></div>
+      </li>
+      <li>
+        <span class="hx-steps__when">Where</span>
+        <div><h3>A gym with the equipment</h3><p>The HYROX workouts need SkiErgs, rowing machines and more. We are hoping to hold them at a gym with that equipment very close to ours, and will confirm as soon as it is set.</p></div>
+      </li>
+      <li>
+        <span class="hx-steps__when">Apr 3&ndash;4</span>
+        <div><h3>Race weekend</h3><p>Several months to build strength, endurance and familiarity with the format, then we race together in Houston.</p></div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<section class="prog-section hx-alt" id="race" data-live>
+  <div class="container">
+    <p class="hx-label">@@BOLT16@@What the race looks like</p>
+    <h2 class="hx-h2">STATION BY STATION</h2>
+    <p class="hx-note">Distances and weights change with age and, for the older divisions, gender. Here are the two younger divisions.</p>
+    <div class="hx-tablewrap">
+      <table class="hx-table">
+        <thead><tr><th scope="col">Station</th><th scope="col">Ages 8&ndash;9</th><th scope="col">Ages 10&ndash;11</th></tr></thead>
+        <tbody>
+@@STATIONS@@
+        </tbody>
+      </table>
+    </div>
+    <h3 class="hx-h3">Running</h3>
+    <p class="hx-note">Running grows with age. Each lap is about 200&ndash;275 m, depending on the venue.</p>
+    <ul class="hx-run">
+@@RUNNING@@
+    </ul>
+    <p class="hx-note">The Youngstars website has a kid-friendly manual for every age group with the exact movements, distances, weights and standards. Have a look at your child&rsquo;s before you sign up.</p>
+    <div class="hx-cta">
+      <a href="@@OFFICIAL@@" class="hx-btn hx-btn--line" target="_blank" rel="noopener noreferrer">HYROX Youngstars site</a>
+      <a href="@@HOUSTON@@" class="hx-btn hx-btn--line" target="_blank" rel="noopener noreferrer">Houston event page</a>
+    </div>
+  </div>
+</section>
+
+<section class="prog-section hx-join" id="join" data-live>
+  <div class="container">
+    <p class="hx-label">@@BOLT16@@Interest list</p>
+    <h2 class="hx-h2">COUNT YOUR KID IN</h2>
+    <p class="hx-note hx-note--lead">This is just a list for now: nothing to pay and nothing to decide. Knowing how many kids are interested, and how old they are, helps us plan the training schedule. Professor Shaun keeps the list.</p>
+
+    <form class="hx-form" id="hx-form" novalidate
+          data-event="@@SLUG@@" data-endpoint="@@ENDPOINT@@" data-closes="@@CLOSES@@">
+      <p class="hx-form__title">@@BOLT@@Join the list <span>Takes a minute</span></p>
+
+      <div class="booking-form__group">
+        <label class="booking-form__label" for="hx-name">Your name (parent or guardian)</label>
+        <input class="booking-form__input" id="hx-name" name="name" type="text" autocomplete="name" required minlength="2" maxlength="100" aria-describedby="hx-name-err">
+        <p class="booking-form__error" id="hx-name-err"></p>
+      </div>
+      <div class="booking-form__group">
+        <label class="booking-form__label" for="hx-email">Email</label>
+        <input class="booking-form__input" id="hx-email" name="email" type="email" inputmode="email" autocomplete="email" required maxlength="160" aria-describedby="hx-email-err">
+        <p class="booking-form__error" id="hx-email-err"></p>
+      </div>
+      <div class="booking-form__group">
+        <label class="booking-form__label" for="hx-phone">Phone <span class="hx-opt">(optional)</span></label>
+        <input class="booking-form__input" id="hx-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="40" aria-describedby="hx-phone-err">
+        <p class="booking-form__error" id="hx-phone-err"></p>
+      </div>
+      <div class="booking-form__group">
+        <label class="booking-form__label" for="hx-count">How many kids?</label>
+        <select class="booking-form__input booking-form__select" id="hx-count" name="party" aria-describedby="hx-party-err">
+          <option value="1" selected>1 child</option>
+          <option value="2">2 kids</option>
+          <option value="3">3 kids</option>
+          <option value="4">4 kids</option>
+          <option value="5">5 kids</option>
+        </select>
+        <p class="booking-form__error" id="hx-party-err"></p>
+      </div>
+
+      <fieldset class="hx-kids" id="hx-kids">
+        <legend class="booking-form__label">Each child&rsquo;s name and age <span class="hx-opt">(age on April 3, 2027)</span></legend>
+        <div class="hx-kid" data-kid="1">
+          <input class="booking-form__input" type="text" id="hx-kid-name-1" aria-label="Child 1 name" placeholder="Child&rsquo;s first name" maxlength="40" autocomplete="off">
+          <select class="booking-form__input booking-form__select" id="hx-kid-age-1" aria-label="Child 1 age on race day">
+            <option value="">Age</option>@@AGES@@
+          </select>
+        </div>
+        <p class="booking-form__error" id="hx-notes-err"></p>
+      </fieldset>
+
+      <div class="booking-form__group">
+        <label class="booking-form__label" for="hx-note">Anything we should know? <span class="hx-opt">(optional)</span></label>
+        <textarea class="booking-form__input booking-form__area" id="hx-note" name="note" rows="3" maxlength="250"></textarea>
+      </div>
+
+      <div class="rsvp__hp" aria-hidden="true">
+        <label>Leave this field empty<input type="text" name="hp_leave_empty" id="hx-hp" tabindex="-1" autocomplete="off"></label>
+      </div>
+
+      <p class="hx-status" id="hx-status" role="alert" hidden></p>
+      <button class="hx-submit" id="hx-submit" type="submit">Add Us to the List</button>
+      <p class="booking-form__consent">Free, and no commitment. We will email you a confirmation. Your details are used only to plan this training group.</p>
+      <noscript><p class="hx-status">The form needs JavaScript. Please call us on @@PHONE@@ or email <a href="mailto:info@labyrinth.vision">info@labyrinth.vision</a>.</p></noscript>
+    </form>
+
+    <div class="hx-success" id="hx-success" tabindex="-1" hidden>
+      @@BOLT40@@
+      <p class="hx-label">You are on the list</p>
+      <h2 class="hx-h2">GOT IT</h2>
+      <p><span id="hx-success-name"></span>, we have <strong id="hx-success-kids"></strong> down for HYROX Youngstars Houston.</p>
+      <p>A confirmation is on its way to <strong id="hx-success-email"></strong>. If you do not see it in a few minutes, check your spam folder. To change anything, just submit this form again with the same email.</p>
+      <p>We will email the training schedule as soon as it is set. Structured training starts after tickets drop in November.</p>
+      <div class="hx-cta">
+        <a href="@@OFFICIAL@@" class="hx-btn hx-btn--volt" target="_blank" rel="noopener noreferrer">Read the age-group manuals</a>
+        <a href="/" class="hx-btn hx-btn--line">Back to the site</a>
+      </div>
+    </div>
+    <p class="hx-note" id="hx-over" hidden>The interest list has closed. Thank you to everyone who joined. See what is on this week on the <a href="/schedule">schedule</a>.</p>
+  </div>
+</section>
+
+<section class="prog-section" id="faq" data-live>
+  <div class="container">
+    <p class="hx-label">@@BOLT16@@Good to know</p>
+    <h2 class="hx-h2">QUESTIONS</h2>
+    <div class="faq-list">
+@@FAQ@@
+    </div>
+  </div>
+</section>
+
+<section class="prog-section hx-alt">
+  <div class="container">
+    <p class="hx-label">@@BOLT16@@Where</p>
+    <h2 class="hx-h2">LABYRINTH BJJ</h2>
+    <div class="hx-prose">
+      <p>@@ADDRESS@@<br>Questions? Call <a href="tel:2813937983">@@PHONE@@</a> or ask Professor Shaun at the front desk.</p>
+      <p class="hx-fine">Labyrinth BJJ is an independent academy training its own students for this race. We are not affiliated with or endorsed by HYROX. HYROX and HYROX Youngstars are trademarks of their owners.</p>
+    </div>
+  </div>
+</section>
+<script src="/hyrox.js" defer></script>
+"""
+    ages = "".join('<option value="%d">%d</option>' % (n, n) for n in range(8, 16))
+    for token, value in {
+        "@@BOLT@@": _hyrox_bolt(20), "@@BOLT16@@": _hyrox_bolt(16), "@@BOLT40@@": _hyrox_bolt(44),
+        "@@CHIPS@@": chips, "@@STATIONS@@": stations, "@@RUNNING@@": running, "@@AGES@@": ages,
+        "@@FAQ@@": faq_block(faqs), "@@SLUG@@": HYROX["slug"], "@@ENDPOINT@@": HYROX["endpoint"],
+        "@@CLOSES@@": HYROX["closes_utc"], "@@OFFICIAL@@": HYROX["official"], "@@HOUSTON@@": HYROX["houston"],
+        "@@PHONE@@": PHONE, "@@ADDRESS@@": ADDRESS,
+    }.items():
+        body = body.replace(token, value)
+    assert "@@" not in body, "an unreplaced token in the HYROX page"
+    return "\n".join([head, NAV, crumbs([("HYROX Youngstars", HYROX["path"])]), body, TAIL % {"footer": FOOTER}])
+
+
 
 # ── /ennova ──────────────────────────────────────────────────────────────────
 #
@@ -2581,6 +2870,9 @@ def main():
     with open(os.path.join(ROOT, "pink-october.html"), "w", encoding="utf-8") as fh:
         fh.write(stamp(render_pink_october()))
     print("wrote pink-october.html")
+    with open(os.path.join(ROOT, "hyrox-youngstars.html"), "w", encoding="utf-8") as fh:
+        fh.write(stamp(render_hyrox()))
+    print("wrote hyrox-youngstars.html")
     with open(os.path.join(ROOT, "pricing.html"), "w", encoding="utf-8") as fh:
         fh.write(stamp(render_pricing()))
     print("wrote pricing.html")
