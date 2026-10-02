@@ -1149,40 +1149,56 @@ def render_event_rsvp():
 
 
 def _pink_picker():
-    """The adult classes a woman can book as a first class, one tap each.
+    """The adult classes a woman can book as a first class, on a calendar of the month.
 
     Straight from the timetable the whole site is built from, so it cannot
-    drift: adult and all-ages classes, minus the competition room, the advanced
-    classes (they need a belt or wrestling experience) and open mat. Each button
-    opens the booking form already filled in for that class."""
+    drift: adult and all-ages classes, minus the advanced classes (they need a
+    belt or wrestling experience) and open mat. The Friday competition class is
+    listed and labelled. Each weekday's classes are written out once; the page
+    script lays them over the real days of October, so tapping the 14th shows
+    what runs on a Wednesday. Each button opens the booking form already filled
+    in for that class and that date."""
+    import datetime
     short = schedule_component.SHORT
     days = []
     for day in schedule_data.DAYS:
         rows = []
         for (d, time, name, ages, style, aud, flags) in schedule_data.for_day(day):
-            if aud not in ("adult", "all") or flags & {"comp", "adv"} or name == "Open Mat":
+            if aud not in ("adult", "all") or "adv" in flags or name == "Open Mat":
                 continue
             mode, book_name = schedule_component._booking(name, ages, aud, flags)
             if mode != "form":
                 continue
             h, rest = time.split(":")
             mins = (int(h) % 12 + (12 if rest.endswith("PM") else 0)) * 60 + int(rest[:2])
-            label = name + (" &middot; " + style if style else "")
+            label = html.escape(name + (" \u00b7 " + style if style else "")).replace(" \u00b7 ", " &middot; ")
+            if "comp" in flags:
+                label += " &middot; Competition team"
             rows.append(
                 '<button type="button" class="pick__time" data-name="%s" data-type="%s" data-day="%s" '
                 'data-time="%s" data-mins="%d"><strong>%s</strong><span>%s</span></button>'
                 % (html.escape(book_name, quote=True), html.escape(style, quote=True), short[day], time, mins,
-                   time, label.replace("&", "&amp;").replace("&amp;middot;", "&middot;")))
+                   time, label))
         if rows:
             days.append((short[day], day, rows))
-    pills = "".join('<button type="button" class="pick__pill" data-pick-pill="%s" aria-pressed="false">%s</button>' % (s_, s_)
-                    for s_, _, _ in days)
     panels = "\n".join(
-        '      <div class="pick__day" data-pick-day="%s" role="group" aria-label="%s classes">\n'
-        '        <h3 class="pick__day-title">%s</h3>\n        <div class="pick__times">%s</div>\n      </div>'
-        % (s_, full, full, "".join(rows)) for s_, full, rows in days)
-    return ('<div class="pick" id="pick" data-pick>\n      <div class="pick__pills" role="group" aria-label="Choose a day">%s</div>\n%s\n    </div>'
-            % (pills, panels))
+        '      <div class="pick__week" data-pick-day="%s" hidden>%s</div>' % (s_, "".join(rows))
+        for s_, _, rows in days)
+    start = datetime.datetime.fromisoformat(EVENT["start"])
+    first = datetime.date.fromisoformat(PINK["starts"])
+    last = datetime.date(first.year, first.month + 1, 1) - datetime.timedelta(days=1)
+    rng, _ = _event_range()
+    return (
+        '<div class="pick" id="pick" data-pick data-year="%d" data-month="%d" data-last="%s" data-event="%s">\n'
+        '      <div class="pick__cal" id="pick-cal"></div>\n'
+        '      <div class="pick__panel" id="pick-panel" aria-live="polite"></div>\n'
+        '      <noscript><p class="pick__nojs">Turn on JavaScript to pick a date, or <a href="tel:2813937983">call %s</a>.</p></noscript>\n'
+        '%s\n'
+        '      <a class="pick__event" id="pick-event" href="%s" hidden><span>Special event</span>'
+        '<strong>%s</strong><em>%s &middot; Free &middot; Tap to RSVP</em></a>\n'
+        '    </div>'
+        % (first.year, first.month, last.isoformat(), start.date().isoformat(), PHONE, panels,
+           EVENT["path"], html.escape(EVENT["title"]), rng))
 
 
 def render_pink_october():
@@ -1265,7 +1281,7 @@ def render_pink_october():
     <div>
       <p class="section-label rsvp-label">@@RIBBON16@@Book in one tap</p>
       <h2 class="section-title section-title--lg">PICK YOUR FIRST CLASS</h2>
-      <p class="pink-pick__lead">Choose a day, tap a time, and we will hold your spot. Every class here is open to beginners, and your first class is free. Mention Pink October when you book, or at the front desk.</p>
+      <p class="pink-pick__lead">Tap a day on the calendar to see what is on, then tap a class and we will hold your spot. Beginners are welcome in every class except the competition team, and your first class is free. Mention Pink October when you book, or at the front desk.</p>
     </div>
     @@PICKER@@
     <p class="pink-pick__more">Need a kids class too? <a data-book-trial href="/#book">See kids times</a> &middot; Prefer to talk first? <a href="tel:2813937983">Call @@PHONE@@</a></p>
@@ -1322,43 +1338,93 @@ def render_pink_october():
 
 <script>(function(){
   var root = document.getElementById('pick'); if (!root) return;
-  var days = [].slice.call(root.querySelectorAll('[data-pick-day]'));
-  var pills = [].slice.call(root.querySelectorAll('[data-pick-pill]'));
-  var ORDER = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var calEl = document.getElementById('pick-cal'), panel = document.getElementById('pick-panel');
+  var eventCard = document.getElementById('pick-event');
+  var weeks = {};
+  [].slice.call(root.querySelectorAll('[data-pick-day]')).forEach(function(w){ weeks[w.getAttribute('data-pick-day')] = w; });
+  var Y = +root.getAttribute('data-year'), M = +root.getAttribute('data-month') - 1, LAST = root.getAttribute('data-last'), EVENT = root.getAttribute('data-event');
+  var DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var FULL = {Sun:'Sunday',Mon:'Monday',Tue:'Tuesday',Wed:'Wednesday',Thu:'Thursday',Fri:'Friday',Sat:'Saturday'};
+  var pad = function(n){ return (n < 10 ? '0' : '') + n; };
+  var key = function(y, m, d){ return y + '-' + pad(m + 1) + '-' + pad(d); };
   root.classList.add('is-js');
   // "Now" on the academy's clock, wherever the visitor is.
-  var parts = {};
-  new Intl.DateTimeFormat('en-US', {timeZone:'America/Chicago', weekday:'short', hour:'numeric', minute:'numeric', hour12:false})
-    .formatToParts(new Date()).forEach(function(p){ parts[p.type] = p.value; });
-  var today = parts.weekday, nowMins = (parseInt(parts.hour,10) % 24) * 60 + parseInt(parts.minute,10);
-  function has(d){ return days.some(function(x){ return x.getAttribute('data-pick-day') === d; }); }
-  function show(d){
-    days.forEach(function(x){ x.classList.toggle('is-on', x.getAttribute('data-pick-day') === d); });
-    pills.forEach(function(b){ var on = b.getAttribute('data-pick-pill') === d; b.classList.toggle('is-on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); });
+  var p = {};
+  new Intl.DateTimeFormat('en-US', {timeZone:'America/Chicago', year:'numeric', month:'numeric', day:'numeric', hour:'numeric', minute:'numeric', hour12:false})
+    .formatToParts(new Date()).forEach(function(x){ p[x.type] = x.value; });
+  var todayKey = key(+p.year, +p.month - 1, +p.day), nowMins = (parseInt(p.hour, 10) % 24) * 60 + parseInt(p.minute, 10);
+  var selected = null;
+
+  function classesOn(k, wd) {
+    var w = weeks[DOW[wd]]; if (!w) return [];
+    return [].slice.call(w.querySelectorAll('.pick__time')).filter(function(b){
+      return k !== todayKey || parseInt(b.getAttribute('data-mins'), 10) > nowMins;
+    });
   }
-  // Classes that have already started today are not offered.
-  days.forEach(function(x){
-    if (x.getAttribute('data-pick-day') !== today) return;
-    [].slice.call(x.querySelectorAll('.pick__time')).forEach(function(b){ if (parseInt(b.getAttribute('data-mins'),10) <= nowMins) b.hidden = true; });
-  });
-  function left(x){ return x.querySelectorAll('.pick__time:not([hidden])').length > 0; }
-  var start = null, i = ORDER.indexOf(today);
-  for (var n = 0; n < 7 && !start; n++) {
-    var d = ORDER[(i + n) % 7];
-    var panel = days.filter(function(x){ return x.getAttribute('data-pick-day') === d; })[0];
-    if (panel && left(panel)) start = d;
+  function shutOn(d) { var B = window.LabyrinthBooking; return B && B.shutReason ? B.shutReason(d) : null; }
+  function bookable(d) {
+    var k = key(Y, M, d), wd = new Date(Y, M, d).getDay();
+    return k >= todayKey && k <= LAST && !shutOn(new Date(Y, M, d)) && classesOn(k, wd).length > 0;
   }
-  pills.forEach(function(b){
-    var d = b.getAttribute('data-pick-pill');
-    if (d === today) b.insertAdjacentHTML('beforeend', '<small>Today</small>');
-    b.addEventListener('click', function(){ show(d); });
+
+  function draw() {
+    var days = new Date(Y, M + 1, 0).getDate(), lead = new Date(Y, M, 1).getDay();
+    var h = '<div class="pick__head">' + MONTHS[M] + ' ' + Y + '</div><div class="pick__grid" role="group" aria-label="Pick a day in ' + MONTHS[M] + '">';
+    DOW.forEach(function(n){ h += '<span class="pick__dow" aria-hidden="true">' + n.charAt(0) + '</span>'; });
+    for (var i = 0; i < lead; i++) h += '<span class="pick__pad"></span>';
+    var shut = [];
+    for (var d = 1; d <= days; d++) {
+      var k = key(Y, M, d), dt = new Date(Y, M, d), cls = 'pick__d', tag = '';
+      if (k === todayKey) cls += ' is-today';
+      if (k === EVENT) { cls += ' is-event'; tag = '<i class="pick__dot" aria-hidden="true"></i>'; }
+      var why = shutOn(dt);
+      if (why && k >= todayKey && weeks[DOW[dt.getDay()]]) { shut.push(MONTHS[M].slice(0, 3) + ' ' + d + ': ' + why); h += '<span class="pick__d is-shut" title="Closed: ' + why + '">' + d + '</span>'; continue; }
+      if (bookable(d)) {
+        h += '<button type="button" class="' + cls + ' is-open' + (k === selected ? ' is-on' : '') + '" data-pick-date="' + k + '" aria-pressed="' + (k === selected) + '" aria-label="' + FULL[DOW[dt.getDay()]] + ', ' + MONTHS[M] + ' ' + d + (k === EVENT ? ', special event' : '') + '">' + d + tag + '</button>';
+      } else {
+        h += '<span class="' + cls + ' is-off">' + d + '</span>';
+      }
+    }
+    h += '</div>';
+    if (shut.length) h += '<p class="pick__note">Closed ' + shut.join('; ') + '</p>';
+    calEl.innerHTML = h;
+  }
+
+  function show(k) {
+    selected = k;
+    var pr = k.split('-'), d = +pr[2], wd = new Date(+pr[0], +pr[1] - 1, d).getDay();
+    var h = '<h3 class="pick__day-title">' + FULL[DOW[wd]] + ', ' + MONTHS[M] + ' ' + d + '</h3>';
+    if (k === EVENT && eventCard) h += eventCard.outerHTML.replace(' hidden', '').replace('id="pick-event"', '');
+    h += '<div class="pick__times">';
+    classesOn(k, wd).forEach(function(b){
+      var c = b.cloneNode(true); c.setAttribute('data-date', k); h += c.outerHTML;
+    });
+    panel.innerHTML = h + '</div>';
+    draw();
+  }
+
+  function render() {
+    draw();
+    var first = null;
+    for (var d = 1; d <= new Date(Y, M + 1, 0).getDate() && !first; d++) if (bookable(d)) first = key(Y, M, d);
+    if (first) show(selected && selected >= todayKey ? selected : first);
+    else panel.innerHTML = '<p class="pick__nojs">No more classes this month. See the <a href="/schedule">schedule</a>.</p>';
+  }
+  render();
+  // booking.js is deferred: once it is there, closed days (Columbus Day) can be marked.
+  window.addEventListener('load', render);
+
+  calEl.addEventListener('click', function(e){
+    var b = e.target.closest('[data-pick-date]'); if (!b) return;
+    show(b.getAttribute('data-pick-date'));
+    var f = calEl.querySelector('[data-pick-date="' + selected + '"]'); if (f) f.focus();
   });
-  show(start || (days[0] && days[0].getAttribute('data-pick-day')));
-  root.addEventListener('click', function(e){
+  panel.addEventListener('click', function(e){
     var t = e.target.closest('.pick__time'); if (!t) return;
     var B = window.LabyrinthBooking;
     if (!B) { window.location.href = '/#book'; return; }
-    B.openForm(t.getAttribute('data-name'), t.getAttribute('data-type'), t.getAttribute('data-day'), t.getAttribute('data-time'));
+    B.openForm(t.getAttribute('data-name'), t.getAttribute('data-type'), t.getAttribute('data-day'), t.getAttribute('data-time'), t.getAttribute('data-date'));
   });
 })();</script>
 <script>(function(){if(Date.now()>Date.parse('@@CLOSES@@')){document.getElementById('pink-ended').hidden=false;document.querySelectorAll('[data-live]').forEach(function(e){e.hidden=true})}})()</script>

@@ -596,7 +596,7 @@
   }
 
   // ── Render State B: Booking Form ──
-  function showBookingForm(className, classType, dayAbbr, timeStr) {
+  function showBookingForm(className, classType, dayAbbr, timeStr, dateKey) {
     var dates = upcomingDayDates(dayAbbr, timeStr);
     var dateStr = formatDate(dates[0]);
     var dayFull = dayAbbrToFull(dayAbbr);
@@ -664,6 +664,17 @@
     lastDate.setDate(firstDate.getDate() + BOOK_AHEAD_DAYS);
     var selected = ymd(firstDate);
     var view = new Date(firstDate.getFullYear(), firstDate.getMonth(), 1);
+    /* A page that already knows the day (the Pink October calendar) can say
+       which one. Only honoured when it is a real class day this form would
+       have offered anyway; anything else falls back to the soonest. */
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateKey || '')) {
+      var wp = dateKey.split('-');
+      var want = new Date(Number(wp[0]), Number(wp[1]) - 1, Number(wp[2]));
+      if (want.getDay() === DAY_MAP[dayAbbr] && dateKey >= ymd(firstDate) && dateKey <= ymd(lastDate) && !isShut(want)) {
+        selected = dateKey;
+        view = new Date(want.getFullYear(), want.getMonth(), 1);
+      }
+    }
     var calEl = document.getElementById('bookingCal');
 
     function drawCal() {
@@ -865,8 +876,8 @@
     openPicker: showClassPicker,
     openAdultList: function () { showClassList(ADULT_CLASSES, 'Adult Classes'); openBookingModal(); },
     openKidsTrials: showKidsTrials,
-    openForm: function (name, type, day, time) {
-      showBookingForm(name, type, day, time);
+    openForm: function (name, type, day, time, dateKey) {
+      showBookingForm(name, type, day, time, dateKey);
       openBookingModal();
     },
     close: closeBookingModal,
@@ -890,7 +901,11 @@
     // arithmetic against the published federal dates for years nobody has
     // reached yet — everything but the five fixed dates moves annually, and a
     // rule that is wrong in 2028 is wrong silently.
-    holidays: federalHolidays
+    holidays: federalHolidays,
+    // For pages that draw their own month: whether the academy is shut that
+    // day, and the holiday's name if so.
+    isShut: isShut,
+    shutReason: shutReason
   };
 
   /**

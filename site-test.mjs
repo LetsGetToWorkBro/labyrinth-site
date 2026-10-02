@@ -738,35 +738,51 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   check('L1y the site nav keeps its gold, so it is still the same academy', inPage.nav === GOLD, inPage.nav)
   check('L1y ribbons are used throughout', inPage.ribbons >= 6, 'ribbons: ' + inPage.ribbons)
   check('L1y the page has a "see kids times" link that opens the class picker', inPage.cta >= 1, 'cta: ' + inPage.cta)
-  // The one-tap picker: pinned to Friday 10:00 AM Central so the test does not depend on the day it runs.
+  // The class calendar: pinned to Friday Oct 9, 10:00 AM Central so the test does not depend on the day it runs.
   await pp.clock.setFixedTime(new Date('2026-10-09T15:00:00Z'))
-  await pp.goto('http://localhost:4620/pink-october', { waitUntil: 'networkidle' })
-  const pk = await pp.evaluate(() => ({
-    pills: [...document.querySelectorAll('[data-pick-pill]')].map(b => b.dataset.pickPill).join(),
-    on: document.querySelector('.pick__pill.is-on')?.dataset.pickPill,
-    todayTag: document.querySelector('.pick__pill.is-on small')?.textContent,
-    shown: [...document.querySelectorAll('.pick__day.is-on .pick__time:not([hidden])')].map(b => b.dataset.time + '|' + b.dataset.name).join(),
-    all: document.querySelectorAll('.pick__time').length,
-    noComp: ![...document.querySelectorAll('.pick__time')].some(b => /Comp|Grappling|Kids|Open Mat/.test(b.dataset.name)),
+  await pp.goto('http://localhost:4620/pink-october', { waitUntil: 'load' })
+  const cal = await pp.evaluate(() => ({
+    month: document.querySelector('.pick__head')?.textContent,
+    open: [...document.querySelectorAll('.pick__d.is-open')].map(b => +b.textContent).join(),
+    shut: [...document.querySelectorAll('.pick__d.is-shut')].map(b => +b.textContent).join(),
+    on: document.querySelector('.pick__d.is-on')?.textContent,
+    shown: [...document.querySelectorAll('#pick-panel .pick__time')].map(b => b.dataset.time + '|' + b.dataset.name).join(),
+    title: document.querySelector('#pick-panel .pick__day-title')?.textContent,
   }))
-  check('L1y the picker offers adult classes only, a pill per day, from Monday to Saturday',
-    pk.pills === 'Mon,Tue,Wed,Thu,Fri,Sat' && pk.noComp && pk.all >= 14, JSON.stringify(pk))
-  check('L1y on a Friday morning it opens on Friday and offers the 11:00 AM and nothing earlier',
-    pk.on === 'Fri' && pk.todayTag === 'Today' && pk.shown === '11:00 AM|Adult BJJ', JSON.stringify(pk))
-  await pp.click('.pick__pill[data-pick-pill="Tue"]')
-  check('L1y tapping a day shows that day\'s classes',
-    (await pp.$$eval('.pick__day.is-on .pick__time', bs => bs.map(b => b.dataset.time).join())) === '6:30 AM,4:15 PM,6:30 PM')
-  await pp.click('.pick__day.is-on .pick__time >> nth=0')
+  check('L1y the picker is a calendar of the whole month, not one week',
+    cal.month === 'October 2026' && /^9,10,13,14,15,16,17,19,20,21,22,23,24,26,27,28,29,30,31$/.test(cal.open), JSON.stringify(cal))
+  check('L1y past days, Sundays (no beginner class) and the Columbus Day closure are not selectable; the closure is marked',
+    cal.shut === '12' && !/(^|,)(1|8|11|12|18|25)(,|$)/.test(cal.open), JSON.stringify(cal))
+  check('L1y on a Friday morning it opens on today, Friday Oct 9, listing the 11:00 AM and the Friday adult comp class',
+    cal.on === '9' && cal.title === 'Friday, October 9' && cal.shown === '11:00 AM|Adult BJJ,6:30 PM|Adult Comp', JSON.stringify(cal))
+  await pp.click('[data-pick-date="2026-10-14"]')
+  check('L1y tapping a date lists that weekday\'s classes',
+    (await pp.$$eval('#pick-panel .pick__time', bs => bs.map(b => b.dataset.time).join())) === '6:30 AM,11:00 AM,6:30 PM' &&
+    (await pp.textContent('#pick-panel .pick__day-title')) === 'Wednesday, October 14')
+  await pp.click('[data-pick-date="2026-10-23"]')
+  check('L1y every Friday in the month lists the adult comp class',
+    (await pp.$$eval('#pick-panel .pick__time', bs => bs.map(b => b.dataset.name).join())).includes('Adult Comp'))
+  check('L1y the special event shows only on its own date, linked to its RSVP page',
+    (await pp.locator('#pick-panel .pick__event').count()) === 0)
+  await pp.click('[data-pick-date="2026-10-24"]')
+  check('L1y Saturday Oct 24 shows the Rolling for Ribbons seminar with an RSVP link',
+    (await pp.locator('#pick-panel a.pick__event[href="/self-defense-for-women"]').count()) === 1 &&
+    /Rolling for Ribbons/.test(await pp.textContent('#pick-panel .pick__event')) && (await pp.locator('.pick__d.is-event').count()) === 1)
+  await pp.click('[data-pick-date="2026-10-21"]')
+  await pp.click('#pick-panel .pick__time >> nth=0')
   await pp.waitForTimeout(500)
-  const form = await pp.evaluate(() => ({ open: !!document.querySelector('.booking-overlay.open'), text: document.querySelector('.booking-overlay.open')?.innerText || '' }))
-  check('L1y tapping a time opens the booking form already filled in for that class',
-    form.open && /Adult BJJ/.test(form.text) && /Tue/i.test(form.text) && /6:30 AM/.test(form.text), form.text.slice(0, 120))
+  const form = await pp.evaluate(() => ({
+    open: !!document.querySelector('.booking-overlay.open'), text: document.querySelector('.booking-overlay.open')?.innerText || '',
+    date: document.querySelector('input[name="bookingDate"]:checked')?.id,
+  }))
+  check('L1y tapping a class opens the booking form for that class on the date picked',
+    form.open && /Adult BJJ/.test(form.text) && /Wed/i.test(form.text) && /6:30 AM/.test(form.text) && form.date === 'bookingDate-2026-10-21', JSON.stringify(form).slice(0, 200))
   await pp.evaluate(() => window.LabyrinthBooking.close())
   // A Friday evening: the day's classes are gone, so it opens on the next day that has some.
   await pp.clock.setFixedTime(new Date('2026-10-10T02:00:00Z'))
-  await pp.goto('http://localhost:4620/pink-october', { waitUntil: 'networkidle' })
+  await pp.goto('http://localhost:4620/pink-october', { waitUntil: 'load' })
   check('L1y when a day has no classes left it opens on the next day that does',
-    (await pp.evaluate(() => document.querySelector('.pick__pill.is-on')?.dataset.pickPill)) === 'Sat')
+    (await pp.evaluate(() => document.querySelector('.pick__d.is-on')?.textContent)) === '10')
   await pp.click('main .pink-band a[href="#pick-class"]')
   check('L1y the page buttons lead to the picker', (await pp.locator('a[href="#pick-class"]').count()) >= 3)
   await pp.goto('http://localhost:4620/pink-october', { waitUntil: 'networkidle' })
