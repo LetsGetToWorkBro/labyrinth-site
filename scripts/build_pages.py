@@ -930,6 +930,16 @@ def render_event_rsvp():
     <h1 class="prog-hero__title">@@TITLE@@</h1>
     <p class="rsvp-hero__sub">@@SUBTITLE@@</p>
     <p class="prog-hero__lead">A free, beginner-friendly self defense seminar for women, built on the jiu-jitsu we teach every day at Labyrinth. We are hosting it for breast cancer awareness: donations and merch sales at the event go directly to a family affected by breast cancer. Come on your own or bring a friend.</p>
+    <div class="cd" id="cd" role="timer" aria-label="Time until the seminar" hidden>
+      <p class="cd__label" id="cd-label">Starts in</p>
+      <div class="cd__tiles" id="cd-tiles">
+        <div class="cd__tile"><b id="cd-d">0</b><span>Days</span></div>
+        <div class="cd__tile"><b id="cd-h">00</b><span>Hours</span></div>
+        <div class="cd__tile"><b id="cd-m">00</b><span>Minutes</span></div>
+        <div class="cd__tile"><b id="cd-s">00</b><span>Seconds</span></div>
+      </div>
+      <p class="cd__when">@@LONG@@ &middot; @@RANGE@@ Central</p>
+    </div>
     <div class="prog-hero__cta">
       <a href="#rsvp" class="btn btn--gold">RSVP Now</a>
       <a href="#donate" class="btn btn--pink">Donate</a>
@@ -949,7 +959,6 @@ def render_event_rsvp():
       <p class="section-label rsvp-label">RSVP</p>
       <h2 class="section-title section-title--lg">SAVE YOUR SPOT</h2>
       <p class="rsvp__note"><strong>The seminar is free, and no experience is needed.</strong> If you have never set foot on a mat, this is for you.</p>
-      <p class="rsvp__countdown" id="rsvp-countdown" hidden></p>
       <ul class="rsvp-perks" aria-label="What to expect">
         <li>@@RIBBON16@@<span><strong>Free</strong>Nothing to pay, ever</span></li>
         <li>@@RIBBON16@@<span><strong>Come as you are</strong>No experience, no gear needed</span></li>
