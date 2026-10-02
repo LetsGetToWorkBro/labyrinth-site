@@ -596,7 +596,7 @@
   }
 
   // ── Render State B: Booking Form ──
-  function showBookingForm(className, classType, dayAbbr, timeStr, dateKey) {
+  function showBookingForm(className, classType, dayAbbr, timeStr, dateKey, tag) {
     var dates = upcomingDayDates(dayAbbr, timeStr);
     var dateStr = formatDate(dates[0]);
     var dayFull = dayAbbrToFull(dayAbbr);
@@ -648,7 +648,10 @@
       crmProgram: crmProgramFor(className, dayAbbr, timeStr),
       classDay: dayFull,
       classTime: timeStr,
-      classDate: dateStr
+      classDate: dateStr,
+      // Which page the booking came from, when it matters (the Pink October calendar).
+      // Goes at the front of the lead's note so the desk sees it first.
+      tag: tag ? String(tag).slice(0, 40) : ''
     };
 
     /*
@@ -745,7 +748,8 @@
         crmProgram: classInfo.crmProgram,
         classDay: classInfo.classDay,
         classTime: classInfo.classTime,
-        classDate: chosenDate()
+        classDate: chosenDate(),
+        tag: classInfo.tag
       };
 
       submitBooking(lastBookingData);
@@ -779,7 +783,7 @@
       // at "Trial Booked" with the right time, and the confirmation email
       // names that class instead of promising to be in touch.
       trialAt: toCentralISO(data.classDate, data.classTime),
-      note: data.className + ', ' + data.classDay + ' ' + data.classTime + ', booked from the website'
+      note: (data.tag ? data.tag.toUpperCase() + ': ' : '') + data.className + ', ' + data.classDay + ' ' + data.classTime + ', booked from the website'
     }).then(function (ok) {
       if (ok) {
         showBookingSuccess(data);
@@ -876,8 +880,8 @@
     openPicker: showClassPicker,
     openAdultList: function () { showClassList(ADULT_CLASSES, 'Adult Classes'); openBookingModal(); },
     openKidsTrials: showKidsTrials,
-    openForm: function (name, type, day, time, dateKey) {
-      showBookingForm(name, type, day, time, dateKey);
+    openForm: function (name, type, day, time, dateKey, tag) {
+      showBookingForm(name, type, day, time, dateKey, tag);
       openBookingModal();
     },
     close: closeBookingModal,

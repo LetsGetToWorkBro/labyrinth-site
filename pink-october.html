@@ -331,7 +331,7 @@
     var t = e.target.closest('.pick__time'); if (!t) return;
     var B = window.LabyrinthBooking;
     if (!B) { window.location.href = '/#book'; return; }
-    B.openForm(t.getAttribute('data-name'), t.getAttribute('data-type'), t.getAttribute('data-day'), t.getAttribute('data-time'), t.getAttribute('data-date'));
+    B.openForm(t.getAttribute('data-name'), t.getAttribute('data-type'), t.getAttribute('data-day'), t.getAttribute('data-time'), t.getAttribute('data-date'), 'Pink October');
   });
 })();</script>
 <script>(function(){if(Date.now()>Date.parse('2026-11-01T05:00:00Z')){document.getElementById('pink-ended').hidden=false;document.querySelectorAll('[data-live]').forEach(function(e){e.hidden=true})}})()</script>
@@ -348,6 +348,6 @@
 </footer>
 
 <script src="/app.js?v=2aed9ee9"></script>
-<script src="/booking.js?v=e658dbc8"></script>
+<script src="/booking.js?v=e19850ef"></script>
 </body>
 </html>
