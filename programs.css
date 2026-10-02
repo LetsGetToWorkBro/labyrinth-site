@@ -1490,7 +1490,19 @@ body.theme-pink main .prog-section--surface {
 @media (min-width: 760px) { .fund__lists { grid-template-columns: 1fr 1fr; gap: 32px; } .fund { max-width: 760px; } }
 
 /* ── RSVP: make it feel worth doing ───────────────────────────────────────── */
-.rsvp__countdown { display: inline-flex; align-items: center; gap: 8px; margin: 14px 0 0; padding: 8px 16px; border-radius: 999px; background: var(--awareness); color: #1a0b12; font-weight: 800; font-size: 15px; }
+.cd { margin: 28px 0 8px; padding: 18px 16px 16px; max-width: 560px; border: 1.5px solid var(--awareness); border-radius: 20px; text-align: center;
+  background: linear-gradient(160deg, rgba(229, 143, 181, 0.22), rgba(229, 143, 181, 0.05)); box-shadow: 0 18px 50px rgba(229, 143, 181, 0.14); }
+.cd[hidden], .cd__tiles[hidden] { display: none; }
+.cd__label { margin: 0 0 12px; font-size: 12px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--awareness); }
+.cd[data-state] .cd__label { margin: 4px 0 8px; font-size: 18px; letter-spacing: 0.04em; text-transform: none; color: var(--text); }
+.cd__tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.cd__tile { padding: 12px 4px 10px; border-radius: 14px; background: rgba(10, 4, 8, 0.55); border: 1px solid var(--awareness-line); }
+.cd__tile b { display: block; font-size: clamp(30px, 9vw, 52px); line-height: 1; font-weight: 900; color: var(--text); font-variant-numeric: tabular-nums; letter-spacing: 0.01em; }
+.cd__tile span { display: block; margin-top: 6px; font-size: 10.5px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--awareness); }
+.cd--soon .cd__tile:nth-child(n+2) b { color: var(--awareness); }
+.cd__when { margin: 12px 0 0; font-size: 14px; color: var(--text-muted); }
+.cd[data-state] .cd__when { display: none; }
+@media (min-width: 760px) { .cd { padding: 22px 24px 18px; } .cd__tiles { gap: 14px; } }
 .rsvp-perks { list-style: none; margin: 22px 0 0; padding: 0; display: grid; grid-template-columns: 1fr; gap: 12px; }
 .rsvp-perks li { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; border: 1px solid var(--awareness-line); border-radius: 12px; background: var(--awareness-soft); color: var(--text-muted); font-size: 14px; line-height: 1.45; }
 .rsvp-perks .ribbon { flex: none; color: var(--awareness); margin-top: 2px; }

@@ -472,15 +472,34 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   await rp.goto(URL, { waitUntil: 'networkidle' })
   const wow = await rp.evaluate(() => ({
     perks: [...document.querySelectorAll('.rsvp-perks li strong')].map(e => e.textContent),
-    count: document.getElementById('rsvp-countdown').textContent,
+    count: [...document.querySelectorAll('#cd-d,#cd-h,#cd-m,#cd-s')].map(e => e.textContent).join(':'),
+    cdLabel: document.getElementById('cd-label').textContent,
     button: document.getElementById('rsvp-submit').textContent,
     party: document.getElementById('rsvp-party').options[1].textContent,
     title: document.querySelector('.rsvp__form-title')?.textContent,
   }))
   check('L1x the RSVP says what to expect: free, come as you are, real instructors, bring a friend',
     wow.perks.length === 4 && /Free/.test(wow.perks[0]) && /Come as you are/.test(wow.perks[1]) && /Coach Scott and Professor Tony/.test(wow.perks[2]) && /Bring a friend/.test(wow.perks[3]), JSON.stringify(wow))
-  check('L1x a real countdown (ten days before the 24th) and a button that says what it does',
-    wow.count === '10 days to go' && wow.button === 'Save My Spot' && /friend/.test(wow.party) && /Save your spot/.test(wow.title), JSON.stringify(wow))
+  check('L1x a big live countdown in the hero (10 days 1 hour before the 11:00 AM start) and a button that says what it does',
+    wow.count === '10:01:00:00' && wow.cdLabel === 'Starts in' && wow.button === 'Save My Spot' && /friend/.test(wow.party) && /Save your spot/.test(wow.title), JSON.stringify(wow))
+  // It really ticks, and it knows when the seminar is on and when it is over.
+  {
+    const cx = await browser.newContext(); const cp = await cx.newPage()
+    await cp.clock.install({ time: new Date('2026-10-24T14:00:00Z') })
+    await cp.goto(URL, { waitUntil: 'load' })
+    const read = () => cp.evaluate(() => ({ t: ['cd-d', 'cd-h', 'cd-m', 'cd-s'].map(i => document.getElementById(i).textContent).join(':'), label: document.getElementById('cd-label').textContent, vis: !document.getElementById('cd').hidden, state: document.getElementById('cd').dataset.state || '' }))
+    const sec = t => t.split(':').reduce((n, v, i) => n + (+v) * [86400, 3600, 60, 1][i], 0)
+    const a0 = await read(); await cp.clock.runFor(3000); const a1 = await read()
+    check('L1x the countdown is live: two hours out it reads about 0:02:00:00 and ticks down three seconds in three seconds',
+      a0.vis && /^0:0(2:00:00|1:59:59)$/.test(a0.t) && a0.label === 'Starts today' && sec(a0.t) - sec(a1.t) === 3, JSON.stringify({ a0, a1 }))
+    await cp.clock.setFixedTime(new Date('2026-10-24T16:10:00Z')); await cp.clock.runFor(1500)
+    const live = await read()
+    check('L1x while the seminar is on, it says so instead of counting', live.state === 'live' && /Happening now/.test(live.label), JSON.stringify(live))
+    await cp.clock.setFixedTime(new Date('2026-10-24T18:00:00Z')); await cp.clock.runFor(1500)
+    const over = await read()
+    check('L1x afterwards it thanks people', over.state === 'over' && /Thank you/.test(over.label), JSON.stringify(over))
+    await cx.close()
+  }
   await rp.setViewportSize({ width: 390, height: 800 })
   const stickyTop = await rp.evaluate(() => !document.getElementById('rsvp-sticky').hidden)
   await rp.evaluate(() => document.getElementById('donate').scrollIntoView({ behavior: 'instant' })); await rp.waitForTimeout(500)

@@ -94,16 +94,40 @@
     return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Chicago', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(ms));
   }
 
+  // The big countdown in the hero: days, hours, minutes and seconds, ticking.
+  // It counts down the same instant the form posts, then says the seminar is on,
+  // then thanks people. Worked out from Date.now() on every tick rather than by
+  // subtracting one per second, so a phone that slept catches up at once.
   (function countdown() {
-    var el = $('rsvp-countdown');
-    if (!el || !startAt) return;
-    var today = Date.parse(centralDay(Date.now()) + 'T00:00:00Z');
-    var day = Date.parse(centralDay(startAt) + 'T00:00:00Z');
-    var n = Math.round((day - today) / 86400000);
-    var text = n > 1 ? n + ' days to go' : (n === 1 ? 'Tomorrow' : (n === 0 && Date.now() < startAt ? 'Today' : ''));
-    if (!text) return;
-    el.textContent = text;
-    el.hidden = false;
+    var box = $('cd');
+    if (!box || !startAt) return;
+    var endAt = startAt + (parseInt(form.getAttribute('data-minutes'), 10) || 90) * 60000;
+    var label = $('cd-label'), tiles = $('cd-tiles');
+    var parts = { d: $('cd-d'), h: $('cd-h'), m: $('cd-m'), s: $('cd-s') };
+    var two = function (n) { return (n < 10 ? '0' : '') + n; };
+    function tick() {
+      var now = Date.now(), left = startAt - now;
+      if (left > 0) {
+        var secs = Math.floor(left / 1000);
+        parts.d.textContent = Math.floor(secs / 86400);
+        parts.h.textContent = two(Math.floor(secs % 86400 / 3600));
+        parts.m.textContent = two(Math.floor(secs % 3600 / 60));
+        parts.s.textContent = two(secs % 60);
+        label.textContent = secs < 86400 ? 'Starts today' : 'Starts in';
+        box.classList.toggle('cd--soon', secs < 86400);
+        box.removeAttribute('data-state');
+      } else if (now < endAt) {
+        tiles.hidden = true; label.textContent = 'Happening now. Come on down!';
+        box.setAttribute('data-state', 'live');
+      } else {
+        tiles.hidden = true; label.textContent = 'Thank you to everyone who came out.';
+        box.setAttribute('data-state', 'over');
+        clearInterval(timer); return;
+      }
+      box.hidden = false;
+    }
+    var timer = setInterval(tick, 1000);
+    tick();
   })();
 
   (function sticky() {
