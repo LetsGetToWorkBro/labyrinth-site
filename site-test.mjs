@@ -467,6 +467,35 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
       && led[1][0] === '/coaches/anthony-curry' && /Anthony Curry/.test(led[1][1]) && /Professor/.test(led[1][1]), JSON.stringify(led).slice(0, 160))
   check('L1x structured data lists both instructors as performers',
     !!ev && Array.isArray(ev.performer) && ev.performer.map(p => p.name).join() === 'Scott Jones,Anthony Curry')
+  // The fundraiser: honest at $0, and the real feed rendered when there is one.
+  let feed = { raised: 0, count: 0, goal: 500, top: [], recent: [] }, feedFail = false
+  await rp.route('**/functions/v1/event-donations**', route => feedFail
+    ? route.fulfill({ status: 502, contentType: 'application/json', body: '{"error":"x"}' })
+    : route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(feed) }))
+  await fresh()
+  const f0 = await rp.evaluate(() => ({
+    raised: document.getElementById('fund-raised').textContent, goal: document.getElementById('fund-goal').textContent,
+    first: !document.getElementById('fund-first').hidden, lists: !document.getElementById('fund-lists').hidden,
+    width: document.getElementById('fund-fill').style.width }))
+  check('L1x fundraiser at $0: shows $0 of $500, invites the first gift, and invents no donors',
+    f0.raised === '$0' && f0.goal === '$500' && f0.first && !f0.lists && /^0(%|px)?$/.test(f0.width), JSON.stringify(f0))
+  feed = { raised: 135, count: 3, goal: 500, top: [{ name: 'Sam T.', amount: 100 }, { name: 'Anonymous', amount: 25 }, { name: 'Pat <b>x</b>', amount: 10 }],
+    recent: [{ name: 'Pat <b>x</b>', amount: 10 }, { name: 'Anonymous', amount: 25 }, { name: 'Sam T.', amount: 100 }] }
+  await fresh()
+  const f1 = await rp.evaluate(() => ({
+    raised: document.getElementById('fund-raised').textContent, count: document.getElementById('fund-count').textContent,
+    width: document.getElementById('fund-fill').style.width, now: document.getElementById('fund-bar').getAttribute('aria-valuenow'),
+    first: document.getElementById('fund-first').hidden, top: [...document.querySelectorAll('#fund-top li')].map(l => l.textContent),
+    html: document.getElementById('fund-top').innerHTML.includes('<b>') }))
+  check('L1x fundraiser with gifts: total, percent, supporter count and the leaderboard',
+    f1.raised === '$135' && f1.count === '3 supporters' && f1.width === '27%' && f1.now === '135' && f1.first
+      && f1.top[0] === 'Sam T.$100' && f1.top[1] === 'Anonymous$25', JSON.stringify(f1))
+  check('L1x a donor name is shown as text, never as markup', f1.html === false && f1.top[2].includes('<b>'))
+  feedFail = true
+  await fresh()
+  check('L1x if the total cannot load the page stays calm: $0 line, no error, form and buttons still there',
+    (await rp.textContent('#fund-raised')) === '$0' && (await rp.isVisible('#rsvp-form')) && (await rp.locator('#donate a.rsvp-give__amt').count()) === 8)
+  await rp.unroute('**/functions/v1/event-donations**')
   check('L1x no em dashes in what a visitor reads', !/—/.test(text))
   const pink = await rp.evaluate(() => {
     const rgb = c => c.match(/\d+/g).slice(0, 3).map(Number)
