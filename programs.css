@@ -1469,3 +1469,22 @@ body.theme-pink main .prog-section--surface {
   .rsvp-photo img { aspect-ratio: 16 / 9; object-position: 50% 8%; }
   .rsvp-photo figcaption { padding: 40px 28px 20px; font-size: 17px; }
 }
+
+/* Fundraiser progress: real numbers from Stripe, filled in by rsvp.js. */
+.fund { margin-top: var(--space-6); padding: 22px; border: 1px solid var(--awareness-line); border-radius: 16px; background: var(--awareness-soft); }
+.fund__head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; }
+.fund__raised { margin: 0; color: var(--text-muted); font-size: 15px; }
+.fund__raised strong { color: var(--awareness); font-size: 38px; line-height: 1; letter-spacing: -0.01em; margin-right: 6px; }
+.fund__count { margin: 0; color: var(--text); font-weight: 600; font-size: 15px; }
+.fund__bar { height: 14px; margin-top: 14px; border-radius: 999px; background: rgba(229, 143, 181, 0.16); overflow: hidden; }
+.fund__bar span { display: block; height: 100%; border-radius: 999px; background: var(--awareness); transition: width 0.8s ease; }
+.fund__first { margin: 14px 0 0; color: var(--text); font-weight: 600; }
+.fund__lists { display: grid; gap: 18px; margin-top: 20px; }
+.fund__title { margin: 0 0 8px; color: var(--awareness); font-size: 13px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
+.fund__list { list-style: none; margin: 0; padding: 0; }
+.fund__list li { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--awareness-line); color: var(--text-muted); font-size: 15px; }
+.fund__list li:last-child { border-bottom: 0; }
+.fund__list strong { color: var(--text); }
+.fund__note { margin: 16px 0 0; color: var(--text-muted); font-size: 13px; line-height: 1.5; }
+.fund [hidden] { display: none !important; }
+@media (min-width: 760px) { .fund__lists { grid-template-columns: 1fr 1fr; gap: 32px; } .fund { max-width: 760px; } }

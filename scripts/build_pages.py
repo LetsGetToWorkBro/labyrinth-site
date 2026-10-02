@@ -796,6 +796,10 @@ EVENT = {
         (100, "https://donate.stripe.com/3cI7sMfoFgz43Jz5jRgjC0h"),
     ],
     "endpoint": "https://jctufxvmuvobaggxcwfn.supabase.co/functions/v1/event-rsvp",
+    # The fundraiser total, read from Stripe by an edge function (event-donations).
+    # The goal is set there; this is the dollar figure the page shows until it loads.
+    "donations_endpoint": "https://jctufxvmuvobaggxcwfn.supabase.co/functions/v1/event-donations",
+    "goal": 500,
     "maps_url": "https://maps.google.com/?cid=7150744267965161030",
 }
 
@@ -1044,6 +1048,19 @@ def render_event_rsvp():
       <p>Donations are welcome and never expected. They go directly to a family affected by breast cancer. You choose the amount, and payment is handled securely by Stripe.</p>
       <p>We will also be selling merch at the event, and those sales go to the same family.</p>
     </div>
+    <div class="fund" id="fund" data-endpoint="@@DONATIONS@@" data-goal="@@GOAL@@">
+      <div class="fund__head">
+        <p class="fund__raised"><strong id="fund-raised">$0</strong> <span>raised online of <span id="fund-goal">$@@GOAL@@</span> goal</span></p>
+        <p class="fund__count" id="fund-count" hidden></p>
+      </div>
+      <div class="fund__bar" role="progressbar" aria-label="Fundraiser progress" aria-valuemin="0" aria-valuemax="@@GOAL@@" aria-valuenow="0" id="fund-bar"><span id="fund-fill" style="width:0"></span></div>
+      <p class="fund__first" id="fund-first">Be the first to give. Every gift, big or small, moves the bar.</p>
+      <div class="fund__lists" id="fund-lists" hidden>
+        <div><p class="fund__title">Top supporters</p><ol class="fund__list" id="fund-top"></ol></div>
+        <div><p class="fund__title">Latest gifts</p><ol class="fund__list" id="fund-recent"></ol></div>
+      </div>
+      <p class="fund__note">Online gifts only. Cash and merch sales at the event go to the same family and are counted at the event. When you give, you choose whether your name is shown.</p>
+    </div>
     <p class="rsvp-give__pick" id="donate-pick">Choose an amount</p>
     <div class="rsvp-give__amounts" role="group" aria-labelledby="donate-pick">
 @@AMOUNTS@@
@@ -1088,7 +1105,7 @@ def render_event_rsvp():
 """
     for token, value in {
         "@@RIBBON16@@": ribbon(16), "@@RIBBON20@@": ribbon(20), "@@RIBBON40@@": ribbon(40), "@@MARK@@": ribbon(320),
-        "@@PINKPATH@@": PINK["path"], "@@TITLE@@": EVENT["title"], "@@SUBTITLE@@": EVENT["subtitle"], "@@NAME@@": EVENT["name"], "@@DONATE@@": EVENT["donate_url"], "@@AMOUNTS@@": "\n".join(
+        "@@PINKPATH@@": PINK["path"], "@@TITLE@@": EVENT["title"], "@@SUBTITLE@@": EVENT["subtitle"], "@@NAME@@": EVENT["name"], "@@DONATE@@": EVENT["donate_url"], "@@DONATIONS@@": EVENT["donations_endpoint"], "@@GOAL@@": str(EVENT["goal"]), "@@AMOUNTS@@": "\n".join(
             '      <a href="%s" class="rsvp-give__amt" target="_blank" rel="noopener noreferrer">$%d</a>' % (u, d)
             for d, u in EVENT["donate_amounts"]), "@@SHORT@@": short_date,
         "@@TIME@@": time, "@@LONG@@": long_date, "@@SLUG@@": EVENT["slug"],
