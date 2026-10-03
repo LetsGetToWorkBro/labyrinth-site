@@ -145,6 +145,72 @@
 
 [data-season="halloween"] .footer { background: #08050f; }
 
+/* ── The rest of the page ───────────────────────────────────────────────────
+   Every section has its own layer of decoration (built into index.html by
+   scripts/build_pages.py: SEASON_SECTIONS), sitting behind the content so it
+   never gets in the way: webs in corners, spiders on threads, ghosts in the
+   margins, bunting along the top, a patch of pumpkins, skulls, candy corn and a
+   bubbling cauldron at the foot, bats crossing, eyes watching from the dark. */
+[data-season="halloween"] :is(#eventStrip, #programs, #competition, #coaches, #gallery, #belt-journey, #locations, #faq, #schedule, #testimonials, #pricing, #contact) {
+  position: relative; overflow: clip;
+}
+.season-sec { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+[data-season="halloween"] .season-sec ~ .container { position: relative; z-index: 1; }
+.season-sec > * { position: absolute; }
+
+.ss-web { top: 0; width: clamp(80px, 12vw, 170px); height: auto; opacity: 0.7; }
+.ss-web--l { left: 0; }
+.ss-web--r { right: 0; transform: scaleX(-1); }
+
+.ss-bunting {
+  left: 0; right: 0; top: 0; height: 40px; opacity: 0.85;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='40' viewBox='0 0 96 40'%3E%3Cpath d='M0 3Q48 15 96 3' fill='none' stroke='%23b9a6ff' stroke-opacity='.55' stroke-width='1.5'/%3E%3Cpath d='M8 6L28 9L17 30Z' fill='%23ff8a1f'/%3E%3Cpath d='M40 9L60 9L50 31Z' fill='%237a3bd1'/%3E%3Cpath d='M72 9L92 6L82 30Z' fill='%23ff8a1f'/%3E%3C/svg%3E") repeat-x top left;
+  -webkit-mask-image: linear-gradient(90deg, #000 0, #000 100%);
+}
+
+/* Spiders hang from the top edge and swing. */
+.ss-spider { top: 0; width: var(--w, 46px); transform-origin: 50% 0; animation: spider-swing 5.5s ease-in-out infinite; }
+.ss-spider i { display: block; width: 1px; height: var(--len, 80px); margin: 0 auto; background: rgba(214, 206, 245, 0.65); }
+.ss-spider svg { display: block; width: 100%; height: auto; filter: drop-shadow(0 0 6px rgba(190, 160, 255, 0.55)); }
+@keyframes spider-swing { 0%, 100% { transform: rotate(-7deg); } 50% { transform: rotate(7deg); } }
+
+/* Ghosts drift in the margins; tappable (the global Boo! handler), faint and under the content. */
+.season-sec .ss-ghost { pointer-events: auto; opacity: 0.42; height: auto; }
+.season-sec .ss-ghost.is-boo { opacity: 1; }
+
+.ss-bat { left: -90px; }
+
+/* Eyes in the dark: two glowing dots that blink. */
+.ss-eyes { display: flex; gap: 10px; padding: 0 clamp(6px, 1.4vw, 22px); animation: eyes-blink 7s infinite; }
+.ss-eyes b { width: 11px; height: 7px; border-radius: 50%; background: #ffd54a; box-shadow: 0 0 10px 3px rgba(255, 190, 40, 0.85); transform: rotate(-10deg); }
+.ss-eyes b + b { transform: rotate(10deg); }
+@keyframes eyes-blink { 0%, 44%, 48%, 100% { opacity: 1; transform: scaleY(1); } 46% { opacity: 1; transform: scaleY(0.1); } 70%, 78% { opacity: 0.12; } }
+
+/* The patch at the foot of the section. */
+.ss-patch { bottom: -2px; display: flex; align-items: flex-end; gap: clamp(2px, 0.6vw, 10px); }
+.ss-patch--l { left: clamp(4px, 2.2vw, 36px); }
+.ss-patch--r { right: clamp(4px, 2.2vw, 36px); }
+.ss-i { display: block; height: auto; flex-shrink: 0; }
+.ss-i--pump { width: clamp(38px, 5.4vw, 74px); }
+.ss-i--pump:nth-child(2n) { width: clamp(28px, 4vw, 54px); animation-delay: -1.3s; }
+.ss-i--pump:nth-child(3n) { animation-delay: -2.3s; }
+.ss-i--skull { width: clamp(28px, 3.6vw, 48px); transform: rotate(-9deg); filter: drop-shadow(0 0 8px rgba(255, 138, 31, 0.5)); }
+.ss-i--candy { width: clamp(18px, 2.4vw, 32px); transform: rotate(8deg); filter: drop-shadow(0 0 6px rgba(255, 210, 90, 0.45)); }
+.ss-i--cauldron { width: clamp(46px, 6.2vw, 84px); filter: drop-shadow(0 0 14px rgba(120, 240, 70, 0.55)); }
+.ss-i--cauldron .s-bubbles { animation: bubble-pop 2.6s ease-in-out infinite; }
+@keyframes bubble-pop { 0%, 100% { transform: translateY(2px); opacity: 0.55; } 50% { transform: translateY(-5px); opacity: 1; } }
+
+@media (max-width: 700px) {
+  .ss-web { width: 74px; opacity: 0.55; }
+  .season-sec .ss-ghost { opacity: 0.3; width: 38px !important; }
+  .ss-bat:nth-of-type(n+3) { display: none; }
+  .ss-eyes { display: none; }
+  .ss-spider { left: auto !important; right: 3%; --w: 34px; }
+  .ss-spider i { height: min(var(--len, 80px), 70px); }
+  .ss-patch .ss-i--candy, .ss-patch .ss-i:nth-child(n+3) { display: none; }
+  .ss-bunting { height: 36px; opacity: 0.7; }
+}
+
 /* Phones: fewer things flying about, nothing wider than the screen. */
 @media (max-width: 700px) {
   .season-bat--3, .season-ghost--3 { display: none; }

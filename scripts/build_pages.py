@@ -977,6 +977,37 @@ def season_defs():
       <path d="M22 0Q18 18 0 22M44 0Q38 38 0 44M66 0Q58 58 0 66M88 0Q78 78 0 88M110 0Q98 98 0 110"/>
     </g>
   </symbol>
+  <symbol id="s-spider" viewBox="0 0 60 56">
+    <g fill="none" stroke="#cbb9ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M24 28L10 14L2 22M24 31L6 30L1 40M26 34L12 46L8 54M28 36L22 50L22 55"/>
+      <path d="M36 28L50 14L58 22M36 31L54 30L59 40M34 34L48 46L52 54M32 36L38 50L38 55"/>
+    </g>
+    <ellipse cx="30" cy="36" rx="9" ry="11" fill="#1c122d" stroke="#cbb9ff" stroke-width="1.6"/>
+    <circle cx="30" cy="22" r="6.5" fill="#1c122d" stroke="#cbb9ff" stroke-width="1.6"/>
+    <circle cx="27.5" cy="21" r="1.7" fill="#ff8a1f"/><circle cx="32.5" cy="21" r="1.7" fill="#ff8a1f"/>
+    <path d="M26 33l4 5 4-5M27 40l3 4 3-4" fill="none" stroke="#ff8a1f" stroke-width="1.4" stroke-linecap="round" opacity=".8"/>
+  </symbol>
+  <symbol id="s-skull" viewBox="0 0 100 100">
+    <path d="M50 6C26 6 12 22 12 44c0 14 6 22 14 28v14c0 4 3 6 6 6h36c3 0 6-2 6-6V72c8-6 14-14 14-28C88 22 74 6 50 6z" fill="#ece6d4"/>
+    <path d="M50 6C36 10 28 24 28 40c0 12 4 22 10 30l-12 2V58C20 52 16 46 14 38 14 22 28 8 50 6z" fill="#cfc7ae" opacity=".55"/>
+    <ellipse cx="34" cy="46" rx="11" ry="13" fill="#140a1e"/><ellipse cx="66" cy="46" rx="11" ry="13" fill="#140a1e"/>
+    <ellipse cx="34" cy="48" rx="3.4" ry="4.4" fill="#ff8a1f" opacity=".9"/><ellipse cx="66" cy="48" rx="3.4" ry="4.4" fill="#ff8a1f" opacity=".9"/>
+    <path d="M50 58l-6 12h12z" fill="#140a1e"/>
+    <path d="M34 82v12M42 82v14M50 82v14M58 82v14M66 82v12" stroke="#140a1e" stroke-width="3" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="s-candy" viewBox="0 0 60 80">
+    <path d="M30 4C22 4 14 14 4 70c0 6 5 8 10 8h32c5 0 10-2 10-8C46 14 38 4 30 4z" fill="#fff6dc"/>
+    <path d="M12 44h36l5 26c0 6-5 8-10 8H17c-5 0-10-2-10-8z" fill="#ff8a1f"/>
+    <path d="M30 4C26 4 22 8 18 18h24C38 8 34 4 30 4z" fill="#ffd23a"/>
+  </symbol>
+  <symbol id="s-cauldron" viewBox="0 0 120 110">
+    <g class="s-bubbles"><circle cx="44" cy="30" r="9" fill="#8dff5a" opacity=".85"/><circle cx="72" cy="22" r="6" fill="#8dff5a" opacity=".75"/><circle cx="84" cy="36" r="8" fill="#8dff5a" opacity=".8"/></g>
+    <ellipse cx="60" cy="52" rx="44" ry="11" fill="#58d63a"/>
+    <ellipse cx="60" cy="52" rx="44" ry="11" fill="none" stroke="#1a1426" stroke-width="6"/>
+    <path d="M12 54c-6 20 2 50 24 56h48c22-6 30-36 24-56-10 8-30 12-48 12S22 62 12 54z" fill="#1a1426"/>
+    <path d="M24 66c2 16 10 30 22 38" stroke="#3b2f55" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M30 108l-8 8M90 108l8 8" stroke="#1a1426" stroke-width="7" stroke-linecap="round"/>
+  </symbol>
   <symbol id="s-tree" viewBox="0 0 160 220">
     <path d="M78 220c2-40 0-70-4-96-10-4-24-12-34-30-4 8-2 18 2 26-10-6-20-18-22-34 6 0 12 4 16 10-2-12 0-26 8-38 2 12 6 22 14 30-2-12-2-24 4-36 4 12 8 22 16 30 2-10 8-22 18-28-2 12-2 22 2 32 6-8 14-12 24-12-4 10-10 16-18 20 4 4 10 6 18 6-8 8-20 10-30 8-4 6-6 14-6 26 4 28 6 56 8 86z" fill="#07040d"/>
   </symbol>
@@ -1037,6 +1068,72 @@ def season_footer():
   <svg class="season-pump season-pump--f2" viewBox="0 0 100 90"><use href="#s-pumpkin"/></svg>
   <svg class="season-ghost season-ghost--f" viewBox="0 0 100 120"><use href="#s-ghost"/></svg>
 </div>"""
+
+
+# Halloween through the whole page, not only the top and bottom. Each section gets its
+# own layer of decoration (a web in a corner, a spider swinging on a thread, a ghost
+# drifting in the margin, a patch of pumpkins at the foot, bats crossing, eyes in the dark)
+# behind the content so nothing is in the way. Different on every section so the page
+# does not repeat itself. Spliced into the SEASON-SEC-<id> markers in index.html.
+
+SEASON_SECTIONS = {
+    "eventStrip":   ["web:r", "spider:l:8:70:46", "bats:18"],
+    "programs":     ["web:l", "spider:r:7:96:50", "ghost:l:34:56:0", "patch:r:pump,skull", "eyes:l:72", "bunting"],
+    "competition":  ["web:r", "spider:l:5:80:46", "bats:12", "patch:l:candy,pump,pump", "ghost:r:58:56:2", "bunting"],
+    "coaches":      ["web:l", "ghost:r:18:56:1", "patch:r:pump,cauldron", "spider:r:14:120:52", "bats:70", "bunting"],
+    "gallery":      ["web:l", "web:r", "bats:10", "ghost:l:62:56:3", "patch:l:pump,skull,candy", "spider:r:12:70:44", "bunting"],
+    "belt-journey": ["web:r", "spider:r:4:110:52", "eyes:r:52", "patch:l:cauldron,pump", "ghost:l:20:56:0", "bunting"],
+    "locations":    ["web:l", "ghost:r:40:56:2", "patch:l:cauldron,candy,pump", "spider:r:8:84:46", "bunting"],
+    "faq":          ["web:r", "spider:l:6:100:50", "eyes:r:30", "bats:40", "patch:r:skull,pump", "bunting"],
+    "schedule":     ["web:l", "ghost:l:72:56:1", "patch:r:pump,pump,candy", "spider:r:5:76:44", "bunting"],
+    "testimonials": ["web:l", "web:r", "spider:l:10:90:48", "ghost:r:44:56:3", "patch:l:skull,pump", "bunting"],
+    "pricing":      ["web:l", "bats:16", "patch:r:pump,cauldron,pump", "spider:r:6:110:52", "eyes:l:60", "bunting"],
+    "contact":      ["web:r", "ghost:l:30:56:0", "ghost:r:55:56:2", "patch:l:pump,candy,pump", "patch:r:skull,pump,pump", "spider:r:16:90:48", "bunting"],
+}
+
+
+def season_section(sec_id):
+    out = []
+    for spec in SEASON_SECTIONS[sec_id]:
+        kind, *a = spec.split(":")
+        if kind == "web":
+            out.append('<svg class="ss-web ss-web--%s" viewBox="0 0 120 120"><use href="#s-web"/></svg>' % a[0])
+        elif kind == "spider":
+            side, off, ln, size = a
+            out.append('<div class="ss-spider" style="%s:%s%%;--len:%spx;--w:%spx;animation-delay:-%ss"><i></i>'
+                       '<svg viewBox="0 0 60 56"><use href="#s-spider"/></svg></div>'
+                       % ("left" if side == "l" else "right", off, ln, size, int(off) % 4 + 1))
+        elif kind == "ghost":
+            side, top, size, delay = a
+            out.append('<button type="button" class="season-ghost ss-ghost" tabindex="-1" data-boo '
+                       'style="%s:0.4%%;top:%s%%;width:%spx;animation-delay:-%ss"><svg viewBox="0 0 100 120">'
+                       '<use href="#s-ghost"/></svg><span class="season-boo">Boo!</span></button>'
+                       % ("left" if side == "l" else "right", top, size, delay))
+        elif kind == "bats":
+            top = int(a[0])
+            for n, (dy, w, dur, off) in enumerate([(0, 40, 21, 0), (5, 28, 27, 9), (-4, 22, 33, 17)]):
+                out.append('<svg class="season-bat ss-bat" viewBox="0 0 100 60" style="top:%d%%;width:%dpx;'
+                           'animation:bat-fly %ds linear -%ds infinite,bat-flap .3s ease-in-out infinite alternate">'
+                           '<use href="#s-bat"/></svg>' % (top + dy, w, dur, off))
+        elif kind == "eyes":
+            out.append('<div class="ss-eyes" style="%s:0;top:%s%%"><b></b><b></b></div>'
+                       % ("left" if a[0] == "l" else "right", a[1]))
+        elif kind == "patch":
+            side, items = a
+            bits = []
+            for it in items.split(","):
+                if it == "pump":
+                    bits.append('<svg class="season-pump ss-i ss-i--pump" viewBox="0 0 100 90"><use href="#s-pumpkin"/></svg>')
+                elif it == "skull":
+                    bits.append('<svg class="ss-i ss-i--skull" viewBox="0 0 100 100"><use href="#s-skull"/></svg>')
+                elif it == "candy":
+                    bits.append('<svg class="ss-i ss-i--candy" viewBox="0 0 60 80"><use href="#s-candy"/></svg>')
+                elif it == "cauldron":
+                    bits.append('<svg class="ss-i ss-i--cauldron" viewBox="0 0 120 120"><use href="#s-cauldron"/></svg>')
+            out.append('<div class="ss-patch ss-patch--%s">%s</div>' % (side, "".join(bits)))
+        elif kind == "bunting":
+            out.append('<div class="ss-bunting"></div>')
+    return '<div class="season-deco season-sec" aria-hidden="true">' + "".join(out) + "</div>"
 
 
 def render_event_rsvp():
@@ -3107,10 +3204,17 @@ def main():
     splice(index, "JITS-METERS", jits_data.meters())
     splice(index, "JITS-ATHLETES", jits_data.athletes())
     print("wrote the jits.gg numbers and top athletes into index.html")
-    splice(index, "EVENT-STRIP", event_strip())
+    # The strip is regenerated whole, so its seasonal layer is written in here rather than
+    # into a marker of its own.
+    splice(index, "EVENT-STRIP", event_strip().replace(
+        'aria-labelledby="tm-title">', 'aria-labelledby="tm-title">\n  ' + season_section("eventStrip"), 1))
     splice(index, "HERO-CHIP", hero_chip())
     splice(index, "SEASON-HERO", season_hero())
     splice(index, "SEASON-FOOTER", season_footer())
+    for sec_id in SEASON_SECTIONS:
+        if sec_id == "eventStrip":
+            continue
+        splice(index, "SEASON-SEC-" + sec_id, season_section(sec_id))
     print("wrote the this-month cards, hero chip and seasonal decoration into index.html")
     with open(os.path.join(ROOT, "self-defense-for-women.html"), "w", encoding="utf-8") as fh:
         fh.write(stamp(render_event_rsvp()))

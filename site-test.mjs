@@ -1736,8 +1736,10 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
     const strip = document.getElementById('eventStrip')
     return {
       season: document.documentElement.dataset.season,
-      ghosts: vis('.season-hero .season-ghost'), bats: vis('.season-bat'), moon: vis('.season-moon'), yard: vis('.season-yard'),
+      ghosts: vis('.season-hero .season-ghost'), bats: vis('.season-hero .season-bat'), moon: vis('.season-moon'), yard: vis('.season-yard'),
       stones: vis('.season-stone'), pumpkins: vis('.season-pump'),
+      secs: [...document.querySelectorAll('main > section')].filter(x => x.id !== 'hero' && x.querySelector(':scope > .season-sec') && getComputedStyle(x.querySelector(':scope > .season-sec')).display !== 'none').length,
+      secSpiders: vis('.season-sec .ss-spider'), secWebs: vis('.season-sec .ss-web'), secPatches: vis('.season-sec .ss-patch'), secGhosts: vis('.season-sec .ss-ghost'), secBunting: vis('.season-sec .ss-bunting'),
       gold: getComputedStyle(document.documentElement).getPropertyValue('--gold').trim(),
       cards: [...strip.querySelectorAll('a.event-strip__link')].filter(a => !a.hidden).map(a => a.getAttribute('href')),
       stripTop: Math.round(strip.getBoundingClientRect().top + window.scrollY),
@@ -1748,6 +1750,13 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
   })
   check('L2h in October the homepage is Halloween: moon, bats, ghosts, a graveyard, and tombstones with epitaphs above the footer',
     h1.season === 'halloween' && h1.ghosts === 3 && h1.bats === 3 && h1.moon === 1 && h1.yard === 1 && h1.stones === 4 && h1.pumpkins >= 6, JSON.stringify(h1))
+  check('L2h Halloween runs through the whole page: every section after the hero has its own webs, spiders, ghosts, bunting and a pumpkin patch',
+    h1.secs === 12 && h1.secSpiders >= 10 && h1.secWebs >= 12 && h1.secPatches >= 10 && h1.secGhosts >= 6 && h1.secBunting >= 10, JSON.stringify(h1))
+  check('L2h the section decoration sits behind the content and never blocks it',
+    await hh.evaluate(() => {
+      const sec = document.querySelector('#programs .season-sec'), c = document.querySelector('#programs > .container')
+      return getComputedStyle(sec).pointerEvents === 'none' && +getComputedStyle(sec).zIndex < +getComputedStyle(c).zIndex
+    }))
   check('L2h the gold turns pumpkin orange', h1.gold === '#ff8a1f', h1.gold)
   check('L2h Pink October, the seminar and HYROX are three cards right under the hero, in that order',
     JSON.stringify(h1.cards) === JSON.stringify(['/pink-october', '/self-defense-for-women', '/hyrox-youngstars']) && h1.stripTop < 1000 && /THIS MONTH AT LABYRINTH/i.test(h1.title), JSON.stringify(h1))
@@ -1778,7 +1787,7 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
   await hh.goto(URLH, { waitUntil: 'load' })
   const h2 = await hh.evaluate(() => ({
     season: document.documentElement.dataset.season || '',
-    deco: [...document.querySelectorAll('.season-hero, .season-footer')].every(e => getComputedStyle(e).display === 'none'),
+    deco: [...document.querySelectorAll('.season-hero, .season-footer, .season-sec')].every(e => getComputedStyle(e).display === 'none'),
     gold: getComputedStyle(document.documentElement).getPropertyValue('--gold').trim(),
     cards: [...document.querySelectorAll('#eventStrip a.event-strip__link')].filter(a => !a.hidden).map(a => a.getAttribute('href')),
     chip: document.getElementById('heroChip').textContent,
