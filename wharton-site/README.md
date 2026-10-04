@@ -31,7 +31,7 @@ change the generator or the config and re-run it.
    | `opening_date` | `"2027-01-10"`. Shown as "Classes start January 10, 2027", or "Now open in Wharton" once that date has passed |
    | `hours` | `[{"days": ["Monday","Wednesday"], "opens": "17:00", "closes": "20:30"}]` |
    | `schedule` | `[{"day":"Monday","start":"18:00","end":"19:00","class":"Adult BJJ","type":"Gi","audience":"adult"}]`. `type` is `Gi`, `No-Gi` or empty; `audience` is `adult`, `kids` or `all`; `end` and `note` are optional |
-   | `pricing` | `[{"name":"Adult Unlimited","audience":"adult","price":"149","period":"month","features":["..."],"featured":true}]`. `audience` is `adult`, `kids`, `family` or `other` (other = small add-on rows). `period` is `month`, `class`, `hour`, or empty |
+   | `pricing` | `[{"name":"Adult Unlimited","audience":"adult","price":"149","period":"month","features":["..."],"featured":true}]`. `audience` is `all` (shown to everyone), `adult`, `kids`, `family` or `other` (other = small add-on rows). `period` is `month`, `class`, `hour`, or empty |
    | `kids_ages` | free text, for example `"ages 6 to 15"`. Empty means "age groups will be confirmed with the schedule" |
    | `joe_photo` | `"assets/joe-herrera.jpg"`. Put the file there (and a `.webp` beside it if you can). Empty keeps the initials card |
    | `map_url` | a Google Maps link. Becomes a "Get directions" button |

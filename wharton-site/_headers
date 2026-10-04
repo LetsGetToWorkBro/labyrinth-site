@@ -4,7 +4,6 @@
   X-Frame-Options: SAMEORIGIN
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
-  X-Robots-Tag: noindex, nofollow
 
 # Cache-Control is deliberately not set here, for the reason given in the main
 # site's _headers: Pages applies it unpredictably. The CSS and JS are requested
