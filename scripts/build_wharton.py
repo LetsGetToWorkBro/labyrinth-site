@@ -1389,7 +1389,7 @@ def kids_faqs(S):
     return [
         youngest,
         ("Is jiu-jitsu safe for a young child?",
-         "It is one of the safest martial arts a child can do, because there is no striking in it at all. Jiu-jitsu is grappling: leverage, position and control. Children are not being hit, and they are not hitting anyone. Falling safely is one of the first skills of the art, and it is the one parents tell us shows up outside the gym."),
+         "It is one of the safest martial arts a child can do, because there is no striking in it at all. Jiu-jitsu is grappling: leverage, position and control. Children are not being hit, and they are not hitting anyone. Falling safely is one of the first skills of the art, and it is a skill that shows up outside the gym too."),
         ("What should my child wear to the first class?",
          "A t-shirt and shorts or leggings with no zippers, buttons or pockets, and a water bottle. If your child does not have a gi, tell us when you sign up and we will let you know what to bring. Nobody needs to spend money to find out whether their kid likes it."),
         ("Will my child have to compete?",
@@ -1453,7 +1453,7 @@ def page_kids(S):
 
 <section class="prog-section prog-section--surface">
   <div class="container">
-{section_head('What kids get', 'MORE THAN TECHNIQUE', 'Jiu-jitsu is the vehicle. These are the things parents tell us they notice.')}
+{section_head('What kids get', 'MORE THAN TECHNIQUE', 'Jiu-jitsu is the vehicle. These are the things it builds along the way.')}
     <div class="prog-groups stagger">
       <div class="prog-group"><p class="prog-group__tag">Focus</p><h3 class="prog-group__title">Listening and following instructions</h3><p class="prog-group__desc">A class has a structure and a respectful way of working with a partner. Children learn to listen, wait their turn and try again.</p></div>
       <div class="prog-group"><p class="prog-group__tag">Body control</p><h3 class="prog-group__title">Falling safely and moving well</h3><p class="prog-group__desc">Coordination, balance and falling without getting hurt are among the first skills of the art, and they carry over to every other sport.</p></div>
