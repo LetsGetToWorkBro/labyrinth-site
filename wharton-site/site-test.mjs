@@ -302,9 +302,9 @@ await linkCheck('live', dirLive)
   // The committed config, as the owner has it
   const real = committedCfg.schedule
   const find = (cls, day) => real.filter(r => r.class === cls && r.day === day)
-  check('K5 the committed schedule is exactly Joe\'s (adult kickboxing Tue/Thu 6 to 7 PM is checked in K8): kids kickboxing Tue/Thu and kids jiu-jitsu Wed/Fri at 5 to 6 PM, adult kickboxing Tue/Thu and women\'s self defense Wed/Fri 6 to 7 PM',
-    real.length === 8 && find('Kids Kickboxing', 'Tuesday').length === 1 && find('Kids Kickboxing', 'Thursday').length === 1 &&
-    find('Kids Jiu-Jitsu', 'Wednesday').length === 1 && find('Kids Jiu-Jitsu', 'Friday').length === 1 &&
+  check('K5 the committed schedule is exactly Joe\'s (adult kickboxing Tue/Thu 6 to 7 PM is checked in K8): kids jiu-jitsu Tue/Wed/Thu/Fri at 5 to 6 PM (no kids kickboxing), adult kickboxing Tue/Thu and women\'s self defense Wed/Fri 6 to 7 PM',
+    real.length === 8 && !real.some(r => /Kids Kickboxing/.test(r.class)) &&
+    ['Tuesday', 'Wednesday', 'Thursday', 'Friday'].every(d => find('Kids Jiu-Jitsu', d).length === 1) &&
     real.filter(r => r.class.startsWith('Kids')).every(r => r.start === '17:00' && r.end === '18:00') &&
     find("Women's Self Defense Jiu-Jitsu", 'Friday')[0].start === '18:00' && find("Women's Self Defense Jiu-Jitsu", 'Friday')[0].end === '19:00' && find("Women's Self Defense Jiu-Jitsu", 'Monday').length === 0 &&
     find("Women's Self Defense Jiu-Jitsu", 'Wednesday')[0].start === '18:00' && committedCfg.kids_ages === '', JSON.stringify(real).slice(0, 200))
@@ -316,16 +316,17 @@ await linkCheck('live', dirLive)
   check('K8 the real site: adult jiu-jitsu says its times are coming soon, does not borrow the women\'s class, and shows adult kickboxing Tue/Thu 6 to 7 PM',
     /Adult class times coming soon/.test(adultReal) && !/Women's Self Defense Jiu-Jitsu/.test(adultReal.replace(/Women's Self Defense/g, '')) && /Adult Kickboxing/.test(adultReal) && /6:00 PM to 7:00 PM/.test(adultReal) && !/Adult Jiu-Jitsu\b.{0,40}6:00 PM/.test(adultReal))
   const kidsReal = strip(read(dirReal, 'programs/kids-bjj-wharton.html'))
-  check('K9 the real site: the kids page covers kickboxing (Tue/Thu) and jiu-jitsu (Wed/Fri)',
-    /Kids Kickboxing: Tuesday, Thursday/.test(kidsReal) && /Kids Jiu-Jitsu: Wednesday, Friday/.test(kidsReal) && /5:00 PM to 6:00 PM/.test(kidsReal))
+  check('K9 the real site: the kids page is jiu-jitsu only, Tuesday to Friday 5 to 6 PM, with no kickboxing',
+    /Kids Jiu-Jitsu: Tuesday, Wednesday, Thursday, Friday/.test(kidsReal) && !/kickbox/i.test(kidsReal) && /5:00 PM to 6:00 PM/.test(kidsReal))
   const wom = strip(read(dirReal, 'programs/womens-self-defense-wharton.html'))
   check('K10 the women\'s self defense page exists with Wednesday and Friday, 6:00 to 7:00 PM, and is linked from nav-level pages and the footer',
     /Friday/.test(wom) && /Wednesday/.test(wom) && !/Monday/.test(wom) && /6:00 PM to 7:00 PM/.test(wom) &&
     htmlFiles(dirReal).filter(f => !['404.html', 'privacy-policy.html'].includes(f)).every(f => /href="\/programs\/womens-self-defense-wharton"/.test(read(dirReal, f))))
-  const kick = ['index.html', 'programs/index.html', 'programs/kids-bjj-wharton.html', 'llms.txt'].every(f => /kickboxing/i.test(read(dirReal, f)))
-  const kickSoon = ['index.html', 'programs/index.html', 'programs/kids-bjj-wharton.html', 'llms.txt'].every(f => /kickboxing/i.test(read(dirCommitted, f)))
-  check('K11 kickboxing is named wherever programs are listed (home, programs, kids page, llms.txt), live and coming soon, and in the JSON-LD',
-    kick && kickSoon && /Kids Kickboxing and Jiu-Jitsu/.test(read(dirReal, 'index.html')) && /"Kickboxing"/.test(read(dirCommitted, 'index.html')))
+  const kick = ['index.html', 'programs/index.html', 'programs/adult-bjj-wharton.html', 'llms.txt'].every(f => /kickboxing/i.test(read(dirReal, f)))
+  const kickSoon = ['index.html', 'programs/index.html', 'llms.txt'].every(f => /kickboxing/i.test(read(dirCommitted, f)))
+  const noKidsKb = htmlFiles(dirReal).concat(['llms.txt']).every(f => !/kids?\s+(and adult\s+)?kickbox/i.test(strip(read(dirReal, f))))
+  check('K11 adult kickboxing is named wherever programs are listed (home, programs, adult page, llms.txt), live and coming soon, and no page mentions kids kickboxing',
+    kick && kickSoon && noKidsKb && /"Kickboxing"/.test(read(dirCommitted, 'index.html')))
   const smReal = read(dirReal, 'sitemap.xml')
   check('K12 the sitemap lists the women\'s page and the kids page', /programs\/womens-self-defense-wharton</.test(smReal) && /programs\/kids-bjj-wharton</.test(smReal))
   const metas = htmlFiles(dirReal).map(f => (read(dirReal, f).match(/<meta name="description" content="([^"]*)"/) || [])[1] || '').join(' ')

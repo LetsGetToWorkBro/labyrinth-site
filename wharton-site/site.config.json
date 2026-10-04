@@ -30,24 +30,6 @@
   "hours": [],
   "schedule": [
     {
-      "day": "Tuesday",
-      "start": "17:00",
-      "class": "Kids Kickboxing",
-      "type": "",
-      "audience": "kids",
-      "note": "",
-      "end": "18:00"
-    },
-    {
-      "day": "Thursday",
-      "start": "17:00",
-      "class": "Kids Kickboxing",
-      "type": "",
-      "audience": "kids",
-      "note": "",
-      "end": "18:00"
-    },
-    {
       "day": "Wednesday",
       "start": "17:00",
       "class": "Kids Jiu-Jitsu",
@@ -99,6 +81,24 @@
       "class": "Women's Self Defense Jiu-Jitsu",
       "type": "",
       "audience": "women",
+      "note": ""
+    },
+    {
+      "day": "Tuesday",
+      "start": "17:00",
+      "end": "18:00",
+      "class": "Kids Jiu-Jitsu",
+      "type": "",
+      "audience": "kids",
+      "note": ""
+    },
+    {
+      "day": "Thursday",
+      "start": "17:00",
+      "end": "18:00",
+      "class": "Kids Jiu-Jitsu",
+      "type": "",
+      "audience": "kids",
       "note": ""
     }
   ],
