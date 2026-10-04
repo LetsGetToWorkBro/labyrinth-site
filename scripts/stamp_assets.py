@@ -76,7 +76,10 @@ def main():
     vers = versions()
     changed = []
     for p in sorted(ROOT.rglob("*.html")):
-        if "node_modules" in p.parts:
+        # wharton-site/ is a separate Cloudflare Pages project with its own copies
+        # of app.js and style.css; scripts/build_wharton.py versions those itself.
+        # Stamping them with this site's hashes would point them at the wrong files.
+        if "node_modules" in p.parts or "wharton-site" in p.parts:
             continue
         before = p.read_text(encoding="utf-8")
         after = stamp(before, vers)
