@@ -24,7 +24,9 @@ everywhere at once, and whatever is still empty keeps its coming-soon message.
 What may be stated as fact comes from exactly three places:
   - the brief for this site (Joe Herrera is a brown belt under Prof. Anthony
     Curry and the lead instructor at Wharton; the first class is free;
-    programs are Adults and Kids & Teens; phone and email)
+    kids kickboxing and jiu-jitsu; phone and email), as amended by the owner's
+    later message (see the PROGRAMS section: kids classes for now, women's
+    self defense jiu-jitsu, adult times not yet announced)
   - the main site's coach page for Prof. Anthony Curry
   - scripts/jits_data.py, the Labyrinth team's results as jits.gg reports them
     (always presented as the Labyrinth team's, never as Wharton's)
@@ -57,7 +59,7 @@ SITE_NAME = "Labyrinth BJJ Wharton"
 LEGAL_NAME = "Labyrinth Brazilian Jiu Jitsu LLC"
 
 DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-AUDIENCES = {"all": "Membership", "adult": "Adults", "kids": "Kids & Teens", "family": "Family", "other": "More"}
+AUDIENCES = {"all": "Membership", "adult": "Adults", "kids": "Kids", "family": "Family", "other": "More"}
 
 FONT_URL = ("https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700"
             "&f[]=general-sans@300,400,500,600,700&display=swap")
@@ -207,18 +209,25 @@ def fmt_time(t):
 
 
 def normalise_schedule(rows):
+    """Validated, sorted rows. `start` may be empty (time not announced yet): such a row
+    sorts after the timed rows of its day and renders as "Time to be announced". A start
+    that IS given must be a real 24-hour time; an end needs a start."""
     out = []
     for r in rows:
         _need(r.get("day") in DAYS, "schedule day %r must be one of %s" % (r.get("day"), ", ".join(DAYS)))
-        hhmm(r.get("start"), "schedule start")
-        if r.get("end"):
-            hhmm(r["end"], "schedule end")
+        start = (r.get("start") or "").strip()
+        end = (r.get("end") or "").strip()
+        if start:
+            hhmm(start, "schedule start")
+        if end:
+            _need(start, "schedule row %r has an end time but no start" % r.get("class"))
+            hhmm(end, "schedule end")
         _need(str(r.get("class", "")).strip(), "every schedule row needs a class name")
         aud = r.get("audience", "all")
-        _need(aud in ("adult", "kids", "all"), "schedule audience must be adult, kids or all")
-        out.append({"day": r["day"], "start": r["start"], "end": r.get("end", ""), "class": r["class"].strip(),
+        _need(aud in ("adult", "kids", "women", "all"), "schedule audience must be adult, kids, women or all")
+        out.append({"day": r["day"], "start": start, "end": end, "class": r["class"].strip(),
                     "type": (r.get("type") or "").strip(), "audience": aud, "note": (r.get("note") or "").strip()})
-    out.sort(key=lambda r: (DAYS.index(r["day"]), hhmm(r["start"], "start")))
+    out.sort(key=lambda r: (DAYS.index(r["day"]), 0 if r["start"] else 1, hhmm(r["start"], "start") if r["start"] else (0, 0)))
     return out
 
 
@@ -527,6 +536,9 @@ def footer(S, p):
       <div class="footer__col">
         <h4>Explore</h4>
         <a href="/programs/">Programs</a>
+        <a href="/programs/kids-bjj-wharton">Kids classes</a>
+        <a href="/programs/womens-self-defense-wharton">Women's self defense</a>
+        <a href="/programs/adult-bjj-wharton">Adult jiu-jitsu</a>
         <a href="/schedule">Schedule</a>
         <a href="/pricing">Pricing</a>
         <a href="/coaches/">Coaches</a>
@@ -659,10 +671,9 @@ def close_block(title, text, cta_label="Get Your Free First Class", href="/conta
 WHO_OPTIONS = [
     ("", "Choose one"),
     ("adult", "Me (an adult)"),
-    ("kids-3-6", "My child, ages 3 to 6"),
-    ("kids-7-12", "My child, ages 7 to 12"),
-    ("teens", "My teen, ages 13 to 17"),
-    ("several", "More than one of us"),
+    ("womens", "Me, for women's self defense"),
+    ("kids", "My child"),
+        ("several", "More than one of us"),
 ]
 
 
@@ -763,15 +774,22 @@ def slot_html(r):
         badge = '<span class="prog-slot__badge prog-slot__badge--nogi">No-Gi</span>'
     elif r["type"]:
         badge = '<span class="prog-slot__badge">%s</span>' % esc(r["type"])
-    t = fmt_time(r["start"]) + ((" to " + fmt_time(r["end"])) if r["end"] else "")
+    if r["start"]:
+        t = fmt_time(r["start"]) + ((" to " + fmt_time(r["end"])) if r["end"] else "")
+    else:
+        t = "Time to be announced"
     name = esc(r["class"]) + ((" <span class=\"prog-slot__note\">%s</span>" % esc(r["note"])) if r["note"] else "")
     return ('<div class="prog-slot"><div class="prog-slot__time">%s%s</div><div class="prog-slot__name">%s</div></div>'
             % (t, badge, name))
 
 
-def schedule_week(S, audiences=None, limit=None):
+def schedule_week(S, audiences=None, limit=None, only=None, exclude=None):
     """The real timetable, or None when there is nothing to show (not live, or no rows)."""
     rows = [r for r in S.schedule if audiences is None or r["audience"] in audiences]
+    if only:
+        rows = [r for r in rows if any(k in r["class"] for k in only)]
+    if exclude:
+        rows = [r for r in rows if not any(k in r["class"] for k in exclude)]
     if limit:
         rows = rows[:limit]
     if not rows:
@@ -857,6 +875,14 @@ def loc_cards(S):
 
 # ── JSON-LD ──────────────────────────────────────────────────────────────────
 
+# The programs Wharton has announced, as (service name, route, description). One list, used by the
+# JSON-LD offer catalog; the page copy that describes them is in the page_* functions.
+PROGRAM_SERVICES = [
+    ("Kids Kickboxing and Jiu-Jitsu", "/programs/kids-bjj-wharton", "Kickboxing and Brazilian jiu-jitsu classes for children in Wharton, TX."),
+    ("Women's Self Defense Jiu-Jitsu", "/programs/womens-self-defense-wharton", "Self defense built on Brazilian jiu-jitsu, for women, in Wharton, TX."),
+    ("Adult Brazilian Jiu-Jitsu", "/programs/adult-bjj-wharton", "Brazilian jiu-jitsu for adults in Wharton, TX. Class times to be announced."),
+]
+
 AREAS_SERVED = ["Wharton", "El Campo", "East Bernard", "Boling", "Hungerford", "Louise"]
 
 
@@ -874,21 +900,20 @@ def business_schema(S):
         "@id": S.url + "/#business",
         "name": SITE_NAME,
         "alternateName": "Labyrinth Brazilian Jiu-Jitsu Wharton",
-        "description": ("Brazilian jiu-jitsu for adults, kids and teens in Wharton, Texas, led by Joe Herrera, a brown belt "
-                        "under Prof. Anthony Curry. Part of Labyrinth BJJ. Your first class is free."),
+        "description": ("Kids kickboxing and jiu-jitsu, women's self defense jiu-jitsu and adult jiu-jitsu in Wharton, Texas, "
+                        "led by Joe Herrera, a brown belt under Prof. Anthony Curry. Part of Labyrinth BJJ. Your first class is free."),
         "url": S.url,
         "telephone": "+1-" + S.phone.strip("() ").replace(") ", "-").replace(")", "-"),
         "email": S.email,
         "image": [S.url + "/assets/og-wharton.jpg", S.url + "/assets/hero-team.jpg"],
         "logo": S.url + "/assets/logo-maze.jpg",
         "parentOrganization": {"@type": "Organization", "name": "Labyrinth BJJ", "legalName": LEGAL_NAME, "url": PARENT_URL},
-        "sport": "Brazilian Jiu-Jitsu",
+        "sport": ["Brazilian Jiu-Jitsu", "Kickboxing"],
         "areaServed": [{"@type": "City", "name": n + ", TX"} for n in AREAS_SERVED],
         "employee": [joe_person(S)],
     }
     offers = []
-    for name, url, desc in (("Adult Brazilian Jiu-Jitsu", "/programs/adult-bjj-wharton", "Brazilian jiu-jitsu classes for adults in Wharton, TX."),
-                            ("Kids & Teens Brazilian Jiu-Jitsu", "/programs/kids-bjj-wharton", "Brazilian jiu-jitsu classes for kids and teens in Wharton, TX.")):
+    for name, url, desc in PROGRAM_SERVICES:
         offers.append({"@type": "Offer", "itemOffered": {"@type": "Service", "name": name, "url": S.abs(url), "description": desc}})
     for p in S.pricing:                                  # empty unless live
         if is_number(p["price"]):
@@ -961,15 +986,25 @@ def faq_price(S):
 
 def faq_ages(S):
     if S.kids_ages:
-        return ("What ages can train?", "Wharton has programs for adults and for kids and teens. Kids and teens: %s." % S.kids_ages)
+        return ("What ages can train?",
+                "Right now the Wharton kids classes are for %s. If your child is a different age, tell us their age on the form so we know. Women's self defense and adult jiu-jitsu are for adults." % S.kids_ages)
     return ("What ages can train?",
-            "Wharton has programs for adults and for kids and teens. The exact age groups will be confirmed with the class schedule, so tell us your child's age on the form and we will let you know where they fit.")
+            "Tell us your child's age on the form and we will confirm the right class for them. Women's self defense and adult jiu-jitsu are for adults.")
+
+
+def faq_classes(S):
+    if S.schedule:
+        return ("What classes are there?",
+                "Kids kickboxing and kids jiu-jitsu, and women's self defense jiu-jitsu, are on the schedule. Adult jiu-jitsu class times have not been announced yet.")
+    return ("What classes are there?",
+            "Wharton's first classes are kids kickboxing, kids jiu-jitsu and women's self defense jiu-jitsu, and there will be adult jiu-jitsu. Class times are coming soon.")
 
 
 def home_faqs(S):
     return [
         faq_when(S),
         faq_where(S),
+        faq_classes(S),
         ("Is the first class really free?",
          "Yes. Your first class at Labyrinth BJJ Wharton is free, with no commitment. Use the form on this page to claim it."),
         ("Do I need experience, or to be in shape?",
@@ -989,26 +1024,62 @@ def home_faqs(S):
 
 # ── Pages ────────────────────────────────────────────────────────────────────
 
+def program_cards(S, h):
+    """The three Wharton programs as cards (home page and the programs hub)."""
+    ages = esc(S.kids_ages) if S.kids_ages else "ages with the schedule"
+    mark = ('<div class="w-program__media w-program__media--mark"><img src="/assets/logo-maze-480.png" alt="" aria-hidden="true" '
+            'width="480" height="480" loading="lazy" decoding="async"></div>')
+    return f"""<div class="program-trio stagger">
+      <a href="/programs/kids-bjj-wharton" class="w-program">
+        <div class="w-program__media">{picture('kids-gi', 'Young Labyrinth BJJ student in a white gi')}</div>
+        <div class="w-program__body">
+          <p class="w-program__tag">Kids &middot; {ages}</p>
+          <{h} class="w-program__title">Kids Kickboxing &amp; <b class="nw">Jiu-Jitsu</b></{h}>
+          <p>Kickboxing and jiu-jitsu for children. The first Wharton kids classes are for {ages if S.kids_ages else "one age group"}, and we want to hear from families with other ages.</p>
+          <span class="coach-card__link">Kids classes &rarr;</span>
+        </div>
+      </a>
+      <a href="/programs/womens-self-defense-wharton" class="w-program">
+        {mark}
+        <div class="w-program__body">
+          <p class="w-program__tag">Women &middot; Jiu-jitsu</p>
+          <{h} class="w-program__title">Women's Self Defense</{h}>
+          <p>Self defense for women, built on the jiu-jitsu we teach: leverage, position and control rather than strength.</p>
+          <span class="coach-card__link">Women's self defense &rarr;</span>
+        </div>
+      </a>
+      <a href="/programs/adult-bjj-wharton" class="w-program">
+        <div class="w-program__media">{picture('adult-gi', 'Adult Brazilian jiu-jitsu competitor in a Labyrinth BJJ gi')}</div>
+        <div class="w-program__body">
+          <p class="w-program__tag">Adults &middot; Times coming soon</p>
+          <{h} class="w-program__title">Adult Jiu-Jitsu</{h}>
+          <p>Brazilian jiu-jitsu for adults, beginners included. Adult class times have not been announced yet.</p>
+          <span class="coach-card__link">Adult jiu-jitsu &rarr;</span>
+        </div>
+      </a>
+    </div>"""
+
+
 def page_home(S):
     has_form = True
-    p = Page("/", "index.html", "Labyrinth BJJ Wharton | Brazilian Jiu-Jitsu in Wharton, TX",
-             "", og_title="Labyrinth BJJ Wharton: Brazilian Jiu-Jitsu in Wharton, Texas", has_form=has_form,
+    p = Page("/", "index.html", "Labyrinth BJJ Wharton | Jiu-Jitsu & Kickboxing in Wharton, TX",
+             "", og_title="Labyrinth BJJ Wharton: Jiu-Jitsu & Kickboxing in Wharton, Texas", has_form=has_form,
              preload="/assets/hero-team.webp", priority="1.0", changefreq="weekly")
     op = opening_line(S)
     if S.live:
-        p.description = ("Brazilian jiu-jitsu for adults, kids and teens in Wharton, TX. Led by Joe Herrera, a brown belt under Prof. Anthony Curry. "
-                         "Part of Labyrinth BJJ. Your first class is free.")
+        p.description = ("Kids and adult kickboxing, kids jiu-jitsu and women's self defense in Wharton, TX. Led by Joe Herrera, "
+                         "a brown belt under Prof. Anthony Curry. First class free.")
         badge = soon_badge(op) if op else ""
-        h1 = 'Brazilian <b class="nw">Jiu-Jitsu</b> in <span>Wharton, Texas</span>'
-        sub = ("Adults, kids and teens, led by Joe Herrera, a brown belt under Prof. Anthony Curry. "
-               "Part of the Labyrinth BJJ family. Your first class is free.")
+        h1 = '<b class="nw">Jiu-Jitsu</b> &amp; Kickboxing in <span>Wharton, Texas</span>'
+        sub = ("Kids kickboxing and jiu-jitsu, women's self defense jiu-jitsu, adult kickboxing and adult jiu-jitsu, led by Joe Herrera, "
+               "a brown belt under Prof. Anthony Curry. Part of the Labyrinth BJJ family. Your first class is free.")
     else:
-        p.description = ("Labyrinth BJJ is bringing Brazilian jiu-jitsu to Wharton, TX, led by Joe Herrera, a brown belt under Prof. Anthony Curry. "
+        p.description = ("Labyrinth BJJ is bringing jiu-jitsu and kickboxing to Wharton, TX, led by Joe Herrera, a brown belt under Prof. Anthony Curry. "
                          "Coming soon. Get notified and claim a free first class.")
         badge = soon_badge("Coming soon to Wharton, TX")
-        h1 = 'Brazilian <b class="nw">Jiu-Jitsu</b> is coming to <span>Wharton, Texas</span>'
-        sub = ("Labyrinth BJJ is opening a Wharton gym for adults, kids and teens, led by Joe Herrera, a brown belt under "
-               "Prof. Anthony Curry. Class times, prices and the address are coming soon. Your first class is free.")
+        h1 = '<b class="nw">Jiu-Jitsu</b> &amp; Kickboxing are coming to <span>Wharton, Texas</span>'
+        sub = ("Labyrinth BJJ is opening a Wharton gym with kids kickboxing and jiu-jitsu, women's self defense, adult kickboxing and adult jiu-jitsu, "
+               "led by Joe Herrera, a brown belt under Prof. Anthony Curry. Class times, prices and the address are coming soon. Your first class is free.")
     p.schema = [business_schema(S), faq_schema(home_faqs(S))]
 
     sched = schedule_week(S, limit=12)
@@ -1021,7 +1092,7 @@ def page_home(S):
                                   "Wharton prices are not set yet. What we can tell you now: your first class is free. We will post prices here as soon as they are confirmed.",
                                   ("#free-class", "Claim your free class"))
     price_more = '<p class="more-link fade-in"><a href="/pricing" class="coach-card__link">See all plans &rarr;</a></p>' if pr else ""
-    kids_line = ("Ages: %s." % S.kids_ages) if S.kids_ages else "Age groups will be confirmed with the class schedule."
+    kids_line = ("Kids &middot; %s" % esc(S.kids_ages)) if S.kids_ages else "Kids &middot; ages with the schedule"
     if S.live:
         intro2 = ("Classes are on the <a href=\"/schedule\">schedule</a> and your first one is free. "
                   "Use the form at the bottom of this page, or call us on %s." % S.phone)
@@ -1055,8 +1126,8 @@ def page_home(S):
       <div>
 {section_head('The Wharton gym', 'A NEW LABYRINTH GYM FOR WHARTON')}
         <div class="prog-prose fade-in">
-          <p>Labyrinth BJJ Wharton is a Brazilian jiu-jitsu gym in Wharton, Texas, part of the Labyrinth family of gyms. It is led by <strong>Joe Herrera</strong>, a brown belt under Prof. Anthony Curry, who founded Labyrinth in 2021.</p>
-          <p>Brazilian jiu-jitsu is a grappling art built on leverage, position and control. There is no striking in it. It is a practical way to get fit, to learn real self-defense, and to be part of a room full of people who are working on the same hard thing.</p>
+          <p>Labyrinth BJJ Wharton is a jiu-jitsu and kickboxing gym in Wharton, Texas, part of the Labyrinth family of gyms. It is led by <strong>Joe Herrera</strong>, a brown belt under Prof. Anthony Curry, who founded Labyrinth in 2021.</p>
+          <p>Brazilian jiu-jitsu is a grappling art built on leverage, position and control, with no striking in it. Kickboxing is the striking side: punches and kicks. Jiu-jitsu is a practical way to get fit, to learn real self-defense, and to be part of a room full of people who are working on the same hard thing.</p>
           <p>{intro2}</p>
         </div>
         <div class="prog-hero__cta fade-in">
@@ -1071,27 +1142,8 @@ def page_home(S):
 
 <section class="prog-section prog-section--surface" id="programs">
   <div class="container">
-{section_head('Programs', 'TWO PROGRAMS, ONE FIRST CLASS FREE', 'Pick the one that is for you, or for your child. Both start with a free first class.')}
-    <div class="program-duo stagger">
-      <a href="/programs/adult-bjj-wharton" class="w-program">
-        <div class="w-program__media">{picture('adult-gi', 'Adult Brazilian jiu-jitsu competitor in a Labyrinth BJJ gi')}</div>
-        <div class="w-program__body">
-          <p class="w-program__tag">Adults &middot; Gi &amp; No-Gi</p>
-          <h3 class="w-program__title">Adult Brazilian Jiu-Jitsu</h3>
-          <p>For complete beginners and experienced grapplers alike. You do not need to be in shape to start. Jiu-jitsu gets you in shape.</p>
-          <span class="coach-card__link">Adult BJJ &rarr;</span>
-        </div>
-      </a>
-      <a href="/programs/kids-bjj-wharton" class="w-program">
-        <div class="w-program__media">{picture('kids-gi', 'Young Labyrinth BJJ student in a white gi')}</div>
-        <div class="w-program__body">
-          <p class="w-program__tag">Kids &amp; Teens &middot; {esc(kids_line)}</p>
-          <h3 class="w-program__title">Kids &amp; Teens Jiu-Jitsu</h3>
-          <p>Focus, confidence and the ability to handle pressure, through a grappling art with no striking. Competition is always optional.</p>
-          <span class="coach-card__link">Kids &amp; Teens BJJ &rarr;</span>
-        </div>
-      </a>
-    </div>
+{section_head('Programs', 'WHAT WE TEACH IN WHARTON', 'Pick the one that is for you, or for your child. Every one starts with a free first class.')}
+    {program_cards(S, 'h3')}
   </div>
 </section>
 
@@ -1198,22 +1250,23 @@ def page_home(S):
 
 def page_programs_hub(S):
     trail = [("/programs/", "Programs")]
-    p = Page("/programs/", "programs/index.html", "Programs: Adult & Kids BJJ in Wharton, TX | Labyrinth BJJ Wharton",
-             "Two programs at Labyrinth BJJ Wharton: Brazilian jiu-jitsu for adults, and for kids and teens. Beginners welcome. Your first class is free.",
+    p = Page("/programs/", "programs/index.html", "Programs in Wharton, TX | Labyrinth BJJ Wharton",
+             "Programs at Labyrinth BJJ Wharton: kids kickboxing and jiu-jitsu, women's self defense jiu-jitsu, adult kickboxing and adult jiu-jitsu. Your first class is free.",
              og_title="Programs at Labyrinth BJJ Wharton", crumbs=trail, priority="0.9")
     p.schema = [breadcrumb_schema(S, trail)]
     if S.live:
-        hub_note = 'Class times and prices are on the <a href="/schedule">schedule</a> and <a href="/pricing">pricing</a> pages.'
+        hub_note = 'Class times and prices are on the <a href="/schedule">schedule</a> and <a href="/pricing">pricing</a> pages. Adult class times have not been announced yet.'
     else:
         hub_note = "The Wharton class schedule and prices are coming soon. Until then, the free first class form is the way to get on the list."
+    kids_now = ("The first kids classes are for %s." % esc(S.kids_ages)) if S.kids_ages else "Kids classes are on the timetable. Tell us your child's age on the form and we will confirm the right class."
     p.body = crumbs_html([("/", "Home"), (None, "Programs")]) + f"""
 <header class="prog-hero">
   <div class="container">
     <p class="section-label">Programs</p>
-    <h1 class="prog-hero__title">Find Your Path</h1>
-    <p class="prog-hero__lead">Two programs at Labyrinth BJJ Wharton: Brazilian jiu-jitsu for adults, and Brazilian jiu-jitsu for kids and teens. Both start with a free first class.</p>
+    <h1 class="prog-hero__title">What We Teach in Wharton</h1>
+    <p class="prog-hero__lead">Kids kickboxing and jiu-jitsu, women's self defense jiu-jitsu, adult kickboxing and adult jiu-jitsu at Labyrinth BJJ Wharton. Every one starts with a free first class.</p>
     <div class="prog-prose" style="margin-top:var(--space-6)">
-      <p>If it is for you, it is <a href="/programs/adult-bjj-wharton">adult BJJ</a>, and it does not matter that you have never done a combat sport, because most people who start have not. If it is for a child or a teenager, it is <a href="/programs/kids-bjj-wharton">kids and teens BJJ</a>, a grappling art with no striking in it.</p>
+      <p>If it is for a child, it is <a href="/programs/kids-bjj-wharton">kids kickboxing and jiu-jitsu</a>. {kids_now} Other ages are not on the schedule yet, so tell us your child's age on the form. If it is for you and you want self defense, it is <a href="/programs/womens-self-defense-wharton">women's self defense</a>. If you want jiu-jitsu classes for adults, it is <a href="/programs/adult-bjj-wharton">adult jiu-jitsu</a>, and it does not matter that you have never done a combat sport, because most people who start have not.</p>
       <p>{hub_note}</p>
     </div>
     <div class="prog-hero__cta">
@@ -1225,40 +1278,21 @@ def page_programs_hub(S):
 
 <section class="prog-section">
   <div class="container">
-    <div class="program-duo stagger">
-      <a href="/programs/adult-bjj-wharton" class="w-program">
-        <div class="w-program__media">{picture('adult-gi', 'Adult Brazilian jiu-jitsu competitor in a Labyrinth BJJ gi')}</div>
-        <div class="w-program__body">
-          <p class="w-program__tag">Adults &middot; Gi &amp; No-Gi</p>
-          <h2 class="w-program__title">Adult Brazilian Jiu-Jitsu</h2>
-          <p>For complete beginners up to experienced grapplers. Calm, patient and technical beats young and explosive.</p>
-          <span class="coach-card__link">Adult BJJ &rarr;</span>
-        </div>
-      </a>
-      <a href="/programs/kids-bjj-wharton" class="w-program">
-        <div class="w-program__media">{picture('kids-gi', 'Young Labyrinth BJJ student in a white gi')}</div>
-        <div class="w-program__body">
-          <p class="w-program__tag">Kids &amp; Teens</p>
-          <h2 class="w-program__title">Kids &amp; Teens Jiu-Jitsu</h2>
-          <p>Focus, confidence and the ability to handle pressure, with competition always optional.</p>
-          <span class="coach-card__link">Kids &amp; Teens BJJ &rarr;</span>
-        </div>
-      </a>
-    </div>
+    {program_cards(S, 'h2')}
   </div>
 </section>
 
 <section class="prog-section prog-section--surface">
   <div class="container">
-{section_head('What stays the same', 'ON EVERY MAT')}
+{section_head('Two arts', 'JIU-JITSU AND KICKBOXING')}
     <div class="prog-groups stagger">
-      <div class="prog-group"><p class="prog-group__tag">Start here</p><h3 class="prog-group__title">Beginners are welcome</h3><p class="prog-group__desc">Nobody expects you to know anything. Show up, ask questions and go at your own pace.</p></div>
-      <div class="prog-group"><p class="prog-group__tag">Grappling</p><h3 class="prog-group__title">No striking</h3><p class="prog-group__desc">Brazilian jiu-jitsu is leverage, position and control. Nobody is hitting anyone.</p></div>
+      <div class="prog-group"><p class="prog-group__tag">Grappling</p><h3 class="prog-group__title">Jiu-jitsu</h3><p class="prog-group__desc">Brazilian jiu-jitsu is leverage, position and control. There is no striking in it. It is the art behind the kids jiu-jitsu, women's self defense and adult classes.</p></div>
+      <div class="prog-group"><p class="prog-group__tag">Striking</p><h3 class="prog-group__title">Kickboxing</h3><p class="prog-group__desc">Kickboxing is punches and kicks. At Wharton it is part of the kids program, alongside jiu-jitsu.</p></div>
       <div class="prog-group"><p class="prog-group__tag">Free</p><h3 class="prog-group__title">The first class costs nothing</h3><p class="prog-group__desc">No commitment. Try it, then decide.</p></div>
     </div>
   </div>
 </section>
-""" + close_block("NOT SURE WHICH ONE?", "Tell us who would be training and we will point you to the right program, including if the answer is that we are not the right fit.", S=S)
+""" + close_block("NOT SURE WHICH ONE?", "Tell us who would be training and we will point you to the right class, including if the answer is that we are not the right fit yet.", S=S)
     return p
 
 
@@ -1269,7 +1303,7 @@ def adult_faqs(S):
         ("I am in my forties or older. Am I too old for this?",
          "No. Jiu-jitsu is the martial art most forgiving of a late start because leverage and patience beat athleticism in it more often than in anything else. Train at your pace, tap early, and you can keep doing this for decades."),
         ("What is the difference between Gi and No-Gi?",
-         "Gi is the traditional uniform, and the jacket and trousers become part of the game: grips, collar chokes, sweeps off the sleeve. No-Gi is a rashguard and shorts: faster, more wrestling-like, nothing to hold on to. Labyrinth teaches both, and the Wharton classes will be labeled on the schedule."),
+         "Gi is the traditional uniform, and the jacket and trousers become part of the game: grips, collar chokes, sweeps off the sleeve. No-Gi is a rashguard and shorts: faster, more wrestling-like, nothing to hold on to. Labyrinth teaches both. Which style the Wharton adult classes will be has not been announced."),
         ("What do I wear and what do I need to bring?",
          "For a first class, athletic clothes with no zippers or pockets, and a water bottle. If you do not own a gi, tell us when you sign up and we will let you know what to bring. Trim your nails."),
         ("Do I have to commit to anything?",
@@ -1279,28 +1313,38 @@ def adult_faqs(S):
 
 def page_adult(S):
     trail = [("/programs/", "Programs"), ("/programs/adult-bjj-wharton", "Adult BJJ")]
-    desc = ("Adult Brazilian jiu-jitsu in Wharton, TX at Labyrinth BJJ Wharton. Gi and No-Gi, beginners welcome, led by Joe Herrera. "
-            "Your first class is free.")
+    desc = ("Adult jiu-jitsu in Wharton, TX at Labyrinth BJJ Wharton. Beginners welcome, led by Joe Herrera. "
+            "Adult class times coming soon. Your first class is free.")
     p = Page("/programs/adult-bjj-wharton", "programs/adult-bjj-wharton.html", "Adult BJJ Classes in Wharton, TX | Labyrinth BJJ Wharton",
              desc, og_title="Adult BJJ in Wharton, TX | Labyrinth BJJ Wharton", og_image="assets/og-wharton.jpg",
              crumbs=trail, priority="0.9")
     faqs = adult_faqs(S)
     p.schema = [service_schema(S, "Adult Brazilian Jiu-Jitsu", desc, p.route), breadcrumb_schema(S, trail), faq_schema(faqs)]
-    sched = schedule_week(S, audiences=("adult", "all"))
+    sched = schedule_week(S, audiences=("adult", "all"), exclude=("Kickboxing",))
+    kb_sched = schedule_week(S, audiences=("adult",), only=("Kickboxing",))
     sched_block = sched or soon_card("Adult class times coming soon",
-                                     "The Wharton class schedule is not set yet. Put your name on the list and we will email you as soon as adult class times are confirmed.",
+                                     "Adult jiu-jitsu class times have not been announced yet. Put your name on the list and we will email you as soon as they are.",
                                      ("/contact#free-class", "Get notified"))
     pr = price_cards(S, audiences=("all", "adult", "family", "other"))
     price_block = pr or soon_card("Prices coming soon",
                                   "Wharton prices are not set yet. Your first class is free, and prices will be posted on the pricing page once they are confirmed.",
                                   ("/pricing", "About pricing"))
-    fact_sched = "On the schedule" if sched else "Coming soon"
+    fact_sched = "On the schedule" if sched else "To be announced"
+    kb_section = ("""
+<section class="prog-section prog-section--surface" id="kickboxing">
+  <div class="container">
+""" + section_head('Also at Wharton', 'ADULT KICKBOXING') + f"""
+    <p class="prog-prose fade-in" style="max-width:62ch">Adult kickboxing runs at Labyrinth BJJ Wharton on Tuesday and Thursday evenings. Your first class is free, with no commitment. Tell us in the message box on the form if you have questions about what to expect.</p>
+    {kb_sched}
+  </div>
+</section>
+""") if kb_sched else ""
     p.body = crumbs_html([("/", "Home"), ("/programs/", "Programs"), (None, "Adult BJJ")]) + f"""
 <header class="prog-hero">
   <div class="container">
     <div class="prog-hero__grid">
       <div>
-        <p class="section-label">All levels &middot; Gi &amp; No-Gi</p>
+        <p class="section-label">All levels &middot; Times coming soon</p>
         <h1 class="prog-hero__title">Adult Brazilian Jiu-Jitsu in Wharton</h1>
         <p class="prog-hero__lead">Brazilian jiu-jitsu for adults at Labyrinth BJJ Wharton, from complete beginner up. Led by Joe Herrera. Your first class is free.</p>
         <div class="prog-hero__cta">
@@ -1312,7 +1356,7 @@ def page_adult(S):
     </div>
     <div class="prog-facts">
       <div class="prog-fact"><div class="prog-fact__label">Levels</div><div class="prog-fact__value">Beginners welcome</div></div>
-      <div class="prog-fact"><div class="prog-fact__label">Styles</div><div class="prog-fact__value">Gi &amp; No-Gi</div></div>
+      <div class="prog-fact"><div class="prog-fact__label">Instructor</div><div class="prog-fact__value">Joe Herrera</div></div>
       <div class="prog-fact"><div class="prog-fact__label">Class times</div><div class="prog-fact__value">{fact_sched}</div></div>
       <div class="prog-fact"><div class="prog-fact__label">First class</div><div class="prog-fact__value"><em>Free</em></div></div>
     </div>
@@ -1325,7 +1369,7 @@ def page_adult(S):
     <div class="prog-prose fade-in">
       <p>Most adults who walk into a jiu-jitsu gym for the first time have never done a combat sport. They have a job, a busy week and maybe a bad shoulder, and they have been meaning to try this for a long time. That is the normal case, not the exception, and the classes are built around it.</p>
       <p>Jiu-jitsu suits adults who start late better than almost any other martial art, for a reason that is not obvious until you have done it: it is the one where being calm, patient and technical beats being young and explosive. Position and leverage count for more than strength or speed.</p>
-      <p>Labyrinth teaches <strong>Gi and No-Gi</strong>: the traditional uniform, and the shorts-and-rashguard version. You can do one, or both. Which Wharton classes are Gi and which are No-Gi will be labeled on the schedule.</p>
+      <p>Labyrinth teaches <strong>Gi and No-Gi</strong>: the traditional uniform, and the shorts-and-rashguard version. Which style the Wharton adult classes will be has not been announced.</p>
     </div>
   </div>
 </section>
@@ -1343,11 +1387,11 @@ def page_adult(S):
 
 <section class="prog-section" id="times">
   <div class="container">
-{section_head('Timetable', 'ADULT CLASS TIMES')}
+{section_head('Timetable', 'ADULT JIU-JITSU CLASS TIMES')}
     {sched_block}
   </div>
 </section>
-
+{kb_section}
 <section class="prog-section prog-section--surface">
   <div class="container">
 {section_head('Coaching', 'WHO TEACHES IT')}
@@ -1369,7 +1413,8 @@ def page_adult(S):
   <div class="container">
 {section_head('Keep reading', 'MORE FROM WHARTON')}
     <div class="prog-siblings stagger">
-      <a href="/programs/kids-bjj-wharton" class="prog-sibling"><div class="prog-sibling__title">Kids &amp; Teens BJJ</div><div class="prog-sibling__desc">Focus, confidence and no striking</div></a>
+      <a href="/programs/kids-bjj-wharton" class="prog-sibling"><div class="prog-sibling__title">Kids Kickboxing &amp; Jiu-Jitsu</div><div class="prog-sibling__desc">Focus, confidence and body control</div></a>
+      <a href="/programs/womens-self-defense-wharton" class="prog-sibling"><div class="prog-sibling__title">Women's Self Defense</div><div class="prog-sibling__desc">Jiu-jitsu for self defense</div></a>
       <a href="/schedule" class="prog-sibling"><div class="prog-sibling__title">Class schedule</div><div class="prog-sibling__desc">{"Weekly timetable" if S.schedule else "Coming soon"}</div></a>
       <a href="/pricing" class="prog-sibling"><div class="prog-sibling__title">Pricing</div><div class="prog-sibling__desc">{"Plans and prices" if S.pricing else "Coming soon"}</div></a>
       <a href="/areas/" class="prog-sibling"><div class="prog-sibling__title">Areas we serve</div><div class="prog-sibling__desc">El Campo, East Bernard, Boling and more</div></a>
@@ -1380,18 +1425,42 @@ def page_adult(S):
     return p
 
 
-def kids_faqs(S):
+def class_days(S, audiences):
+    """'Kids Kickboxing: Tuesday, Thursday. ...' from the real schedule, or '' when it has none."""
+    groups = {}
+    for r in S.schedule:
+        if r["audience"] in audiences:
+            groups.setdefault(r["class"], [])
+            if r["day"] not in groups[r["class"]]:
+                groups[r["class"]].append(r["day"])
+    return " ".join("%s: %s." % (name, ", ".join(days)) for name, days in groups.items())
+
+
+def untimed_note(S, audiences):
+    rows = [r for r in S.schedule if r["audience"] in audiences]
+    return " Start times have not been announced yet." if any(not r["start"] for r in rows) else ""
+
+
+def kids_now(S):
     if S.kids_ages:
-        youngest = ("What is the youngest age you take?", "Wharton kids and teens classes are for %s. Tell us your child's age on the form and we will confirm where they fit." % S.kids_ages)
-    else:
-        youngest = ("What is the youngest age you take?",
-                    "The Wharton age groups are not confirmed yet. They will be set with the class schedule. Tell us your child's age on the form and we will let you know where they fit.")
+        return ("Right now the Wharton kids classes are for %s. More age groups may be added later. If your child is a different age, "
+                "tell us their age in the message box on the form so we know." % S.kids_ages)
+    return ("Tell us your child's age on the form and we will confirm the right class for them.")
+
+
+def kids_faqs(S):
+    days = class_days(S, ("kids",))
+    when = (days + untimed_note(S, ("kids",)) + " See the schedule page for the latest.") if days else \
+        "Class times are coming soon. Put your name on the list and we will email you as soon as they are announced."
     return [
-        youngest,
-        ("Is jiu-jitsu safe for a young child?",
-         "It is one of the safest martial arts a child can do, because there is no striking in it at all. Jiu-jitsu is grappling: leverage, position and control. Children are not being hit, and they are not hitting anyone. Falling safely is one of the first skills of the art, and it is a skill that shows up outside the gym too."),
+        ("What ages are the kids classes for?", kids_now(S)),
+        ("When are the kids classes?", when),
+        ("What is the difference between the kickboxing and the jiu-jitsu class?",
+         "Kickboxing is a striking sport: punches and kicks. Jiu-jitsu is grappling: leverage, position and control, with no striking in it. Wharton's kids program has both."),
+        ("Is it safe for a young child?",
+         "Jiu-jitsu is one of the safest martial arts a child can do, because there is no striking in it at all. Falling safely is one of the first skills of the art. Kickboxing does involve punches and kicks, so if you want to know how the Wharton kickboxing class is run before your child's first class, ask us when you sign up."),
         ("What should my child wear to the first class?",
-         "A t-shirt and shorts or leggings with no zippers, buttons or pockets, and a water bottle. If your child does not have a gi, tell us when you sign up and we will let you know what to bring. Nobody needs to spend money to find out whether their kid likes it."),
+         "A t-shirt and shorts or leggings with no zippers, buttons or pockets, and a water bottle. If your child does not have a gi, tell us when you sign up and we will let you know what to bring."),
         ("Will my child have to compete?",
          "No. Competition is always optional at Labyrinth. Plenty of students train for years and never enter a tournament."),
         ("My child is shy, or has never played a sport. Is that a problem?",
@@ -1400,30 +1469,32 @@ def kids_faqs(S):
 
 
 def page_kids(S):
-    trail = [("/programs/", "Programs"), ("/programs/kids-bjj-wharton", "Kids & Teens BJJ")]
-    desc = ("Kids and teens Brazilian jiu-jitsu in Wharton, TX. No striking, competition always optional, "
-            "led by Joe Herrera. Your child's first class is free.")
-    p = Page("/programs/kids-bjj-wharton", "programs/kids-bjj-wharton.html", "Kids & Teens BJJ in Wharton, TX | Labyrinth BJJ Wharton",
-             desc, og_title="Kids & Teens BJJ in Wharton, TX | Labyrinth BJJ Wharton", crumbs=trail, priority="0.9")
+    trail = [("/programs/", "Programs"), ("/programs/kids-bjj-wharton", "Kids Kickboxing & Jiu-Jitsu")]
+    desc = ("Kids kickboxing and jiu-jitsu in Wharton, TX at Labyrinth BJJ Wharton, led by Joe Herrera. "
+            + (("Ages %s for now. " % S.kids_ages.replace("ages ", "")) if S.kids_ages.startswith("ages ") else "")
+            + "Your child's first class is free.")
+    p = Page("/programs/kids-bjj-wharton", "programs/kids-bjj-wharton.html", "Kids Kickboxing & Jiu-Jitsu in Wharton, TX | Labyrinth BJJ Wharton",
+             desc, og_title="Kids Kickboxing & Jiu-Jitsu in Wharton, TX | Labyrinth BJJ Wharton", crumbs=trail, priority="0.9")
     faqs = kids_faqs(S)
-    p.schema = [service_schema(S, "Kids & Teens Brazilian Jiu-Jitsu", desc, p.route), breadcrumb_schema(S, trail), faq_schema(faqs)]
+    p.schema = [service_schema(S, "Kids Kickboxing and Jiu-Jitsu", desc, p.route), breadcrumb_schema(S, trail), faq_schema(faqs)]
     sched = schedule_week(S, audiences=("kids", "all"))
-    sched_block = sched or soon_card("Kids & teens class times coming soon",
-                                     "The Wharton class schedule is not set yet. Put your name on the list and we will email you as soon as kids and teens class times are confirmed.",
+    sched_block = sched or soon_card("Kids class times coming soon",
+                                     "The Wharton kids class times have not been announced yet. Put your name on the list and we will email you as soon as they are.",
                                      ("/contact#free-class", "Get notified"))
     pr = price_cards(S, audiences=("all", "kids", "family", "other"))
     price_block = pr or soon_card("Prices coming soon",
                                   "Wharton prices are not set yet. Your child's first class is free, and prices will be posted on the pricing page once they are confirmed.",
                                   ("/pricing", "About pricing"))
-    ages_fact = esc(S.kids_ages[0].upper() + S.kids_ages[1:]) if S.kids_ages else "Confirmed with the schedule"
-    p.body = crumbs_html([("/", "Home"), ("/programs/", "Programs"), (None, "Kids & Teens BJJ")]) + f"""
+    ages_fact = esc(S.kids_ages[0].upper() + S.kids_ages[1:]) if S.kids_ages else "Set with the schedule"
+    lead_ages = (" Right now the classes are for %s." % esc(S.kids_ages)) if S.kids_ages else ""
+    p.body = crumbs_html([("/", "Home"), ("/programs/", "Programs"), (None, "Kids Kickboxing & Jiu-Jitsu")]) + f"""
 <header class="prog-hero">
   <div class="container">
     <div class="prog-hero__grid">
       <div>
-        <p class="section-label">Kids &amp; Teens &middot; No striking</p>
-        <h1 class="prog-hero__title">Kids &amp; Teens Jiu-Jitsu in Wharton</h1>
-        <p class="prog-hero__lead">Brazilian jiu-jitsu for children and teens at Labyrinth BJJ Wharton, led by Joe Herrera. Your child's first class is free.</p>
+        <p class="section-label">Kids &middot; Kickboxing &amp; jiu-jitsu</p>
+        <h1 class="prog-hero__title">Kids Kickboxing &amp; Jiu-Jitsu in Wharton</h1>
+        <p class="prog-hero__lead">Kickboxing and jiu-jitsu for children at Labyrinth BJJ Wharton, led by Joe Herrera.{lead_ages} Your child's first class is free.</p>
         <div class="prog-hero__cta">
           <a href="/contact#free-class" class="btn btn--gold">Get a Free First Class</a>
           <a href="#times" class="btn btn--ghost">Class Times</a>
@@ -1433,7 +1504,7 @@ def page_kids(S):
     </div>
     <div class="prog-facts">
       <div class="prog-fact"><div class="prog-fact__label">Ages</div><div class="prog-fact__value">{ages_fact}</div></div>
-      <div class="prog-fact"><div class="prog-fact__label">Contact</div><div class="prog-fact__value">Grappling, no striking</div></div>
+      <div class="prog-fact"><div class="prog-fact__label">Classes</div><div class="prog-fact__value">Kickboxing &amp; jiu-jitsu</div></div>
       <div class="prog-fact"><div class="prog-fact__label">Competition</div><div class="prog-fact__value">Always optional</div></div>
       <div class="prog-fact"><div class="prog-fact__label">First class</div><div class="prog-fact__value"><em>Free</em></div></div>
     </div>
@@ -1444,8 +1515,9 @@ def page_kids(S):
   <div class="container">
 {section_head('The program', 'WHAT IT IS')}
     <div class="prog-prose fade-in">
-      <p>Most parents come to jiu-jitsu for one of three reasons. Their child is being pushed around at school and they want them to be able to handle it. Their child has energy that no amount of playground time absorbs. Or their child has tried a sport, sat on a bench for a season, and quietly decided they are not sporty.</p>
-      <p>Brazilian jiu-jitsu answers all three, and it does it without a single punch being thrown. It is a grappling art, leverage, position and control, which makes it the martial art parents and pediatricians tend to be least nervous about. It is also one of the few children's activities where a small child who thinks carefully genuinely beats a bigger one who does not.</p>
+      <p>Most parents come to martial arts for one of three reasons. Their child is being pushed around at school and they want them to be able to handle it. Their child has energy that no amount of playground time absorbs. Or their child has tried a sport, sat on a bench for a season, and quietly decided they are not sporty.</p>
+      <p>The Wharton kids program has two parts. <strong>Kickboxing</strong> is a striking sport: punches and kicks. <strong>Brazilian jiu-jitsu</strong> is a grappling art, leverage, position and control, with no striking in it, which makes it the martial art parents and pediatricians tend to be least nervous about. It is also one of the few children's activities where a small child who thinks carefully genuinely beats a bigger one who does not.</p>
+      <p>{kids_now(S)}</p>
       <p>Labyrinth BJJ is ranked in the top {jits_data.NATIONAL_TOP_PCT}% of academies nationally on jits.gg (#{jits_data.NATIONAL_RANK} of {jits_data.NATIONAL_OF:,}, as of {jits_data.AS_OF}). That is a competition statistic about the whole Labyrinth team, not about Wharton. It is the record of the school Wharton belongs to, founded by the instructor Joe trains under.</p>
     </div>
   </div>
@@ -1453,18 +1525,18 @@ def page_kids(S):
 
 <section class="prog-section prog-section--surface">
   <div class="container">
-{section_head('What kids get', 'MORE THAN TECHNIQUE', 'Jiu-jitsu is the vehicle. These are the things it builds along the way.')}
+{section_head('What kids get', 'MORE THAN TECHNIQUE', 'Kickboxing and jiu-jitsu are the vehicles. These are the things they build along the way.')}
     <div class="prog-groups stagger">
       <div class="prog-group"><p class="prog-group__tag">Focus</p><h3 class="prog-group__title">Listening and following instructions</h3><p class="prog-group__desc">A class has a structure and a respectful way of working with a partner. Children learn to listen, wait their turn and try again.</p></div>
-      <div class="prog-group"><p class="prog-group__tag">Body control</p><h3 class="prog-group__title">Falling safely and moving well</h3><p class="prog-group__desc">Coordination, balance and falling without getting hurt are among the first skills of the art, and they carry over to every other sport.</p></div>
-      <div class="prog-group"><p class="prog-group__tag">Confidence</p><h3 class="prog-group__title">Handling pressure calmly</h3><p class="prog-group__desc">Working with a partner who is trying to control you, and staying calm while you solve it, is a skill that shows up well outside the gym.</p></div>
+      <div class="prog-group"><p class="prog-group__tag">Body control</p><h3 class="prog-group__title">Coordination and moving well</h3><p class="prog-group__desc">Coordination and balance are at the heart of both arts, and falling without getting hurt is among the first skills of jiu-jitsu. They carry over to every other sport.</p></div>
+      <div class="prog-group"><p class="prog-group__tag">Confidence</p><h3 class="prog-group__title">Handling pressure calmly</h3><p class="prog-group__desc">Working with a partner and staying calm while you solve a problem is a skill that shows up well outside the gym.</p></div>
     </div>
   </div>
 </section>
 
 <section class="prog-section" id="times">
   <div class="container">
-{section_head('Timetable', 'KIDS &amp; TEENS CLASS TIMES')}
+{section_head('Timetable', 'KIDS CLASS TIMES')}
     {sched_block}
   </div>
 </section>
@@ -1485,19 +1557,134 @@ def page_kids(S):
   </div>
 </section>
 
-{faq_html(faqs, 'Questions', 'KIDS &amp; TEENS BJJ FAQ')}
+{faq_html(faqs, 'Questions', 'KIDS CLASSES FAQ')}
 <section class="prog-section">
   <div class="container">
 {section_head('Keep reading', 'MORE FROM WHARTON')}
     <div class="prog-siblings stagger">
-      <a href="/programs/adult-bjj-wharton" class="prog-sibling"><div class="prog-sibling__title">Adult BJJ</div><div class="prog-sibling__desc">Gi &amp; No-Gi, beginners welcome</div></a>
+      <a href="/programs/womens-self-defense-wharton" class="prog-sibling"><div class="prog-sibling__title">Women's Self Defense</div><div class="prog-sibling__desc">Jiu-jitsu for self defense</div></a>
+      <a href="/programs/adult-bjj-wharton" class="prog-sibling"><div class="prog-sibling__title">Adult Jiu-Jitsu</div><div class="prog-sibling__desc">Times coming soon</div></a>
       <a href="/schedule" class="prog-sibling"><div class="prog-sibling__title">Class schedule</div><div class="prog-sibling__desc">{"Weekly timetable" if S.schedule else "Coming soon"}</div></a>
-      <a href="/pricing" class="prog-sibling"><div class="prog-sibling__title">Pricing</div><div class="prog-sibling__desc">{"Plans and prices" if S.pricing else "Coming soon"}</div></a>
       <a href="/areas/" class="prog-sibling"><div class="prog-sibling__title">Areas we serve</div><div class="prog-sibling__desc">El Campo, East Bernard, Boling and more</div></a>
     </div>
   </div>
 </section>
 """ + close_block("BOOK THEIR FIRST CLASS", "Free, with no commitment. Tell us your child's age and we will set up their first class.", S=S)
+    return p
+
+
+def womens_faqs(S):
+    days = class_days(S, ("women",))
+    rows = [r for r in S.schedule if r["audience"] == "women"]
+    if rows:
+        when = days + untimed_note(S, ("women",))
+        timed = [r for r in rows if r["start"]]
+        if timed and len({(r["start"], r["end"]) for r in timed}) == 1 and len(timed) == len(rows):
+            r = timed[0]
+            when = "%s, %s%s." % (", ".join(x["day"] for x in rows), fmt_time(r["start"]), (" to " + fmt_time(r["end"])) if r["end"] else "")
+    else:
+        when = "Class times are coming soon. Put your name on the list and we will email you as soon as they are announced."
+    return [
+        ("When is the women's self defense class?", when),
+        ("Is the class for women only?", "It is Women's Self Defense Jiu-Jitsu, a class for women."),
+        ("Do I need experience?",
+         "Most people who start jiu-jitsu have never done a combat sport. If you would like to ask about your experience level or what to expect, say so in the message box on the form."),
+        ("Is the first class free?", "Yes. Your first class at Labyrinth BJJ Wharton is free, with no commitment."),
+        ("What should I wear?",
+         "Comfortable athletic clothes with no zippers, buttons or pockets, and a water bottle. If you are unsure, ask us when you sign up."),
+        ("Is this the same as the adult jiu-jitsu program?",
+         "It is built on the same art, but it is its own class with its own times. Adult jiu-jitsu class times have not been announced yet."),
+    ]
+
+
+def page_womens(S):
+    route = "/programs/womens-self-defense-wharton"
+    trail = [("/programs/", "Programs"), (route, "Women's Self Defense")]
+    desc = ("Women's self defense jiu-jitsu in Wharton, TX at Labyrinth BJJ Wharton, led by Joe Herrera. "
+            "Your first class is free.")
+    p = Page(route, "programs/womens-self-defense-wharton.html", "Women's Self Defense in Wharton, TX | Labyrinth BJJ Wharton",
+             desc, og_title="Women's Self Defense Jiu-Jitsu in Wharton, TX | Labyrinth BJJ Wharton", crumbs=trail, priority="0.9")
+    faqs = womens_faqs(S)
+    p.schema = [service_schema(S, "Women's Self Defense Jiu-Jitsu", desc, route), breadcrumb_schema(S, trail), faq_schema(faqs)]
+    sched = schedule_week(S, audiences=("women", "all"))
+    sched_block = sched or soon_card("Class times coming soon",
+                                     "The Wharton women's self defense class time has not been announced yet. Put your name on the list and we will email you as soon as it is.",
+                                     ("/contact#free-class", "Get notified"))
+    pr = price_cards(S, audiences=("all", "adult", "family", "other"))
+    price_block = pr or soon_card("Prices coming soon",
+                                  "Wharton prices are not set yet. Your first class is free, and prices will be posted on the pricing page once they are confirmed.",
+                                  ("/pricing", "About pricing"))
+    p.body = crumbs_html([("/", "Home"), ("/programs/", "Programs"), (None, "Women's Self Defense")]) + f"""
+<header class="prog-hero">
+  <div class="container">
+    <div class="prog-hero__grid">
+      <div>
+        <p class="section-label">Women &middot; Jiu-jitsu</p>
+        <h1 class="prog-hero__title">Women's Self Defense Jiu-Jitsu in Wharton</h1>
+        <p class="prog-hero__lead">Self defense for women, built on Brazilian jiu-jitsu, at Labyrinth BJJ Wharton and led by Joe Herrera. Your first class is free.</p>
+        <div class="prog-hero__cta">
+          <a href="/contact#free-class" class="btn btn--gold">Get Your Free First Class</a>
+          <a href="#times" class="btn btn--ghost">Class Times</a>
+        </div>
+      </div>
+      <div class="prog-hero__shot prog-hero__shot--mark"><img src="/assets/logo-maze-480.png" alt="" aria-hidden="true" width="480" height="480" loading="eager" decoding="async"></div>
+    </div>
+    <div class="prog-facts">
+      <div class="prog-fact"><div class="prog-fact__label">Who</div><div class="prog-fact__value">Women</div></div>
+      <div class="prog-fact"><div class="prog-fact__label">Built on</div><div class="prog-fact__value">Jiu-jitsu</div></div>
+      <div class="prog-fact"><div class="prog-fact__label">Class times</div><div class="prog-fact__value">{"On the schedule" if sched else "To be announced"}</div></div>
+      <div class="prog-fact"><div class="prog-fact__label">First class</div><div class="prog-fact__value"><em>Free</em></div></div>
+    </div>
+  </div>
+</header>
+
+<section class="prog-section">
+  <div class="container">
+{section_head('The class', 'WHAT IT IS')}
+    <div class="prog-prose fade-in">
+      <p>Women's self defense at Labyrinth BJJ Wharton is built on the Brazilian jiu-jitsu taught at every Labyrinth gym. Jiu-jitsu is a grappling art: leverage, position and control rather than strength or size, which is why so many people start with it for self defense, and why a smaller person can learn to deal with a bigger one.</p>
+      <p>If you have never trained, or you simply have questions about what to expect, say so in the message box on the form. Your first class is free, with no commitment.</p>
+      <p>Labyrinth BJJ is ranked in the top {jits_data.NATIONAL_TOP_PCT}% of academies nationally on jits.gg (#{jits_data.NATIONAL_RANK} of {jits_data.NATIONAL_OF:,}, as of {jits_data.AS_OF}). That is the whole Labyrinth team's record, not Wharton's, and it is the school this class belongs to.</p>
+    </div>
+  </div>
+</section>
+
+<section class="prog-section prog-section--surface" id="times">
+  <div class="container">
+{section_head('Timetable', 'CLASS TIMES')}
+    {sched_block}
+  </div>
+</section>
+
+<section class="prog-section">
+  <div class="container">
+{section_head('Coaching', 'WHO TEACHES IT')}
+    <div class="coach-pair stagger">
+{coach_card_joe(S)}
+    </div>
+  </div>
+</section>
+
+<section class="prog-section prog-section--surface">
+  <div class="container">
+{section_head('Membership', 'WHAT IT COSTS')}
+    {price_block}
+  </div>
+</section>
+
+{faq_html(faqs, 'Questions', "WOMEN'S SELF DEFENSE FAQ")}
+<section class="prog-section">
+  <div class="container">
+{section_head('Keep reading', 'MORE FROM WHARTON')}
+    <div class="prog-siblings stagger">
+      <a href="/programs/kids-bjj-wharton" class="prog-sibling"><div class="prog-sibling__title">Kids Kickboxing &amp; Jiu-Jitsu</div><div class="prog-sibling__desc">Focus, confidence and body control</div></a>
+      <a href="/programs/adult-bjj-wharton" class="prog-sibling"><div class="prog-sibling__title">Adult Jiu-Jitsu</div><div class="prog-sibling__desc">Times coming soon</div></a>
+      <a href="/schedule" class="prog-sibling"><div class="prog-sibling__title">Class schedule</div><div class="prog-sibling__desc">{"Weekly timetable" if S.schedule else "Coming soon"}</div></a>
+      <a href="/areas/" class="prog-sibling"><div class="prog-sibling__title">Areas we serve</div><div class="prog-sibling__desc">El Campo, East Bernard, Boling and more</div></a>
+    </div>
+  </div>
+</section>
+""" + close_block("TAKE A FREE CLASS", "No commitment, no pressure. Tell us you are interested and we will set up your free first class.", S=S)
     return p
 
 
@@ -1650,16 +1837,16 @@ def page_schedule(S):
     p = Page("/schedule", "schedule.html", "Class Schedule | Labyrinth BJJ Wharton",
              "", og_title="Class Schedule: Labyrinth BJJ Wharton", crumbs=trail, has_form=not has_real, priority="0.9", changefreq="weekly")
     if has_real:
-        p.description = "The weekly class schedule at Labyrinth BJJ Wharton in Wharton, TX: adult, kids and teens Brazilian jiu-jitsu. Your first class is free."
-        lead = "The weekly timetable for adults, kids and teens at Labyrinth BJJ Wharton. Your first class is free, in whichever class suits you."
+        p.description = "The class schedule at Labyrinth BJJ Wharton in Wharton, TX: kids kickboxing and jiu-jitsu and women's self defense. Your first class is free."
+        lead = "The weekly timetable at Labyrinth BJJ Wharton: kids kickboxing and jiu-jitsu, and women's self defense. Your first class is free."
     else:
         p.description = "The Labyrinth BJJ Wharton class schedule is coming soon. Get notified when class times are set and claim a free first class."
         lead = "The Wharton class schedule is not set yet. Tell us you are interested and you will be the first to know when it is, with your free first class on us."
     faqs = [("When will the Wharton class schedule be posted?",
              "It is on this page." if has_real else "As soon as it is confirmed. Put your name on the list and we will email you the moment it is posted."),
             ("Is the first class free?", "Yes. Your first class at Labyrinth BJJ Wharton is free, with no commitment."),
-            ("Are there classes for kids?", "Wharton has a kids and teens program as well as an adult program. " +
-             ("Look for the kids and teens classes on the timetable." if has_real else "Kids and teens class times will be on this page when the schedule is set."))]
+            ("Are there classes for kids?", kids_now(S) + (" The kids classes are on the timetable." if has_real else " Kids class times will be on this page when the schedule is set.")),
+            ("When are the adult jiu-jitsu classes?", "Adult jiu-jitsu class times have not been announced yet. Put your name on the list and we will email you as soon as they are.")]
     p.schema = [breadcrumb_schema(S, trail), faq_schema(faqs)]
     week = schedule_week(S)
     if has_real:
@@ -1667,7 +1854,7 @@ def page_schedule(S):
   <div class="container">
 {section_head('Weekly timetable', 'CLASS TIMES')}
     {week}
-    <p class="prog-week__note fade-in">Your first class is free in any class that suits you. Tell us when you sign up if you do not own a gi.</p>
+    <p class="prog-week__note fade-in">Your first class is free in any class that suits you. Adult jiu-jitsu class times have not been announced yet. Tell us when you sign up if you do not own a gi.</p>
     <div class="prog-hero__cta fade-in">
       <a href="/contact#free-class" class="btn btn--gold">Get Your Free First Class</a>
     </div>
@@ -1678,7 +1865,7 @@ def page_schedule(S):
     else:
         main = f"""<section class="prog-section">
   <div class="container">
-    {soon_card("Class times coming soon", "We are setting the Wharton timetable now. The classes will be for adults and for kids and teens. When the times are confirmed they will be posted on this page, and everyone on the list will get an email first.")}
+    {soon_card("Class times coming soon", "We are setting the Wharton timetable now. The first classes are kids kickboxing and jiu-jitsu and women's self defense, with adult jiu-jitsu to follow. When the times are confirmed they will be posted on this page, and everyone on the list will get an email first.")}
   </div>
 </section>
 
@@ -1687,7 +1874,7 @@ def page_schedule(S):
 {section_head('While you wait', 'WHAT YOU CAN DO NOW')}
     <div class="prog-groups stagger">
       <div class="prog-group"><p class="prog-group__tag">1</p><h3 class="prog-group__title">Join the list</h3><p class="prog-group__desc">Tell us who would be training. You will hear about class times, prices and the address before anyone else.</p></div>
-      <div class="prog-group"><p class="prog-group__tag">2</p><h3 class="prog-group__title">Read about the programs</h3><p class="prog-group__desc">See what <a href="/programs/adult-bjj-wharton">adult</a> and <a href="/programs/kids-bjj-wharton">kids and teens</a> jiu-jitsu involves and what to expect from a first class.</p></div>
+      <div class="prog-group"><p class="prog-group__tag">2</p><h3 class="prog-group__title">Read about the programs</h3><p class="prog-group__desc">See what <a href="/programs/kids-bjj-wharton">kids kickboxing and jiu-jitsu</a>, <a href="/programs/womens-self-defense-wharton">women's self defense</a> and <a href="/programs/adult-bjj-wharton">adult jiu-jitsu</a> involve and what to expect from a first class.</p></div>
       <div class="prog-group"><p class="prog-group__tag">3</p><h3 class="prog-group__title">Claim your free first class</h3><p class="prog-group__desc">Your first class costs nothing and carries no commitment. The form below reserves your place on the list for it.</p></div>
     </div>
   </div>
@@ -1723,7 +1910,7 @@ def page_pricing(S):
     p = Page("/pricing", "pricing.html", "Pricing | Labyrinth BJJ Wharton", "", og_title="Pricing: Labyrinth BJJ Wharton",
              crumbs=trail, priority="0.8")
     if has_real:
-        p.description = "Membership prices at Labyrinth BJJ Wharton in Wharton, TX, for adults, kids and teens. Your first class is free."
+        p.description = "Membership prices at Labyrinth BJJ Wharton in Wharton, TX. Your first class is free."
         lead = "Membership prices for Labyrinth BJJ Wharton are on this page, and the first class is free whatever you decide afterwards."
     else:
         p.description = "Labyrinth BJJ Wharton prices are coming soon. Your first class is free. Get notified when prices are posted."
@@ -1759,7 +1946,7 @@ def page_pricing(S):
     </div>
     <div class="prog-facts">
       <div class="prog-fact"><div class="prog-fact__label">First class</div><div class="prog-fact__value"><em>Free</em></div></div>
-      <div class="prog-fact"><div class="prog-fact__label">Programs</div><div class="prog-fact__value">Adults, kids &amp; teens</div></div>
+      <div class="prog-fact"><div class="prog-fact__label">Classes</div><div class="prog-fact__value">Kickboxing &amp; jiu-jitsu</div></div>
       <div class="prog-fact"><div class="prog-fact__label">Prices</div><div class="prog-fact__value">{"On this page" if has_real else "Coming soon"}</div></div>
     </div>
   </div>
@@ -1826,45 +2013,45 @@ AREAS = [
     {
         "slug": "bjj-el-campo", "place": "El Campo", "isd": "El Campo ISD",
         "eyebrow": "El Campo, Wharton County",
-        "title": "Brazilian Jiu-Jitsu Near El Campo, TX | Labyrinth BJJ Wharton",
-        "description": "Brazilian jiu-jitsu for adults, kids and teens, serving families from El Campo, TX. Labyrinth BJJ Wharton is in the same county. First class free.",
+        "title": "Jiu-Jitsu & Kickboxing Near El Campo, TX | Labyrinth BJJ Wharton",
+        "description": "Kids and adult kickboxing, kids jiu-jitsu and women's self defense, serving families from El Campo, TX. Labyrinth BJJ Wharton. First class free.",
         "lead": "Labyrinth BJJ Wharton is the new Labyrinth gym in Wharton County, and we are serving families from El Campo, up US 59.",
         "body": [
-            "If you live in El Campo, Wharton is up US 59, and a Labyrinth gym that close is the whole reason this page exists. We have not published a drive time because the Wharton address is not set yet. When it is, it will be on this page and on the contact page, and your own maps app will give you a better answer than any estimate of ours.",
+            "If you live in El Campo, Wharton is up US 59, and a Labyrinth gym that close is the whole reason this page exists. We do not quote a drive time: your own maps app will give you a better answer than any estimate of ours.",
             "If you work shifts or long days, the first thing to do is tell us what suits you. Before work, at lunch, evenings or weekends: put it in the message box on the form. We cannot promise a class at every hour, but we would rather know.",
-            "Families in El Campo ISD will want to know about after-school classes. The kids and teens class times are not set yet; they will be on the schedule page when they are, and your child's first class is free either way.",
+            "Families in El Campo ISD will want to know about after-school classes. The kids classes are on the schedule page, with a start time as soon as one is announced, and your child's first class is free either way.",
         ],
         "cards": [
             ("Same county", "In Wharton County with you", "El Campo and Wharton are both in Wharton County, so this is a local gym, not a trip to the city."),
-            ("US 59", "Up the highway", "We are not quoting minutes. When the address is published, check the drive on your own map."),
-            ("Free", "Try before you decide", "Adults, kids and teens all get a free first class with no commitment."),
+            ("US 59", "Up the highway", "We are not quoting minutes. Check the drive on your own map."),
+            ("Free", "Try before you decide", "Every class at Wharton starts with a free first class and no commitment."),
         ],
         "faqs": [
             ("Is there a Labyrinth gym near El Campo?",
              "Labyrinth BJJ Wharton is in Wharton, in the same county as El Campo. The street address is {addr}."),
             ("Can El Campo families get the free first class?",
-             "Yes. Use the form, mention El Campo if you like, and tell us who would be training. Adults, kids and teens all get a free first class."),
+             "Yes. Use the form, mention El Campo if you like, and tell us who would be training. Every first class is free."),
         ],
     },
     {
         "slug": "bjj-east-bernard", "place": "East Bernard", "isd": "East Bernard ISD",
         "eyebrow": "East Bernard, Wharton County",
-        "title": "Brazilian Jiu-Jitsu Near East Bernard, TX | Labyrinth BJJ Wharton",
-        "description": "Brazilian jiu-jitsu for adults, kids and teens, serving families from East Bernard, TX. Labyrinth BJJ Wharton, in Wharton County. First class free.",
-        "lead": "A Labyrinth gym is coming to Wharton, and we are serving families from East Bernard who want jiu-jitsu without a trip into Houston.",
+        "title": "Jiu-Jitsu & Kickboxing Near East Bernard, TX | Labyrinth BJJ Wharton",
+        "description": "Kids and adult kickboxing, kids jiu-jitsu and women's self defense, serving families from East Bernard, TX. Labyrinth BJJ Wharton. First class free.",
+        "lead": "A Labyrinth gym is open to families in Wharton, and we are serving families from East Bernard who want jiu-jitsu and kickboxing without a trip into Houston.",
         "body": [
-            "East Bernard and Wharton are both in Wharton County. We have not worked out a drive time, because the Wharton address is not set yet; once it is published you can check it on your own map and decide whether a regular class fits your week.",
-            "Two situations are worth mentioning. The first is a school athlete: a student who plays football, volleyball or runs track and wants something that builds strength, balance and grit between seasons. Jiu-jitsu has no season of its own, which is why it pairs well with team sports.",
-            "The second is a household that wants to train together, a parent and one or two children in the same evening. If that is you, choose \"More than one of us\" on the form and tell us the ages. Class times are not set yet, and knowing who is coming helps us answer you properly.",
+            "East Bernard and Wharton are both in Wharton County. We have not worked out a drive time; check it on your own map and decide whether a regular class fits your week.",
+            "Two situations are worth mentioning. The first is a school athlete: a student who plays football, volleyball or runs track and wants something that builds strength, balance and grit between seasons. Jiu-jitsu and kickboxing have no season of their own, which is why they pair well with team sports.",
+            "The second is a household that wants to train together. If that is you, choose \"More than one of us\" on the form and tell us who is coming. Knowing who is coming helps us answer you properly.",
         ],
         "cards": [
             ("Cross-training", "A fit for school athletes", "Strength, balance and grit that carry across to football, volleyball, track and wrestling."),
-            ("Together", "Parents and kids", "Adults and kids and teens each have a program. Tell us who is coming and we will point you to the right ones."),
+            ("Together", "Kids and adults", "Wharton has kids classes, a women's self defense class and adult jiu-jitsu on the way. Tell us who is coming and we will point you to the right ones."),
             ("Free", "Try before you decide", "Your first class is free, with no commitment."),
         ],
         "faqs": [
             ("Can a parent and child both try a class?",
-             "Yes. Both get a free first class. Choose \"More than one of us\" on the form and tell us the ages, and we will be in touch about class times when they are set."),
+             "Yes. Both get a free first class. Choose \"More than one of us\" on the form and tell us the ages, and we will be in touch about class times."),
             ("Is jiu-jitsu a good fit for a child who plays other sports?",
              "Many people find it is. Jiu-jitsu builds balance, body control and the habit of staying calm under pressure, and it has no season that clashes with team sports. Competition is always optional at Labyrinth."),
         ],
@@ -1872,40 +2059,40 @@ AREAS = [
     {
         "slug": "bjj-boling", "place": "Boling", "isd": "Boling ISD",
         "eyebrow": "Boling, Wharton County",
-        "title": "Brazilian Jiu-Jitsu Near Boling, TX | Labyrinth BJJ Wharton",
-        "description": "Brazilian jiu-jitsu for beginners, adults, kids and teens, serving families from Boling, TX. Labyrinth BJJ Wharton in Wharton County. First class free.",
-        "lead": "Labyrinth BJJ Wharton is opening in the county seat, and we are serving families from Boling who have never trained and are curious.",
+        "title": "Jiu-Jitsu & Kickboxing Near Boling, TX | Labyrinth BJJ Wharton",
+        "description": "Kids and adult kickboxing, kids jiu-jitsu and women's self defense, serving families from Boling, TX. Labyrinth BJJ Wharton. First class free.",
+        "lead": "Labyrinth BJJ Wharton is in the county seat, and we are serving families from Boling who have never trained and are curious.",
         "body": [
-            "Boling and Wharton are in the same county. The Wharton address is not set yet and we are not going to guess a drive time; when it is published, your map will tell you.",
+            "Boling and Wharton are in the same county. We are not going to guess a drive time; your map will tell you.",
             "Most people who start jiu-jitsu have never done a combat sport, and this page is written for them. You do not have to be fit, flexible or athletic. You scale the warm-up, you tap early, and you go at your own pace. Fitness, self-defense and a good room full of people are common reasons to start, and none of it requires experience.",
-            "For Boling ISD families, the program for kids and teens is grappling with no striking, built around focus, body control and handling pressure. Age groups will be confirmed with the schedule, so put your child's age in the form and we will tell you where they fit.",
+            "For Boling ISD families, Wharton's kids classes are kickboxing and jiu-jitsu, built around focus, body control and handling pressure. Put your child's age in the form and we will confirm which class fits.",
         ],
         "cards": [
-            ("Never trained", "Beginners are the point", "You do not need any experience or fitness to start. Most people who begin have never done a combat sport."),
-            ("Grappling", "No striking", "Brazilian jiu-jitsu is leverage, position and control. Nobody is hitting anyone."),
+            ("Never trained", "Beginners are the point", "You do not need any experience or fitness to start jiu-jitsu. Most people who begin have never done a combat sport."),
+            ("Women", "Self defense class", "Wharton has a women's self defense jiu-jitsu class, with its own time on the schedule."),
             ("Free", "Try before you decide", "Your first class is free. Tell us who is coming and we will be in touch."),
         ],
         "faqs": [
             ("I have never done any martial art. Can I just turn up?",
-             "Yes. Beginners are welcome and a first class is built for people who have never trained. Come in comfortable athletic clothes with no zippers or pockets, and tell us when you sign up if you do not own a gi."),
+             "Start with the free first class. Come in comfortable athletic clothes with no zippers or pockets, and tell us when you sign up what you have or have not done before, and whether you own a gi."),
             ("Is Boling close enough to train regularly?",
-             "That depends on your week, and we have not measured it. The address will be published as soon as it is confirmed. A free first class means you can find out how the drive feels before you commit to anything."),
+             "That depends on your week, and we have not measured it. A free first class means you can find out how the drive feels before you commit to anything."),
         ],
     },
     {
         "slug": "bjj-hungerford", "place": "Hungerford", "isd": None,
         "eyebrow": "Hungerford, Wharton County",
-        "title": "Brazilian Jiu-Jitsu Near Hungerford, TX | Labyrinth BJJ Wharton",
-        "description": "Brazilian jiu-jitsu for adults, kids and teens, serving families from Hungerford, TX. Labyrinth BJJ Wharton, in Wharton County. First class free.",
+        "title": "Jiu-Jitsu & Kickboxing Near Hungerford, TX | Labyrinth BJJ Wharton",
+        "description": "Kids and adult kickboxing, kids jiu-jitsu and women's self defense, serving families from Hungerford, TX. Labyrinth BJJ Wharton. First class free.",
         "lead": "Hungerford is a small community, so this is a short page: Labyrinth BJJ Wharton is the nearest Labyrinth gym and we are serving families from Hungerford.",
         "body": [
-            "Hungerford and Wharton are both in Wharton County. We have not published a drive time, because the Wharton address is not set yet. When it is, check the route on your own map.",
-            "Here is what is useful to know today. There is a program for adults and a program for kids and teens. Both are Brazilian jiu-jitsu, which is grappling with no striking. The first class is free. Class times and prices are coming soon, and the form is the way to hear about them first.",
+            "Hungerford and Wharton are both in Wharton County. We have not published a drive time. Check the route on your own map.",
+            "Here is what is useful to know today. Wharton has kids kickboxing and jiu-jitsu, a women's self defense jiu-jitsu class, and adult jiu-jitsu with times still to come. The first class is free, and the form is the way to hear about class times first.",
             "If you are from Hungerford, say so in the message box. It costs nothing, and it tells us which communities people are writing from.",
         ],
         "cards": [
-            ("Programs", "Adults, kids and teens", "Two programs, both starting with a free first class."),
-            ("Coming soon", "Times and prices", "Not set yet, and we are not going to guess. Join the list to hear first."),
+            ("Classes", "Kids, women and adults", "Kickboxing and jiu-jitsu for kids, self defense for women, adult jiu-jitsu to come."),
+            ("Free", "First class", "Every class starts with a free first class. No commitment."),
             ("Contact", "Call or email", "You can also call or email us directly with any question."),
         ],
         "faqs": [
@@ -1918,22 +2105,22 @@ AREAS = [
     {
         "slug": "bjj-louise", "place": "Louise", "isd": "Louise ISD",
         "eyebrow": "Louise, Wharton County",
-        "title": "Brazilian Jiu-Jitsu Near Louise, TX | Labyrinth BJJ Wharton",
-        "description": "Brazilian jiu-jitsu for adults, kids and teens, serving families from Louise, TX. Labyrinth BJJ Wharton, in Wharton County. First class free.",
+        "title": "Jiu-Jitsu & Kickboxing Near Louise, TX | Labyrinth BJJ Wharton",
+        "description": "Kids and adult kickboxing, kids jiu-jitsu and women's self defense, serving families from Louise, TX. Labyrinth BJJ Wharton. First class free.",
         "lead": "Labyrinth BJJ Wharton is serving families from Louise and the surrounding area, and the first class is free so you can find out how the drive feels.",
         "body": [
-            "Louise and Wharton are in the same county, but we have not measured the drive and we are not going to pretend it is short or long. The Wharton address is not set yet. When it is published, check the route on your own map against the days and times you would actually be driving.",
-            "A regular class is a commitment of time as well as money. That is one reason the first class is free: it costs you one trip to find out whether jiu-jitsu, and the drive, fit your week.",
-            "For Louise ISD families thinking about kids and teens jiu-jitsu: it is grappling with no striking, and the point is confidence, focus and learning to stay calm under pressure. Age groups will be confirmed with the schedule. Put your child's age in the form and we will tell you where they fit.",
+            "Louise and Wharton are in the same county, but we have not measured the drive and we are not going to pretend it is short or long. Check the route on your own map against the days and times you would actually be driving.",
+            "A regular class is a commitment of time as well as money. That is one reason the first class is free: it costs you one trip to find out whether the class, and the drive, fit your week.",
+            "For Louise ISD families thinking about the kids classes: kickboxing and jiu-jitsu, with the point being confidence, focus and learning to stay calm under pressure. Add your child's age to the form and we will point you to the right class.",
         ],
         "cards": [
-            ("Your week", "Check the drive yourself", "We are not quoting minutes. Compare the address, once published, with the times you would travel."),
-            ("Kids & teens", "Confidence and focus", "A grappling art with no striking, and competition is always optional."),
+            ("Your week", "Check the drive yourself", "We are not quoting minutes. Compare the address with the times you would travel."),
+            ("Kids", "Confidence and focus", "Kickboxing and jiu-jitsu for children, and competition is always optional."),
             ("Free", "One trip to find out", "The first class costs nothing, so you can see how the drive feels before you decide anything else."),
         ],
         "faqs": [
             ("How far is Louise from the Wharton gym?",
-             "We have not measured it and will not guess. Both are in Wharton County. The address will be published as soon as it is confirmed, and your maps app will give you a drive time for the hours you would actually travel."),
+             "We have not measured it and will not guess. Both are in Wharton County, and your maps app will give you a drive time for the hours you would actually travel."),
             ("Can my child try a class before we commit?",
              "Yes. Your child's first class is free, with no commitment. Tell us their age on the form and we will let you know where they fit."),
         ],
@@ -1955,9 +2142,9 @@ def page_area(S, a):
     route = "/areas/" + a["slug"]
     trail = [("/areas/", "Areas"), (route, a["place"])]
     p = Page(route, "areas/%s.html" % a["slug"], a["title"], a["description"],
-             og_title="Brazilian Jiu-Jitsu near %s, TX | Labyrinth BJJ Wharton" % a["place"], crumbs=trail, has_form=True, priority="0.6")
+             og_title="Jiu-Jitsu & Kickboxing near %s, TX | Labyrinth BJJ Wharton" % a["place"], crumbs=trail, has_form=True, priority="0.6")
     faqs = area_faqs(S, a)
-    svc = service_schema(S, "Brazilian Jiu-Jitsu near %s, TX" % a["place"], a["description"], route)
+    svc = service_schema(S, "Jiu-Jitsu and kickboxing near %s, TX" % a["place"], a["description"], route)
     svc["areaServed"] = [{"@type": "City", "name": a["place"] + ", TX"}]
     p.schema = [svc, breadcrumb_schema(S, trail), faq_schema(faqs)]
     others = [x for x in AREAS if x["slug"] != a["slug"]]
@@ -1968,7 +2155,7 @@ def page_area(S, a):
 <header class="prog-hero">
   <div class="container">
     <p class="section-label">{esc(a['eyebrow'])}{" " + soon_badge() if not S.live else ""}</p>
-    <h1 class="prog-hero__title">Brazilian Jiu-Jitsu Near {esc(a['place'])}, TX</h1>
+    <h1 class="prog-hero__title">Jiu-Jitsu &amp; Kickboxing Near {esc(a['place'])}, TX</h1>
     <p class="prog-hero__lead">{esc(a['lead'])}</p>
     <div class="prog-hero__cta">
       <a href="#free-class" class="btn btn--gold">Get Your Free First Class</a>
@@ -1977,7 +2164,7 @@ def page_area(S, a):
     <div class="prog-facts">
       <div class="prog-fact"><div class="prog-fact__label">Serving</div><div class="prog-fact__value">{esc(a['place'])}, TX</div></div>
       <div class="prog-fact"><div class="prog-fact__label">Gym</div><div class="prog-fact__value">Labyrinth BJJ Wharton</div></div>
-      <div class="prog-fact"><div class="prog-fact__label">Programs</div><div class="prog-fact__value">Adults, kids &amp; teens</div></div>
+      <div class="prog-fact"><div class="prog-fact__label">Classes</div><div class="prog-fact__value">Kids, women &amp; adults</div></div>
       <div class="prog-fact"><div class="prog-fact__label">First class</div><div class="prog-fact__value"><em>Free</em></div></div>
     </div>
   </div>
@@ -2027,12 +2214,12 @@ def page_area(S, a):
 def page_areas_hub(S):
     trail = [("/areas/", "Areas")]
     desc = ("Towns near Wharton, TX served by Labyrinth BJJ Wharton: El Campo, East Bernard, Boling, Hungerford and Louise. "
-            "Jiu-jitsu for adults, kids and teens. First class free.")
+            "Jiu-jitsu and kickboxing. First class free.")
     p = Page("/areas/", "areas/index.html", "Areas We Serve Near Wharton, TX | Labyrinth BJJ Wharton", desc,
              og_title="Towns near Wharton served by Labyrinth BJJ Wharton", crumbs=trail, priority="0.7")
     p.schema = [breadcrumb_schema(S, trail), {
         "@context": "https://schema.org", "@type": "ItemList",
-        "itemListElement": [{"@type": "ListItem", "position": i, "name": "Brazilian Jiu-Jitsu near %s, TX" % a["place"],
+        "itemListElement": [{"@type": "ListItem", "position": i, "name": "Jiu-Jitsu and kickboxing near %s, TX" % a["place"],
                              "url": S.abs("/areas/" + a["slug"])} for i, a in enumerate(AREAS, start=1)]}]
     addr_note = 'The address is on the <a href="/contact">contact page</a>.' if S.has_address else "The Wharton address is not confirmed yet, and we will post it as soon as it is."
     cards = "".join('<a href="/areas/%s" class="prog-sibling"><div class="prog-sibling__title">Near %s</div><div class="prog-sibling__desc">%s</div></a>'
@@ -2044,7 +2231,7 @@ def page_areas_hub(S):
     <h1 class="prog-hero__title">Towns Near Wharton</h1>
     <p class="prog-hero__lead">Labyrinth BJJ Wharton serves Wharton and the communities around it. These are the towns we hear from, with what is useful to know from each.</p>
     <div class="prog-prose" style="margin-top:var(--space-6)">
-      <p>We do not quote drive times, because we would rather you check the route on your own map once the address is published. {addr_note} Whichever town you are in, the first class is free.</p>
+      <p>We do not quote drive times, because we would rather you check the route on your own map. {addr_note} Whichever town you are in, the first class is free.</p>
     </div>
   </div>
 </header>
@@ -2155,7 +2342,8 @@ def page_privacy(S):
           <p class="footer__col-title">Programs</p>
           <ul class="footer__links" role="list">
             <li><a href="/programs/adult-bjj-wharton">Adult BJJ</a></li>
-            <li><a href="/programs/kids-bjj-wharton">Kids &amp; Teens BJJ</a></li>
+            <li><a href="/programs/kids-bjj-wharton">Kids Kickboxing &amp; Jiu-Jitsu</a></li>
+            <li><a href="/programs/womens-self-defense-wharton">Women's Self Defense</a></li>
           </ul>
         </div>
         <div>
@@ -2358,7 +2546,7 @@ This file follows the llms.txt convention (https://llmstxt.org). While the site 
 ## The essentials
 
 - **Status**: coming soon, not yet open
-- **Programs**: Brazilian jiu-jitsu for adults, and for kids and teens
+- **Programs**: kids kickboxing and jiu-jitsu, women's self defense jiu-jitsu, adult kickboxing (Tuesday and Thursday), adult jiu-jitsu (adult jiu-jitsu times not announced yet)
 - **First class**: free
 - **Lead instructor**: Joe Herrera, brown belt under Prof. Anthony Curry (owner and head instructor of Labyrinth BJJ)
 - **Phone**: {S.phone}
@@ -2377,7 +2565,7 @@ This file follows the llms.txt convention (https://llmstxt.org). While the site 
 Labyrinth BJJ was founded in 2021 by Prof. Anthony Curry and is ranked in the top {j.NATIONAL_TOP_PCT}% of academies nationally on jits.gg (#{j.NATIONAL_RANK} of {j.NATIONAL_OF:,} as of {j.AS_OF}). Those results belong to the whole Labyrinth team, not to the Wharton gym. Main site: {PARENT_URL}
 """
     out = [f"# {SITE_NAME}", "",
-           f"> Brazilian jiu-jitsu gym in Wharton, Texas, part of Labyrinth BJJ. Adults, kids and teens. Lead instructor: Joe Herrera, a brown belt under Prof. Anthony Curry. The first class is free.", "",
+           f"> Jiu-jitsu and kickboxing gym in Wharton, Texas, part of Labyrinth BJJ. Kids kickboxing and jiu-jitsu, women's self defense jiu-jitsu, adult jiu-jitsu. Lead instructor: Joe Herrera, a brown belt under Prof. Anthony Curry. The first class is free.", "",
            "This file follows the llms.txt convention (https://llmstxt.org). Every fact here is also on the pages linked beneath it; if the two ever disagree, the page is right and this file is stale.", "",
            "## The essentials", ""]
     if S.has_address:
@@ -2386,8 +2574,10 @@ Labyrinth BJJ was founded in 2021 by Prof. Anthony Curry and is ranked in the to
     if op:
         out.append("- **Opening**: " + op)
     out += [f"- **Phone**: {S.phone}", f"- **Email**: {S.email}", "- **First class**: free",
-            "- **Programs**: Brazilian jiu-jitsu for adults, and for kids and teens",
+            "- **Programs**: kids kickboxing and jiu-jitsu, women's self defense jiu-jitsu, adult kickboxing (Tuesday and Thursday), adult jiu-jitsu (adult jiu-jitsu times not announced yet)",
             "- **Lead instructor**: Joe Herrera, brown belt under Prof. Anthony Curry"]
+    if S.kids_ages:
+        out.append("- **Kids classes**: %s for now" % S.kids_ages)
     if S.map_url:
         out.append("- **Map**: " + S.map_url)
     if S.hours:
@@ -2396,15 +2586,16 @@ Labyrinth BJJ was founded in 2021 by Prof. Anthony Curry and is ranked in the to
     if S.schedule:
         out += ["", "## Class schedule", ""]
         for r in S.schedule:
-            t = fmt_time(r["start"]) + ((" to " + fmt_time(r["end"])) if r["end"] else "")
-            out.append("- %s %s: %s%s%s" % (r["day"], t, r["class"], (" (%s)" % r["type"]) if r["type"] else "",
+            t = (fmt_time(r["start"]) + ((" to " + fmt_time(r["end"])) if r["end"] else "")) if r["start"] else "time to be announced"
+            out.append("- %s, %s: %s%s%s" % (r["day"], t, r["class"], (" (%s)" % r["type"]) if r["type"] else "",
                                             (", " + r["note"]) if r["note"] else ""))
     if S.pricing:
         out += ["", "## Pricing", ""]
         for p in S.pricing:
             out.append("- %s: %s%s%s" % (p["name"], money(p["price"]), period_label(p["period"]), (". " + p["note"]) if p["note"] else ""))
     out += ["", "## Pages", "",
-            f"- [Programs]({S.url}/programs/)", f"- [Schedule]({S.url}/schedule)", f"- [Pricing]({S.url}/pricing)",
+            f"- [Programs]({S.url}/programs/)", f"- [Kids kickboxing and jiu-jitsu]({S.url}/programs/kids-bjj-wharton)",
+            f"- [Women's self defense]({S.url}/programs/womens-self-defense-wharton)", f"- [Adult jiu-jitsu]({S.url}/programs/adult-bjj-wharton)", f"- [Schedule]({S.url}/schedule)", f"- [Pricing]({S.url}/pricing)",
             f"- [Coaches]({S.url}/coaches/)", f"- [Contact and free first class]({S.url}/contact)",
             f"- [Areas served]({S.url}/areas/): El Campo, East Bernard, Boling, Hungerford, Louise",
             "", "## Part of Labyrinth BJJ", "",
@@ -2415,7 +2606,7 @@ Labyrinth BJJ was founded in 2021 by Prof. Anthony Curry and is ranked in the to
 # ── Build ────────────────────────────────────────────────────────────────────
 
 def all_pages(S):
-    pages = [page_home(S), page_programs_hub(S), page_adult(S), page_kids(S), page_coaches(S), page_joe(S),
+    pages = [page_home(S), page_programs_hub(S), page_kids(S), page_womens(S), page_adult(S), page_coaches(S), page_joe(S),
              page_schedule(S), page_pricing(S), page_contact(S), page_areas_hub(S)]
     pages += [page_area(S, a) for a in AREAS]
     return pages

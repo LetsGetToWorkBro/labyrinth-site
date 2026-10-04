@@ -82,7 +82,9 @@ const filled = {
   hours: [{ days: ['Monday', 'Wednesday'], opens: '17:00', closes: '20:30' }],
   schedule: [
     { day: 'Monday', start: '18:00', end: '19:00', class: 'SENTINEL Adult Class', type: 'Gi', audience: 'adult' },
+    { day: 'Tuesday', start: '', class: 'SENTINEL Kids Untimed', type: '', audience: 'kids', note: 'SENTINEL untimed note' },
     { day: 'Tuesday', start: '17:15', class: 'SENTINEL Kids Class', type: 'No-Gi', audience: 'kids', note: 'SENTINEL note' },
+    { day: 'Wednesday', start: '19:30', class: 'SENTINEL Women Class', type: '', audience: 'women' },
   ],
   pricing: [
     { name: 'SENTINEL Adult Plan', audience: 'adult', price: '987', period: 'month', features: ['SENTINEL feature'], featured: true },
@@ -93,12 +95,13 @@ const filled = {
   map_url: 'https://maps.example.test/SENTINEL',
   social: { instagram: 'https://instagram.example.test/SENTINEL', facebook: '' },
 }
-const SENTINELS = ['SENTINEL', '$987', '$654', '99999', 'February 14, 2027', 'maps.example.test', 'test-joe.jpg', '5:00 PM', '8:30 PM', '6:00 PM to 7:00 PM']
+const SENTINELS = ['SENTINEL', '$987', '$654', '99999', 'February 14, 2027', 'maps.example.test', 'test-joe.jpg', '5:00 PM', '8:30 PM', '6:00 PM to 7:00 PM', '7:30 PM']
 
 const dirCommitted = build('soon-empty', base)   // coming-soon mode, nothing filled in
 const dirSoonFilled = build('soon-filled', { ...filled, live: false })   // live false, config full of real-looking values
 const dirLive = build('live', { ...filled, live: true })                 // live true, same values
 const dirLiveEmpty = build('live-empty', { ...base, live: true })        // live true but nothing filled in
+const dirReal = build('real', committedCfg)                              // the committed config, exactly as the owner has it
 
 function htmlFiles(root) {
   const out = []
@@ -118,7 +121,7 @@ const allText = root => everything(root).map(f => f + '\n' + read(root, f)).join
 const pagesCommitted = htmlFiles(SITE).filter(f => !['site-test.mjs'].includes(f))
 check('00 the site has the expected pages', [
   'index.html', '404.html', 'contact.html', 'schedule.html', 'pricing.html', 'privacy-policy.html',
-  'programs/index.html', 'programs/adult-bjj-wharton.html', 'programs/kids-bjj-wharton.html',
+  'programs/index.html', 'programs/adult-bjj-wharton.html', 'programs/kids-bjj-wharton.html', 'programs/womens-self-defense-wharton.html',
   'coaches/index.html', 'coaches/joe-herrera.html', 'areas/index.html',
   'areas/bjj-el-campo.html', 'areas/bjj-east-bernard.html', 'areas/bjj-boling.html', 'areas/bjj-hungerford.html', 'areas/bjj-louise.html',
 ].every(f => pagesCommitted.includes(f)), pagesCommitted.join(', '))
@@ -264,14 +267,15 @@ await linkCheck('live', dirLive)
 
   const liveAll = allText(dirLive)
   check('T7 live: every filled-in value renders', ['SENTINEL-STREET 4242 Test Rd', '99999', 'February 14, 2027', 'maps.example.test/SENTINEL', 'SENTINEL ages 5 to 6',
-    'SENTINEL Adult Class', 'SENTINEL Kids Class', '$987', '$654', '5:00 PM to 8:30 PM', 'instagram.example.test/SENTINEL'].every(s => liveAll.includes(s)),
+    'SENTINEL Adult Class', 'SENTINEL Kids Class', 'SENTINEL Women Class', '7:30 PM', '$987', '$654', '5:00 PM to 8:30 PM', 'instagram.example.test/SENTINEL'].every(s => liveAll.includes(s)),
     ['SENTINEL-STREET 4242 Test Rd', '99999', 'February 14, 2027', 'maps.example.test/SENTINEL', 'SENTINEL ages 5 to 6', 'SENTINEL Adult Class', '$987', '$654', '5:00 PM to 8:30 PM'].filter(s => !liveAll.includes(s)).join(', '))
   check('T8 live: the address is in the footer on every page, the schedule on /schedule, prices on /pricing, the hours in the footer',
     htmlFiles(dirLive).filter(f => f !== '404.html' && f !== 'privacy-policy.html').every(f => /SENTINEL-STREET/.test(read(dirLive, f.replace(/\\/g, '/'))) && /Mon, Wed/.test(read(dirLive, f))) &&
     /SENTINEL Adult Class/.test(read(dirLive, 'schedule.html')) && /\$987/.test(read(dirLive, 'pricing.html')))
-  check('T9 live: the adult page shows only adult classes, the kids page only kids classes',
-    /SENTINEL Adult Class/.test(read(dirLive, 'programs/adult-bjj-wharton.html')) && !/SENTINEL Kids Class/.test(read(dirLive, 'programs/adult-bjj-wharton.html')) &&
-    /SENTINEL Kids Class/.test(read(dirLive, 'programs/kids-bjj-wharton.html')) && !/SENTINEL Adult Class/.test(read(dirLive, 'programs/kids-bjj-wharton.html')))
+  check('T9 live: each program page shows only its own classes (adult, kids, women)',
+    /SENTINEL Adult Class/.test(read(dirLive, 'programs/adult-bjj-wharton.html')) && !/SENTINEL (Kids|Women) (Class|Untimed)/.test(read(dirLive, 'programs/adult-bjj-wharton.html')) &&
+    /SENTINEL Kids Class/.test(read(dirLive, 'programs/kids-bjj-wharton.html')) && !/SENTINEL (Adult|Women) Class/.test(read(dirLive, 'programs/kids-bjj-wharton.html')) &&
+    /SENTINEL Women Class/.test(read(dirLive, 'programs/womens-self-defense-wharton.html')) && !/SENTINEL (Adult|Kids) (Class|Untimed)/.test(read(dirLive, 'programs/womens-self-defense-wharton.html')))
   check('T10 live: Joe\'s photo replaces the monogram', /<img[^>]*src="\/assets\/test-joe.jpg"/.test(read(dirLive, 'coaches/joe-herrera.html')) && !/portrait__initials/.test(read(dirLive, 'coaches/joe-herrera.html')))
   check('T11 live: llms.txt carries the address, hours, schedule and prices', /SENTINEL-STREET/.test(read(dirLive, 'llms.txt')) && /\$987/.test(read(dirLive, 'llms.txt')) && /SENTINEL Adult Class/.test(read(dirLive, 'llms.txt')))
   check('T12 coming soon: llms.txt tells a model not to guess', /have NOT been announced/.test(read(dirCommitted, 'llms.txt')) && !/\$\d/.test(read(dirCommitted, 'llms.txt')))
@@ -279,6 +283,58 @@ await linkCheck('live', dirLive)
   check('T13 live with an empty config: still no invented facts, and the coming-soon messages remain',
     !/\$\s?\d/.test(liveEmpty) && /Address coming soon/.test(liveEmpty) && /Class times coming soon/.test(liveEmpty) && /Prices coming soon/.test(liveEmpty))
   check('T14 live: the opening line says classes start on the date', /Classes start February 14, 2027/.test(read(dirLive, 'index.html')) || /Classes start February 14, 2027/.test(read(dirLive, 'contact.html')))
+}
+
+// ── K: the real schedule, and schedule rows with no time yet ──
+{
+  const sh = read(dirLive, 'schedule.html')
+  const tue = sh.slice(sh.indexOf('>Tuesday<'), sh.indexOf('>Wednesday<'))
+  check('K1 a row with no start time renders "Time to be announced", with its note, on the schedule, kids page, home page and llms.txt',
+    ['schedule.html', 'programs/kids-bjj-wharton.html', 'index.html'].every(f => /Time to be announced/.test(read(dirLive, f)) && /SENTINEL untimed note/.test(read(dirLive, f))) && /time to be announced/.test(read(dirLive, 'llms.txt')))
+  check('K2 on a day with both, timed rows come before rows with no time', tue.indexOf('SENTINEL Kids Class') > -1 && tue.indexOf('SENTINEL Kids Untimed') > tue.indexOf('SENTINEL Kids Class'), tue.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').slice(0, 200))
+  const gen = (rows) => { const pth = join(work, 'k-' + Math.random().toString(36).slice(2) + '.json'); writeFileSync(pth, JSON.stringify({ ...base, live: true, schedule: rows })); return spawnSync('python3', [GEN, '--out', join(work, 'k-out'), '--config', pth], { encoding: 'utf8' }) }
+  const badTimes = [['25:99', ''], ['6pm', ''], ['18:00', '7pm'], ['', '19:00']].map(([st, en]) => gen([{ day: 'Monday', start: st, end: en, class: 'x', audience: 'kids' }]))
+  check('K3 a start time that IS given must be a real 24-hour time, and an end needs a start (4 bad rows all stop the build)',
+    badTimes.every(r => r.status !== 0), badTimes.map(r => r.status).join(','))
+  check('K4 a row with no start key at all, or an empty one, is accepted',
+    gen([{ day: 'Monday', class: 'x', audience: 'kids' }, { day: 'Friday', start: '', class: 'y', audience: 'all' }]).status === 0)
+
+  // The committed config, as the owner has it
+  const real = committedCfg.schedule
+  const find = (cls, day) => real.filter(r => r.class === cls && r.day === day)
+  check('K5 the committed schedule is exactly Joe\'s (adult kickboxing Tue/Thu 6 to 7 PM is checked in K8): kids kickboxing Tue/Thu and kids jiu-jitsu Wed/Fri at 5 to 6 PM, adult kickboxing Tue/Thu and women\'s self defense Wed/Fri 6 to 7 PM',
+    real.length === 8 && find('Kids Kickboxing', 'Tuesday').length === 1 && find('Kids Kickboxing', 'Thursday').length === 1 &&
+    find('Kids Jiu-Jitsu', 'Wednesday').length === 1 && find('Kids Jiu-Jitsu', 'Friday').length === 1 &&
+    real.filter(r => r.class.startsWith('Kids')).every(r => r.start === '17:00' && r.end === '18:00') &&
+    find("Women's Self Defense Jiu-Jitsu", 'Friday')[0].start === '18:00' && find("Women's Self Defense Jiu-Jitsu", 'Friday')[0].end === '19:00' && find("Women's Self Defense Jiu-Jitsu", 'Monday').length === 0 &&
+    find("Women's Self Defense Jiu-Jitsu", 'Wednesday')[0].start === '18:00' && committedCfg.kids_ages === '', JSON.stringify(real).slice(0, 200))
+  const times = new Set(htmlFiles(dirReal).flatMap(f => [...strip(read(dirReal, f)).matchAll(/\b\d{1,2}:\d{2}\s?(?:AM|PM)\b/g)].map(m => m[0])).concat([...read(dirReal, 'llms.txt').matchAll(/\b\d{1,2}:\d{2}\s?(?:AM|PM)\b/g)].map(m => m[0])))
+  check('K6 the only clock times anywhere on the real site are 5:00 to 7:00 PM (nothing invented)', [...times].every(t => /^[567]:00 PM$/.test(t)) && times.size === 3, [...times].join(', '))
+  const rs = htmlFiles(dirReal).filter(f => f !== 'privacy-policy.html').map(f => f + strip(read(dirReal, f))).join(' ')
+  check('K7 the real site: no kids age range is claimed anywhere', !/ages? (3|4|5|6|7|8|9|10|11|12)\b|aged \d|(\d) to (\d+) years/i.test(rs))
+  const adultReal = strip(read(dirReal, 'programs/adult-bjj-wharton.html'))
+  check('K8 the real site: adult jiu-jitsu says its times are coming soon, does not borrow the women\'s class, and shows adult kickboxing Tue/Thu 6 to 7 PM',
+    /Adult class times coming soon/.test(adultReal) && !/Women's Self Defense Jiu-Jitsu/.test(adultReal.replace(/Women's Self Defense/g, '')) && /Adult Kickboxing/.test(adultReal) && /6:00 PM to 7:00 PM/.test(adultReal) && !/Adult Jiu-Jitsu\b.{0,40}6:00 PM/.test(adultReal))
+  const kidsReal = strip(read(dirReal, 'programs/kids-bjj-wharton.html'))
+  check('K9 the real site: the kids page covers kickboxing (Tue/Thu) and jiu-jitsu (Wed/Fri)',
+    /Kids Kickboxing: Tuesday, Thursday/.test(kidsReal) && /Kids Jiu-Jitsu: Wednesday, Friday/.test(kidsReal) && /5:00 PM to 6:00 PM/.test(kidsReal))
+  const wom = strip(read(dirReal, 'programs/womens-self-defense-wharton.html'))
+  check('K10 the women\'s self defense page exists with Wednesday and Friday, 6:00 to 7:00 PM, and is linked from nav-level pages and the footer',
+    /Friday/.test(wom) && /Wednesday/.test(wom) && !/Monday/.test(wom) && /6:00 PM to 7:00 PM/.test(wom) &&
+    htmlFiles(dirReal).filter(f => !['404.html', 'privacy-policy.html'].includes(f)).every(f => /href="\/programs\/womens-self-defense-wharton"/.test(read(dirReal, f))))
+  const kick = ['index.html', 'programs/index.html', 'programs/kids-bjj-wharton.html', 'llms.txt'].every(f => /kickboxing/i.test(read(dirReal, f)))
+  const kickSoon = ['index.html', 'programs/index.html', 'programs/kids-bjj-wharton.html', 'llms.txt'].every(f => /kickboxing/i.test(read(dirCommitted, f)))
+  check('K11 kickboxing is named wherever programs are listed (home, programs, kids page, llms.txt), live and coming soon, and in the JSON-LD',
+    kick && kickSoon && /Kids Kickboxing and Jiu-Jitsu/.test(read(dirReal, 'index.html')) && /"Kickboxing"/.test(read(dirCommitted, 'index.html')))
+  const smReal = read(dirReal, 'sitemap.xml')
+  check('K12 the sitemap lists the women\'s page and the kids page', /programs\/womens-self-defense-wharton</.test(smReal) && /programs\/kids-bjj-wharton</.test(smReal))
+  const metas = htmlFiles(dirReal).map(f => (read(dirReal, f).match(/<meta name="description" content="([^"]*)"/) || [])[1] || '').join(' ')
+  check('K13 no meta description, OG text or JSON-LD still says "kids and teens"', !/teen/i.test(metas) && !/teen/i.test(htmlFiles(dirReal).filter(f => f !== 'privacy-policy.html').map(f => read(dirReal, f)).join(' ')) && !/teen/i.test(read(dirReal, 'llms.txt')))
+  const og = read(join(REPO, 'scripts'), 'og-wharton.html')
+  check('K14 the OG image text does not mention teens', !/teen/i.test(og))
+  const home = strip(read(dirReal, 'index.html'))
+  check('K15 the real home page: price shown once as the single grand opening membership, address shown, no hours or opening date invented',
+    /Grand Opening Membership/.test(home) && /\$150/.test(home) && /201 N Houston St/.test(home) && !/Classes start|Now open in Wharton/.test(home))
 }
 
 // ── F: nothing forbidden is on any page, in either mode ──
@@ -289,6 +345,7 @@ await linkCheck('live', dirLive)
     [/lorem|ipsum/i, 'lorem ipsum'],
     [/\bundefined\b|\bNaN\b|\[object |\{\{|\}\}/, 'a template leak'],
     [/\bTBD\b|\bTODO\b|\bFIXME\b/, 'a to-do marker'],
+    [/\bteens?\b|\bteenagers?\b|13 to 17|ages 7 to 12|ages 3 to 6/i, 'a teens or other-age program claim (no kids age range has been given for Wharton)'],
     [/perplexity\.ai|created with perplexity|name="generator"/i, 'Perplexity attribution'],
     [/halloween|data-season|season\.css|pink october|rolling for ribbons|hyrox|ribbon/i, 'seasonal or promotional content'],
     [/live ?stream|member portal|pre-?order|apple tv|cornerman/i, 'stream, portal or pre-order content'],
@@ -297,7 +354,7 @@ await linkCheck('live', dirLive)
     [/Shaun Lawler|Jared Vevera|Christian Solano|Jake Maronge|Malik Pickett|Scott Jones/, "another coach presented on this site"],
     [/\bgymdesk\b|calendar\.labyrinth|sauna\.labyrinth/i, 'main-site tooling links'],
   ]
-  for (const [label, root] of [['coming soon', dirCommitted], ['live', dirLive], ['live, empty config', dirLiveEmpty]]) {
+  for (const [label, root] of [['coming soon', dirCommitted], ['live', dirLive], ['live, empty config', dirLiveEmpty], ['the real config', dirReal]]) {
     const hits = []
     for (const f of everything(root)) {
       if (f === 'privacy-policy.html') continue          // the policy names its own vendors (Stripe, GymDesk, Cornerman)
@@ -455,12 +512,12 @@ const LIVE = await serve(dirLive)
       await ctx.close()
       return { sent, state, errors }
     }
-    const good = { name: 'Test Parent', email: 'test@example.com', phone: '2815550100', who: 'kids-7-12', message: 'We can only do evenings.' }
+    const good = { name: 'Test Parent', email: 'test@example.com', phone: '2815550100', who: 'kids', message: 'We can only do evenings.' }
     const ok = await run(r => r.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ ok: true }) }), good)
     const payload = ok.sent[0] && JSON.parse(ok.sent[0].body)
     check('B8 the form posts once, as JSON, to the CRM book-trial endpoint', ok.sent.length === 1 && ok.sent[0].method === 'POST' && /application\/json/.test(ok.sent[0].ct))
     check('B9 the payload is name, email, phone, program and a note that starts "WHARTON: ", with no class date',
-      payload && payload.name === 'Test Parent' && payload.email === 'test@example.com' && payload.phone === '2815550100' && payload.program === 'Kids 7-12' &&
+      payload && payload.name === 'Test Parent' && payload.email === 'test@example.com' && payload.phone === '2815550100' && payload.program === 'Kids 3-6' &&
       payload.note.startsWith('WHARTON: ') && /We can only do evenings\./.test(payload.note) && !('trialAt' in payload) && !('company' in payload) &&
       Object.keys(payload).sort().join() === 'email,name,note,phone,program', JSON.stringify(payload))
     check('B10 success is shown when the CRM confirms it saved', ok.state.success && ok.state.formHidden && !ok.state.errorShown && /on the list/i.test(ok.state.successText), JSON.stringify(ok.state))
