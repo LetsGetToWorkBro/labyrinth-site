@@ -1,0 +1,689 @@
+/* Copied from the main site by scripts/wharton_sync.py and pruned of the promotional
+   blocks the Wharton site does not carry. Do not hand-edit: Wharton-only rules
+   belong in wharton.css. */
+/* ========================================
+   LABYRINTH BJJ: PROGRAM PAGES
+   ========================================
+
+   Loaded only by the pages under /programs/, on top of style.css. Everything
+   these pages share with the front page, the nav, buttons, section headings,
+   coach cards, the FAQ accordion. Comes from style.css and is not repeated
+   here. What is here is the handful of blocks that only a program page has:
+   its header, its fact strip, its own slice of the timetable, and the price
+   row at the bottom.
+
+   The front page does not load this file, which is the point of it being
+   separate: four program pages should not make the homepage's stylesheet
+   bigger. */
+
+/* ===== SECTION RHYTHM ===== */
+/* style.css gives each front-page section its own padding rule by name
+   (.programs, .coaches, .faq …) and has no generic one, so these pages bring
+   their own. Same clamp as the front page uses, so the two feel like one site
+   when a visitor moves between them. */
+.prog-section { padding: clamp(48px, 6vw, 80px) 0; }
+
+.prog-section--surface {
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+
+/* ===== BREADCRUMBS ===== */
+.prog-crumbs {
+  padding: calc(var(--nav-height) + var(--space-8)) 0 0;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.prog-crumbs a {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.prog-crumbs a:hover { color: var(--gold); }
+.prog-crumbs__sep { margin: 0 var(--space-2); color: var(--text-faint); }
+.prog-crumbs__current { color: var(--text); }
+
+/* ===== HEADER ===== */
+.prog-hero { padding: var(--space-8) 0 var(--space-12); }
+
+.prog-hero__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2.25rem, 6vw, 4rem);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  margin: var(--space-3) 0 var(--space-5);
+}
+
+.prog-hero__lead {
+  font-size: clamp(1.0625rem, 2.2vw, 1.25rem);
+  line-height: 1.6;
+  color: var(--text-muted);
+  max-width: 60ch;
+}
+
+.prog-hero__cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+}
+
+/* The photograph sits beside the words on a wide screen and above them on a
+   narrow one, where a side-by-side would leave both too small to do any work. */
+.prog-hero__grid {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: var(--space-12);
+  align-items: center;
+}
+
+.prog-hero__shot {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  aspect-ratio: 4 / 3;
+}
+
+/* <picture> is the element the height has to be given to: the <img> inside it
+   resolves height:100% against its parent, and a bare <picture> is auto-height,
+   so without this the photograph sits short and leaves a band of empty card
+   under it. */
+.prog-hero__shot picture {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.prog-hero__shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ===== FACT STRIP ===== */
+/* auto-fit rather than a fixed count: the pages carry four facts each today,
+   but a page with three should not leave a hole where the fourth would be. */
+.prog-facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-top: var(--space-12);
+}
+
+.prog-fact { background: var(--surface); padding: var(--space-6); }
+
+.prog-fact__label {
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: var(--space-2);
+}
+
+.prog-fact__value {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.125rem;
+  line-height: 1.3;
+  color: var(--text);
+}
+
+.prog-fact__value em {
+  font-style: normal;
+  color: var(--gold);
+}
+
+/* A phone number in a fact strip is the one value anybody taps. It inherits
+   the display face and weight from the value above; it just needs to look
+   like something you can press. */
+.prog-fact__value a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(200, 162, 76, 0.4);
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.prog-fact__value a:hover {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
+}
+
+/* ===== PROSE ===== */
+.prog-prose { max-width: 68ch; }
+.prog-prose p { margin-bottom: var(--space-5); line-height: 1.75; color: var(--text-muted); }
+.prog-prose p strong { color: var(--text); font-weight: 600; }
+.prog-prose a { color: var(--gold); text-decoration: none; border-bottom: 1px solid rgba(200,162,76,0.35); }
+.prog-prose a:hover { border-bottom-color: var(--gold); }
+
+.prog-prose h3 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: var(--text);
+  margin: var(--space-10) 0 var(--space-4);
+}
+
+.prog-prose ul { margin: 0 0 var(--space-5) var(--space-5); }
+.prog-prose li { margin-bottom: var(--space-3); line-height: 1.7; color: var(--text-muted); }
+.prog-prose li strong { color: var(--text); font-weight: 600; }
+
+/* ===== CLASS BREAKDOWN CARDS ===== */
+.prog-groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-5);
+  margin-top: var(--space-10);
+}
+
+.prog-group {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+}
+
+.prog-group__tag {
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: var(--space-3);
+}
+
+.prog-group__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.125rem;
+  margin-bottom: var(--space-3);
+}
+
+.prog-group__desc { font-size: 0.9375rem; line-height: 1.65; color: var(--text-muted); }
+
+/* ===== THIS PROGRAM'S TIMETABLE ===== */
+/* One column per training day rather than the front page's seven-column grid:
+   a program that runs three days a week in a seven-column table is four
+   columns of dashes, which reads as a gap rather than as a schedule. */
+/* 180px, not 200: the kids timetable runs six days, and at 200 the sixth wraps
+   onto a row of its own with five columns of empty space beside it. */
+.prog-week {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-10);
+}
+
+.prog-day {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+}
+
+.prog-day__name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.9375rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--gold);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--space-4);
+}
+
+.prog-slot { margin-bottom: var(--space-4); }
+.prog-slot:last-child { margin-bottom: 0; }
+
+.prog-slot__time {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text);
+}
+
+.prog-slot__name { font-size: 0.875rem; color: var(--text-muted); margin-top: 2px; }
+
+.prog-slot__badge {
+  display: inline-block;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: var(--space-2);
+  vertical-align: 2px;
+}
+
+.prog-slot__badge--gi { background: rgba(200,162,76,0.16); color: var(--gold); }
+.prog-slot__badge--nogi { background: rgba(231,76,60,0.16); color: var(--red-hover); }
+.prog-slot__badge--adv { background: rgba(255,255,255,0.08); color: var(--text-muted); }
+
+.prog-week__note {
+  margin-top: var(--space-6);
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+/* ===== PRICE ROW ===== */
+.prog-prices {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-5);
+  margin-top: var(--space-10);
+}
+
+.prog-price {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  text-align: center;
+}
+
+.prog-price--feature { border-color: var(--gold); }
+
+.prog-price__name {
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.prog-price__amount {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 2rem;
+  color: var(--text);
+}
+
+.prog-price__amount span { font-size: 0.875rem; font-weight: 400; color: var(--text-muted); }
+.prog-price__note { font-size: 0.875rem; color: var(--text-muted); margin-top: var(--space-3); line-height: 1.6; }
+
+/* ===== COACH ROW ===== */
+.prog-coaches {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-5);
+  margin-top: var(--space-10);
+}
+
+/* style.css spans every non-featured coach card across two columns, which is
+   right for the front page's six-column grid and wrong here, with auto-fit
+   it silently halved this grid to two cards a row. Three across divides the
+   roster evenly and keeps the pairs that belong together on one row. */
+.prog-coaches .coach-card {
+  grid-column: auto;
+}
+
+/* Three across or one. A two-column step would put the ninth coach alone on
+   a row of her own, away from the eighth, and the last two on this roster are
+   the pair that most belongs side by side. */
+@media (max-width: 720px) {
+  .prog-coaches { grid-template-columns: 1fr; }
+}
+
+/* ===== CLOSING CTA ===== */
+.prog-close {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-16) var(--space-8);
+  text-align: center;
+  margin: var(--space-20) 0;
+}
+
+.prog-close__title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.5rem, 4vw, 2.25rem);
+  text-transform: uppercase;
+  margin-bottom: var(--space-4);
+}
+
+.prog-close__text {
+  color: var(--text-muted);
+  max-width: 52ch;
+  margin: 0 auto var(--space-8);
+  line-height: 1.7;
+}
+
+/* ===== SIBLING PROGRAMS ===== */
+.prog-siblings {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-5);
+  margin-top: var(--space-10);
+}
+
+.prog-sibling {
+  display: block;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+  text-decoration: none;
+  transition: border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.prog-sibling:hover { border-color: var(--gold); transform: translateY(-2px); }
+
+.prog-sibling__title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.0625rem;
+  color: var(--text);
+  margin-bottom: var(--space-2);
+}
+
+.prog-sibling__desc { font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; }
+
+/* ===== NARROW SCREENS ===== */
+@media (max-width: 899px) {
+  .prog-hero__grid { grid-template-columns: 1fr; gap: var(--space-8); }
+  /* Photograph first: it says what the class is faster than the heading does. */
+  .prog-hero__shot { order: -1; }
+}
+
+@media (max-width: 560px) {
+  .prog-hero__cta { flex-direction: column; align-items: stretch; }
+  .prog-hero__cta .btn { justify-content: center; }
+  .prog-close { padding: var(--space-12) var(--space-5); }
+}
+
+/* A day emptied by a filter is hidden outright rather than left as a titled
+   empty card. [hidden] is display:none and .prog-day sets display:block, so
+   the attribute needs the extra weight to win. */
+.prog-day[hidden], .prog-slot[hidden] { display: none !important; }
+
+/* ── /pricing ── */
+.price-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--space-5);
+  margin-top: var(--space-10);
+}
+
+.price-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-8);
+  display: flex;
+  flex-direction: column;
+}
+
+.price-card--feature { border-color: var(--gold); }
+
+.price-card__name {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.0625rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: var(--space-4);
+}
+
+.price-card__amount {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 2.75rem;
+  line-height: 1;
+  color: var(--text);
+  margin-bottom: var(--space-6);
+}
+
+.price-card__amount span {
+  font-size: 0.9375rem;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
+.price-card__list {
+  list-style: none;
+  margin: 0 0 var(--space-8);
+  padding: 0;
+  flex: 1;
+}
+
+.price-card__list li {
+  position: relative;
+  padding-left: 24px;
+  margin-bottom: var(--space-3);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.price-card__list li::before {
+  content: "\2713";
+  position: absolute;
+  left: 0;
+  color: var(--gold);
+  font-weight: 700;
+}
+
+.price-card__btn {
+  display: block;
+  text-align: center;
+  padding: 13px 20px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+}
+
+.price-card--feature .price-card__btn {
+  background: var(--gold);
+  color: #0A0A0A;
+  border-color: var(--gold);
+}
+
+.price-card__btn:hover { transform: translateY(-2px); border-color: var(--gold); }
+.price-card--feature .price-card__btn:hover { background: var(--gold-hover); }
+
+.price-extras {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-10);
+}
+
+.price-extra {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: var(--space-6);
+}
+
+.price-extra__name {
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.price-extra__amount {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--text);
+}
+
+.price-extra__amount span { font-size: 0.8125rem; font-weight: 400; color: var(--text-muted); }
+.price-extra__note { font-size: 0.875rem; color: var(--text-muted); margin-top: var(--space-2); line-height: 1.55; }
+
+/* ── /coaches ── */
+/* .prog-coaches is defined once, higher up, with its column counts. */
+
+.coach-card__link {
+  display: inline-block;
+  margin-top: var(--space-4);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--gold);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--transition-fast);
+}
+
+.coach-card__link:hover { border-bottom-color: var(--gold); }
+
+/* The coach portraits are 200x200 headshots. Left as a 4:3 hero they would be
+   blown up four times over, so the frame is square and capped. */
+.coach-hero__shot {
+  aspect-ratio: 1 / 1;
+  max-width: 340px;
+  margin-left: auto;
+  border-radius: 50%;
+}
+
+@media (max-width: 899px) {
+  .coach-hero__shot { margin: 0 auto; max-width: 220px; }
+}
+
+/* ── Lineage ── */
+/* Who promoted whom, given a card of its own beside the explanation. It is the
+   one claim on a coach page a rival cannot write for themselves, so it does not
+   sit buried in a paragraph. */
+.lineage {
+  display: grid;
+  grid-template-columns: minmax(240px, 340px) 1fr;
+  gap: var(--space-12);
+  align-items: start;
+  margin-top: var(--space-10);
+}
+
+.lineage__card {
+  background: var(--bg);
+  border: 1px solid var(--gold);
+  border-radius: var(--radius-md);
+  padding: var(--space-8);
+  position: sticky;
+  top: calc(var(--nav-height) + var(--space-6));
+}
+
+.lineage__label {
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.lineage__name {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.5rem;
+  line-height: 1.15;
+  color: var(--gold);
+  margin-bottom: var(--space-2);
+}
+
+.lineage__name a { color: inherit; border-bottom: 1px solid rgba(200,162,76,0.4); }
+.lineage__name a:hover { border-bottom-color: var(--gold); }
+
+.lineage__where { font-size: 0.875rem; color: var(--text-muted); line-height: 1.5; }
+
+@media (max-width: 899px) {
+  .lineage { grid-template-columns: 1fr; gap: var(--space-8); }
+  .lineage__card { position: static; }
+}
+.form-group__hint {
+  font-weight: 400;
+  color: var(--text-faint);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.trial-form__submit { width: 100%; }
+
+.booking-form__area { height: auto; min-height: 104px; padding: 12px 14px; line-height: 1.5; resize: vertical; }
+.booking-form__select {
+  padding-right: 40px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'><path d='M1 1.5l5 5 5-5' fill='none' stroke='%23999' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+}
+
+
+/* ══ Pink theme ═════════════════════════════════════════════════════════════
+   Breast Cancer Awareness Month, for the pages that are about it: the October
+   offers and the self defense event. A page opts in with <body class="theme-pink">.
+
+   It is a theme, not a set of accents: inside <main> the site's gold becomes
+   the awareness pink and the surfaces turn rose-black, so every component the
+   page already uses (buttons, facts, cards, links, form fields) comes along
+   without being restyled one by one. The nav and footer stay as they are, so
+   it is still obviously the same academy. */
+body.theme-pink main {
+  --gold: var(--awareness);
+  --gold-hover: var(--awareness-hover);
+  --surface: #1a0e14;
+  --surface-elevated: #22121b;
+  --border: rgba(229, 143, 181, 0.16);
+  --border-strong: rgba(229, 143, 181, 0.32);
+  --text-muted: #b9a1ae;
+  --text-faint: #8f7584;
+  background: #120a0e;
+}
+body.theme-pink main .btn--gold:hover {
+  box-shadow: 0 4px 16px rgba(229, 143, 181, 0.35), 0 0 30px rgba(229, 143, 181, 0.15);
+}
+body.theme-pink main .btn--ghost { color: #fbd3e3; border-color: var(--awareness-line); }
+body.theme-pink main .btn--ghost:hover { border-color: var(--awareness); background: var(--awareness-soft); box-shadow: none; }
+.btn--dark { background: #1a0b12; color: #fff; }
+.btn--dark:hover { background: #2a1220; transform: translateY(-2px); }
+
+[data-live][hidden] { display: none !important; }
+body.theme-pink main .prog-prose { margin-top: var(--space-4); }
+
+/* Bands: the surface sections get a pink rule top and bottom. */
+body.theme-pink main .prog-section--surface {
+  background: linear-gradient(180deg, #1c0f16, #170c12);
+  border-top: 1px solid var(--awareness-line);
+  border-bottom: 1px solid var(--awareness-line);
+}
+
+/* ══ HYROX Youngstars: black and volt yellow ════════════════════════════════
+   The kids' HYROX race page. Its own look on purpose: the awareness pink and the
+   academy gold belong to other pages, and this is a race. Everything is scoped to
+   <body class="theme-hyrox">, and inside <main> the site's gold becomes volt so
+   the shared form fields and FAQ come along. The nav and footer are unchanged. */
+body.theme-hyrox main {
+  --volt: #e3ff2e;
+  --volt-dim: rgba(227, 255, 46, 0.14);
+  --volt-line: rgba(227, 255, 46, 0.32);
+  --gold: var(--volt);
+  --gold-hover: #f1ff7a;
+  --surface: #121410;
+  --surface-elevated: #181b14;
+  --border: rgba(227, 255, 46, 0.14);
+  --border-strong: rgba(227, 255, 46, 0.34);
+  --text-muted: #adb3a2;
+  --text-faint: #858b7a;
+  background: #0a0b08;
+}
+body.theme-hyrox main .prog-section { border-color: var(--border); }
+[data-live][hidden] { display: none !important; }
+
+body.theme-hyrox main .faq-item { border-color: var(--border-strong); }
+body.theme-hyrox main .faq-item__question:hover { color: var(--volt); }
