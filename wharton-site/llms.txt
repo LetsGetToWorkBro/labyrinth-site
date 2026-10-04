@@ -1,6 +1,6 @@
 # Labyrinth BJJ Wharton
 
-> Brazilian jiu-jitsu gym in Wharton, Texas, part of Labyrinth BJJ. Adults, kids and teens. Lead instructor: Joe Herrera, a brown belt under Prof. Anthony Curry. The first class is free.
+> Jiu-jitsu and kickboxing gym in Wharton, Texas, part of Labyrinth BJJ. Kids kickboxing and jiu-jitsu, women's self defense jiu-jitsu, adult jiu-jitsu. Lead instructor: Joe Herrera, a brown belt under Prof. Anthony Curry. The first class is free.
 
 This file follows the llms.txt convention (https://llmstxt.org). Every fact here is also on the pages linked beneath it; if the two ever disagree, the page is right and this file is stale.
 
@@ -10,9 +10,20 @@ This file follows the llms.txt convention (https://llmstxt.org). Every fact here
 - **Phone**: (281) 393-7983
 - **Email**: info@labyrinth.vision
 - **First class**: free
-- **Programs**: Brazilian jiu-jitsu for adults, and for kids and teens
+- **Programs**: kids kickboxing and jiu-jitsu, women's self defense jiu-jitsu, adult kickboxing (Tuesday and Thursday), adult jiu-jitsu (adult jiu-jitsu times not announced yet)
 - **Lead instructor**: Joe Herrera, brown belt under Prof. Anthony Curry
 - **Map**: https://www.google.com/maps/search/?api=1&query=201+N+Houston+St+Wharton+TX+77488
+
+## Class schedule
+
+- Tuesday, 5:00 PM to 6:00 PM: Kids Kickboxing
+- Tuesday, 6:00 PM to 7:00 PM: Adult Kickboxing
+- Wednesday, 5:00 PM to 6:00 PM: Kids Jiu-Jitsu
+- Wednesday, 6:00 PM to 7:00 PM: Women's Self Defense Jiu-Jitsu
+- Thursday, 5:00 PM to 6:00 PM: Kids Kickboxing
+- Thursday, 6:00 PM to 7:00 PM: Adult Kickboxing
+- Friday, 5:00 PM to 6:00 PM: Kids Jiu-Jitsu
+- Friday, 6:00 PM to 7:00 PM: Women's Self Defense Jiu-Jitsu
 
 ## Pricing
 
@@ -21,6 +32,9 @@ This file follows the llms.txt convention (https://llmstxt.org). Every fact here
 ## Pages
 
 - [Programs](https://wharton.labyrinth.vision/programs/)
+- [Kids kickboxing and jiu-jitsu](https://wharton.labyrinth.vision/programs/kids-bjj-wharton)
+- [Women's self defense](https://wharton.labyrinth.vision/programs/womens-self-defense-wharton)
+- [Adult jiu-jitsu](https://wharton.labyrinth.vision/programs/adult-bjj-wharton)
 - [Schedule](https://wharton.labyrinth.vision/schedule)
 - [Pricing](https://wharton.labyrinth.vision/pricing)
 - [Coaches](https://wharton.labyrinth.vision/coaches/)

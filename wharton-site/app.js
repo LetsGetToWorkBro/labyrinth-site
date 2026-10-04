@@ -113,10 +113,10 @@
 
   // The CRM accepts only its own programmes and silently substitutes a default
   // for anything else, so a blank is better than a wrong label.
-  var PROGRAMS = { 'adult': 'Adult BJJ', 'kids-3-6': 'Kids 3-6', 'kids-7-12': 'Kids 7-12', 'teens': 'Teens', 'several': '' };
+  var PROGRAMS = { 'adult': 'Adult BJJ', 'womens': 'Adult BJJ', 'kids': 'Kids 3-6', 'several': '' };
   var WHO = {
-    'adult': 'an adult', 'kids-3-6': 'a child aged 3-6', 'kids-7-12': 'a child aged 7-12',
-    'teens': 'a teen aged 13-17', 'several': 'more than one person'
+    'adult': 'an adult', 'womens': 'an adult, for women\'s self defense', 'kids': 'a child',
+    'several': 'more than one person'
   };
 
   function sendToCrm(payload) {

@@ -5,7 +5,7 @@
     "address": "street (and optional suite) and zip are the TBD parts. city and state are already known.",
     "opening_date": "ISO date, for example 2026-12-01. Shown as 'Classes start December 1, 2026' (or 'Now open' once the build date has passed).",
     "hours": "List of {\"days\": [\"Monday\", \"Wednesday\"], \"opens\": \"17:00\", \"closes\": \"20:30\"}. 24-hour times.",
-    "schedule": "List of {\"day\": \"Monday\", \"start\": \"18:00\", \"end\": \"19:00\", \"class\": \"Adult BJJ\", \"type\": \"Gi\" or \"No-Gi\" or \"\", \"audience\": \"adult\" or \"kids\" or \"all\", \"note\": \"\"}. 'end' and 'note' are optional.",
+    "schedule": "List of {\"day\": \"Monday\", \"start\": \"18:00\", \"end\": \"19:00\", \"class\": \"Women's Self Defense Jiu-Jitsu\", \"type\": \"Gi\" or \"No-Gi\" or \"\", \"audience\": \"adult\" or \"kids\" or \"women\" or \"all\", \"note\": \"\"}. 'start' may be empty or left out when the time has not been announced: the row then shows 'Time to be announced' after the timed rows of its day. 'end' needs a 'start'. 'note' is optional.",
     "pricing": "List of {\"name\": \"Adult Unlimited\", \"audience\": \"adult\" or \"kids\" or \"family\" or \"other\", \"price\": \"149\", \"period\": \"month\" or \"class\" or \"hour\" or \"\", \"note\": \"\", \"features\": [\"...\"], \"featured\": false}. 'other' items render as small add-on rows.",
     "kids_ages": "Free text, for example 'ages 5 to 15'. Empty means 'age groups will be confirmed with the schedule'.",
     "joe_photo": "Path inside wharton-site/, for example assets/joe-herrera.jpg (put a .webp with the same name beside it if you can). Empty means the monogram portrait card is shown.",
@@ -28,7 +28,80 @@
   },
   "opening_date": "",
   "hours": [],
-  "schedule": [],
+  "schedule": [
+    {
+      "day": "Tuesday",
+      "start": "17:00",
+      "class": "Kids Kickboxing",
+      "type": "",
+      "audience": "kids",
+      "note": "",
+      "end": "18:00"
+    },
+    {
+      "day": "Thursday",
+      "start": "17:00",
+      "class": "Kids Kickboxing",
+      "type": "",
+      "audience": "kids",
+      "note": "",
+      "end": "18:00"
+    },
+    {
+      "day": "Wednesday",
+      "start": "17:00",
+      "class": "Kids Jiu-Jitsu",
+      "type": "",
+      "audience": "kids",
+      "note": "",
+      "end": "18:00"
+    },
+    {
+      "day": "Friday",
+      "start": "17:00",
+      "class": "Kids Jiu-Jitsu",
+      "type": "",
+      "audience": "kids",
+      "note": "",
+      "end": "18:00"
+    },
+    {
+      "day": "Wednesday",
+      "start": "18:00",
+      "end": "19:00",
+      "class": "Women's Self Defense Jiu-Jitsu",
+      "type": "",
+      "audience": "women",
+      "note": ""
+    },
+    {
+      "day": "Tuesday",
+      "start": "18:00",
+      "end": "19:00",
+      "class": "Adult Kickboxing",
+      "type": "",
+      "audience": "adult",
+      "note": ""
+    },
+    {
+      "day": "Thursday",
+      "start": "18:00",
+      "end": "19:00",
+      "class": "Adult Kickboxing",
+      "type": "",
+      "audience": "adult",
+      "note": ""
+    },
+    {
+      "day": "Friday",
+      "start": "18:00",
+      "end": "19:00",
+      "class": "Women's Self Defense Jiu-Jitsu",
+      "type": "",
+      "audience": "women",
+      "note": ""
+    }
+  ],
   "pricing": [
     {
       "name": "Grand Opening Membership",
