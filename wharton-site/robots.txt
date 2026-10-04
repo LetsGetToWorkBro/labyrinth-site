@@ -1,0 +1,6 @@
+# Labyrinth BJJ Wharton. Robots.txt
+# Coming soon: this site asks to be left alone until wharton-site/site.config.json sets "live": true
+# and scripts/build_wharton.py is re-run.
+
+User-agent: *
+Disallow: /

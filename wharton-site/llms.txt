@@ -1,0 +1,26 @@
+# Labyrinth BJJ Wharton
+
+> A Labyrinth Brazilian jiu-jitsu gym coming soon to Wharton, Texas. It is not open yet. The street address, class schedule, opening date, hours and prices have NOT been announced; please do not guess them. Lead instructor: Joe Herrera, a brown belt under Prof. Anthony Curry.
+
+This file follows the llms.txt convention (https://llmstxt.org). While the site is in coming-soon mode it is deliberately short: it states only what is settled. If this file and a page ever disagree, the page is right.
+
+## The essentials
+
+- **Status**: coming soon, not yet open
+- **Programs**: Brazilian jiu-jitsu for adults, and for kids and teens
+- **First class**: free
+- **Lead instructor**: Joe Herrera, brown belt under Prof. Anthony Curry (owner and head instructor of Labyrinth BJJ)
+- **Phone**: (281) 393-7983
+- **Email**: info@labyrinth.vision
+- **Not announced yet**: street address, class schedule, opening date, hours, prices
+
+## Pages
+
+- [Home](https://wharton.labyrinth.vision/)
+- [Programs](https://wharton.labyrinth.vision/programs/)
+- [Coaches](https://wharton.labyrinth.vision/coaches/)
+- [Contact and free first class](https://wharton.labyrinth.vision/contact)
+
+## Part of Labyrinth BJJ
+
+Labyrinth BJJ was founded in 2021 by Prof. Anthony Curry and is ranked in the top 1% of academies nationally on jits.gg (#39 of 7,869 as of September 24, 2026). Those results belong to the whole Labyrinth team, not to the Wharton gym. Main site: https://labyrinth.vision

@@ -1,0 +1,40 @@
+{
+  "_help": {
+    "what_this_is": "The ONE place every not-yet-decided Wharton fact lives. Fill these in, set \"live\" to true, run `python3 scripts/build_wharton.py`, and every page (hero, schedule, pricing, location cards, footer, JSON-LD, robots, sitemap, llms.txt) updates together. See wharton-site/README.md.",
+    "live": "false = coming-soon mode: every page is noindex, robots.txt disallows everything, there is no sitemap, and NOTHING below is rendered even if it is filled in. true = public mode: noindex is removed and whatever is filled in below appears; anything still empty keeps its 'coming soon' message.",
+    "address": "street (and optional suite) and zip are the TBD parts. city and state are already known.",
+    "opening_date": "ISO date, for example 2026-12-01. Shown as 'Classes start December 1, 2026' (or 'Now open' once the build date has passed).",
+    "hours": "List of {\"days\": [\"Monday\", \"Wednesday\"], \"opens\": \"17:00\", \"closes\": \"20:30\"}. 24-hour times.",
+    "schedule": "List of {\"day\": \"Monday\", \"start\": \"18:00\", \"end\": \"19:00\", \"class\": \"Adult BJJ\", \"type\": \"Gi\" or \"No-Gi\" or \"\", \"audience\": \"adult\" or \"kids\" or \"all\", \"note\": \"\"}. 'end' and 'note' are optional.",
+    "pricing": "List of {\"name\": \"Adult Unlimited\", \"audience\": \"adult\" or \"kids\" or \"family\" or \"other\", \"price\": \"149\", \"period\": \"month\" or \"class\" or \"hour\" or \"\", \"note\": \"\", \"features\": [\"...\"], \"featured\": false}. 'other' items render as small add-on rows.",
+    "kids_ages": "Free text, for example 'ages 5 to 15'. Empty means 'age groups will be confirmed with the schedule'.",
+    "joe_photo": "Path inside wharton-site/, for example assets/joe-herrera.jpg (put a .webp with the same name beside it if you can). Empty means the monogram portrait card is shown.",
+    "map_url": "A Google Maps (or other) link to the gym. Shown as a Get directions button.",
+    "social": "Wharton-specific profile URLs. Empty ones are not shown.",
+    "lastmod": "Date written into sitemap.xml. Update it when you change content."
+  },
+  "live": false,
+  "site_url": "https://wharton.labyrinth.vision",
+  "lastmod": "2026-10-04",
+  "phone": "(281) 393-7983",
+  "phone_tel": "+12813937983",
+  "email": "info@labyrinth.vision",
+  "address": {
+    "street": "",
+    "suite": "",
+    "city": "Wharton",
+    "state": "TX",
+    "zip": ""
+  },
+  "opening_date": "",
+  "hours": [],
+  "schedule": [],
+  "pricing": [],
+  "kids_ages": "",
+  "joe_photo": "",
+  "map_url": "",
+  "social": {
+    "instagram": "",
+    "facebook": ""
+  }
+}
