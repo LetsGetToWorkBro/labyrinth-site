@@ -273,9 +273,10 @@ await linkCheck('live', dirLive)
     htmlFiles(dirLive).filter(f => f !== '404.html' && f !== 'privacy-policy.html').every(f => /SENTINEL-STREET/.test(read(dirLive, f.replace(/\\/g, '/'))) && /Mon, Wed/.test(read(dirLive, f))) &&
     /SENTINEL Adult Class/.test(read(dirLive, 'schedule.html')) && /\$987/.test(read(dirLive, 'pricing.html')))
   check('T9 live: each program page shows only its own classes (adult, kids, women)',
-    /SENTINEL Adult Class/.test(read(dirLive, 'programs/adult-bjj-wharton.html')) && !/SENTINEL (Kids|Women) (Class|Untimed)/.test(read(dirLive, 'programs/adult-bjj-wharton.html')) &&
-    /SENTINEL Kids Class/.test(read(dirLive, 'programs/kids-bjj-wharton.html')) && !/SENTINEL (Adult|Women) Class/.test(read(dirLive, 'programs/kids-bjj-wharton.html')) &&
-    /SENTINEL Women Class/.test(read(dirLive, 'programs/womens-self-defense-wharton.html')) && !/SENTINEL (Adult|Kids) (Class|Untimed)/.test(read(dirLive, 'programs/womens-self-defense-wharton.html')))
+    // the booking script's JSON lists every class on every page (it is what the calendar books from), so only the visible page counts
+    /SENTINEL Adult Class/.test(strip(read(dirLive, 'programs/adult-bjj-wharton.html'))) && !/SENTINEL (Kids|Women) (Class|Untimed)/.test(strip(read(dirLive, 'programs/adult-bjj-wharton.html'))) &&
+    /SENTINEL Kids Class/.test(strip(read(dirLive, 'programs/kids-bjj-wharton.html'))) && !/SENTINEL (Adult|Women) Class/.test(strip(read(dirLive, 'programs/kids-bjj-wharton.html'))) &&
+    /SENTINEL Women Class/.test(strip(read(dirLive, 'programs/womens-self-defense-wharton.html'))) && !/SENTINEL (Adult|Kids) (Class|Untimed)/.test(strip(read(dirLive, 'programs/womens-self-defense-wharton.html'))))
   check('T10 live: Joe\'s photo replaces the monogram', /<img[^>]*src="\/assets\/test-joe.jpg"/.test(read(dirLive, 'coaches/joe-herrera.html')) && !/portrait__initials/.test(read(dirLive, 'coaches/joe-herrera.html')))
   check('T11 live: llms.txt carries the address, hours, schedule and prices', /SENTINEL-STREET/.test(read(dirLive, 'llms.txt')) && /\$987/.test(read(dirLive, 'llms.txt')) && /SENTINEL Adult Class/.test(read(dirLive, 'llms.txt')))
   check('T12 coming soon: llms.txt tells a model not to guess', /have NOT been announced/.test(read(dirCommitted, 'llms.txt')) && !/\$\d/.test(read(dirCommitted, 'llms.txt')))
@@ -418,6 +419,7 @@ await linkCheck('live', dirLive)
 // ── B: behaviour, in a browser ──
 const SOON = await serve(dirCommitted)
 const LIVE = await serve(dirLive)
+const LIVEBLANK = await serve(dirLiveEmpty)   // live, but no timetable yet: the enquiry form is still the way in
 {
   // B1/B2: no horizontal overflow, no script errors, the page paints, at phone and desktop widths
   for (const [label, srv, root] of [['coming soon', SOON, dirCommitted], ['live', LIVE, dirLive]]) {
@@ -554,16 +556,16 @@ const LIVE = await serve(dirLive)
     const labels = await (async () => { const c = await newPage(SOON.base); await c.page.goto(SOON.base + '/contact'); const r = await c.page.evaluate(() => [...document.querySelectorAll('form input:not([type=hidden]), form select, form textarea')].filter(e => !e.closest('.hp-field')).map(e => !!document.querySelector(`label[for="${e.id}"]`))); await c.ctx.close(); return r })()
     check('B17 every visible form control has a label', labels.length >= 5 && labels.every(Boolean))
     // The live site's form tells the visitor something different from the coming-soon one
-    const l = await newPage(LIVE.base)
+    const l = await newPage(LIVEBLANK.base)
     await l.page.route(CRM, r => r.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' }))
-    await l.page.goto(LIVE.base + '/contact', { waitUntil: 'load' })
+    await l.page.goto(LIVEBLANK.base + '/contact', { waitUntil: 'load' })
     await l.page.fill('form[data-wharton-form] [name=name]', 'X'); await l.page.fill('form[data-wharton-form] [name=email]', 'x@y.zz')
     await l.page.click('form[data-wharton-form] button[type=submit]'); await l.page.waitForTimeout(400)
     check('B18 live: the success message does not promise "when classes are confirmed"', !/confirmed/.test(await l.page.locator('.form-success').first().innerText()) && await l.page.locator('.form-success.show').count() === 1)
     await l.ctx.close()
   }
 }
-SOON.server.close(); LIVE.server.close()
+SOON.server.close(); LIVE.server.close(); LIVEBLANK.server.close()
 
 console.log(`\n${pass} passed, ${fail} failed`)
 await browser.close()

@@ -103,7 +103,8 @@ button {
 </style>
 <link rel="stylesheet" href="/style.css?v=66a0210d">
 <link rel="stylesheet" href="/programs.css?v=458cf86d">
-<link rel="stylesheet" href="/wharton.css?v=62f48a37">
+<link rel="stylesheet" href="/wharton.css?v=3f00ef4e">
+<link rel="stylesheet" href="/booking.css?v=6073b089">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -167,7 +168,7 @@ button {
       <a href="/contact" class="nav__link">Contact</a>
       <span class="nav__divider"></span>
       <a href="tel:+12813937983" class="nav__phone" aria-label="Call us"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg> (281) 393-7983</a>
-      <a href="/contact#free-class" class="nav__cta">Free First Class</a>
+      <a href="/schedule#book" class="nav__cta" data-book-trial>Book a Free Class</a>
     </div>
 
     <button class="nav__hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobileNav">
@@ -183,7 +184,7 @@ button {
   <a href="/coaches/">Coaches</a>
   <a href="/areas/">Areas</a>
   <a href="/contact">Contact</a>
-  <a href="/contact#free-class" class="nav__cta">Free First Class</a>
+  <a href="/schedule#book" class="nav__cta" data-book-trial>Book a Free Class</a>
 </div>
 
 <main id="main">
@@ -201,7 +202,7 @@ button {
     <h1 class="prog-hero__title">What It Costs</h1>
     <p class="prog-hero__lead">Membership prices for Labyrinth BJJ Wharton are on this page, and the first class is free whatever you decide afterwards.</p>
     <div class="prog-hero__cta">
-      <a href="/contact#free-class" class="btn btn--gold">Get Your Free First Class</a>
+      <a href="/schedule#book" data-book-trial class="btn btn--gold">Book Your Free Class</a>
       <a href="/schedule" class="btn btn--ghost">See the Schedule</a>
     </div>
     <div class="prog-facts">
@@ -219,11 +220,13 @@ button {
       <h2 class="section-title section-title--lg">MEMBERSHIPS</h2>
       
     </div>
-    <h3 class="price-group__title fade-in">Membership</h3><div class="price-grid stagger"><div class="price-card price-card--feature">
-        <h4 class="price-card__name">Grand Opening Membership</h4>
-        <div class="price-card__amount">$150<span>/mo</span></div>
-        <p class="price-card__note">Grand opening price</p><ul class="price-card__list"></ul>
-        <a href="/contact#free-class" class="price-card__btn">Start Free</a>
+    <div class="pricing__grid pricing__grid--1 stagger"><div class="pricing-card pricing-card--popular">
+        <div class="pricing-card__badge">Grand opening price</div>
+        <h4 class="pricing-card__name">Grand Opening Membership</h4>
+        
+        <div class="pricing-card__price">$150<span>/mo</span></div>
+        <ul class="pricing-card__features"><li>Your first class is free</li></ul>
+        <a href="/schedule#book" data-book-trial class="btn btn--gold">Book Free Class</a>
       </div></div>
   </div>
 </section>
@@ -258,7 +261,7 @@ button {
     <h2 class="prog-close__title">TRY IT BEFORE YOU PAY</h2>
     <p class="prog-close__text">The first class is free for everybody. Decide about money afterwards.</p>
     <div class="prog-hero__cta" style="justify-content:center">
-      <a href="/contact#free-class" class="btn btn--gold">Get Your Free First Class</a>
+      <a href="/schedule#book" data-book-trial class="btn btn--gold">Book Your Free Class</a>
       <a href="tel:+12813937983" class="btn btn--ghost">Call (281) 393-7983</a>
     </div>
   </div>
@@ -312,9 +315,11 @@ button {
 
 <div class="mobile-cta-bar" id="mobileCta">
   <a href="tel:+12813937983" class="mobile-cta-bar__phone" aria-label="Call Labyrinth BJJ Wharton"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg> Call</a>
-  <a href="/contact#free-class" class="mobile-cta-bar__trial">Free First Class</a>
+  <a href="/schedule#book" class="mobile-cta-bar__trial" data-book-trial>Book a Free Class</a>
 </div>
 
+<script type="application/json" id="whartonBooking">{"classes": [{"name": "Kids Jiu-Jitsu", "day": "Tue", "time": "5:00 PM", "audience": "kids", "crm": "Kids 3-6"}, {"name": "Adult Kickboxing", "day": "Tue", "time": "6:00 PM", "audience": "adult", "crm": "Adult BJJ"}, {"name": "Kids Jiu-Jitsu", "day": "Wed", "time": "5:00 PM", "audience": "kids", "crm": "Kids 3-6"}, {"name": "Women's Self Defense Jiu-Jitsu", "day": "Wed", "time": "6:00 PM", "audience": "women", "crm": "Womens"}, {"name": "Kids Jiu-Jitsu", "day": "Thu", "time": "5:00 PM", "audience": "kids", "crm": "Kids 3-6"}, {"name": "Adult Kickboxing", "day": "Thu", "time": "6:00 PM", "audience": "adult", "crm": "Adult BJJ"}, {"name": "Kids Jiu-Jitsu", "day": "Fri", "time": "5:00 PM", "audience": "kids", "crm": "Kids 3-6"}, {"name": "Women's Self Defense Jiu-Jitsu", "day": "Fri", "time": "6:00 PM", "audience": "women", "crm": "Womens"}], "closed": [], "firstBookable": "", "address": "201 N Houston St, Wharton, TX 77488", "phone": "(281) 393-7983", "mapUrl": "https://www.google.com/maps/search/?api=1&query=201+N+Houston+St+Wharton+TX+77488"}</script>
+<script src="/booking.js?v=57009013" defer></script>
 <script src="/app.js?v=2009d3e3" defer></script>
 </body>
 </html>
