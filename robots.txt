@@ -8,6 +8,8 @@ Allow: /
 Disallow: /admin/
 Disallow: /api/
 Disallow: /assets/email/
+# The Wharton site is built here and served from its own project; this copy is only a preview
+Disallow: /wharton-site/
 
 # Sitemap
 Sitemap: https://labyrinth.vision/sitemap.xml
