@@ -1,0 +1,24 @@
+# Cloudflare Pages redirects for wharton.labyrinth.vision.
+#
+# Common guesses at URLs this site does not have, so a mistyped or remembered
+# address lands somewhere useful instead of on the 404 page.
+/classes              /programs/                  301
+/class-schedule       /schedule                   301
+/classes-schedule     /schedule                   301
+/plans                /pricing                    301
+/plans-and-pricing    /pricing                    301
+/instructors          /coaches/                   301
+/coach                /coaches/                   301
+/joe                  /coaches/joe-herrera        301
+/adult-bjj            /programs/adult-bjj-wharton 301
+/kids-bjj             /programs/kids-bjj-wharton  301
+/adults               /programs/adult-bjj-wharton 301
+/kids                 /programs/kids-bjj-wharton  301
+/contact-us           /contact                    301
+/free-trial           /contact#free-class         301
+/trial                /contact#free-class         301
+/free-class           /contact#free-class         301
+/locations            /areas/                     301
+/location             /contact                    301
+/faq                  /#faq                       301
+/privacy              /privacy-policy             301

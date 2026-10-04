@@ -1,0 +1,15 @@
+/*
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+  X-Robots-Tag: noindex, nofollow
+
+# Cache-Control is deliberately not set here, for the reason given in the main
+# site's _headers: Pages applies it unpredictably. The CSS and JS are requested
+# with ?v=<hash> (scripts/build_wharton.py), so a changed file is a changed URL.
+#
+# While the site is coming soon (site.config.json "live": false) every response
+# also carries X-Robots-Tag: noindex, nofollow, in addition to the robots meta
+# tag on each page and robots.txt. Setting live to true and rebuilding removes it.
