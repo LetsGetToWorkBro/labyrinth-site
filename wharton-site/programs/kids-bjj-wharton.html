@@ -103,7 +103,8 @@ button {
 </style>
 <link rel="stylesheet" href="/style.css?v=66a0210d">
 <link rel="stylesheet" href="/programs.css?v=458cf86d">
-<link rel="stylesheet" href="/wharton.css?v=62f48a37">
+<link rel="stylesheet" href="/wharton.css?v=3f00ef4e">
+<link rel="stylesheet" href="/booking.css?v=6073b089">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -182,7 +183,7 @@ button {
       "name": "What ages are the kids classes for?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Tell us your child's age on the form and we will confirm the right class for them."
+        "text": "Call or email us with your child's age and we will confirm the right class for them."
       }
     },
     {
@@ -214,7 +215,7 @@ button {
       "name": "What should my child wear to the first class?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A t-shirt and shorts or leggings with no zippers, buttons or pockets, and a water bottle. If your child does not have a gi, tell us when you sign up and we will let you know what to bring."
+        "text": "A t-shirt and shorts or leggings with no zippers, buttons or pockets, and a water bottle. If your child does not have a gi, tell us when you arrive and we will let you know what to bring."
       }
     },
     {
@@ -255,7 +256,7 @@ button {
       <a href="/contact" class="nav__link">Contact</a>
       <span class="nav__divider"></span>
       <a href="tel:+12813937983" class="nav__phone" aria-label="Call us"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg> (281) 393-7983</a>
-      <a href="/contact#free-class" class="nav__cta">Free First Class</a>
+      <a href="/schedule#book" class="nav__cta" data-book-trial>Book a Free Class</a>
     </div>
 
     <button class="nav__hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobileNav">
@@ -271,7 +272,7 @@ button {
   <a href="/coaches/">Coaches</a>
   <a href="/areas/">Areas</a>
   <a href="/contact">Contact</a>
-  <a href="/contact#free-class" class="nav__cta">Free First Class</a>
+  <a href="/schedule#book" class="nav__cta" data-book-trial>Book a Free Class</a>
 </div>
 
 <main id="main">
@@ -293,14 +294,14 @@ button {
         <h1 class="prog-hero__title">Kids Jiu-Jitsu in Wharton</h1>
         <p class="prog-hero__lead">Jiu-jitsu for children at Labyrinth BJJ Wharton, led by Joe Herrera. Your child's first class is free.</p>
         <div class="prog-hero__cta">
-          <a href="/contact#free-class" class="btn btn--gold">Get a Free First Class</a>
+          <a href="/schedule#book" data-book-trial class="btn btn--gold">Book a Free Class</a>
           <a href="#times" class="btn btn--ghost">Class Times</a>
         </div>
       </div>
-      <div class="prog-hero__shot"><picture><source srcset="/assets/kids-gi.webp" type="image/webp"><img src="/assets/kids-gi.jpg" alt="Young Labyrinth BJJ student in a white gi with a coach raising their hand" width="720" height="480" loading="eager" decoding="async"></picture></div>
+      <div class="prog-hero__shot"><picture><source srcset="/assets/wharton-kids.webp" type="image/webp"><img src="/assets/wharton-kids.jpg" alt="Kids lined up with their coach on the mats at Labyrinth BJJ Wharton" width="800" height="600" loading="eager" decoding="async"></picture></div>
     </div>
     <div class="prog-facts">
-      <div class="prog-fact"><div class="prog-fact__label">Ages</div><div class="prog-fact__value">Set with the schedule</div></div>
+      <div class="prog-fact"><div class="prog-fact__label">When</div><div class="prog-fact__value">Tue to Fri, 5:00 PM</div></div>
       <div class="prog-fact"><div class="prog-fact__label">Classes</div><div class="prog-fact__value">Jiu-jitsu</div></div>
       <div class="prog-fact"><div class="prog-fact__label">Competition</div><div class="prog-fact__value">Always optional</div></div>
       <div class="prog-fact"><div class="prog-fact__label">First class</div><div class="prog-fact__value"><em>Free</em></div></div>
@@ -318,7 +319,7 @@ button {
     <div class="prog-prose fade-in">
       <p>Most parents come to martial arts for one of three reasons. Their child is being pushed around at school and they want them to be able to handle it. Their child has energy that no amount of playground time absorbs. Or their child has tried a sport, sat on a bench for a season, and quietly decided they are not sporty.</p>
       <p><strong>Brazilian jiu-jitsu</strong> is a grappling art, leverage, position and control, with no striking in it, which makes it the martial art parents and pediatricians tend to be least nervous about. It is also one of the few children's activities where a small child who thinks carefully genuinely beats a bigger one who does not.</p>
-      <p>Tell us your child's age on the form and we will confirm the right class for them.</p>
+      <p>Call or email us with your child's age and we will confirm the right class for them.</p>
       <p>Labyrinth BJJ is ranked in the top 1% of academies nationally on jits.gg (#39 of 7,869, as of September 24, 2026). That is a competition statistic about the whole Labyrinth team, not about Wharton. It is the record of the school Wharton belongs to, founded by the instructor Joe trains under.</p>
     </div>
   </div>
@@ -346,7 +347,7 @@ button {
       <h2 class="section-title section-title--lg">KIDS CLASS TIMES</h2>
       
     </div>
-    <div class="prog-week stagger"><div class="prog-day"><div class="prog-day__name">Tuesday</div><div class="prog-slot"><div class="prog-slot__time">5:00 PM to 6:00 PM</div><div class="prog-slot__name">Kids Jiu-Jitsu</div></div></div><div class="prog-day"><div class="prog-day__name">Wednesday</div><div class="prog-slot"><div class="prog-slot__time">5:00 PM to 6:00 PM</div><div class="prog-slot__name">Kids Jiu-Jitsu</div></div></div><div class="prog-day"><div class="prog-day__name">Thursday</div><div class="prog-slot"><div class="prog-slot__time">5:00 PM to 6:00 PM</div><div class="prog-slot__name">Kids Jiu-Jitsu</div></div></div><div class="prog-day"><div class="prog-day__name">Friday</div><div class="prog-slot"><div class="prog-slot__time">5:00 PM to 6:00 PM</div><div class="prog-slot__name">Kids Jiu-Jitsu</div></div></div></div>
+    <div class="sc sc--wharton fade-in" data-sc style="--sc-cols:4"><div class="sc__week"><section class="sc__col" data-sc-col="Tue" aria-label="Tuesday"><h3 class="sc__day"><span class="sc__day-full">Tuesday</span><span class="sc__day-short" aria-hidden="true">Tue</span><span class="sc__today" hidden>Today</span></h3><ul class="sc__list"><li><button type="button" class="sc__class sc__class--kids" data-aud="kids" data-book-class="0" aria-label="Book Kids Jiu-Jitsu, Tuesday at 5:00 PM"><span class="sc__time">5:00 PM<span class="sc__style">to 6:00 PM</span></span><span class="sc__name">Kids Jiu-Jitsu</span><span class="sc__tags"><span class="sc__tag sc__tag--trial">Free first class</span></span></button></li></ul></section><section class="sc__col" data-sc-col="Wed" aria-label="Wednesday"><h3 class="sc__day"><span class="sc__day-full">Wednesday</span><span class="sc__day-short" aria-hidden="true">Wed</span><span class="sc__today" hidden>Today</span></h3><ul class="sc__list"><li><button type="button" class="sc__class sc__class--kids" data-aud="kids" data-book-class="2" aria-label="Book Kids Jiu-Jitsu, Wednesday at 5:00 PM"><span class="sc__time">5:00 PM<span class="sc__style">to 6:00 PM</span></span><span class="sc__name">Kids Jiu-Jitsu</span><span class="sc__tags"><span class="sc__tag sc__tag--trial">Free first class</span></span></button></li></ul></section><section class="sc__col" data-sc-col="Thu" aria-label="Thursday"><h3 class="sc__day"><span class="sc__day-full">Thursday</span><span class="sc__day-short" aria-hidden="true">Thu</span><span class="sc__today" hidden>Today</span></h3><ul class="sc__list"><li><button type="button" class="sc__class sc__class--kids" data-aud="kids" data-book-class="4" aria-label="Book Kids Jiu-Jitsu, Thursday at 5:00 PM"><span class="sc__time">5:00 PM<span class="sc__style">to 6:00 PM</span></span><span class="sc__name">Kids Jiu-Jitsu</span><span class="sc__tags"><span class="sc__tag sc__tag--trial">Free first class</span></span></button></li></ul></section><section class="sc__col" data-sc-col="Fri" aria-label="Friday"><h3 class="sc__day"><span class="sc__day-full">Friday</span><span class="sc__day-short" aria-hidden="true">Fri</span><span class="sc__today" hidden>Today</span></h3><ul class="sc__list"><li><button type="button" class="sc__class sc__class--kids" data-aud="kids" data-book-class="6" aria-label="Book Kids Jiu-Jitsu, Friday at 5:00 PM"><span class="sc__time">5:00 PM<span class="sc__style">to 6:00 PM</span></span><span class="sc__name">Kids Jiu-Jitsu</span><span class="sc__tags"><span class="sc__tag sc__tag--trial">Free first class</span></span></button></li></ul></section></div><p class="sc__foot">Tap any class to book it. Your first class is <strong>free</strong>, with no payment and no commitment. Call <a href="tel:+12813937983">(281) 393-7983</a> if you would rather talk first.</p></div>
   </div>
 </section>
 
@@ -357,17 +358,16 @@ button {
       <h2 class="section-title section-title--lg">WHO TEACHES IT</h2>
       
     </div>
-    <div class="coach-pair stagger">
-      <article class="w-coach">
-        <div class="w-coach__media"><div class="portrait portrait--sm portrait--photo"><picture class="portrait__pic"><source srcset="/assets/joe-herrera.webp" type="image/webp"><img src="/assets/joe-herrera.jpg" alt="Joe Herrera, lead instructor at Labyrinth BJJ Wharton" width="900" height="900" loading="lazy" decoding="async"></picture></div></div>
-        <div class="w-coach__info">
-          <h3 class="w-coach__name">Joe Herrera</h3>
-          <p class="w-coach__role">Lead Instructor, Labyrinth BJJ Wharton</p>
+    <div class="coaches__grid wcoaches stagger">
+      <div class="coach-card coach-card--featured coach-card--head">
+        <div class="coach-card__avatar"><picture><source srcset="/assets/joe-herrera.webp" type="image/webp"><img src="/assets/joe-herrera.jpg" alt="Joe Herrera, lead instructor at Labyrinth BJJ Wharton" width="900" height="900" loading="lazy" decoding="async"></picture></div>
+        <div class="coach-card__info">
+          <h3 class="coach-card__name">Joe Herrera</h3>
+          <p class="coach-card__role">Lead Instructor, Wharton</p>
           <div class="coach-card__rank"><div class="belt-bar belt-bar--brown"><span class="belt-bar__belt"></span><span class="belt-bar__tab"></span></div><span class="coach-card__rank-label">Brown Belt</span></div>
-          <p class="w-coach__bio">Joe Herrera, brown belt under Prof. Anthony Curry, lead instructor at Labyrinth BJJ Wharton.</p>
-          <a href="/coaches/joe-herrera" class="coach-card__link">About Joe &rarr;</a>
+          <p class="coach-card__bio">Brown belt under Prof. Anthony Curry and the lead instructor at Labyrinth BJJ Wharton. <a href="/coaches/joe-herrera" class="coach-card__link">About Joe &rarr;</a></p>
         </div>
-      </article>
+      </div>
     </div>
   </div>
 </section>
@@ -379,11 +379,13 @@ button {
       <h2 class="section-title section-title--lg">WHAT IT COSTS</h2>
       
     </div>
-    <h3 class="price-group__title fade-in">Membership</h3><div class="price-grid stagger"><div class="price-card price-card--feature">
-        <h4 class="price-card__name">Grand Opening Membership</h4>
-        <div class="price-card__amount">$150<span>/mo</span></div>
-        <p class="price-card__note">Grand opening price</p><ul class="price-card__list"></ul>
-        <a href="/contact#free-class" class="price-card__btn">Start Free</a>
+    <div class="pricing__grid pricing__grid--1 stagger"><div class="pricing-card pricing-card--popular">
+        <div class="pricing-card__badge">Grand opening price</div>
+        <h4 class="pricing-card__name">Grand Opening Membership</h4>
+        
+        <div class="pricing-card__price">$150<span>/mo</span></div>
+        <ul class="pricing-card__features"><li>Your first class is free</li></ul>
+        <a href="/schedule#book" data-book-trial class="btn btn--gold">Book Free Class</a>
       </div></div>
   </div>
 </section>
@@ -400,7 +402,7 @@ button {
           <span>What ages are the kids classes for?</span>
           <svg class="faq-item__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
-        <div class="faq-item__answer"><p>Tell us your child&#x27;s age on the form and we will confirm the right class for them.</p></div>
+        <div class="faq-item__answer"><p>Call or email us with your child&#x27;s age and we will confirm the right class for them.</p></div>
       </div>
       <div class="faq-item">
         <button class="faq-item__question" aria-expanded="false">
@@ -428,7 +430,7 @@ button {
           <span>What should my child wear to the first class?</span>
           <svg class="faq-item__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
-        <div class="faq-item__answer"><p>A t-shirt and shorts or leggings with no zippers, buttons or pockets, and a water bottle. If your child does not have a gi, tell us when you sign up and we will let you know what to bring.</p></div>
+        <div class="faq-item__answer"><p>A t-shirt and shorts or leggings with no zippers, buttons or pockets, and a water bottle. If your child does not have a gi, tell us when you arrive and we will let you know what to bring.</p></div>
       </div>
       <div class="faq-item">
         <button class="faq-item__question" aria-expanded="false">
@@ -468,7 +470,7 @@ button {
     <h2 class="prog-close__title">BOOK THEIR FIRST CLASS</h2>
     <p class="prog-close__text">Free, with no commitment. Tell us your child&#x27;s age and we will set up their first class.</p>
     <div class="prog-hero__cta" style="justify-content:center">
-      <a href="/contact#free-class" class="btn btn--gold">Get Your Free First Class</a>
+      <a href="/schedule#book" data-book-trial class="btn btn--gold">Book Your Free Class</a>
       <a href="tel:+12813937983" class="btn btn--ghost">Call (281) 393-7983</a>
     </div>
   </div>
@@ -522,9 +524,11 @@ button {
 
 <div class="mobile-cta-bar" id="mobileCta">
   <a href="tel:+12813937983" class="mobile-cta-bar__phone" aria-label="Call Labyrinth BJJ Wharton"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg> Call</a>
-  <a href="/contact#free-class" class="mobile-cta-bar__trial">Free First Class</a>
+  <a href="/schedule#book" class="mobile-cta-bar__trial" data-book-trial>Book a Free Class</a>
 </div>
 
+<script type="application/json" id="whartonBooking">{"classes": [{"name": "Kids Jiu-Jitsu", "day": "Tue", "time": "5:00 PM", "audience": "kids", "crm": "Kids 3-6"}, {"name": "Adult Kickboxing", "day": "Tue", "time": "6:00 PM", "audience": "adult", "crm": "Adult BJJ"}, {"name": "Kids Jiu-Jitsu", "day": "Wed", "time": "5:00 PM", "audience": "kids", "crm": "Kids 3-6"}, {"name": "Women's Self Defense Jiu-Jitsu", "day": "Wed", "time": "6:00 PM", "audience": "women", "crm": "Womens"}, {"name": "Kids Jiu-Jitsu", "day": "Thu", "time": "5:00 PM", "audience": "kids", "crm": "Kids 3-6"}, {"name": "Adult Kickboxing", "day": "Thu", "time": "6:00 PM", "audience": "adult", "crm": "Adult BJJ"}, {"name": "Kids Jiu-Jitsu", "day": "Fri", "time": "5:00 PM", "audience": "kids", "crm": "Kids 3-6"}, {"name": "Women's Self Defense Jiu-Jitsu", "day": "Fri", "time": "6:00 PM", "audience": "women", "crm": "Womens"}], "closed": [], "firstBookable": "", "address": "201 N Houston St, Wharton, TX 77488", "phone": "(281) 393-7983", "mapUrl": "https://www.google.com/maps/search/?api=1&query=201+N+Houston+St+Wharton+TX+77488"}</script>
+<script src="/booking.js?v=57009013" defer></script>
 <script src="/app.js?v=2009d3e3" defer></script>
 </body>
 </html>

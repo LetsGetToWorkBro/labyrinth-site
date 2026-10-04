@@ -13,9 +13,11 @@ index.html ...     generated pages (home, programs/, coaches/, areas/, schedule,
 robots.txt  sitemap.xml  llms.txt  _headers  _redirects     generated
 style.css  programs.css  base.css   the main site's design system (copied by scripts/wharton_sync.py)
 wharton.css        everything specific to this site (hand-written)
-app.js             nav, FAQ accordion, reveal-on-scroll, the enquiry form (hand-written, ~200 lines)
+app.js             nav, FAQ accordion, reveal-on-scroll, the enquiry form used only while there is no timetable (hand-written)
+booking.js/.css    the free-class booking calendar (hand-written; the class list is written into each page by the generator)
 assets/            photos and logos (webp + jpg pairs), og-wharton.jpg
 site-test.mjs      the test suite
+booking-test.mjs   drives the booking calendar in a browser with the CRM stubbed
 ```
 
 The generator is `scripts/build_wharton.py` in the repository root. **Do not hand-edit the generated files**:
@@ -94,7 +96,30 @@ no class date (Wharton has no timetable, so the form is "free first class / get 
 `program` is set from the "Who would be training?" answer (`Adult BJJ`, `Kids 3-6`, `Kids 7-12`, `Teens`) or left
 empty for "more than one of us". A hidden `company` field is a honeypot: if a bot fills it, nothing is sent.
 
+## Booking a free class
+
+Once `schedule` has timed classes, the enquiry form is replaced everywhere by a booking calendar: every class on
+the timetable is a button, the nav button opens a picker, and the visitor chooses a class, a day on a month
+calendar (only that class's weekday is selectable, twelve weeks ahead) and leaves name, email and phone. It
+posts to the same `book-trial` function as the form, with:
+
+| field | value |
+|---|---|
+| `location` | `wharton` (so the CRM, the confirmation email/text and the reminders use the Wharton address, not Fulshear's) |
+| `className` | the exact class, e.g. `Kids Jiu-Jitsu` |
+| `program` | the CRM programme (`Kids 3-6`, `Womens`, `Adult BJJ`) |
+| `trialAt` | the chosen day and the class start time, with Central's offset for that date |
+| `note` | `WHARTON: <class>, <day> <time>, booked from the website` |
+
+Two optional config fields shape the calendar: `closed_dates` (`[{"date": "2026-12-25", "reason": "Christmas"}]`,
+shown on the calendar and not bookable; nothing is assumed closed) and `first_bookable` (`"2026-11-02"`, nothing
+is offered before it, for a gym that has not opened yet). With no timetable the old enquiry form is used instead.
+
 ## Tests
+
+```
+node wharton-site/booking-test.mjs
+```
 
 ```
 node wharton-site/site-test.mjs

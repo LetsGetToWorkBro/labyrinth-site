@@ -104,7 +104,8 @@ button {
 </style>
 <link rel="stylesheet" href="/style.css?v=66a0210d">
 <link rel="stylesheet" href="/programs.css?v=458cf86d">
-<link rel="stylesheet" href="/wharton.css?v=62f48a37">
+<link rel="stylesheet" href="/wharton.css?v=3f00ef4e">
+<link rel="stylesheet" href="/booking.css?v=6073b089">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -254,7 +255,7 @@ button {
       "name": "Is the first class really free?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Yes. Your first class at Labyrinth BJJ Wharton is free, with no commitment. Use the form on this page to claim it."
+        "text": "Yes. Your first class at Labyrinth BJJ Wharton is free, with no commitment. Book a class on this page to claim it."
       }
     },
     {
@@ -270,7 +271,7 @@ button {
       "name": "What ages can train?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Tell us your child's age on the form and we will confirm the right class for them. Women's self defense and adult jiu-jitsu are for adults."
+        "text": "Call or email us with your child's age and we will confirm the right class for them. Women's self defense and adult jiu-jitsu are for adults."
       }
     },
     {
@@ -310,7 +311,7 @@ button {
       "name": "What should I wear to my first class?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "Comfortable athletic clothes with no zippers, buttons or pockets, and a water bottle. If you do not own a gi, tell us when you sign up and we will let you know what to bring."
+        "text": "Comfortable athletic clothes with no zippers, buttons or pockets, and a water bottle. If you do not own a gi, tell us when you arrive and we will let you know what to bring."
       }
     }
   ]
@@ -335,7 +336,7 @@ button {
       <a href="/contact" class="nav__link">Contact</a>
       <span class="nav__divider"></span>
       <a href="tel:+12813937983" class="nav__phone" aria-label="Call us"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg> (281) 393-7983</a>
-      <a href="#free-class" class="nav__cta">Free First Class</a>
+      <a href="/schedule#book" class="nav__cta" data-book-trial>Book a Free Class</a>
     </div>
 
     <button class="nav__hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobileNav">
@@ -351,27 +352,137 @@ button {
   <a href="/coaches/">Coaches</a>
   <a href="/areas/">Areas</a>
   <a href="/contact">Contact</a>
-  <a href="#free-class" class="nav__cta">Free First Class</a>
+  <a href="/schedule#book" class="nav__cta" data-book-trial>Book a Free Class</a>
 </div>
 
 <main id="main">
 
 <section class="hero hero--wharton" id="hero">
   <div class="hero__bg">
-    <picture class="hero__still"><source srcset="/assets/hero-team.webp" type="image/webp"><img src="/assets/hero-team.jpg" alt="Labyrinth BJJ team celebrating with medals and trophies" width="1600" height="900" loading="eager" decoding="async" fetchpriority="high"></picture>
+    <picture class="hero__still"><source srcset="/assets/wharton-class.webp" type="image/webp"><img src="/assets/wharton-class.jpg" alt="Kids and their coach on the mats at Labyrinth BJJ Wharton" width="1600" height="740" loading="eager" decoding="async" fetchpriority="high"></picture>
   </div>
   <div class="hero__content">
     <div class="hero__badges"></div>
     <h1 class="hero__title"><b class="nw">Jiu-Jitsu</b> &amp; Kickboxing in <span>Wharton, Texas</span></h1>
     <p class="hero__subtitle">Kids jiu-jitsu, adult kickboxing, women's self defense jiu-jitsu and adult jiu-jitsu (coming soon), led by Joe Herrera, a brown belt under Prof. Anthony Curry. Part of the Labyrinth BJJ family. Your first class is free.</p>
     <div class="hero__ctas">
-      <a href="#free-class" class="btn btn--gold">Get Your Free First Class</a>
-      <a href="/programs/" class="btn btn--ghost">See the Programs</a>
+      <a href="/schedule#book" class="btn btn--gold" data-book-trial>Book Your Free Class</a>
+      <a href="#schedule" class="btn btn--ghost">See the Schedule</a>
     </div>
     <div class="hero__stats hero__stats--3 stagger">
       <div class="hero__stat"><div class="hero__stat-value">Free</div><div class="hero__stat-label">First class</div></div>
-      <div class="hero__stat"><div class="hero__stat-value">Top 1%</div><div class="hero__stat-label">Labyrinth BJJ nationally, per <a href="https://jits.gg/academy/labyrinth-bjj-4377" target="_blank" rel="noopener noreferrer">jits.gg</a></div></div>
+      <div class="hero__stat"><div class="hero__stat-value">$150/mo</div><div class="hero__stat-label">Grand Opening Membership</div></div>
       <div class="hero__stat"><div class="hero__stat-value">2021</div><div class="hero__stat-label">Labyrinth BJJ founded</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="prog-section prog-section--surface" id="schedule">
+  <div class="container">
+    <div class="fade-in section-head">
+      <p class="section-label">Book a class</p>
+      <h2 class="section-title section-title--lg">THIS WEEK AT WHARTON</h2>
+      <p class="section-subtitle">Tap a class, pick your day on the calendar and you are booked. Your first class is free.</p>
+    </div>
+    <div class="sc sc--wharton fade-in" data-sc style="--sc-cols:4"><div class="sc__bar"><div class="sc__filters" role="group" aria-label="Show classes for"><button type="button" class="sc__filter is-active" data-sc-filter="all" aria-pressed="true">All classes</button><button type="button" class="sc__filter" data-sc-filter="kids" aria-pressed="false">Kids</button><button type="button" class="sc__filter" data-sc-filter="adult" aria-pressed="false">Adults</button><button type="button" class="sc__filter" data-sc-filter="women" aria-pressed="false">Women</button></div><ul class="sc__legend" aria-label="Key"><li><span class="sc__swatch sc__swatch--kids"></span>Kids</li><li><span class="sc__swatch sc__swatch--adult"></span>Adults</li><li><span class="sc__swatch sc__swatch--women"></span>Women</li></ul></div><div class="sc__week"><section class="sc__col" data-sc-col="Tue" aria-label="Tuesday"><h3 class="sc__day"><span class="sc__day-full">Tuesday</span><span class="sc__day-short" aria-hidden="true">Tue</span><span class="sc__today" hidden>Today</span></h3><ul class="sc__list"><li><button type="button" class="sc__class sc__class--kids" data-aud="kids" data-book-class="0" aria-label="Book Kids Jiu-Jitsu, Tuesday at 5:00 PM"><span class="sc__time">5:00 PM<span class="sc__style">to 6:00 PM</span></span><span class="sc__name">Kids Jiu-Jitsu</span><span class="sc__tags"><span class="sc__tag sc__tag--trial">Free first class</span></span></button></li><li><button type="button" class="sc__class sc__class--adult" data-aud="adult" data-book-class="1" aria-label="Book Adult Kickboxing, Tuesday at 6:00 PM"><span class="sc__time">6:00 PM<span class="sc__style">to 7:00 PM</span></span><span class="sc__name">Adult Kickboxing</span><span class="sc__tags"><span class="sc__tag sc__tag--trial">Free first class</span></span></button></li></ul></section><section class="sc__col" data-sc-col="Wed" aria-label="Wednesday"><h3 class="sc__day"><span class="sc__day-full">Wednesday</span><span class="sc__day-short" aria-hidden="true">Wed</span><span class="sc__today" hidden>Today</span></h3><ul class="sc__list"><li><button type="button" class="sc__class sc__class--kids" data-aud="kids" data-book-class="2" aria-label="Book Kids Jiu-Jitsu, Wednesday at 5:00 PM"><span class="sc__time">5:00 PM<span class="sc__style">to 6:00 PM</span></span><span class="sc__name">Kids Jiu-Jitsu</span><span class="sc__tags"><span class="sc__tag sc__tag--trial">Free first class</span></span></button></li><li><button type="button" class="sc__class sc__class--women" data-aud="women" data-book-class="3" aria-label="Book Women&#x27;s Self Defense Jiu-Jitsu, Wednesday at 6:00 PM"><span class="sc__time">6:00 PM<span class="sc__style">to 7:00 PM</span></span><span class="sc__name">Women&#x27;s Self Defense Jiu-Jitsu</span><span class="sc__tags"><span class="sc__tag sc__tag--trial">Free first class</span></span></button></li></ul></section><section class="sc__col" data-sc-col="Thu" aria-label="Thursday"><h3 class="sc__day"><span class="sc__day-full">Thursday</span><span class="sc__day-short" aria-hidden="true">Thu</span><span class="sc__today" hidden>Today</span></h3><ul class="sc__list"><li><button type="button" class="sc__class sc__class--kids" data-aud="kids" data-book-class="4" aria-label="Book Kids Jiu-Jitsu, Thursday at 5:00 PM"><span class="sc__time">5:00 PM<span class="sc__style">to 6:00 PM</span></span><span class="sc__name">Kids Jiu-Jitsu</span><span class="sc__tags"><span class="sc__tag sc__tag--trial">Free first class</span></span></button></li><li><button type="button" class="sc__class sc__class--adult" data-aud="adult" data-book-class="5" aria-label="Book Adult Kickboxing, Thursday at 6:00 PM"><span class="sc__time">6:00 PM<span class="sc__style">to 7:00 PM</span></span><span class="sc__name">Adult Kickboxing</span><span class="sc__tags"><span class="sc__tag sc__tag--trial">Free first class</span></span></button></li></ul></section><section class="sc__col" data-sc-col="Fri" aria-label="Friday"><h3 class="sc__day"><span class="sc__day-full">Friday</span><span class="sc__day-short" aria-hidden="true">Fri</span><span class="sc__today" hidden>Today</span></h3><ul class="sc__list"><li><button type="button" class="sc__class sc__class--kids" data-aud="kids" data-book-class="6" aria-label="Book Kids Jiu-Jitsu, Friday at 5:00 PM"><span class="sc__time">5:00 PM<span class="sc__style">to 6:00 PM</span></span><span class="sc__name">Kids Jiu-Jitsu</span><span class="sc__tags"><span class="sc__tag sc__tag--trial">Free first class</span></span></button></li><li><button type="button" class="sc__class sc__class--women" data-aud="women" data-book-class="7" aria-label="Book Women&#x27;s Self Defense Jiu-Jitsu, Friday at 6:00 PM"><span class="sc__time">6:00 PM<span class="sc__style">to 7:00 PM</span></span><span class="sc__name">Women&#x27;s Self Defense Jiu-Jitsu</span><span class="sc__tags"><span class="sc__tag sc__tag--trial">Free first class</span></span></button></li></ul></section></div><p class="sc__foot">Tap any class to book it. Your first class is <strong>free</strong>, with no payment and no commitment. Call <a href="tel:+12813937983">(281) 393-7983</a> if you would rather talk first.</p></div>
+    
+  </div>
+</section>
+
+<section class="programs" id="programs">
+  <div class="container">
+    <div class="fade-in">
+      <p class="section-label">Programs</p>
+      <h2 class="section-title section-title--lg">WHAT WE TEACH IN WHARTON</h2>
+      <p class="section-subtitle">Pick the one that is for you, or for your child. Every one starts with a free first class. <a href="/programs/" class="section-subtitle__link">All programs &rarr;</a></p>
+    </div>
+    <div class="programs__grid wprograms stagger">
+      <a href="/programs/kids-bjj-wharton" class="program-card program-card--half">
+        <picture class="program-card__pic"><source srcset="/assets/wharton-kids.webp" type="image/webp"><img src="/assets/wharton-kids.jpg" alt="Kids lined up with their coach on the mats at Labyrinth BJJ Wharton" width="800" height="600" loading="lazy" decoding="async"></picture>
+        <div class="program-card__body">
+          <p class="program-card__tag">Kids &middot; Tue to Fri, 5:00 PM</p>
+          <h3 class="program-card__title">Kids Jiu-Jitsu</h3>
+          <p class="program-card__desc">Brazilian jiu-jitsu for children, Tuesday to Friday at 5:00 PM. Their first class is free.</p>
+          <span class="program-card__more">Kids classes &rarr;</span>
+        </div>
+      </a>
+      <a href="/programs/adult-bjj-wharton#kickboxing" class="program-card program-card--half">
+        <picture class="program-card__pic"><source srcset="/assets/wharton-gear.webp" type="image/webp"><img src="/assets/wharton-gear.jpg" alt="Heavy bag and striking gear on the shelves at Labyrinth BJJ Wharton" width="800" height="600" loading="lazy" decoding="async"></picture>
+        <div class="program-card__body">
+          <p class="program-card__tag">Adults &middot; Tue, Thu, 6:00 PM</p>
+          <h3 class="program-card__title">Adult Kickboxing</h3>
+          <p class="program-card__desc">Kickboxing for adults: punches and kicks. Your first class is free.</p>
+          <span class="program-card__more">Adult kickboxing &rarr;</span>
+        </div>
+      </a>
+      <a href="/programs/womens-self-defense-wharton" class="program-card program-card--half">
+        <picture class="program-card__pic"><source srcset="/assets/strength-conditioning-class.webp" type="image/webp"><img src="/assets/strength-conditioning-class.jpg" alt="Labyrinth BJJ members together after class" width="1200" height="800" loading="lazy" decoding="async"></picture>
+        <div class="program-card__body">
+          <p class="program-card__tag">Women &middot; Wed, Fri, 6:00 PM</p>
+          <h3 class="program-card__title">Women's Self Defense</h3>
+          <p class="program-card__desc">Self defense for women, built on the jiu-jitsu we teach: leverage, position and control rather than strength.</p>
+          <span class="program-card__more">Women's self defense &rarr;</span>
+        </div>
+      </a>
+      <a href="/programs/adult-bjj-wharton" class="program-card program-card--half">
+        <picture class="program-card__pic"><source srcset="/assets/adult-card.webp" type="image/webp"><img src="/assets/adult-card.jpg" alt="Labyrinth BJJ coaches celebrating gold medals" width="1080" height="720" loading="lazy" decoding="async"></picture>
+        <div class="program-card__body">
+          <p class="program-card__tag">Adults &middot; Coming soon</p>
+          <h3 class="program-card__title">Adult Jiu-Jitsu</h3>
+          <p class="program-card__desc">Brazilian jiu-jitsu for adults, beginners included. Adult jiu-jitsu class times are coming soon.</p>
+          <span class="program-card__more">Adult jiu-jitsu &rarr;</span>
+        </div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="coaches" id="coach">
+  <div class="container">
+    <div class="coaches__header fade-in">
+      <p class="section-label">Instruction</p>
+      <h2 class="section-title section-title--lg">MEET YOUR COACH</h2>
+      <p class="section-subtitle">Joe Herrera leads the Wharton classes. He trains under Prof. Anthony Curry, who founded Labyrinth. <a href="/coaches/" class="section-subtitle__link">Meet the coaches &rarr;</a></p>
+    </div>
+    <div class="coaches__grid wcoaches stagger">
+      <div class="coach-card coach-card--featured coach-card--head">
+        <div class="coach-card__avatar"><picture><source srcset="/assets/joe-herrera.webp" type="image/webp"><img src="/assets/joe-herrera.jpg" alt="Joe Herrera, lead instructor at Labyrinth BJJ Wharton" width="900" height="900" loading="lazy" decoding="async"></picture></div>
+        <div class="coach-card__info">
+          <h3 class="coach-card__name">Joe Herrera</h3>
+          <p class="coach-card__role">Lead Instructor, Wharton</p>
+          <div class="coach-card__rank"><div class="belt-bar belt-bar--brown"><span class="belt-bar__belt"></span><span class="belt-bar__tab"></span></div><span class="coach-card__rank-label">Brown Belt</span></div>
+          <p class="coach-card__bio">Brown belt under Prof. Anthony Curry and the lead instructor at Labyrinth BJJ Wharton. <a href="/coaches/joe-herrera" class="coach-card__link">About Joe &rarr;</a></p>
+        </div>
+      </div>
+      <div class="coach-card coach-card--featured coach-card--head">
+        <div class="coach-card__avatar"><picture><source srcset="/assets/coach-tony.webp" type="image/webp"><img src="/assets/coach-tony.jpg" alt="Prof. Anthony Curry, owner and head instructor of Labyrinth BJJ" width="400" height="400" loading="lazy" decoding="async"></picture></div>
+        <div class="coach-card__info">
+          <h3 class="coach-card__name">Prof. Anthony Curry</h3>
+          <p class="coach-card__role">Head Instructor / Owner</p>
+          <div class="coach-card__rank"><div class="belt-bar belt-bar--black"><span class="belt-bar__belt"></span><span class="belt-bar__tab"></span></div><span class="coach-card__rank-label">Black Belt</span></div>
+          <p class="coach-card__bio">Founded Labyrinth in 2021. Black belt under Matt Leighton of Citadel BJJ. Joe trains under him. <a href="https://labyrinth.vision/coaches/anthony-curry" class="coach-card__link" target="_blank" rel="noopener noreferrer">Full profile &rarr;</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="gallery" id="gallery">
+  <div class="container">
+    <div class="gallery__header fade-in">
+      <p class="section-label">Life at Labyrinth</p>
+      <h2 class="section-title section-title--lg">ON &amp; OFF THE MAT</h2>
+    </div>
+    <div class="gallery__grid stagger">
+      <div class="gallery__item gallery__item--wide"><picture><source srcset="/assets/wharton-class.webp" type="image/webp"><img src="/assets/wharton-class.jpg" alt="Kids and their coach on the mats at Labyrinth BJJ Wharton" width="1600" height="740" loading="lazy" decoding="async"></picture><div class="gallery__overlay"></div></div>
+      <div class="gallery__item"><picture><source srcset="/assets/gallery-4.webp" type="image/webp"><img src="/assets/gallery-4.jpg" alt="Young girl in a gi flexing at a competition" width="800" height="533" loading="lazy" decoding="async"></picture><div class="gallery__overlay"></div></div>
+      <div class="gallery__item gallery__item--tall"><picture><source srcset="/assets/gallery-7.webp" type="image/webp"><img src="/assets/gallery-7.jpg" alt="Young athlete in a pink gi waiting at a competition arena" width="720" height="1080" loading="lazy" decoding="async"></picture><div class="gallery__overlay"></div></div>
+      <div class="gallery__item"><picture><source srcset="/assets/gallery-2.webp" type="image/webp"><img src="/assets/gallery-2.jpg" alt="Kids gi competition action at JJWL" width="800" height="533" loading="lazy" decoding="async"></picture><div class="gallery__overlay"></div></div>
+      <div class="gallery__item"><picture><source srcset="/assets/gallery-5.webp" type="image/webp"><img src="/assets/gallery-5.jpg" alt="Labyrinth BJJ coaches with gold medals at JJWL Austin" width="800" height="533" loading="lazy" decoding="async"></picture><div class="gallery__overlay"></div></div>
+      <div class="gallery__item"><picture><source srcset="/assets/gallery-3.webp" type="image/webp"><img src="/assets/gallery-3.jpg" alt="Young athlete in a pink gi with a JJWL Finals gold medal" width="800" height="800" loading="lazy" decoding="async"></picture><div class="gallery__overlay"></div></div>
+      <div class="gallery__item gallery__item--wide"><picture><source srcset="/assets/gallery-8.webp" type="image/webp"><img src="/assets/gallery-8.jpg" alt="Labyrinth BJJ team photo with trophies after a tournament" width="800" height="533" loading="lazy" decoding="async"></picture><div class="gallery__overlay"></div></div>
+      <div class="gallery__item"><picture><source srcset="/assets/gallery-6.webp" type="image/webp"><img src="/assets/gallery-6.jpg" alt="Close-up of a JJWL Finals gold medal on a gi" width="800" height="800" loading="lazy" decoding="async"></picture><div class="gallery__overlay"></div></div>
+      <div class="gallery__item"><picture><source srcset="/assets/gallery-1.webp" type="image/webp"><img src="/assets/gallery-1.jpg" alt="Labyrinth BJJ athletes with trophies and medals at a competition" width="800" height="533" loading="lazy" decoding="async"></picture><div class="gallery__overlay"></div></div>
     </div>
   </div>
 </section>
@@ -388,76 +499,14 @@ button {
         <div class="prog-prose fade-in">
           <p>Labyrinth BJJ Wharton is a jiu-jitsu and kickboxing gym in Wharton, Texas, part of the Labyrinth family of gyms. It is led by <strong>Joe Herrera</strong>, a brown belt under Prof. Anthony Curry, who founded Labyrinth in 2021.</p>
           <p>Brazilian jiu-jitsu is a grappling art built on leverage, position and control, with no striking in it. Kickboxing is the striking side: punches and kicks. Jiu-jitsu is a practical way to get fit, to learn real self-defense, and to be part of a room full of people who are working on the same hard thing.</p>
-          <p>Classes are on the <a href="/schedule">schedule</a> and your first one is free. Use the form at the bottom of this page, or call us on (281) 393-7983.</p>
+          <p>Classes are on the <a href="/schedule">schedule</a> and your first one is free. Tap any class to book it, or call us on (281) 393-7983.</p>
         </div>
         <div class="prog-hero__cta fade-in">
-          <a href="#free-class" class="btn btn--gold">Get Your Free First Class</a>
+          <a href="/schedule#book" data-book-trial class="btn btn--gold">Book Your Free Class</a>
           <a href="/contact" class="btn btn--ghost">Contact Us</a>
         </div>
       </div>
-      <div class="split__media fade-in"><picture><source srcset="/assets/community-real.webp" type="image/webp"><img src="/assets/community-real.jpg" alt="Members of the Labyrinth BJJ team with their medals" width="800" height="600" loading="lazy" decoding="async"></picture></div>
-    </div>
-  </div>
-</section>
-
-<section class="prog-section prog-section--surface" id="programs">
-  <div class="container">
-    <div class="fade-in section-head">
-      <p class="section-label">Programs</p>
-      <h2 class="section-title section-title--lg">WHAT WE TEACH IN WHARTON</h2>
-      <p class="section-subtitle">Pick the one that is for you, or for your child. Every one starts with a free first class.</p>
-    </div>
-    <div class="program-trio stagger">
-      <a href="/programs/kids-bjj-wharton" class="w-program">
-        <div class="w-program__media"><picture><source srcset="/assets/kids-gi.webp" type="image/webp"><img src="/assets/kids-gi.jpg" alt="Young Labyrinth BJJ student in a white gi" width="720" height="480" loading="lazy" decoding="async"></picture></div>
-        <div class="w-program__body">
-          <p class="w-program__tag">Kids &middot; ages with the schedule</p>
-          <h3 class="w-program__title">Kids <b class="nw">Jiu-Jitsu</b></h3>
-          <p>Brazilian jiu-jitsu for children. The first Wharton kids classes are for one age group, and we want to hear from families with other ages.</p>
-          <span class="coach-card__link">Kids classes &rarr;</span>
-        </div>
-      </a>
-      <a href="/programs/womens-self-defense-wharton" class="w-program">
-        <div class="w-program__media w-program__media--mark"><img src="/assets/logo-maze-480.png" alt="" aria-hidden="true" width="480" height="480" loading="lazy" decoding="async"></div>
-        <div class="w-program__body">
-          <p class="w-program__tag">Women &middot; Jiu-jitsu</p>
-          <h3 class="w-program__title">Women's Self Defense</h3>
-          <p>Self defense for women, built on the jiu-jitsu we teach: leverage, position and control rather than strength.</p>
-          <span class="coach-card__link">Women's self defense &rarr;</span>
-        </div>
-      </a>
-      <a href="/programs/adult-bjj-wharton" class="w-program">
-        <div class="w-program__media"><picture><source srcset="/assets/adult-gi.webp" type="image/webp"><img src="/assets/adult-gi.jpg" alt="Adult Brazilian jiu-jitsu competitor in a Labyrinth BJJ gi" width="720" height="720" loading="lazy" decoding="async"></picture></div>
-        <div class="w-program__body">
-          <p class="w-program__tag">Adults &middot; Times coming soon</p>
-          <h3 class="w-program__title">Adult Jiu-Jitsu</h3>
-          <p>Brazilian jiu-jitsu for adults, beginners included. Adult class times have not been announced yet.</p>
-          <span class="coach-card__link">Adult jiu-jitsu &rarr;</span>
-        </div>
-      </a>
-    </div>
-  </div>
-</section>
-
-<section class="prog-section" id="coach">
-  <div class="container">
-    <div class="split split--portrait">
-      <div class="split__media fade-in"><div class="portrait portrait--photo"><picture class="portrait__pic"><source srcset="/assets/joe-herrera.webp" type="image/webp"><img src="/assets/joe-herrera.jpg" alt="Joe Herrera, lead instructor at Labyrinth BJJ Wharton" width="900" height="900" loading="lazy" decoding="async"></picture></div></div>
-      <div>
-    <div class="fade-in section-head">
-      <p class="section-label">Meet your coach</p>
-      <h2 class="section-title section-title--lg">JOE HERRERA</h2>
-      
-    </div>
-        <div class="prog-prose fade-in">
-          <p>Joe Herrera, brown belt under Prof. Anthony Curry, lead instructor at Labyrinth BJJ Wharton.</p>
-          <p>Prof. Curry founded Labyrinth in 2021 and is a black belt under Matt Leighton of Citadel BJJ. <a href="https://labyrinth.vision/coaches/anthony-curry" target="_blank" rel="noopener noreferrer">Read his profile on labyrinth.vision</a>.</p>
-        </div>
-        <div class="prog-hero__cta fade-in">
-          <a href="/coaches/joe-herrera" class="btn btn--ghost">About Joe</a>
-          <a href="/coaches/" class="btn btn--ghost">Coaches</a>
-        </div>
-      </div>
+      <div class="split__media fade-in"><picture><source srcset="/assets/wharton-kids.webp" type="image/webp"><img src="/assets/wharton-kids.jpg" alt="Kids lined up with their coach on the mats at Labyrinth BJJ Wharton" width="800" height="600" loading="lazy" decoding="async"></picture></div>
     </div>
   </div>
 </section>
@@ -484,54 +533,21 @@ button {
   </div>
 </section>
 
-<section class="prog-section" id="family">
+<section class="pricing wpricing" id="pricing">
   <div class="container">
-    <div class="family">
-      <div class="family__logo fade-in"><img src="/assets/logo-maze-480.png" alt="Labyrinth BJJ maze logo" width="480" height="480" loading="lazy"></div>
-      <div>
-    <div class="fade-in section-head">
-      <p class="section-label">Part of the Labyrinth family</p>
-      <h2 class="section-title section-title--lg">ONE FAMILY OF GYMS</h2>
-      
-    </div>
-        <div class="prog-prose fade-in">
-          <p>Labyrinth BJJ began in 2021 under Prof. Anthony Curry and trains in Fulshear and Katy, Texas. Wharton is the newest Labyrinth gym, and it shares the same lineage, the same standards and the same name.</p>
-          <p>Want to see the wider Labyrinth community, the team's tournament results and the other gyms? Visit <a href="https://labyrinth.vision" target="_blank" rel="noopener noreferrer">labyrinth.vision</a>.</p>
-        </div>
-        <div class="prog-hero__cta fade-in">
-          <a href="https://labyrinth.vision" class="btn btn--ghost" target="_blank" rel="noopener noreferrer">Visit labyrinth.vision</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="prog-section prog-section--surface" id="schedule">
-  <div class="container">
-    <div class="fade-in section-head">
-      <p class="section-label">Schedule</p>
-      <h2 class="section-title section-title--lg">CLASS TIMES</h2>
-      
-    </div>
-    <div class="prog-week stagger"><div class="prog-day"><div class="prog-day__name">Tuesday</div><div class="prog-slot"><div class="prog-slot__time">5:00 PM to 6:00 PM</div><div class="prog-slot__name">Kids Jiu-Jitsu</div></div><div class="prog-slot"><div class="prog-slot__time">6:00 PM to 7:00 PM</div><div class="prog-slot__name">Adult Kickboxing</div></div></div><div class="prog-day"><div class="prog-day__name">Wednesday</div><div class="prog-slot"><div class="prog-slot__time">5:00 PM to 6:00 PM</div><div class="prog-slot__name">Kids Jiu-Jitsu</div></div><div class="prog-slot"><div class="prog-slot__time">6:00 PM to 7:00 PM</div><div class="prog-slot__name">Women&#x27;s Self Defense Jiu-Jitsu</div></div></div><div class="prog-day"><div class="prog-day__name">Thursday</div><div class="prog-slot"><div class="prog-slot__time">5:00 PM to 6:00 PM</div><div class="prog-slot__name">Kids Jiu-Jitsu</div></div><div class="prog-slot"><div class="prog-slot__time">6:00 PM to 7:00 PM</div><div class="prog-slot__name">Adult Kickboxing</div></div></div><div class="prog-day"><div class="prog-day__name">Friday</div><div class="prog-slot"><div class="prog-slot__time">5:00 PM to 6:00 PM</div><div class="prog-slot__name">Kids Jiu-Jitsu</div></div><div class="prog-slot"><div class="prog-slot__time">6:00 PM to 7:00 PM</div><div class="prog-slot__name">Women&#x27;s Self Defense Jiu-Jitsu</div></div></div></div>
-    <p class="more-link fade-in"><a href="/schedule" class="coach-card__link">See the full schedule &rarr;</a></p>
-  </div>
-</section>
-
-<section class="prog-section" id="pricing">
-  <div class="container">
-    <div class="fade-in section-head">
+    <div class="pricing__header fade-in">
       <p class="section-label">Membership</p>
       <h2 class="section-title section-title--lg">WHAT IT COSTS</h2>
-      
+      <p class="section-subtitle">Your first class is free. <a href='/pricing' class='section-subtitle__link'>Full pricing &rarr;</a></p>
     </div>
-    <h3 class="price-group__title fade-in">Membership</h3><div class="price-grid stagger"><div class="price-card price-card--feature">
-        <h4 class="price-card__name">Grand Opening Membership</h4>
-        <div class="price-card__amount">$150<span>/mo</span></div>
-        <p class="price-card__note">Grand opening price</p><ul class="price-card__list"></ul>
-        <a href="/contact#free-class" class="price-card__btn">Start Free</a>
+    <div class="pricing__grid pricing__grid--1 stagger"><div class="pricing-card pricing-card--popular">
+        <div class="pricing-card__badge">Grand opening price</div>
+        <h4 class="pricing-card__name">Grand Opening Membership</h4>
+        
+        <div class="pricing-card__price">$150<span>/mo</span></div>
+        <ul class="pricing-card__features"><li>Your first class is free</li></ul>
+        <a href="/schedule#book" data-book-trial class="btn btn--gold">Book Free Class</a>
       </div></div>
-    <p class="more-link fade-in"><a href="/pricing" class="coach-card__link">See all plans &rarr;</a></p>
   </div>
 </section>
 
@@ -542,7 +558,7 @@ button {
       <h2 class="section-title section-title--lg">LOCATION &amp; HOURS</h2>
       
     </div>
-    <div class="loc-grid stagger"><div class="loc-card"><h3 class="loc-card__title">Opening</h3><span class="soon-badge">Coming soon</span><p>Opening date to be announced. Join the list to hear first.</p></div><div class="loc-card"><h3 class="loc-card__title">Address</h3><p class="loc-card__big">201 N Houston St<br>Wharton, TX 77488</p></div><div class="loc-card"><h3 class="loc-card__title">Hours</h3><span class="soon-badge">Coming soon</span><p>Hours will follow the class schedule once it is set.</p></div><div class="loc-card"><h3 class="loc-card__title">Map</h3><p><a href="https://www.google.com/maps/search/?api=1&amp;query=201+N+Houston+St+Wharton+TX+77488" class="btn btn--ghost" target="_blank" rel="noopener noreferrer">Get directions</a></p></div></div>
+    <div class="loc-grid stagger"><div class="loc-card"><h3 class="loc-card__title">Classes</h3><p class="loc-card__big">Tue to Fri</p><p><a href="/schedule">See the schedule</a></p></div><div class="loc-card"><h3 class="loc-card__title">Address</h3><p class="loc-card__big">201 N Houston St<br>Wharton, TX 77488</p></div><div class="loc-card"><h3 class="loc-card__title">Contact</h3><p><a href="tel:+12813937983">(281) 393-7983</a></p><p><a href="mailto:info@labyrinth.vision">info@labyrinth.vision</a></p></div><div class="loc-card"><h3 class="loc-card__title">Map</h3><p><a href="https://www.google.com/maps/search/?api=1&amp;query=201+N+Houston+St+Wharton+TX+77488" class="btn btn--ghost" target="_blank" rel="noopener noreferrer">Get directions</a></p></div></div>
   </div>
 </section>
 
@@ -579,7 +595,7 @@ button {
           <span>Is the first class really free?</span>
           <svg class="faq-item__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
-        <div class="faq-item__answer"><p>Yes. Your first class at Labyrinth BJJ Wharton is free, with no commitment. Use the form on this page to claim it.</p></div>
+        <div class="faq-item__answer"><p>Yes. Your first class at Labyrinth BJJ Wharton is free, with no commitment. Book a class on this page to claim it.</p></div>
       </div>
       <div class="faq-item">
         <button class="faq-item__question" aria-expanded="false">
@@ -593,7 +609,7 @@ button {
           <span>What ages can train?</span>
           <svg class="faq-item__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
-        <div class="faq-item__answer"><p>Tell us your child&#x27;s age on the form and we will confirm the right class for them. Women&#x27;s self defense and adult jiu-jitsu are for adults.</p></div>
+        <div class="faq-item__answer"><p>Call or email us with your child&#x27;s age and we will confirm the right class for them. Women&#x27;s self defense and adult jiu-jitsu are for adults.</p></div>
       </div>
       <div class="faq-item">
         <button class="faq-item__question" aria-expanded="false">
@@ -628,7 +644,7 @@ button {
           <span>What should I wear to my first class?</span>
           <svg class="faq-item__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
-        <div class="faq-item__answer"><p>Comfortable athletic clothes with no zippers, buttons or pockets, and a water bottle. If you do not own a gi, tell us when you sign up and we will let you know what to bring.</p></div>
+        <div class="faq-item__answer"><p>Comfortable athletic clothes with no zippers, buttons or pockets, and a water bottle. If you do not own a gi, tell us when you arrive and we will let you know what to bring.</p></div>
       </div>
     </div>
   </div>
@@ -643,7 +659,7 @@ button {
     </div>
     <div class="trial__layout">
       <div class="trial__content fade-in">
-        <p>Walking into a new gym is the hardest part. That is why the first class is free, with no pressure and no commitment. Tell us a little about who is coming and we will be in touch.</p>
+        <p>Walking into a new gym is the hardest part. That is why the first class is free, with no pressure and no commitment. Pick a class and a day and you are booked.</p>
         <h3>What to expect</h3>
         <ul>
           <li>A welcoming room for every experience level</li>
@@ -656,53 +672,16 @@ button {
           <li>A water bottle</li>
           <li>Tell us if you do not own a gi</li>
         </ul>
-        <div class="trial-form" id="free-class">
-  <h3 class="trial-form__title">Get your free first class</h3>
-  <form class="w-form" data-wharton-form data-success-title="Thank you!" data-success-text="We have your details and will be in touch about your free first class." novalidate>
-    <div class="form-row">
-      <div class="form-group">
-        <label for="home-name">Name</label>
-        <input type="text" id="home-name" name="name" placeholder="Your name" autocomplete="name" required>
-      </div>
-      <div class="form-group">
-        <label for="home-email">Email</label>
-        <input type="email" id="home-email" name="email" placeholder="you@email.com" autocomplete="email" required>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label for="home-phone">Phone (optional)</label>
-        <input type="tel" id="home-phone" name="phone" placeholder="(281) 555-0000" autocomplete="tel">
-      </div>
-      <div class="form-group">
-        <label for="home-who">Who would be training?</label>
-        <select id="home-who" name="who"><option value="">Choose one</option><option value="adult">Me (an adult)</option><option value="womens">Me, for women&#x27;s self defense</option><option value="kids">My child</option><option value="several">More than one of us</option></select>
-      </div>
-    </div>
-      <div class="form-row">
-        <div class="form-group form-group--full">
-          <label for="home-message">Message (optional)</label>
-          <textarea id="home-message" name="message" rows="3" placeholder="Anything you would like us to know?"></textarea>
-        </div>
-      </div>
-    <div class="hp-field" aria-hidden="true">
-      <label for="home-company">Leave this field empty</label>
-      <input type="text" id="home-company" name="company" tabindex="-1" autocomplete="off">
-    </div>
-    <p class="w-form__consent">We will email you, and text you if you add a phone number, about your free first class and when Wharton classes open. Reply STOP to any text to opt out.</p>
-    <button type="submit" class="btn btn--gold w-form__submit">Get My Free First Class</button>
-    <p class="w-form__error" role="alert" hidden>Sorry, we could not send that. Please call us on (281) 393-7983 or email info@labyrinth.vision and we will sort out your free first class.</p>
-  </form>
-  <noscript><p class="w-form__noscript">This form needs JavaScript. Please call (281) 393-7983 or email info@labyrinth.vision instead.</p></noscript>
-  <div class="form-success" role="status" tabindex="-1">
-    <div class="form-success__icon" aria-hidden="true">&#129355;</div>
-    <h3 class="form-success__title"></h3>
-    <p class="form-success__text"></p>
-  </div>
+        <div class="trial-form book-panel" id="free-class">
+  <h3 class="trial-form__title">Book your free class</h3>
+  <p class="book-panel__text">Pick a class, choose the day on the calendar and you are booked. No payment and no commitment, and you get a confirmation by email and text.</p>
+  <div class="book-panel__chips"><button type="button" class="book-panel__chip" data-book-class="0">Kids Jiu-Jitsu</button><button type="button" class="book-panel__chip" data-book-class="1">Adult Kickboxing</button><button type="button" class="book-panel__chip" data-book-class="3">Women&#x27;s Self Defense Jiu-Jitsu</button></div>
+  <a href="/schedule#book" class="btn btn--gold book-panel__btn" data-book-trial>Choose a class and a day</a>
+  <p class="book-panel__alt">Prefer to talk? Call <a href="tel:+12813937983">(281) 393-7983</a> or email <a href="mailto:info@labyrinth.vision">info@labyrinth.vision</a>.</p>
 </div>
 
       </div>
-      <div class="trial__image fade-in"><picture><source srcset="/assets/kids-podium.webp" type="image/webp"><img src="/assets/kids-podium.jpg" alt="Young Labyrinth BJJ athletes holding medals and trophies" width="600" height="450" loading="lazy" decoding="async"></picture></div>
+      <div class="trial__image fade-in"><picture><source srcset="/assets/wharton-kids.webp" type="image/webp"><img src="/assets/wharton-kids.jpg" alt="Kids lined up with their coach on the mats at Labyrinth BJJ Wharton" width="800" height="600" loading="lazy" decoding="async"></picture></div>
     </div>
   </div>
 </section>
@@ -755,9 +734,11 @@ button {
 
 <div class="mobile-cta-bar" id="mobileCta">
   <a href="tel:+12813937983" class="mobile-cta-bar__phone" aria-label="Call Labyrinth BJJ Wharton"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg> Call</a>
-  <a href="#free-class" class="mobile-cta-bar__trial">Free First Class</a>
+  <a href="/schedule#book" class="mobile-cta-bar__trial" data-book-trial>Book a Free Class</a>
 </div>
 
+<script type="application/json" id="whartonBooking">{"classes": [{"name": "Kids Jiu-Jitsu", "day": "Tue", "time": "5:00 PM", "audience": "kids", "crm": "Kids 3-6"}, {"name": "Adult Kickboxing", "day": "Tue", "time": "6:00 PM", "audience": "adult", "crm": "Adult BJJ"}, {"name": "Kids Jiu-Jitsu", "day": "Wed", "time": "5:00 PM", "audience": "kids", "crm": "Kids 3-6"}, {"name": "Women's Self Defense Jiu-Jitsu", "day": "Wed", "time": "6:00 PM", "audience": "women", "crm": "Womens"}, {"name": "Kids Jiu-Jitsu", "day": "Thu", "time": "5:00 PM", "audience": "kids", "crm": "Kids 3-6"}, {"name": "Adult Kickboxing", "day": "Thu", "time": "6:00 PM", "audience": "adult", "crm": "Adult BJJ"}, {"name": "Kids Jiu-Jitsu", "day": "Fri", "time": "5:00 PM", "audience": "kids", "crm": "Kids 3-6"}, {"name": "Women's Self Defense Jiu-Jitsu", "day": "Fri", "time": "6:00 PM", "audience": "women", "crm": "Womens"}], "closed": [], "firstBookable": "", "address": "201 N Houston St, Wharton, TX 77488", "phone": "(281) 393-7983", "mapUrl": "https://www.google.com/maps/search/?api=1&query=201+N+Houston+St+Wharton+TX+77488"}</script>
+<script src="/booking.js?v=57009013" defer></script>
 <script src="/app.js?v=2009d3e3" defer></script>
 </body>
 </html>

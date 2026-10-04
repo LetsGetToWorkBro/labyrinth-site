@@ -141,6 +141,48 @@ class Site:
         return normalise_schedule(self.cfg.get("schedule") or []) if self.live else []
 
     @property
+    def bookable(self):
+        """True when there is a real timetable to book from: the calendar replaces the enquiry form."""
+        return bool(self.schedule)
+
+    @property
+    def closed_dates(self):
+        """[{date, reason}] the owner lists in config as real closures. Nothing is assumed."""
+        out = []
+        for c in (self.cfg.get("closed_dates") or []) if self.live else []:
+            try:
+                d = datetime.date.fromisoformat(str(c.get("date", "")).strip())
+            except ValueError:
+                continue
+            out.append({"date": d.isoformat(), "reason": (c.get("reason") or "Closed").strip()})
+        return out
+
+    @property
+    def first_bookable(self):
+        """YYYY-MM-DD: nothing can be booked before this. Empty means from today."""
+        raw = (self.cfg.get("first_bookable") or "").strip() if self.live else ""
+        try:
+            return datetime.date.fromisoformat(raw).isoformat() if raw else ""
+        except ValueError:
+            return ""
+
+    def booking_classes(self):
+        """The bookable classes (rows with a start time), in week order, for booking.js."""
+        abbr = {"Monday": "Mon", "Tuesday": "Tue", "Wednesday": "Wed", "Thursday": "Thu", "Friday": "Fri",
+                "Saturday": "Sat", "Sunday": "Sun"}
+        crm = {"kids": "Kids 3-6", "women": "Womens", "adult": "Adult BJJ", "all": "Adult BJJ"}
+        rows = sorted((r for r in self.schedule if r["start"]), key=lambda r: (DAYS.index(r["day"]), r["start"]))
+        return [{"name": r["class"], "day": abbr[r["day"]], "time": fmt_time(r["start"]),
+                 "audience": r["audience"] if r["audience"] in ("kids", "adult", "women") else "adult",
+                 "crm": crm.get(r["audience"], "Adult BJJ")} for r in rows]
+
+    def booking_json(self):
+        return json.dumps({
+            "classes": self.booking_classes(), "closed": self.closed_dates, "firstBookable": self.first_bookable,
+            "address": self.address_oneline(), "phone": self.phone, "mapUrl": self.map_url,
+        }, ensure_ascii=False).replace("</", "<\\/")
+
+    @property
     def pricing(self):
         return normalise_pricing(self.cfg.get("pricing") or []) if self.live else []
 
@@ -379,9 +421,33 @@ class Page:
         self.body = ""
 
 
-def cta_href(page):
-    """Where "Get my free first class" goes: the form on this page, or the contact page's."""
+def cta_href(S, page):
+    """Where "Book a free class" goes: the booking calendar when there is a timetable,
+    otherwise the enquiry form on this page, or the contact page's."""
+    if S.bookable:
+        return "/schedule#book"
     return "#free-class" if page.has_form else "/contact#free-class"
+
+
+def cta_attrs(S):
+    """Opens the booking calendar in place. The href is the no-JavaScript fallback."""
+    return " data-book-trial" if S.bookable else ""
+
+
+def cta_label(S):
+    return "Book a Free Class" if S.bookable else "Free First Class"
+
+
+def booking_css(S):
+    return ('<link rel="stylesheet" href="/booking.css?v=%s">\n' % ver("booking.css")) if S.bookable else ""
+
+
+def booking_tail(S):
+    """The class list as JSON, then the calendar script. Only on a site with a real timetable."""
+    if not S.bookable:
+        return ""
+    return ('<script type="application/json" id="whartonBooking">%s</script>\n'
+            '<script src="/booking.js?v=%s" defer></script>\n' % (S.booking_json(), ver("booking.js")))
 
 
 def head(S, p):
@@ -430,7 +496,7 @@ def head(S, p):
 <link rel="stylesheet" href="/style.css?v={ver('style.css')}">
 <link rel="stylesheet" href="/programs.css?v={ver('programs.css')}">
 <link rel="stylesheet" href="/wharton.css?v={ver('wharton.css')}">
-{schema}
+{booking_css(S)}{schema}
 </head>
 """
 
@@ -441,7 +507,7 @@ def strip(S, p):
     return ('<div class="soon-strip" role="status"><span class="soon-badge">Coming soon</span>'
             '<span class="soon-strip__text">Labyrinth BJJ Wharton is opening soon. Class times, prices and the address are coming soon.</span>'
             '<span class="soon-strip__short">Opening soon in Wharton.</span>'
-            '<a href="%s">Get notified</a></div>\n' % cta_href(p))
+            '<a href="%s">Get notified</a></div>\n' % cta_href(S, p))
 
 
 def nav(S, p):
@@ -451,7 +517,9 @@ def nav(S, p):
         return '<a href="%s"%s%s>%s</a>' % (h, klass, cur, t)
     desk = "\n      ".join(link(h, t) for h, t in NAV_LINKS)
     mob = "\n  ".join(link(h, t, "") for h, t in NAV_LINKS)
-    cta = cta_href(p)
+    cta = cta_href(S, p)
+    attrs = cta_attrs(S)
+    label = cta_label(S)
     return f"""<a href="#main" class="skip-link">Skip to main content</a>
 {strip(S, p)}<nav class="nav" id="nav" aria-label="Main navigation">
   <div class="nav__inner">
@@ -464,7 +532,7 @@ def nav(S, p):
       {desk}
       <span class="nav__divider"></span>
       <a href="tel:{S.tel}" class="nav__phone" aria-label="Call us">{PHONE_ICON} {S.phone}</a>
-      <a href="{cta}" class="nav__cta">Free First Class</a>
+      <a href="{cta}" class="nav__cta"{attrs}>{label}</a>
     </div>
 
     <button class="nav__hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobileNav">
@@ -475,7 +543,7 @@ def nav(S, p):
 
 <div class="nav__mobile" id="mobileNav" role="navigation" aria-label="Mobile navigation">
   {mob}
-  <a href="{cta}" class="nav__cta">Free First Class</a>
+  <a href="{cta}" class="nav__cta"{attrs}>{label}</a>
 </div>
 
 <main id="main">
@@ -560,18 +628,31 @@ def footer(S, p):
 
 <div class="mobile-cta-bar" id="mobileCta">
   <a href="tel:{S.tel}" class="mobile-cta-bar__phone" aria-label="Call {SITE_NAME}">{PHONE_ICON} Call</a>
-  <a href="{cta_href(p)}" class="mobile-cta-bar__trial">Free First Class</a>
+  <a href="{cta_href(S, p)}" class="mobile-cta-bar__trial"{cta_attrs(S)}>{cta_label(S)}</a>
 </div>
 
-<script src="/app.js?v={ver('app.js')}" defer></script>
+{booking_tail(S)}<script src="/app.js?v={ver('app.js')}" defer></script>
 </body>
 </html>
 """
 
 
+def bookify(S, text):
+    """With a real timetable every "free first class" link opens the booking calendar.
+
+    The href stays a real link (to the schedule page) for visitors without JavaScript."""
+    if not S.bookable:
+        return text
+    text = re.sub(r'href="(?:/contact)?#free-class"', 'href="/schedule#book" data-book-trial', text)
+    for old, new in (("Get Your Free First Class", "Book Your Free Class"), ("Get a Free First Class", "Book a Free Class"),
+                     (">Free First Class<", ">Book a Free Class<"), (">Start Free<", ">Book Free Class<")):
+        text = text.replace(old, new)
+    return text
+
+
 def emit(S, p, outdir, written):
     body_class = "" if S.live else ' class="is-soon"'
-    text = head(S, p) + "<body%s>\n" % body_class + nav(S, p) + p.body + footer(S, p)
+    text = bookify(S, head(S, p) + "<body%s>\n" % body_class + nav(S, p) + p.body + footer(S, p))
     path = os.path.join(outdir, p.file)
     os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
@@ -677,12 +758,31 @@ WHO_OPTIONS = [
 ]
 
 
+def book_panel(S, wrapper_id="free-class"):
+    """Where the enquiry form used to be: pick a class, pick a day on the calendar, done."""
+    first = {}
+    for i, c in enumerate(S.booking_classes()):
+        first.setdefault(c["name"], i)
+    chips = "".join('<button type="button" class="book-panel__chip" data-book-class="%d">%s</button>' % (i, esc(n))
+                    for n, i in first.items())
+    return f"""<div class="trial-form book-panel" id="{wrapper_id}">
+  <h3 class="trial-form__title">Book your free class</h3>
+  <p class="book-panel__text">Pick a class, choose the day on the calendar and you are booked. No payment and no commitment, and you get a confirmation by email and text.</p>
+  <div class="book-panel__chips">{chips}</div>
+  <a href="/schedule#book" class="btn btn--gold book-panel__btn" data-book-trial>Choose a class and a day</a>
+  <p class="book-panel__alt">Prefer to talk? Call <a href="tel:{S.tel}">{S.phone}</a> or email <a href="mailto:{S.email}">{S.email}</a>.</p>
+</div>
+"""
+
+
 def form_html(S, uid, compact=False, title=None, wrapper_id="free-class"):
     """The free-first-class / notify-me enquiry. Behaviour is in app.js, which reads the data-* attributes.
 
     Not a class picker: Wharton has no schedule yet, so there is nothing to pick
     and no class date is ever sent.
     """
+    if S.bookable:
+        return book_panel(S, wrapper_id)
     if title is None:
         title = "Get your free first class"
     if S.live:
@@ -783,8 +883,14 @@ def slot_html(r):
             % (t, badge, name))
 
 
-def schedule_week(S, audiences=None, limit=None, only=None, exclude=None):
-    """The real timetable, or None when there is nothing to show (not live, or no rows)."""
+SC_LABELS = {"kids": "Kids", "adult": "Adults", "women": "Women"}
+
+
+def schedule_week(S, audiences=None, limit=None, only=None, exclude=None, filters=False, foot=True):
+    """The real timetable as the main site's tap-to-book week, or None when there is nothing to show.
+
+    Only the days that have a class are drawn. Each timed class is a button that opens the booking
+    calendar for it (booking.js); a row with no time yet is shown but cannot be booked."""
     rows = [r for r in S.schedule if audiences is None or r["audience"] in audiences]
     if only:
         rows = [r for r in rows if any(k in r["class"] for k in only)]
@@ -794,13 +900,44 @@ def schedule_week(S, audiences=None, limit=None, only=None, exclude=None):
         rows = rows[:limit]
     if not rows:
         return None
-    days = []
+    index = {(c["name"], c["day"], c["time"]): i for i, c in enumerate(S.booking_classes())}
+    abbr = {d: d[:3] for d in DAYS}
+    cols = []
     for d in DAYS:
         today = [r for r in rows if r["day"] == d]
-        if today:
-            days.append('<div class="prog-day"><div class="prog-day__name">%s</div>%s</div>'
-                        % (d, "".join(slot_html(r) for r in today)))
-    return '<div class="prog-week stagger">%s</div>' % "".join(days)
+        if not today:
+            continue
+        items = []
+        for r in today:
+            aud = r["audience"] if r["audience"] in SC_LABELS else "adult"
+            note = '<span class="sc__tag">%s</span>' % esc(r["note"]) if r["note"] else ""
+            if r["start"]:
+                t = fmt_time(r["start"])
+                span = ('<span class="sc__style">to %s</span>' % fmt_time(r["end"])) if r["end"] else ""
+                i = index.get((r["class"], abbr[d], t))
+                tags = '<span class="sc__tags"><span class="sc__tag sc__tag--trial">Free first class</span>%s</span>' % note
+                items.append(f'<li><button type="button" class="sc__class sc__class--{aud}" data-aud="{aud}" data-book-class="{i}" '
+                             f'aria-label="Book {esc(r["class"])}, {d} at {t}"><span class="sc__time">{t}{span}</span>'
+                             f'<span class="sc__name">{esc(r["class"])}</span>{tags}</button></li>')
+            else:
+                untimed_tags = f'<span class="sc__tags">{note}</span>' if note else ""
+                items.append(f'<li><div class="sc__class sc__class--{aud} sc__class--untimed" data-aud="{aud}"><span class="sc__time">Time to be announced</span>'
+                             f'<span class="sc__name">{esc(r["class"])}</span>{untimed_tags}</div></li>')
+        cols.append(f'<section class="sc__col" data-sc-col="{abbr[d]}" aria-label="{d}"><h3 class="sc__day"><span class="sc__day-full">{d}</span>'
+                    f'<span class="sc__day-short" aria-hidden="true">{abbr[d]}</span><span class="sc__today" hidden>Today</span></h3>'
+                    f'<ul class="sc__list">{"".join(items)}</ul></section>')
+    present = [a for a in ("kids", "adult", "women") if any((r["audience"] if r["audience"] in SC_LABELS else "adult") == a for r in rows)]
+    bar = ""
+    if filters and len(present) > 1:
+        btns = '<button type="button" class="sc__filter is-active" data-sc-filter="all" aria-pressed="true">All classes</button>' + "".join(
+            f'<button type="button" class="sc__filter" data-sc-filter="{a}" aria-pressed="false">{SC_LABELS[a]}</button>' for a in present)
+        legend = "".join(f'<li><span class="sc__swatch sc__swatch--{a}"></span>{SC_LABELS[a]}</li>' for a in present)
+        bar = (f'<div class="sc__bar"><div class="sc__filters" role="group" aria-label="Show classes for">{btns}</div>'
+               f'<ul class="sc__legend" aria-label="Key">{legend}</ul></div>')
+    tail = ('<p class="sc__foot">Tap any class to book it. Your first class is <strong>free</strong>, with no payment and no commitment. '
+            'Call <a href="tel:%s">%s</a> if you would rather talk first.</p>' % (S.tel, S.phone)) if foot and S.bookable else ""
+    return (f'<div class="sc sc--wharton fade-in" data-sc style="--sc-cols:{len(cols)}">{bar}'
+            f'<div class="sc__week">{"".join(cols)}</div>{tail}</div>')
 
 
 def period_label(period):
@@ -808,7 +945,7 @@ def period_label(period):
 
 
 def price_cards(S, audiences=None, limit=None):
-    """Real plans grouped by who they are for, or None when there is nothing to show."""
+    """Real plans grouped by who they are for, as the main site's pricing cards, or None when there is nothing to show."""
     items = [p for p in S.pricing if audiences is None or p["audience"] in audiences]
     if limit:
         items = items[:limit]
@@ -821,23 +958,27 @@ def price_cards(S, audiences=None, limit=None):
             continue
         cards = []
         for p in grp:
-            feats = "".join("<li>%s</li>" % esc(f) for f in p["features"])
-            lst = '<ul class="price-card__list">%s</ul>' % feats if feats else '<ul class="price-card__list"></ul>'
-            note = '<p class="price-card__note">%s</p>' % esc(p["note"]) if p["note"] else ""
-            cards.append(f"""<div class="price-card{' price-card--feature' if p['featured'] else ''}">
-        <h4 class="price-card__name">{esc(p['name'])}</h4>
-        <div class="price-card__amount">{esc(money(p['price']))}<span>{esc(period_label(p['period']))}</span></div>
-        {note}{lst}
-        <a href="/contact#free-class" class="price-card__btn">Start Free</a>
+            feats = list(p["features"]) + (["Your first class is free"] if S.bookable else [])
+            lst = "".join("<li>%s</li>" % esc(f) for f in feats)
+            badge = '<div class="pricing-card__badge">%s</div>' % esc(p["note"] or "Best Value") if p["featured"] else ""
+            desc = '' if p["featured"] else ('<p class="pricing-card__desc">%s</p>' % esc(p["note"]) if p["note"] else "")
+            cards.append(f"""<div class="pricing-card{' pricing-card--popular' if p['featured'] else ''}">
+        {badge}
+        <h4 class="pricing-card__name">{esc(p['name'])}</h4>
+        {desc}
+        <div class="pricing-card__price">{esc(money(p['price']))}<span>{esc(period_label(p['period']))}</span></div>
+        <ul class="pricing-card__features">{lst}</ul>
+        <a href="/contact#free-class" class="btn {'btn--gold' if p['featured'] else 'btn--ghost'}">Start Free</a>
       </div>""")
         label = AUDIENCES[aud]
-        out.append(f'<h3 class="price-group__title fade-in">{esc(label)}</h3><div class="price-grid stagger">{"".join(cards)}</div>')
+        title = '' if (aud == "all" and len(grp) == len(items)) else f'<h3 class="pricing__category fade-in">{esc(label)}</h3>'
+        out.append(f'{title}<div class="pricing__grid pricing__grid--{min(len(cards), 4)} stagger">{"".join(cards)}</div>')
     extras = [p for p in items if p["audience"] == "other"]
     if extras:
         rows = "".join(f"""<div class="price-extra"><div class="price-extra__name">{esc(p['name'])}</div>
         <div class="price-extra__amount">{esc(money(p['price']))}<span>{esc(period_label(p['period']))}</span></div>
         <p class="price-extra__note">{esc(p['note'])}</p></div>""" for p in extras)
-        out.append('<h3 class="price-group__title fade-in">More</h3><div class="price-extras stagger">%s</div>' % rows)
+        out.append('<h3 class="pricing__category fade-in">More</h3><div class="price-extras stagger">%s</div>' % rows)
     return "\n".join(out)
 
 
@@ -854,6 +995,9 @@ def loc_cards(S):
     op = opening_line(S)
     if op:
         cards.append(("Opening", "<p class=\"loc-card__big\">%s</p>" % esc(op)))
+    elif S.bookable:
+        days = [d for d in DAYS if any(r["day"] == d for r in S.schedule)]
+        cards.append(("Classes", "<p class=\"loc-card__big\">%s</p><p><a href=\"/schedule\">See the schedule</a></p>" % esc(day_span(days))))
     else:
         cards.append(("Opening", soon_badge() + "<p>Opening date to be announced. Join the list to hear first.</p>"))
     if S.has_address:
@@ -863,6 +1007,8 @@ def loc_cards(S):
     hrs = hours_html(S)
     if hrs:
         cards.append(("Hours", hrs))
+    elif S.bookable:
+        cards.append(("Contact", '<p><a href="tel:%s">%s</a></p><p><a href="mailto:%s">%s</a></p>' % (S.tel, S.phone, S.email, S.email)))
     else:
         cards.append(("Hours", soon_badge() + "<p>Hours will follow the class schedule once it is set.</p>"))
     if S.map_url:
@@ -962,10 +1108,10 @@ def faq_when(S):
     op = S.opening
     if op and op[0] == "future":
         return ("When does Labyrinth BJJ Wharton open?",
-                "Classes start %s. Use the form to claim your free first class and we will be in touch." % op[1])
+                "Classes start %s. Book your free first class and we will be in touch." % op[1])
     if op:
         return ("When does Labyrinth BJJ Wharton open?",
-                "Labyrinth BJJ Wharton is open. See the schedule for class times and use the form to claim your free first class.")
+                "Labyrinth BJJ Wharton is open. See the schedule for class times and book your free first class.")
     return ("When does Labyrinth BJJ Wharton open?",
             "We have not announced an opening date yet. Put your name on the list and we will tell you first, along with the class times and the address.")
 
@@ -987,9 +1133,9 @@ def faq_price(S):
 def faq_ages(S):
     if S.kids_ages:
         return ("What ages can train?",
-                "Right now the Wharton kids classes are for %s. If your child is a different age, tell us their age on the form so we know. Women's self defense and adult jiu-jitsu are for adults." % S.kids_ages)
+                "Right now the Wharton kids classes are for %s. If your child is a different age, call or email us with their age so we know. Women's self defense and adult jiu-jitsu are for adults." % S.kids_ages)
     return ("What ages can train?",
-            "Tell us your child's age on the form and we will confirm the right class for them. Women's self defense and adult jiu-jitsu are for adults.")
+            "Call or email us with your child's age and we will confirm the right class for them. Women's self defense and adult jiu-jitsu are for adults.")
 
 
 def faq_classes(S):
@@ -1006,7 +1152,7 @@ def home_faqs(S):
         faq_where(S),
         faq_classes(S),
         ("Is the first class really free?",
-         "Yes. Your first class at Labyrinth BJJ Wharton is free, with no commitment. Use the form on this page to claim it."),
+         "Yes. Your first class at Labyrinth BJJ Wharton is free, with no commitment. Book a class on this page to claim it."),
         ("Do I need experience, or to be in shape?",
          "No. Beginners are welcome, and waiting until you are fit is the most common reason people never start. Jiu-jitsu will get you in shape. You can scale the warm-up and sit out a round whenever you need to."),
         faq_ages(S),
@@ -1018,46 +1164,103 @@ def home_faqs(S):
         ("Does my child have to compete?",
          "No. Competition is always optional at Labyrinth. Many students train purely for fitness, self-defense, confidence and community."),
         ("What should I wear to my first class?",
-         "Comfortable athletic clothes with no zippers, buttons or pockets, and a water bottle. If you do not own a gi, tell us when you sign up and we will let you know what to bring."),
+         "Comfortable athletic clothes with no zippers, buttons or pockets, and a water bottle. If you do not own a gi, tell us when you arrive and we will let you know what to bring."),
     ]
 
 
 # ── Pages ────────────────────────────────────────────────────────────────────
 
+def class_when(S, name_part, audiences=None):
+    """'Tue to Fri, 5:00 PM' for the timetable rows whose class name contains name_part, or ''."""
+    rows = [r for r in S.schedule if name_part.lower() in r["class"].lower() and (audiences is None or r["audience"] in audiences)]
+    if not rows:
+        return ""
+    days = [d for d in DAYS if any(r["day"] == d for r in rows)]
+    starts = sorted({r["start"] for r in rows if r["start"]})
+    t = (", " + " & ".join(fmt_time(x) for x in starts)) if starts else ""
+    return day_span(days) + t
+
+
 def program_cards(S, h):
-    """The three Wharton programs as cards (home page and the programs hub)."""
-    ages = esc(S.kids_ages) if S.kids_ages else "ages with the schedule"
-    mark = ('<div class="w-program__media w-program__media--mark"><img src="/assets/logo-maze-480.png" alt="" aria-hidden="true" '
-            'width="480" height="480" loading="lazy" decoding="async"></div>')
-    return f"""<div class="program-trio stagger">
-      <a href="/programs/kids-bjj-wharton" class="w-program">
-        <div class="w-program__media">{picture('kids-gi', 'Young Labyrinth BJJ student in a white gi')}</div>
-        <div class="w-program__body">
-          <p class="w-program__tag">Kids &middot; {ages}</p>
-          <{h} class="w-program__title">Kids <b class="nw">Jiu-Jitsu</b></{h}>
-          <p>Brazilian jiu-jitsu for children. The first Wharton kids classes are for {ages if S.kids_ages else "one age group"}, and we want to hear from families with other ages.</p>
-          <span class="coach-card__link">Kids classes &rarr;</span>
+    """The Wharton programs as the main site's photo cards (home page and the programs hub)."""
+    kids_when = class_when(S, "Kids Jiu-Jitsu")
+    kb_when = class_when(S, "Kickboxing")
+    wsd_when = class_when(S, "Women")
+    kids_tag = ("Kids &middot; %s" % esc(kids_when)) if kids_when else "Kids &middot; times coming soon"
+    kb_tag = ("Adults &middot; %s" % esc(kb_when)) if kb_when else "Adults &middot; times coming soon"
+    wsd_tag = ("Women &middot; %s" % esc(wsd_when)) if wsd_when else "Women &middot; times coming soon"
+    kids_rows = [r for r in S.schedule if "kids jiu-jitsu" in r["class"].lower() and r["start"]]
+    if kids_rows:
+        kd = [d for d in DAYS if any(r["day"] == d for r in kids_rows)]
+        kt = fmt_time(kids_rows[0]["start"])
+        span = ("%s to %s" % (kd[0], kd[-1])) if len(kd) >= 3 and [DAYS.index(d) for d in kd] == list(range(DAYS.index(kd[0]), DAYS.index(kd[0]) + len(kd))) else " and ".join(kd)
+        kids_desc = "Brazilian jiu-jitsu for children, %s at %s. Their first class is free." % (span, kt)
+    else:
+        kids_desc = "Brazilian jiu-jitsu for children. Class times are coming soon."
+    return f"""<div class="programs__grid wprograms stagger">
+      <a href="/programs/kids-bjj-wharton" class="program-card program-card--half">
+        {picture('wharton-kids', 'Kids lined up with their coach on the mats at Labyrinth BJJ Wharton', cls='program-card__pic')}
+        <div class="program-card__body">
+          <p class="program-card__tag">{kids_tag}</p>
+          <{h} class="program-card__title">Kids Jiu-Jitsu</{h}>
+          <p class="program-card__desc">{kids_desc}</p>
+          <span class="program-card__more">Kids classes &rarr;</span>
         </div>
       </a>
-      <a href="/programs/womens-self-defense-wharton" class="w-program">
-        {mark}
-        <div class="w-program__body">
-          <p class="w-program__tag">Women &middot; Jiu-jitsu</p>
-          <{h} class="w-program__title">Women's Self Defense</{h}>
-          <p>Self defense for women, built on the jiu-jitsu we teach: leverage, position and control rather than strength.</p>
-          <span class="coach-card__link">Women's self defense &rarr;</span>
+      <a href="/programs/adult-bjj-wharton{'#kickboxing' if kb_when else ''}" class="program-card program-card--half">
+        {picture('wharton-gear', 'Heavy bag and striking gear on the shelves at Labyrinth BJJ Wharton', cls='program-card__pic')}
+        <div class="program-card__body">
+          <p class="program-card__tag">{kb_tag}</p>
+          <{h} class="program-card__title">Adult Kickboxing</{h}>
+          <p class="program-card__desc">Kickboxing for adults: punches and kicks. Your first class is free.</p>
+          <span class="program-card__more">Adult kickboxing &rarr;</span>
         </div>
       </a>
-      <a href="/programs/adult-bjj-wharton" class="w-program">
-        <div class="w-program__media">{picture('adult-gi', 'Adult Brazilian jiu-jitsu competitor in a Labyrinth BJJ gi')}</div>
-        <div class="w-program__body">
-          <p class="w-program__tag">Adults &middot; Times coming soon</p>
-          <{h} class="w-program__title">Adult Jiu-Jitsu</{h}>
-          <p>Brazilian jiu-jitsu for adults, beginners included. Adult class times have not been announced yet.</p>
-          <span class="coach-card__link">Adult jiu-jitsu &rarr;</span>
+      <a href="/programs/womens-self-defense-wharton" class="program-card program-card--half">
+        {picture('strength-conditioning-class', 'Labyrinth BJJ members together after class', cls='program-card__pic')}
+        <div class="program-card__body">
+          <p class="program-card__tag">{wsd_tag}</p>
+          <{h} class="program-card__title">Women's Self Defense</{h}>
+          <p class="program-card__desc">Self defense for women, built on the jiu-jitsu we teach: leverage, position and control rather than strength.</p>
+          <span class="program-card__more">Women's self defense &rarr;</span>
+        </div>
+      </a>
+      <a href="/programs/adult-bjj-wharton" class="program-card program-card--half">
+        {picture('adult-card', 'Labyrinth BJJ coaches celebrating gold medals', cls='program-card__pic')}
+        <div class="program-card__body">
+          <p class="program-card__tag">Adults &middot; Coming soon</p>
+          <{h} class="program-card__title">Adult Jiu-Jitsu</{h}>
+          <p class="program-card__desc">Brazilian jiu-jitsu for adults, beginners included. Adult jiu-jitsu class times are coming soon.</p>
+          <span class="program-card__more">Adult jiu-jitsu &rarr;</span>
         </div>
       </a>
     </div>"""
+
+
+def gallery_block(S):
+    """'Life at Labyrinth': the main site's mosaic, led by the Wharton class photos."""
+    def item(stem, alt, cls=""):
+        return f'<div class="gallery__item{" " + cls if cls else ""}">{picture(stem, alt)}<div class="gallery__overlay"></div></div>'
+    return f"""<section class="gallery" id="gallery">
+  <div class="container">
+    <div class="gallery__header fade-in">
+      <p class="section-label">Life at Labyrinth</p>
+      <h2 class="section-title section-title--lg">ON &amp; OFF THE MAT</h2>
+    </div>
+    <div class="gallery__grid stagger">
+      {item('wharton-class', 'Kids and their coach on the mats at Labyrinth BJJ Wharton', 'gallery__item--wide')}
+      {item('gallery-4', 'Young girl in a gi flexing at a competition')}
+      {item('gallery-7', 'Young athlete in a pink gi waiting at a competition arena', 'gallery__item--tall')}
+      {item('gallery-2', 'Kids gi competition action at JJWL')}
+      {item('gallery-5', 'Labyrinth BJJ coaches with gold medals at JJWL Austin')}
+      {item('gallery-3', 'Young athlete in a pink gi with a JJWL Finals gold medal')}
+      {item('gallery-8', 'Labyrinth BJJ team photo with trophies after a tournament', 'gallery__item--wide')}
+      {item('gallery-6', 'Close-up of a JJWL Finals gold medal on a gi')}
+      {item('gallery-1', 'Labyrinth BJJ athletes with trophies and medals at a competition')}
+    </div>
+  </div>
+</section>
+"""
 
 
 def page_home(S):
@@ -1086,7 +1289,7 @@ def page_home(S):
     sched_block = sched or soon_card("Class schedule coming soon",
                                      "The Wharton timetable is not set yet. Join the list and we will email you the moment it is, with your free first class on us.",
                                      ("#free-class", "Get notified"))
-    sched_more = '<p class="more-link fade-in"><a href="/schedule" class="coach-card__link">See the full schedule &rarr;</a></p>' if sched else ""
+    sched_more = ""
     pr = price_cards(S, limit=3)
     price_block = pr or soon_card("Prices coming soon",
                                   "Wharton prices are not set yet. What we can tell you now: your first class is free. We will post prices here as soon as they are confirmed.",
@@ -1095,31 +1298,64 @@ def page_home(S):
     kids_line = ("Kids &middot; %s" % esc(S.kids_ages)) if S.kids_ages else "Kids &middot; ages with the schedule"
     if S.live:
         intro2 = ("Classes are on the <a href=\"/schedule\">schedule</a> and your first one is free. "
-                  "Use the form at the bottom of this page, or call us on %s." % S.phone)
+                  "Tap any class to book it, or call us on %s." % S.phone if S.bookable else "Use the form at the bottom of this page, or call us on %s." % S.phone)
     else:
         intro2 = ("We are still setting the Wharton schedule. Until it is ready, the best thing you can do is put your name on the list "
                   "below: you will hear first when class times, prices and the address are confirmed, and your first class is free.")
+    price_hero = ""
+    if S.pricing:
+        first = S.pricing[0]
+        price_hero = (f'<div class="hero__stat"><div class="hero__stat-value">{esc(money(first["price"]))}{esc(period_label(first["period"]))}</div>'
+                      f'<div class="hero__stat-label">{esc(first["name"])}</div></div>')
+    hero_ctas = ('<a href="/schedule#book" class="btn btn--gold" data-book-trial>Book Your Free Class</a>\n      <a href="#schedule" class="btn btn--ghost">See the Schedule</a>'
+                 if S.bookable else
+                 '<a href="#free-class" class="btn btn--gold">Get Your Free First Class</a>\n      <a href="/programs/" class="btn btn--ghost">See the Programs</a>')
+    schedule_head = section_head('Book a class', 'THIS WEEK AT WHARTON', 'Tap a class, pick your day on the calendar and you are booked. Your first class is free.') if S.bookable else section_head('Schedule', 'CLASS TIMES')
+    sched_full = schedule_week(S, filters=True)
+    if sched_full:
+        sched_block = sched_full
+    about_media = picture('wharton-kids', 'Kids lined up with their coach on the mats at Labyrinth BJJ Wharton') if S.live else picture('community-real', 'Members of the Labyrinth BJJ team with their medals')
     p.body = f"""
 <section class="hero hero--wharton" id="hero">
   <div class="hero__bg">
-    {picture('hero-team', 'Labyrinth BJJ team celebrating with medals and trophies', cls='hero__still', loading='eager', fetchpriority='high', ext='.jpg')}
+    {picture('wharton-class' if S.live else 'hero-team', 'Kids and their coach on the mats at Labyrinth BJJ Wharton' if S.live else 'Labyrinth BJJ team celebrating with medals and trophies', cls='hero__still', loading='eager', fetchpriority='high', ext='.jpg')}
   </div>
   <div class="hero__content">
     <div class="hero__badges">{badge}</div>
     <h1 class="hero__title">{h1}</h1>
     <p class="hero__subtitle">{sub}</p>
     <div class="hero__ctas">
-      <a href="#free-class" class="btn btn--gold">Get Your Free First Class</a>
-      <a href="/programs/" class="btn btn--ghost">See the Programs</a>
+      {hero_ctas}
     </div>
     <div class="hero__stats hero__stats--3 stagger">
       <div class="hero__stat"><div class="hero__stat-value">Free</div><div class="hero__stat-label">First class</div></div>
-      <div class="hero__stat"><div class="hero__stat-value">Top {jits_data.NATIONAL_TOP_PCT}%</div><div class="hero__stat-label">Labyrinth BJJ nationally, per <a href="{jits_data.ACADEMY_URL}" target="_blank" rel="noopener noreferrer">jits.gg</a></div></div>
+      {price_hero or f'<div class="hero__stat"><div class="hero__stat-value">Top {jits_data.NATIONAL_TOP_PCT}%</div><div class="hero__stat-label">Labyrinth BJJ nationally, per <a href="{jits_data.ACADEMY_URL}" target="_blank" rel="noopener noreferrer">jits.gg</a></div></div>'}
       <div class="hero__stat"><div class="hero__stat-value">2021</div><div class="hero__stat-label">Labyrinth BJJ founded</div></div>
     </div>
   </div>
 </section>
 
+<section class="prog-section prog-section--surface" id="schedule">
+  <div class="container">
+{schedule_head}
+    {sched_block}
+    {sched_more}
+  </div>
+</section>
+
+<section class="programs" id="programs">
+  <div class="container">
+    <div class="fade-in">
+      <p class="section-label">Programs</p>
+      <h2 class="section-title section-title--lg">WHAT WE TEACH IN WHARTON</h2>
+      <p class="section-subtitle">Pick the one that is for you, or for your child. Every one starts with a free first class. <a href="/programs/" class="section-subtitle__link">All programs &rarr;</a></p>
+    </div>
+    {program_cards(S, 'h3')}
+  </div>
+</section>
+
+{coaches_block(S)}
+{gallery_block(S) if S.live else ""}
 <section class="prog-section" id="about">
   <div class="container">
     <div class="split">
@@ -1135,33 +1371,7 @@ def page_home(S):
           <a href="/contact" class="btn btn--ghost">Contact Us</a>
         </div>
       </div>
-      <div class="split__media fade-in">{picture('community-real', 'Members of the Labyrinth BJJ team with their medals', cls='')}</div>
-    </div>
-  </div>
-</section>
-
-<section class="prog-section prog-section--surface" id="programs">
-  <div class="container">
-{section_head('Programs', 'WHAT WE TEACH IN WHARTON', 'Pick the one that is for you, or for your child. Every one starts with a free first class.')}
-    {program_cards(S, 'h3')}
-  </div>
-</section>
-
-<section class="prog-section" id="coach">
-  <div class="container">
-    <div class="split split--portrait">
-      <div class="split__media fade-in">{portrait(S)}</div>
-      <div>
-{section_head('Meet your coach', 'JOE HERRERA')}
-        <div class="prog-prose fade-in">
-          <p>Joe Herrera, brown belt under Prof. Anthony Curry, lead instructor at Labyrinth BJJ Wharton.</p>
-          <p>Prof. Curry founded Labyrinth in 2021 and is a black belt under Matt Leighton of Citadel BJJ. <a href="{ANTHONY_URL}" target="_blank" rel="noopener noreferrer">Read his profile on labyrinth.vision</a>.</p>
-        </div>
-        <div class="prog-hero__cta fade-in">
-          <a href="/coaches/joe-herrera" class="btn btn--ghost">About Joe</a>
-          <a href="/coaches/" class="btn btn--ghost">Coaches</a>
-        </div>
-      </div>
+      <div class="split__media fade-in">{about_media}</div>
     </div>
   </div>
 </section>
@@ -1178,37 +1388,14 @@ def page_home(S):
   </div>
 </section>
 
-<section class="prog-section" id="family">
+<section class="pricing wpricing" id="pricing">
   <div class="container">
-    <div class="family">
-      <div class="family__logo fade-in"><img src="/assets/logo-maze-480.png" alt="Labyrinth BJJ maze logo" width="480" height="480" loading="lazy"></div>
-      <div>
-{section_head('Part of the Labyrinth family', 'ONE FAMILY OF GYMS')}
-        <div class="prog-prose fade-in">
-          <p>Labyrinth BJJ began in 2021 under Prof. Anthony Curry and trains in Fulshear and Katy, Texas. Wharton is the newest Labyrinth gym, and it shares the same lineage, the same standards and the same name.</p>
-          <p>Want to see the wider Labyrinth community, the team's tournament results and the other gyms? Visit <a href="{PARENT_URL}" target="_blank" rel="noopener noreferrer">labyrinth.vision</a>.</p>
-        </div>
-        <div class="prog-hero__cta fade-in">
-          <a href="{PARENT_URL}" class="btn btn--ghost" target="_blank" rel="noopener noreferrer">Visit labyrinth.vision</a>
-        </div>
-      </div>
+    <div class="pricing__header fade-in">
+      <p class="section-label">Membership</p>
+      <h2 class="section-title section-title--lg">WHAT IT COSTS</h2>
+      <p class="section-subtitle">Your first class is free. {"<a href='/pricing' class='section-subtitle__link'>Full pricing &rarr;</a>" if pr else ""}</p>
     </div>
-  </div>
-</section>
-
-<section class="prog-section prog-section--surface" id="schedule">
-  <div class="container">
-{section_head('Schedule', 'CLASS TIMES')}
-    {sched_block}
-    {sched_more}
-  </div>
-</section>
-
-<section class="prog-section" id="pricing">
-  <div class="container">
-{section_head('Membership', 'WHAT IT COSTS')}
     {price_block}
-    {price_more}
   </div>
 </section>
 
@@ -1225,7 +1412,7 @@ def page_home(S):
 {section_head('Get started', 'YOUR FIRST CLASS IS FREE')}
     <div class="trial__layout">
       <div class="trial__content fade-in">
-        <p>Walking into a new gym is the hardest part. That is why the first class is free, with no pressure and no commitment. {"Tell us a little about who is coming and we will be in touch." if S.live else "Tell us who is coming and we will email you the moment the Wharton class times and address are confirmed."}</p>
+        <p>Walking into a new gym is the hardest part. That is why the first class is free, with no pressure and no commitment. {"Pick a class and a day and you are booked." if S.bookable else ("Tell us a little about who is coming and we will be in touch." if S.live else "Tell us who is coming and we will email you the moment the Wharton class times and address are confirmed.")}</p>
         <h3>What to expect</h3>
         <ul>
           <li>A welcoming room for every experience level</li>
@@ -1240,7 +1427,7 @@ def page_home(S):
         </ul>
         {form_html(S, 'home')}
       </div>
-      <div class="trial__image fade-in">{picture('kids-podium', 'Young Labyrinth BJJ athletes holding medals and trophies')}</div>
+      <div class="trial__image fade-in">{picture('wharton-kids' if S.live else 'kids-podium', 'Kids lined up with their coach on the mats at Labyrinth BJJ Wharton' if S.live else 'Young Labyrinth BJJ athletes holding medals and trophies')}</div>
     </div>
   </div>
 </section>
@@ -1258,7 +1445,7 @@ def page_programs_hub(S):
         hub_note = 'Class times and prices are on the <a href="/schedule">schedule</a> and <a href="/pricing">pricing</a> pages. Adult class times have not been announced yet.'
     else:
         hub_note = "The Wharton class schedule and prices are coming soon. Until then, the free first class form is the way to get on the list."
-    kids_now = ("The first kids classes are for %s." % esc(S.kids_ages)) if S.kids_ages else "Kids classes are on the timetable. Tell us your child's age on the form and we will confirm the right class."
+    kids_now = ("The first kids classes are for %s." % esc(S.kids_ages)) if S.kids_ages else "Kids classes are on the timetable. Call or email us with your child's age and we will confirm the right class."
     p.body = crumbs_html([("/", "Home"), (None, "Programs")]) + f"""
 <header class="prog-hero">
   <div class="container">
@@ -1266,7 +1453,7 @@ def page_programs_hub(S):
     <h1 class="prog-hero__title">What We Teach in Wharton</h1>
     <p class="prog-hero__lead">Kids jiu-jitsu, adult kickboxing, women's self defense jiu-jitsu and adult jiu-jitsu (coming soon) at Labyrinth BJJ Wharton. Every one starts with a free first class.</p>
     <div class="prog-prose" style="margin-top:var(--space-6)">
-      <p>If it is for a child, it is <a href="/programs/kids-bjj-wharton">kids jiu-jitsu</a>. {kids_now} Other ages are not on the schedule yet, so tell us your child's age on the form. If it is for you and you want self defense, it is <a href="/programs/womens-self-defense-wharton">women's self defense</a>. If you want jiu-jitsu classes for adults, it is <a href="/programs/adult-bjj-wharton">adult jiu-jitsu</a>, and it does not matter that you have never done a combat sport, because most people who start have not.</p>
+      <p>If it is for a child, it is <a href="/programs/kids-bjj-wharton">kids jiu-jitsu</a>. {kids_now} If it is for you and you want self defense, it is <a href="/programs/womens-self-defense-wharton">women's self defense</a>. If you want jiu-jitsu classes for adults, it is <a href="/programs/adult-bjj-wharton">adult jiu-jitsu</a>, and it does not matter that you have never done a combat sport, because most people who start have not.</p>
       <p>{hub_note}</p>
     </div>
     <div class="prog-hero__cta">
@@ -1305,7 +1492,7 @@ def adult_faqs(S):
         ("What is the difference between Gi and No-Gi?",
          "Gi is the traditional uniform, and the jacket and trousers become part of the game: grips, collar chokes, sweeps off the sleeve. No-Gi is a rashguard and shorts: faster, more wrestling-like, nothing to hold on to. Labyrinth teaches both. Which style the Wharton adult classes will be has not been announced."),
         ("What do I wear and what do I need to bring?",
-         "For a first class, athletic clothes with no zippers or pockets, and a water bottle. If you do not own a gi, tell us when you sign up and we will let you know what to bring. Trim your nails."),
+         "For a first class, athletic clothes with no zippers or pockets, and a water bottle. If you do not own a gi, tell us when you arrive and we will let you know what to bring. Trim your nails."),
         ("Do I have to commit to anything?",
          "No. The first class is free and carries no commitment. A free class costs you the same as watching and tells you far more."),
     ]
@@ -1334,7 +1521,7 @@ def page_adult(S):
 <section class="prog-section prog-section--surface" id="kickboxing">
   <div class="container">
 """ + section_head('Also at Wharton', 'ADULT KICKBOXING') + f"""
-    <p class="prog-prose fade-in" style="max-width:62ch">Adult kickboxing runs at Labyrinth BJJ Wharton on Tuesday and Thursday evenings. Your first class is free, with no commitment. Tell us in the message box on the form if you have questions about what to expect.</p>
+    <p class="prog-prose fade-in" style="max-width:62ch">Adult kickboxing runs at Labyrinth BJJ Wharton on Tuesday and Thursday evenings. Your first class is free, with no commitment. Call or email us if you have questions about what to expect.</p>
     {kb_sched}
   </div>
 </section>
@@ -1380,7 +1567,7 @@ def page_adult(S):
     <div class="prog-prose fade-in">
       <p>A jiu-jitsu class has the same basic shape wherever you train: a warm-up you can scale down, a technique broken into pieces, and then drilling, where you and one partner take turns with no resistance. That drilling is not intimidating and it is most of the class. Most classes finish with live training, and you are free to sit it out.</p>
       <p>You will be worse at this than you expect for about three months, and then something clicks. Everybody goes through it. The people who quit almost always quit in the third week, which is exactly when it is about to start making sense.</p>
-      <p>Come in athletic clothes with no zippers or pockets, bring a water bottle, and tell us when you sign up if you do not own a gi.</p>
+      <p>Come in athletic clothes with no zippers or pockets, bring a water bottle, and tell us when you arrive if you do not own a gi.</p>
     </div>
   </div>
 </section>
@@ -1395,7 +1582,7 @@ def page_adult(S):
 <section class="prog-section prog-section--surface">
   <div class="container">
 {section_head('Coaching', 'WHO TEACHES IT')}
-    <div class="coach-pair stagger">
+    <div class="coaches__grid wcoaches stagger">
 {coach_card_joe(S)}
     </div>
   </div>
@@ -1444,8 +1631,8 @@ def untimed_note(S, audiences):
 def kids_now(S):
     if S.kids_ages:
         return ("Right now the Wharton kids classes are for %s. More age groups may be added later. If your child is a different age, "
-                "tell us their age in the message box on the form so we know." % S.kids_ages)
-    return ("Tell us your child's age on the form and we will confirm the right class for them.")
+                "call or email us with their age so we know." % S.kids_ages)
+    return ("Call or email us with your child's age and we will confirm the right class for them.")
 
 
 def kids_faqs(S):
@@ -1460,7 +1647,7 @@ def kids_faqs(S):
         ("Is it safe for a young child?",
          "Jiu-jitsu is one of the safest martial arts a child can do, because there is no striking in it at all. Falling safely is one of the first skills of the art."),
         ("What should my child wear to the first class?",
-         "A t-shirt and shorts or leggings with no zippers, buttons or pockets, and a water bottle. If your child does not have a gi, tell us when you sign up and we will let you know what to bring."),
+         "A t-shirt and shorts or leggings with no zippers, buttons or pockets, and a water bottle. If your child does not have a gi, tell us when you arrive and we will let you know what to bring."),
         ("Will my child have to compete?",
          "No. Competition is always optional at Labyrinth. Plenty of students train for years and never enter a tournament."),
         ("My child is shy, or has never played a sport. Is that a problem?",
@@ -1485,7 +1672,7 @@ def page_kids(S):
     price_block = pr or soon_card("Prices coming soon",
                                   "Wharton prices are not set yet. Your child's first class is free, and prices will be posted on the pricing page once they are confirmed.",
                                   ("/pricing", "About pricing"))
-    ages_fact = esc(S.kids_ages[0].upper() + S.kids_ages[1:]) if S.kids_ages else "Set with the schedule"
+    ages_fact = esc(S.kids_ages[0].upper() + S.kids_ages[1:]) if S.kids_ages else (esc(class_when(S, "Kids Jiu-Jitsu")) or "Set with the schedule")
     lead_ages = (" Right now the classes are for %s." % esc(S.kids_ages)) if S.kids_ages else ""
     p.body = crumbs_html([("/", "Home"), ("/programs/", "Programs"), (None, "Kids Jiu-Jitsu")]) + f"""
 <header class="prog-hero">
@@ -1500,10 +1687,10 @@ def page_kids(S):
           <a href="#times" class="btn btn--ghost">Class Times</a>
         </div>
       </div>
-      <div class="prog-hero__shot">{picture('kids-gi', 'Young Labyrinth BJJ student in a white gi with a coach raising their hand', loading='eager')}</div>
+      <div class="prog-hero__shot">{picture('wharton-kids', 'Kids lined up with their coach on the mats at Labyrinth BJJ Wharton', loading='eager') if S.live else picture('kids-gi', 'Young Labyrinth BJJ student in a white gi with a coach raising their hand', loading='eager')}</div>
     </div>
     <div class="prog-facts">
-      <div class="prog-fact"><div class="prog-fact__label">Ages</div><div class="prog-fact__value">{ages_fact}</div></div>
+      <div class="prog-fact"><div class="prog-fact__label">{"Ages" if S.kids_ages else "When"}</div><div class="prog-fact__value">{ages_fact}</div></div>
       <div class="prog-fact"><div class="prog-fact__label">Classes</div><div class="prog-fact__value">Jiu-jitsu</div></div>
       <div class="prog-fact"><div class="prog-fact__label">Competition</div><div class="prog-fact__value">Always optional</div></div>
       <div class="prog-fact"><div class="prog-fact__label">First class</div><div class="prog-fact__value"><em>Free</em></div></div>
@@ -1544,7 +1731,7 @@ def page_kids(S):
 <section class="prog-section prog-section--surface">
   <div class="container">
 {section_head('Coaching', 'WHO TEACHES IT')}
-    <div class="coach-pair stagger">
+    <div class="coaches__grid wcoaches stagger">
 {coach_card_joe(S)}
     </div>
   </div>
@@ -1588,10 +1775,10 @@ def womens_faqs(S):
         ("When is the women's self defense class?", when),
         ("Is the class for women only?", "It is Women's Self Defense Jiu-Jitsu, a class for women."),
         ("Do I need experience?",
-         "Most people who start jiu-jitsu have never done a combat sport. If you would like to ask about your experience level or what to expect, say so in the message box on the form."),
+         "Most people who start jiu-jitsu have never done a combat sport. If you would like to ask about your experience level or what to expect, call or email us."),
         ("Is the first class free?", "Yes. Your first class at Labyrinth BJJ Wharton is free, with no commitment."),
         ("What should I wear?",
-         "Comfortable athletic clothes with no zippers, buttons or pockets, and a water bottle. If you are unsure, ask us when you sign up."),
+         "Comfortable athletic clothes with no zippers, buttons or pockets, and a water bottle. If you are unsure, ask us when you arrive."),
         ("Is this the same as the adult jiu-jitsu program?",
          "It is built on the same art, but it is its own class with its own times. Adult jiu-jitsu class times have not been announced yet."),
     ]
@@ -1643,7 +1830,7 @@ def page_womens(S):
 {section_head('The class', 'WHAT IT IS')}
     <div class="prog-prose fade-in">
       <p>Women's self defense at Labyrinth BJJ Wharton is built on the Brazilian jiu-jitsu taught at every Labyrinth gym. Jiu-jitsu is a grappling art: leverage, position and control rather than strength or size, which is why so many people start with it for self defense, and why a smaller person can learn to deal with a bigger one.</p>
-      <p>If you have never trained, or you simply have questions about what to expect, say so in the message box on the form. Your first class is free, with no commitment.</p>
+      <p>If you have never trained, or you simply have questions about what to expect, call or email us. Your first class is free, with no commitment.</p>
       <p>Labyrinth BJJ is ranked in the top {jits_data.NATIONAL_TOP_PCT}% of academies nationally on jits.gg (#{jits_data.NATIONAL_RANK} of {jits_data.NATIONAL_OF:,}, as of {jits_data.AS_OF}). That is the whole Labyrinth team's record, not Wharton's, and it is the school this class belongs to.</p>
     </div>
   </div>
@@ -1659,7 +1846,7 @@ def page_womens(S):
 <section class="prog-section">
   <div class="container">
 {section_head('Coaching', 'WHO TEACHES IT')}
-    <div class="coach-pair stagger">
+    <div class="coaches__grid wcoaches stagger">
 {coach_card_joe(S)}
     </div>
   </div>
@@ -1689,30 +1876,47 @@ def page_womens(S):
 
 
 def coach_card_joe(S):
-    return f"""      <article class="w-coach">
-        <div class="w-coach__media">{portrait(S, small=True)}</div>
-        <div class="w-coach__info">
-          <h3 class="w-coach__name">Joe Herrera</h3>
-          <p class="w-coach__role">Lead Instructor, Labyrinth BJJ Wharton</p>
+    pic = (picture(S.joe_photo, "Joe Herrera, lead instructor at Labyrinth BJJ Wharton", loading="lazy")
+           if S.joe_photo else '<img src="/assets/logo-maze-transparent.png" alt="" width="64" height="64" loading="lazy">')
+    return f"""      <div class="coach-card coach-card--featured coach-card--head">
+        <div class="coach-card__avatar">{pic}</div>
+        <div class="coach-card__info">
+          <h3 class="coach-card__name">Joe Herrera</h3>
+          <p class="coach-card__role">Lead Instructor, Wharton</p>
           <div class="coach-card__rank">{belt_bar('brown')}<span class="coach-card__rank-label">Brown Belt</span></div>
-          <p class="w-coach__bio">Joe Herrera, brown belt under Prof. Anthony Curry, lead instructor at Labyrinth BJJ Wharton.</p>
-          <a href="/coaches/joe-herrera" class="coach-card__link">About Joe &rarr;</a>
+          <p class="coach-card__bio">Brown belt under Prof. Anthony Curry and the lead instructor at Labyrinth BJJ Wharton. <a href="/coaches/joe-herrera" class="coach-card__link">About Joe &rarr;</a></p>
         </div>
-      </article>"""
+      </div>"""
 
 
 def coach_card_anthony(S):
-    pic = picture("coach-tony", "Prof. Anthony Curry, owner and head instructor of Labyrinth BJJ", cls="portrait__pic")
-    return f"""      <article class="w-coach">
-        <div class="w-coach__media"><div class="portrait portrait--sm portrait--photo">{pic}</div></div>
-        <div class="w-coach__info">
-          <h3 class="w-coach__name">Prof. Anthony Curry</h3>
-          <p class="w-coach__role">Owner &amp; Head Instructor, Labyrinth BJJ</p>
+    pic = picture("coach-tony", "Prof. Anthony Curry, owner and head instructor of Labyrinth BJJ", loading="lazy")
+    return f"""      <div class="coach-card coach-card--featured coach-card--head">
+        <div class="coach-card__avatar">{pic}</div>
+        <div class="coach-card__info">
+          <h3 class="coach-card__name">Prof. Anthony Curry</h3>
+          <p class="coach-card__role">Head Instructor / Owner</p>
           <div class="coach-card__rank">{belt_bar('black')}<span class="coach-card__rank-label">Black Belt</span></div>
-          <p class="w-coach__bio">Founded Labyrinth in 2021. Black belt under Matt Leighton of Citadel BJJ. Joe Herrera trains under him.</p>
-          <a href="{ANTHONY_URL}" class="coach-card__link" target="_blank" rel="noopener noreferrer">Full profile on labyrinth.vision &rarr;</a>
+          <p class="coach-card__bio">Founded Labyrinth in 2021. Black belt under Matt Leighton of Citadel BJJ. Joe trains under him. <a href="{ANTHONY_URL}" class="coach-card__link" target="_blank" rel="noopener noreferrer">Full profile &rarr;</a></p>
         </div>
-      </article>"""
+      </div>"""
+
+
+def coaches_block(S):
+    return f"""<section class="coaches" id="coach">
+  <div class="container">
+    <div class="coaches__header fade-in">
+      <p class="section-label">Instruction</p>
+      <h2 class="section-title section-title--lg">MEET YOUR COACH</h2>
+      <p class="section-subtitle">Joe Herrera leads the Wharton classes. He trains under Prof. Anthony Curry, who founded Labyrinth. <a href="/coaches/" class="section-subtitle__link">Meet the coaches &rarr;</a></p>
+    </div>
+    <div class="coaches__grid wcoaches stagger">
+{coach_card_joe(S)}
+{coach_card_anthony(S)}
+    </div>
+  </div>
+</section>
+"""
 
 
 def page_coaches(S):
@@ -1736,7 +1940,7 @@ def page_coaches(S):
 
 <section class="prog-section">
   <div class="container">
-    <div class="coach-pair stagger">
+    <div class="coaches__grid wcoaches stagger">
 {coach_card_joe(S)}
 {coach_card_anthony(S)}
     </div>
@@ -1776,7 +1980,7 @@ def page_joe(S):
               "hasCredential": {"@type": "EducationalOccupationalCredential", "credentialCategory": "Brazilian Jiu-Jitsu Brown Belt"}}
     faqs = [("Who is Joe Herrera?", "Joe Herrera is a brown belt under Prof. Anthony Curry and the lead instructor at Labyrinth BJJ Wharton."),
             ("Who does Joe train under?", "Prof. Anthony Curry, the owner and head instructor of Labyrinth BJJ, who founded Labyrinth in 2021 and is a black belt under Matt Leighton of Citadel BJJ."),
-            ("How can I meet Joe?", "Claim a free first class with the form on this page. It is the best way to meet the Wharton team.")]
+            ("How can I meet Joe?", "Book a free first class on this page. It is the best way to meet the Wharton team.")]
     p.schema = [person, breadcrumb_schema(S, trail), faq_schema(faqs)]
     p.body = crumbs_html([("/", "Home"), ("/coaches/", "Coaches"), (None, "Joe Herrera")]) + f"""
 <header class="prog-hero">
@@ -1848,13 +2052,13 @@ def page_schedule(S):
             ("Are there classes for kids?", kids_now(S) + (" The kids classes are on the timetable." if has_real else " Kids class times will be on this page when the schedule is set.")),
             ("When are the adult jiu-jitsu classes?", "Adult jiu-jitsu class times have not been announced yet. Put your name on the list and we will email you as soon as they are.")]
     p.schema = [breadcrumb_schema(S, trail), faq_schema(faqs)]
-    week = schedule_week(S)
+    week = schedule_week(S, filters=True)
     if has_real:
         main = f"""<section class="prog-section" id="times">
-  <div class="container">
+  <div class="container" id="book">
 {section_head('Weekly timetable', 'CLASS TIMES')}
     {week}
-    <p class="prog-week__note fade-in">Your first class is free in any class that suits you. Adult jiu-jitsu class times have not been announced yet. Tell us when you sign up if you do not own a gi.</p>
+    <p class="prog-week__note fade-in">Your first class is free in any class that suits you. Adult jiu-jitsu class times have not been announced yet. Tell us when you arrive if you do not own a gi.</p>
     <div class="prog-hero__cta fade-in">
       <a href="/contact#free-class" class="btn btn--gold">Get Your Free First Class</a>
     </div>
@@ -1960,7 +2164,7 @@ def page_pricing(S):
 
 def page_contact(S):
     trail = [("/contact", "Contact")]
-    desc = "Contact Labyrinth BJJ Wharton: call, email or use the form to claim your free first class and get notified about class times in Wharton, TX."
+    desc = "Contact Labyrinth BJJ Wharton: call, email or book your free first class and see class times in Wharton, TX."
     p = Page("/contact", "contact.html", "Contact & Free First Class | Labyrinth BJJ Wharton", desc,
              og_title="Contact Labyrinth BJJ Wharton", crumbs=trail, has_form=True, priority="0.9")
     p.schema = [breadcrumb_schema(S, trail),
@@ -1977,7 +2181,7 @@ def page_contact(S):
   <div class="container">
     <p class="section-label">Contact</p>
     <h1 class="prog-hero__title">Talk to Wharton</h1>
-    <p class="prog-hero__lead">Call, email, or use the form to claim your free first class. {"" if S.live else "Class times, prices and the address are coming soon, and the form is how you get them first."}</p>
+    <p class="prog-hero__lead">Call, email, or book your free first class. {"" if S.live else "Class times, prices and the address are coming soon, and the form is how you get them first."}</p>
   </div>
 </header>
 
@@ -2018,7 +2222,7 @@ AREAS = [
         "lead": "Labyrinth BJJ Wharton is the new Labyrinth gym in Wharton County, and we are serving families from El Campo, up US 59.",
         "body": [
             "If you live in El Campo, Wharton is up US 59, and a Labyrinth gym that close is the whole reason this page exists. We do not quote a drive time: your own maps app will give you a better answer than any estimate of ours.",
-            "If you work shifts or long days, the first thing to do is tell us what suits you. Before work, at lunch, evenings or weekends: put it in the message box on the form. We cannot promise a class at every hour, but we would rather know.",
+            "If you work shifts or long days, the first thing to do is tell us what suits you. Before work, at lunch, evenings or weekends: call or email us. We cannot promise a class at every hour, but we would rather know.",
             "Families in El Campo ISD will want to know about after-school classes. The kids classes are on the schedule page, with a start time as soon as one is announced, and your child's first class is free either way.",
         ],
         "cards": [
@@ -2030,7 +2234,7 @@ AREAS = [
             ("Is there a Labyrinth gym near El Campo?",
              "Labyrinth BJJ Wharton is in Wharton, in the same county as El Campo. The street address is {addr}."),
             ("Can El Campo families get the free first class?",
-             "Yes. Use the form, mention El Campo if you like, and tell us who would be training. Every first class is free."),
+             "Yes. Book a class, or call or email us, mention El Campo if you like, and tell us who would be training. Every first class is free."),
         ],
     },
     {
@@ -2042,7 +2246,7 @@ AREAS = [
         "body": [
             "East Bernard and Wharton are both in Wharton County. We have not worked out a drive time; check it on your own map and decide whether a regular class fits your week.",
             "Two situations are worth mentioning. The first is a school athlete: a student who plays football, volleyball or runs track and wants something that builds strength, balance and grit between seasons. Jiu-jitsu and kickboxing have no season of their own, which is why they pair well with team sports.",
-            "The second is a household that wants to train together. If that is you, choose \"More than one of us\" on the form and tell us who is coming. Knowing who is coming helps us answer you properly.",
+            "The second is a household that wants to train together. If that is you, book a class for each person, or call us and tell us who is coming. Knowing who is coming helps us answer you properly.",
         ],
         "cards": [
             ("Cross-training", "A fit for school athletes", "Strength, balance and grit that carry across to football, volleyball, track and wrestling."),
@@ -2051,7 +2255,7 @@ AREAS = [
         ],
         "faqs": [
             ("Can a parent and child both try a class?",
-             "Yes. Both get a free first class. Choose \"More than one of us\" on the form and tell us the ages, and we will be in touch about class times."),
+             "Yes. Both get a free first class. Book a class for each of them, or call us with the ages, and we will help with class times."),
             ("Is jiu-jitsu a good fit for a child who plays other sports?",
              "Many people find it is. Jiu-jitsu builds balance, body control and the habit of staying calm under pressure, and it has no season that clashes with team sports. Competition is always optional at Labyrinth."),
         ],
@@ -2065,7 +2269,7 @@ AREAS = [
         "body": [
             "Boling and Wharton are in the same county. We are not going to guess a drive time; your map will tell you.",
             "Most people who start jiu-jitsu have never done a combat sport, and this page is written for them. You do not have to be fit, flexible or athletic. You scale the warm-up, you tap early, and you go at your own pace. Fitness, self-defense and a good room full of people are common reasons to start, and none of it requires experience.",
-            "For Boling ISD families, Wharton's kids classes are jiu-jitsu, built around focus, body control and handling pressure. Put your child's age in the form and we will confirm which class fits.",
+            "For Boling ISD families, Wharton's kids classes are jiu-jitsu, built around focus, body control and handling pressure. Call or email us with your child's age and we will confirm which class fits.",
         ],
         "cards": [
             ("Never trained", "Beginners are the point", "You do not need any experience or fitness to start jiu-jitsu. Most people who begin have never done a combat sport."),
@@ -2074,7 +2278,7 @@ AREAS = [
         ],
         "faqs": [
             ("I have never done any martial art. Can I just turn up?",
-             "Start with the free first class. Come in comfortable athletic clothes with no zippers or pockets, and tell us when you sign up what you have or have not done before, and whether you own a gi."),
+             "Start with the free first class. Come in comfortable athletic clothes with no zippers or pockets, and tell us when you arrive what you have or have not done before, and whether you own a gi."),
             ("Is Boling close enough to train regularly?",
              "That depends on your week, and we have not measured it. A free first class means you can find out how the drive feels before you commit to anything."),
         ],
@@ -2087,8 +2291,8 @@ AREAS = [
         "lead": "Hungerford is a small community, so this is a short page: Labyrinth BJJ Wharton is the nearest Labyrinth gym and we are serving families from Hungerford.",
         "body": [
             "Hungerford and Wharton are both in Wharton County. We have not published a drive time. Check the route on your own map.",
-            "Here is what is useful to know today. Wharton has kids jiu-jitsu, adult kickboxing, a women's self defense jiu-jitsu class, and adult jiu-jitsu coming soon. The first class is free, and the form is the way to hear about class times first.",
-            "If you are from Hungerford, say so in the message box. It costs nothing, and it tells us which communities people are writing from.",
+            "Here is what is useful to know today. Wharton has kids jiu-jitsu, adult kickboxing, a women's self defense jiu-jitsu class, and adult jiu-jitsu coming soon. The first class is free, and the schedule page has every class time.",
+            "If you are from Hungerford, tell us when you call or book. It costs nothing, and it tells us which communities people are writing from.",
         ],
         "cards": [
             ("Classes", "Kids, women and adults", "Jiu-jitsu for kids, kickboxing for adults, self defense for women, adult jiu-jitsu to come."),
@@ -2111,7 +2315,7 @@ AREAS = [
         "body": [
             "Louise and Wharton are in the same county, but we have not measured the drive and we are not going to pretend it is short or long. Check the route on your own map against the days and times you would actually be driving.",
             "A regular class is a commitment of time as well as money. That is one reason the first class is free: it costs you one trip to find out whether the class, and the drive, fit your week.",
-            "For Louise ISD families thinking about the kids classes: jiu-jitsu, with the point being confidence, focus and learning to stay calm under pressure. Add your child's age to the form and we will point you to the right class.",
+            "For Louise ISD families thinking about the kids classes: jiu-jitsu, with the point being confidence, focus and learning to stay calm under pressure. Call or email us with your child's age and we will point you to the right class.",
         ],
         "cards": [
             ("Your week", "Check the drive yourself", "We are not quoting minutes. Compare the address with the times you would travel."),
@@ -2122,7 +2326,7 @@ AREAS = [
             ("How far is Louise from the Wharton gym?",
              "We have not measured it and will not guess. Both are in Wharton County, and your maps app will give you a drive time for the hours you would actually travel."),
             ("Can my child try a class before we commit?",
-             "Yes. Your child's first class is free, with no commitment. Tell us their age on the form and we will let you know where they fit."),
+             "Yes. Your child's first class is free, with no commitment. Call or email us with their age and we will let you know where they fit."),
         ],
     },
 ]

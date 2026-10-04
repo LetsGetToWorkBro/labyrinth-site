@@ -103,7 +103,8 @@ button {
 </style>
 <link rel="stylesheet" href="/style.css?v=66a0210d">
 <link rel="stylesheet" href="/programs.css?v=458cf86d">
-<link rel="stylesheet" href="/wharton.css?v=62f48a37">
+<link rel="stylesheet" href="/wharton.css?v=3f00ef4e">
+<link rel="stylesheet" href="/booking.css?v=6073b089">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -167,7 +168,7 @@ button {
       <a href="/contact" class="nav__link">Contact</a>
       <span class="nav__divider"></span>
       <a href="tel:+12813937983" class="nav__phone" aria-label="Call us"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg> (281) 393-7983</a>
-      <a href="/contact#free-class" class="nav__cta">Free First Class</a>
+      <a href="/schedule#book" class="nav__cta" data-book-trial>Book a Free Class</a>
     </div>
 
     <button class="nav__hamburger" id="hamburger" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="mobileNav">
@@ -183,7 +184,7 @@ button {
   <a href="/coaches/" aria-current="page">Coaches</a>
   <a href="/areas/">Areas</a>
   <a href="/contact">Contact</a>
-  <a href="/contact#free-class" class="nav__cta">Free First Class</a>
+  <a href="/schedule#book" class="nav__cta" data-book-trial>Book a Free Class</a>
 </div>
 
 <main id="main">
@@ -205,27 +206,25 @@ button {
 
 <section class="prog-section">
   <div class="container">
-    <div class="coach-pair stagger">
-      <article class="w-coach">
-        <div class="w-coach__media"><div class="portrait portrait--sm portrait--photo"><picture class="portrait__pic"><source srcset="/assets/joe-herrera.webp" type="image/webp"><img src="/assets/joe-herrera.jpg" alt="Joe Herrera, lead instructor at Labyrinth BJJ Wharton" width="900" height="900" loading="lazy" decoding="async"></picture></div></div>
-        <div class="w-coach__info">
-          <h3 class="w-coach__name">Joe Herrera</h3>
-          <p class="w-coach__role">Lead Instructor, Labyrinth BJJ Wharton</p>
+    <div class="coaches__grid wcoaches stagger">
+      <div class="coach-card coach-card--featured coach-card--head">
+        <div class="coach-card__avatar"><picture><source srcset="/assets/joe-herrera.webp" type="image/webp"><img src="/assets/joe-herrera.jpg" alt="Joe Herrera, lead instructor at Labyrinth BJJ Wharton" width="900" height="900" loading="lazy" decoding="async"></picture></div>
+        <div class="coach-card__info">
+          <h3 class="coach-card__name">Joe Herrera</h3>
+          <p class="coach-card__role">Lead Instructor, Wharton</p>
           <div class="coach-card__rank"><div class="belt-bar belt-bar--brown"><span class="belt-bar__belt"></span><span class="belt-bar__tab"></span></div><span class="coach-card__rank-label">Brown Belt</span></div>
-          <p class="w-coach__bio">Joe Herrera, brown belt under Prof. Anthony Curry, lead instructor at Labyrinth BJJ Wharton.</p>
-          <a href="/coaches/joe-herrera" class="coach-card__link">About Joe &rarr;</a>
+          <p class="coach-card__bio">Brown belt under Prof. Anthony Curry and the lead instructor at Labyrinth BJJ Wharton. <a href="/coaches/joe-herrera" class="coach-card__link">About Joe &rarr;</a></p>
         </div>
-      </article>
-      <article class="w-coach">
-        <div class="w-coach__media"><div class="portrait portrait--sm portrait--photo"><picture class="portrait__pic"><source srcset="/assets/coach-tony.webp" type="image/webp"><img src="/assets/coach-tony.jpg" alt="Prof. Anthony Curry, owner and head instructor of Labyrinth BJJ" width="400" height="400" loading="lazy" decoding="async"></picture></div></div>
-        <div class="w-coach__info">
-          <h3 class="w-coach__name">Prof. Anthony Curry</h3>
-          <p class="w-coach__role">Owner &amp; Head Instructor, Labyrinth BJJ</p>
+      </div>
+      <div class="coach-card coach-card--featured coach-card--head">
+        <div class="coach-card__avatar"><picture><source srcset="/assets/coach-tony.webp" type="image/webp"><img src="/assets/coach-tony.jpg" alt="Prof. Anthony Curry, owner and head instructor of Labyrinth BJJ" width="400" height="400" loading="lazy" decoding="async"></picture></div>
+        <div class="coach-card__info">
+          <h3 class="coach-card__name">Prof. Anthony Curry</h3>
+          <p class="coach-card__role">Head Instructor / Owner</p>
           <div class="coach-card__rank"><div class="belt-bar belt-bar--black"><span class="belt-bar__belt"></span><span class="belt-bar__tab"></span></div><span class="coach-card__rank-label">Black Belt</span></div>
-          <p class="w-coach__bio">Founded Labyrinth in 2021. Black belt under Matt Leighton of Citadel BJJ. Joe Herrera trains under him.</p>
-          <a href="https://labyrinth.vision/coaches/anthony-curry" class="coach-card__link" target="_blank" rel="noopener noreferrer">Full profile on labyrinth.vision &rarr;</a>
+          <p class="coach-card__bio">Founded Labyrinth in 2021. Black belt under Matt Leighton of Citadel BJJ. Joe trains under him. <a href="https://labyrinth.vision/coaches/anthony-curry" class="coach-card__link" target="_blank" rel="noopener noreferrer">Full profile &rarr;</a></p>
         </div>
-      </article>
+      </div>
     </div>
   </div>
 </section>
@@ -281,7 +280,7 @@ button {
     <h2 class="prog-close__title">MEET THE TEAM</h2>
     <p class="prog-close__text">The best way to meet the Wharton coaches is the free first class. Tell us you are interested and we will be in touch.</p>
     <div class="prog-hero__cta" style="justify-content:center">
-      <a href="/contact#free-class" class="btn btn--gold">Get Your Free First Class</a>
+      <a href="/schedule#book" data-book-trial class="btn btn--gold">Book Your Free Class</a>
       <a href="tel:+12813937983" class="btn btn--ghost">Call (281) 393-7983</a>
     </div>
   </div>
@@ -335,9 +334,11 @@ button {
 
 <div class="mobile-cta-bar" id="mobileCta">
   <a href="tel:+12813937983" class="mobile-cta-bar__phone" aria-label="Call Labyrinth BJJ Wharton"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg> Call</a>
-  <a href="/contact#free-class" class="mobile-cta-bar__trial">Free First Class</a>
+  <a href="/schedule#book" class="mobile-cta-bar__trial" data-book-trial>Book a Free Class</a>
 </div>
 
+<script type="application/json" id="whartonBooking">{"classes": [{"name": "Kids Jiu-Jitsu", "day": "Tue", "time": "5:00 PM", "audience": "kids", "crm": "Kids 3-6"}, {"name": "Adult Kickboxing", "day": "Tue", "time": "6:00 PM", "audience": "adult", "crm": "Adult BJJ"}, {"name": "Kids Jiu-Jitsu", "day": "Wed", "time": "5:00 PM", "audience": "kids", "crm": "Kids 3-6"}, {"name": "Women's Self Defense Jiu-Jitsu", "day": "Wed", "time": "6:00 PM", "audience": "women", "crm": "Womens"}, {"name": "Kids Jiu-Jitsu", "day": "Thu", "time": "5:00 PM", "audience": "kids", "crm": "Kids 3-6"}, {"name": "Adult Kickboxing", "day": "Thu", "time": "6:00 PM", "audience": "adult", "crm": "Adult BJJ"}, {"name": "Kids Jiu-Jitsu", "day": "Fri", "time": "5:00 PM", "audience": "kids", "crm": "Kids 3-6"}, {"name": "Women's Self Defense Jiu-Jitsu", "day": "Fri", "time": "6:00 PM", "audience": "women", "crm": "Womens"}], "closed": [], "firstBookable": "", "address": "201 N Houston St, Wharton, TX 77488", "phone": "(281) 393-7983", "mapUrl": "https://www.google.com/maps/search/?api=1&query=201+N+Houston+St+Wharton+TX+77488"}</script>
+<script src="/booking.js?v=57009013" defer></script>
 <script src="/app.js?v=2009d3e3" defer></script>
 </body>
 </html>
