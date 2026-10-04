@@ -424,13 +424,19 @@ body.is-soon .hero { min-height: calc(100vh - var(--strip-h)); }
 
 /* ===== FOOTER ===== */
 .footer__top--wharton { grid-template-columns: 1.4fr 1.1fr 0.9fr 0.8fr 1fr; gap: var(--space-8); }
-.footer__col .footer__soon { color: var(--text-faint); }
 .footer__col a[href*="labyrinthbjjkaty"] { color: var(--text-muted); font-weight: 400; }
 .footer__col a[href*="labyrinthbjjkaty"]:hover { color: var(--text); }
 .footer__col p { margin-bottom: var(--space-2); }
 .footer__col p a { display: inline; color: var(--gold); }
 @media (max-width: 1024px) { .footer__top--wharton { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 560px) { .footer__top--wharton { grid-template-columns: 1fr; } }
+
+/* ===== FOCUS AND CONTRAST ===== */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+.footer__bottom p, .footer__bottom a, .footer__col .footer__soon { color: var(--text-muted); }
 
 /* ===== MOBILE CTA BAR ===== */
 .mobile-cta-bar svg { flex-shrink: 0; }
