@@ -1,0 +1,32 @@
+<!doctype html>
+<!-- The share image for the Wharton site (wharton-site/assets/og-wharton.jpg), 1200x630.
+     Same look as the main site's og-image: the team photograph under a dark wash, the maze mark,
+     the name in white, a gold line beneath. Nothing on it goes stale: no date, no address, no price.
+     Rendered with: node scripts/og-wharton.mjs  (needs playwright-core). -->
+<html><head><meta charset="utf-8"><style>
+  * { box-sizing: border-box; margin: 0; }
+  body { width: 1200px; height: 630px; overflow: hidden; position: relative; background: #0a0a0a;
+    font-family: "Helvetica Neue", Arial, sans-serif; color: #f4f1ea; }
+  .photo { position: absolute; inset: 0; background: url("../wharton-site/assets/hero-team.jpg") center 30% / cover; }
+  .wash { position: absolute; inset: 0;
+    background: linear-gradient(100deg, rgba(10,10,10,.93) 0%, rgba(10,10,10,.82) 46%, rgba(10,10,10,.45) 100%); }
+  .bar { position: absolute; left: 0; right: 0; bottom: 0; height: 8px; background: #C8A24C; }
+  .mark { position: absolute; left: 80px; top: 52px; width: 104px; height: 104px; border-radius: 50%; filter: invert(1); }
+  .copy { position: absolute; left: 80px; right: 80px; top: 0; bottom: 0; display: flex; flex-direction: column; justify-content: center; padding-top: 90px; }
+  .brand { position: absolute; left: 208px; top: 84px; font-size: 30px; letter-spacing: .3em; font-weight: 700; color: #C8A24C; }
+  h1 { font-size: 112px; line-height: .96; font-weight: 800; letter-spacing: -.015em; text-transform: uppercase; }
+  h1 span { color: #C8A24C; }
+  .sub { margin-top: 26px; font-size: 38px; font-weight: 600; color: #e6dfcf; }
+  .free { margin-top: 28px; align-self: flex-start; padding: 10px 24px; border-radius: 10px; background: #C8A24C; color: #0a0a0a; font-size: 28px; font-weight: 800; }
+  .url { position: absolute; right: 80px; top: 92px; display: none; font-size: 22px; letter-spacing: .12em; color: #b8b0a0; }
+</style></head><body>
+  <div class="photo"></div><div class="wash"></div><div class="bar"></div>
+  <img class="mark" src="../wharton-site/assets/logo-maze-transparent.png" alt="">
+  <div class="url">WHARTON.LABYRINTH.VISION</div>
+  <div class="brand">LABYRINTH BJJ</div>
+  <div class="copy">
+    <h1>Jiu-Jitsu in<br><span>Wharton, TX</span></h1>
+    <div class="sub">Adults &middot; Kids &amp; Teens &middot; Led by Joe Herrera</div>
+    <div class="free">Your first class is free</div>
+  </div>
+</body></html>

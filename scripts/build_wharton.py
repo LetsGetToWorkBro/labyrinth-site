@@ -324,6 +324,12 @@ def ver(name):
     return _ver_cache[name]
 
 
+def base_css():
+    """base.css, inlined in every page (as on labyrinth.vision) so the reset costs no request."""
+    with open(os.path.join(SRC, "base.css"), encoding="utf-8") as f:
+        return f.read().strip() + "\n"
+
+
 def jsonld(obj):
     return '<script type="application/ld+json">\n%s\n</script>' % json.dumps(obj, indent=2, ensure_ascii=False)
 
@@ -410,7 +416,8 @@ def head(S, p):
 {preload}<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
 <link rel="preload" as="style" href="{FONT_URL}" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link href="{FONT_URL}" rel="stylesheet"></noscript>
-<link rel="stylesheet" href="/base.css?v={ver('base.css')}">
+<style>
+{base_css()}</style>
 <link rel="stylesheet" href="/style.css?v={ver('style.css')}">
 <link rel="stylesheet" href="/programs.css?v={ver('programs.css')}">
 <link rel="stylesheet" href="/wharton.css?v={ver('wharton.css')}">
@@ -457,7 +464,7 @@ def nav(S, p):
   </div>
 </nav>
 
-<div class="nav__mobile" id="mobileNav" aria-label="Mobile navigation">
+<div class="nav__mobile" id="mobileNav" role="navigation" aria-label="Mobile navigation">
   {mob}
   <a href="{cta}" class="nav__cta">Free First Class</a>
 </div>
@@ -725,7 +732,7 @@ def form_html(S, uid, compact=False, title=None, wrapper_id="free-class"):
 
 # ── Components that depend on the live switch ────────────────────────────────
 
-def portrait(S, small=False):
+def portrait(S, small=False, eager=False):
     """Joe's portrait: the photo if config has one and live is true, else a monogram card.
 
     There is no photo of Joe. The card is deliberately its own thing, initials
@@ -734,7 +741,7 @@ def portrait(S, small=False):
     cls = "portrait portrait--sm" if small else "portrait"
     if S.joe_photo:
         pic = picture(S.joe_photo, "Joe Herrera, lead instructor at Labyrinth BJJ Wharton", cls="portrait__pic",
-                      loading="eager" if not small else "lazy")
+                      loading="eager" if eager else "lazy")
         return '<div class="%s portrait--photo">%s</div>' % (cls, pic)
     return f"""<div class="{cls}">
   <img class="portrait__mark" src="/assets/logo-maze-transparent.png" alt="" aria-hidden="true" width="64" height="64">
@@ -800,7 +807,7 @@ def price_cards(S, audiences=None, limit=None):
             lst = '<ul class="price-card__list">%s</ul>' % feats if feats else '<ul class="price-card__list"></ul>'
             note = '<p class="price-card__note">%s</p>' % esc(p["note"]) if p["note"] else ""
             cards.append(f"""<div class="price-card{' price-card--feature' if p['featured'] else ''}">
-        <h3 class="price-card__name">{esc(p['name'])}</h3>
+        <h4 class="price-card__name">{esc(p['name'])}</h4>
         <div class="price-card__amount">{esc(money(p['price']))}<span>{esc(period_label(p['period']))}</span></div>
         {note}{lst}
         <a href="/contact#free-class" class="price-card__btn">Start Free</a>
@@ -1024,7 +1031,7 @@ def page_home(S):
     p.body = f"""
 <section class="hero hero--wharton" id="hero">
   <div class="hero__bg">
-    {picture('hero-team', 'Labyrinth BJJ team celebrating with medals and trophies at a tournament', cls='hero__still', loading='eager', fetchpriority='high', ext='.jpg')}
+    {picture('hero-team', 'Labyrinth BJJ team celebrating with medals and trophies', cls='hero__still', loading='eager', fetchpriority='high', ext='.jpg')}
   </div>
   <div class="hero__content">
     <div class="hero__badges">{badge}</div>
@@ -1181,7 +1188,7 @@ def page_home(S):
         </ul>
         {form_html(S, 'home')}
       </div>
-      <div class="trial__image fade-in">{picture('kids-podium', 'Young Labyrinth BJJ athletes with medals and trophies on a podium')}</div>
+      <div class="trial__image fade-in">{picture('kids-podium', 'Young Labyrinth BJJ athletes holding medals and trophies')}</div>
     </div>
   </div>
 </section>
@@ -1304,7 +1311,7 @@ def page_adult(S):
       <div class="prog-hero__shot">{picture('adult-gi', 'Adult Brazilian jiu-jitsu competitor in a Labyrinth BJJ gi', loading='eager')}</div>
     </div>
     <div class="prog-facts">
-      <div class="prog-fact"><div class="prog-fact__label">Levels</div><div class="prog-fact__value">Complete beginner and up</div></div>
+      <div class="prog-fact"><div class="prog-fact__label">Levels</div><div class="prog-fact__value">Beginners welcome</div></div>
       <div class="prog-fact"><div class="prog-fact__label">Styles</div><div class="prog-fact__value">Gi &amp; No-Gi</div></div>
       <div class="prog-fact"><div class="prog-fact__label">Class times</div><div class="prog-fact__value">{fact_sched}</div></div>
       <div class="prog-fact"><div class="prog-fact__label">First class</div><div class="prog-fact__value"><em>Free</em></div></div>
@@ -1394,7 +1401,7 @@ def kids_faqs(S):
 
 def page_kids(S):
     trail = [("/programs/", "Programs"), ("/programs/kids-bjj-wharton", "Kids & Teens BJJ")]
-    desc = ("Kids and teens Brazilian jiu-jitsu in Wharton, TX at Labyrinth BJJ Wharton. No striking, competition always optional, "
+    desc = ("Kids and teens Brazilian jiu-jitsu in Wharton, TX. No striking, competition always optional, "
             "led by Joe Herrera. Your child's first class is free.")
     p = Page("/programs/kids-bjj-wharton", "programs/kids-bjj-wharton.html", "Kids & Teens BJJ in Wharton, TX | Labyrinth BJJ Wharton",
              desc, og_title="Kids & Teens BJJ in Wharton, TX | Labyrinth BJJ Wharton", crumbs=trail, priority="0.9")
@@ -1597,7 +1604,7 @@ def page_joe(S):
           <a href="/programs/" class="btn btn--ghost">See the Programs</a>
         </div>
       </div>
-      <div class="prog-hero__portrait">{portrait(S)}</div>
+      <div class="prog-hero__portrait">{portrait(S, eager=True)}</div>
     </div>
     <div class="prog-facts">
       <div class="prog-fact"><div class="prog-fact__label">Rank</div><div class="prog-fact__value"><em>Brown belt</em></div></div>
@@ -1824,8 +1831,8 @@ AREAS = [
         "lead": "Labyrinth BJJ Wharton is the new Labyrinth gym in Wharton County, and we are serving families from El Campo, up US 59.",
         "body": [
             "If you live in El Campo, Wharton is up US 59, and a Labyrinth gym that close is the whole reason this page exists. We have not published a drive time because the Wharton address is not set yet. When it is, it will be on this page and on the contact page, and your own maps app will give you a better answer than any estimate of ours.",
-            "Adults in El Campo who work shifts or long days are the people we hear from most when a new gym is announced, so the first thing to do is tell us what suits you. Before work, at lunch, evenings or weekends: put it in the message box on the form. We cannot promise a class at every hour, but we would rather know.",
-            "For families in the El Campo ISD, the first question is always after-school. The kids and teens class times are not set yet; they will be on the schedule page when they are, and your child's first class is free either way.",
+            "If you work shifts or long days, the first thing to do is tell us what suits you. Before work, at lunch, evenings or weekends: put it in the message box on the form. We cannot promise a class at every hour, but we would rather know.",
+            "Families in El Campo ISD will want to know about after-school classes. The kids and teens class times are not set yet; they will be on the schedule page when they are, and your child's first class is free either way.",
         ],
         "cards": [
             ("Same county", "In Wharton County with you", "El Campo and Wharton are both in Wharton County, so this is a local gym, not a trip to the city."),
@@ -1847,8 +1854,8 @@ AREAS = [
         "lead": "A Labyrinth gym is coming to Wharton, and we are serving families from East Bernard who want jiu-jitsu without a trip into Houston.",
         "body": [
             "East Bernard and Wharton are both in Wharton County. We have not worked out a drive time, because the Wharton address is not set yet; once it is published you can check it on your own map and decide whether a regular class fits your week.",
-            "Two kinds of family tend to ask about jiu-jitsu first. The first is the one with a school athlete: a student who plays football, volleyball or runs track and wants something that builds strength, balance and grit between seasons. Jiu-jitsu is an individual-pace art with no season, which is why it pairs well with team sports.",
-            "The second is the household that wants to train together, a parent and one or two children in the same evening. If that is you, choose \"More than one of us\" on the form and tell us the ages. Class times are not set yet, and knowing who is coming helps us answer you properly.",
+            "Two situations are worth mentioning. The first is a school athlete: a student who plays football, volleyball or runs track and wants something that builds strength, balance and grit between seasons. Jiu-jitsu has no season of its own, which is why it pairs well with team sports.",
+            "The second is a household that wants to train together, a parent and one or two children in the same evening. If that is you, choose \"More than one of us\" on the form and tell us the ages. Class times are not set yet, and knowing who is coming helps us answer you properly.",
         ],
         "cards": [
             ("Cross-training", "A fit for school athletes", "Strength, balance and grit that carry across to football, volleyball, track and wrestling."),
@@ -1870,7 +1877,7 @@ AREAS = [
         "lead": "Labyrinth BJJ Wharton is opening in the county seat, and we are serving families from Boling who have never trained and are curious.",
         "body": [
             "Boling and Wharton are in the same county. The Wharton address is not set yet and we are not going to guess a drive time; when it is published, your map will tell you.",
-            "Most people who start jiu-jitsu have never done a combat sport, and this page is written for them. You do not have to be fit, flexible or athletic. You scale the warm-up, you tap early, and you go at your own pace. Fitness, self-defense and a good room full of people are what most adults come for, and none of it requires experience.",
+            "Most people who start jiu-jitsu have never done a combat sport, and this page is written for them. You do not have to be fit, flexible or athletic. You scale the warm-up, you tap early, and you go at your own pace. Fitness, self-defense and a good room full of people are common reasons to start, and none of it requires experience.",
             "For Boling ISD families, the program for kids and teens is grappling with no striking, built around focus, body control and handling pressure. Age groups will be confirmed with the schedule, so put your child's age in the form and we will tell you where they fit.",
         ],
         "cards": [
@@ -1916,13 +1923,13 @@ AREAS = [
         "lead": "Labyrinth BJJ Wharton is serving families from Louise and the surrounding area, and the first class is free so you can find out how the drive feels.",
         "body": [
             "Louise and Wharton are in the same county, but we have not measured the drive and we are not going to pretend it is short or long. The Wharton address is not set yet. When it is published, check the route on your own map against the days and times you would actually be driving.",
-            "A regular class is a commitment of time as well as money, and families in smaller communities know that better than anyone. That is one reason the first class is free: it costs you one trip to find out whether jiu-jitsu, and the drive, fit your week.",
+            "A regular class is a commitment of time as well as money. That is one reason the first class is free: it costs you one trip to find out whether jiu-jitsu, and the drive, fit your week.",
             "For Louise ISD families thinking about kids and teens jiu-jitsu: it is grappling with no striking, and the point is confidence, focus and learning to stay calm under pressure. Age groups will be confirmed with the schedule. Put your child's age in the form and we will tell you where they fit.",
         ],
         "cards": [
             ("Your week", "Check the drive yourself", "We are not quoting minutes. Compare the address, once published, with the times you would travel."),
             ("Kids & teens", "Confidence and focus", "A grappling art with no striking, and competition is always optional."),
-            ("Free", "One trip to find out", "Your first class is free, with no commitment."),
+            ("Free", "One trip to find out", "The first class costs nothing, so you can see how the drive feels before you decide anything else."),
         ],
         "faqs": [
             ("How far is Louise from the Wharton gym?",
@@ -2020,7 +2027,7 @@ def page_area(S, a):
 def page_areas_hub(S):
     trail = [("/areas/", "Areas")]
     desc = ("Towns near Wharton, TX served by Labyrinth BJJ Wharton: El Campo, East Bernard, Boling, Hungerford and Louise. "
-            "Brazilian jiu-jitsu for adults, kids and teens. First class free.")
+            "Jiu-jitsu for adults, kids and teens. First class free.")
     p = Page("/areas/", "areas/index.html", "Areas We Serve Near Wharton, TX | Labyrinth BJJ Wharton", desc,
              og_title="Towns near Wharton served by Labyrinth BJJ Wharton", crumbs=trail, priority="0.7")
     p.schema = [breadcrumb_schema(S, trail), {
@@ -2448,16 +2455,22 @@ def build(cfg, outdir, quiet=False):
 
 
 def main(argv=None):
+    global SRC
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--out", default=SRC, help="directory to write into (default wharton-site/)")
     ap.add_argument("--config", default=DEFAULT_CONFIG, help="config JSON (default wharton-site/site.config.json)")
     ap.add_argument("--live", choices=("true", "false"), help="override the config's live flag for this build only")
+    ap.add_argument("--static", help="directory holding style.css, app.js, assets/ (default: the output directory if it has them, else wharton-site/)")
     ap.add_argument("--strict", action="store_true", help="exit 1 if live is true and a TBD field is still empty")
     args = ap.parse_args(argv)
     with open(args.config, encoding="utf-8") as f:
         cfg = json.load(f)
     if args.live:
         cfg["live"] = args.live == "true"
+    if args.static:
+        SRC = os.path.abspath(args.static)
+    elif os.path.exists(os.path.join(args.out, "style.css")):
+        SRC = os.path.abspath(args.out)
     S, _ = build(cfg, args.out)
     if args.strict and S.check():
         return 1
