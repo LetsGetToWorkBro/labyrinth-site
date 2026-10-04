@@ -13,26 +13,36 @@
     "social": "Wharton-specific profile URLs. Empty ones are not shown.",
     "lastmod": "Date written into sitemap.xml. Update it when you change content."
   },
-  "live": false,
+  "live": true,
   "site_url": "https://wharton.labyrinth.vision",
   "lastmod": "2026-10-04",
   "phone": "(281) 393-7983",
   "phone_tel": "+12813937983",
   "email": "info@labyrinth.vision",
   "address": {
-    "street": "",
+    "street": "201 N Houston St",
     "suite": "",
     "city": "Wharton",
     "state": "TX",
-    "zip": ""
+    "zip": "77488"
   },
   "opening_date": "",
   "hours": [],
   "schedule": [],
-  "pricing": [],
+  "pricing": [
+    {
+      "name": "Grand Opening Membership",
+      "audience": "all",
+      "price": "150",
+      "period": "month",
+      "note": "Grand opening price",
+      "features": [],
+      "featured": true
+    }
+  ],
   "kids_ages": "",
-  "joe_photo": "",
-  "map_url": "",
+  "joe_photo": "assets/joe-herrera.jpg",
+  "map_url": "https://www.google.com/maps/search/?api=1&query=201+N+Houston+St+Wharton+TX+77488",
   "social": {
     "instagram": "",
     "facebook": ""

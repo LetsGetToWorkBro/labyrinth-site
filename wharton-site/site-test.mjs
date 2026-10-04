@@ -64,7 +64,15 @@ function build(name, cfg) {
   return dir
 }
 
-const base = JSON.parse(readFileSync(join(SITE, 'site.config.json'), 'utf8'))
+const committedCfg = JSON.parse(readFileSync(join(SITE, 'site.config.json'), 'utf8'))
+// The blank template: every unknown fact empty. The committed config may be filled in and live;
+// the coming-soon behaviour is tested on this blank one instead.
+const base = {
+  ...committedCfg, live: false,
+  address: { street: '', suite: '', city: 'Wharton', state: 'TX', zip: '' },
+  opening_date: '', hours: [], schedule: [], pricing: [], kids_ages: '', joe_photo: '', map_url: '',
+  social: { instagram: '', facebook: '' },
+}
 // Values that look real, so a leak is unmistakable. Every one carries SENTINEL.
 const filled = {
   ...base,
@@ -87,7 +95,7 @@ const filled = {
 }
 const SENTINELS = ['SENTINEL', '$987', '$654', '99999', 'February 14, 2027', 'maps.example.test', 'test-joe.jpg', '5:00 PM', '8:30 PM', '6:00 PM to 7:00 PM']
 
-const dirCommitted = SITE
+const dirCommitted = build('soon-empty', base)   // coming-soon mode, nothing filled in
 const dirSoonFilled = build('soon-filled', { ...filled, live: false })   // live false, config full of real-looking values
 const dirLive = build('live', { ...filled, live: true })                 // live true, same values
 const dirLiveEmpty = build('live-empty', { ...base, live: true })        // live true but nothing filled in
@@ -127,6 +135,9 @@ check('00 the site has the expected pages', [
     const p = join(work, 'bad.json'); writeFileSync(p, JSON.stringify({ ...base, live: true, schedule: [{ day: 'Funday', start: '18:00', class: 'x' }] })); return p })()], { encoding: 'utf8' })
   check('G2 a malformed schedule stops the build instead of rendering garbage', bad.status !== 0 && /Funday/.test(bad.stderr + bad.stdout), bad.stderr.slice(0, 120))
   const priv = spawnSync('python3', [GEN, '--out', join(work, 'strict'), '--strict', '--config', join(work, 'live-empty.json')], { encoding: 'utf8' })
+  // The committed site is the real, live one: the facts the owner has given are on it.
+  const homeC = read(SITE, 'index.html'), contactC = read(SITE, 'contact.html'), pricingC = read(SITE, 'pricing.html'), joeC = read(SITE, 'coaches/joe-herrera.html')
+  check('G4 committed site shows the real address, price and Joe\'s photo, and no test values', /201 N Houston St/.test(contactC) && /77488/.test(contactC) && /\$150/.test(pricingC) && /joe-herrera\.(jpg|webp)/.test(joeC) && !/SENTINEL/.test(homeC + contactC + pricingC + joeC) && existsSync(join(SITE, 'assets', 'joe-herrera.jpg')))
   check('G3 --strict fails when live is true and a TBD field is still empty', priv.status === 1 && /address\.street is empty/.test(priv.stdout), priv.stdout.slice(0, 200))
 }
 
@@ -339,7 +350,7 @@ await linkCheck('live', dirLive)
   areaSets.forEach((a, i) => areaSets.forEach((b, j) => { if (j > i) for (const s of a) if (b.has(s)) dup.push(s.slice(0, 60)) }))
   check('F6 the five area pages share no sentence of their own copy (no doorway-page text)', areaSets.length === 5 && areaSets.every(s => s.size >= 6) && dup.length === 0, dup.join(' | '))
   const mainRobots = readFileSync(join(REPO, 'robots.txt'), 'utf8') + readFileSync(join(REPO, 'sitemap.xml'), 'utf8')
-  check('F7 the main site\'s robots.txt and sitemap.xml know nothing about Wharton', !/wharton/i.test(mainRobots))
+  check('F7 the main site\'s robots.txt and sitemap.xml do not advertise the Wharton site (only a Disallow for the preview folder)', !/wharton\.labyrinth\.vision/i.test(mainRobots) && !/wharton/i.test(readFileSync(join(REPO, 'sitemap.xml'), 'utf8')))
   const st = spawnSync('python3', [join(REPO, 'scripts', 'stamp_assets.py')], { cwd: REPO, encoding: 'utf8' })
   check('F8 the main site\'s asset stamper leaves wharton-site/ alone (stamped 0 files)', /stamped 0 file\(s\)/.test(st.stdout), st.stdout.trim().slice(0, 200))
   const stamped = allPages.filter(f => f !== 'privacy-policy.html' && f !== '404.html').every(f => /href="\/style\.css\?v=[0-9a-f]{8}"/.test(read(dirCommitted, f)) && /src="\/app\.js\?v=[0-9a-f]{8}"/.test(read(dirCommitted, f)))

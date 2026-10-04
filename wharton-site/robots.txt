@@ -1,6 +1,26 @@
 # Labyrinth BJJ Wharton. Robots.txt
-# Coming soon: this site asks to be left alone until wharton-site/site.config.json sets "live": true
-# and scripts/build_wharton.py is re-run.
+# https://wharton.labyrinth.vision
 
 User-agent: *
-Disallow: /
+Allow: /
+Disallow: /api/
+
+# Sitemap
+Sitemap: https://wharton.labyrinth.vision/sitemap.xml
+
+# The assistants people now ask "where can my kid do jiu jitsu near Wharton" are
+# named explicitly, as on labyrinth.vision, rather than left to the wildcard.
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-User
+User-agent: Claude-SearchBot
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+User-agent: Bingbot
+Allow: /
+# Repeated, not inherited: a crawler that matches a named group ignores the wildcard one.
+Disallow: /api/

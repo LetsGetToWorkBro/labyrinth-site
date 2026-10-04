@@ -57,7 +57,7 @@ SITE_NAME = "Labyrinth BJJ Wharton"
 LEGAL_NAME = "Labyrinth Brazilian Jiu Jitsu LLC"
 
 DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
-AUDIENCES = {"adult": "Adults", "kids": "Kids & Teens", "family": "Family", "other": "More"}
+AUDIENCES = {"all": "Membership", "adult": "Adults", "kids": "Kids & Teens", "family": "Family", "other": "More"}
 
 FONT_URL = ("https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700"
             "&f[]=general-sans@300,400,500,600,700&display=swap")
@@ -227,7 +227,7 @@ def normalise_pricing(rows):
     for r in rows:
         _need(str(r.get("name", "")).strip(), "every pricing row needs a name")
         aud = r.get("audience", "other")
-        _need(aud in AUDIENCES, "pricing audience must be adult, kids, family or other")
+        _need(aud in AUDIENCES, "pricing audience must be all, adult, kids, family or other")
         _need(str(r.get("price", "")).strip() != "", "pricing row %r needs a price" % r.get("name"))
         out.append({"name": r["name"].strip(), "audience": aud, "price": str(r["price"]).strip(),
                     "period": (r.get("period") or "").strip(), "note": (r.get("note") or "").strip(),
@@ -797,7 +797,7 @@ def price_cards(S, audiences=None, limit=None):
     if not items:
         return None
     out = []
-    for aud in ("adult", "kids", "family"):
+    for aud in ("all", "adult", "kids", "family"):
         grp = [p for p in items if p["audience"] == aud]
         if not grp:
             continue
@@ -1290,7 +1290,7 @@ def page_adult(S):
     sched_block = sched or soon_card("Adult class times coming soon",
                                      "The Wharton class schedule is not set yet. Put your name on the list and we will email you as soon as adult class times are confirmed.",
                                      ("/contact#free-class", "Get notified"))
-    pr = price_cards(S, audiences=("adult", "family", "other"))
+    pr = price_cards(S, audiences=("all", "adult", "family", "other"))
     price_block = pr or soon_card("Prices coming soon",
                                   "Wharton prices are not set yet. Your first class is free, and prices will be posted on the pricing page once they are confirmed.",
                                   ("/pricing", "About pricing"))
@@ -1411,7 +1411,7 @@ def page_kids(S):
     sched_block = sched or soon_card("Kids & teens class times coming soon",
                                      "The Wharton class schedule is not set yet. Put your name on the list and we will email you as soon as kids and teens class times are confirmed.",
                                      ("/contact#free-class", "Get notified"))
-    pr = price_cards(S, audiences=("kids", "family", "other"))
+    pr = price_cards(S, audiences=("all", "kids", "family", "other"))
     price_block = pr or soon_card("Prices coming soon",
                                   "Wharton prices are not set yet. Your child's first class is free, and prices will be posted on the pricing page once they are confirmed.",
                                   ("/pricing", "About pricing"))
