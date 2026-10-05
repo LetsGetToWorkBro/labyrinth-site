@@ -228,7 +228,7 @@ PROGRAMS = [
         ],
         "schedule_title": "Kids class times",
         "schedule_note": "Classes marked <strong>ADV</strong> are the advanced grappling classes: a child needs a gray-white belt or higher, or two or more years of wrestling, to join one. Everything else is open to any child in the age range, including one who has never trained. <strong>Free trials for kids run on Friday afternoons and Saturday mornings.</strong> Friday is Gi and takes every age from three up; Saturday at 10:00 AM is No-Gi and starts at seven, because there is no 3–6 class on a Saturday to put a younger child in.",
-        "week": schedule_data.week_for({"Kids BJJ", "Kids Grappling", "Teens Grappling", "Kids BJJ Comp", "Teens BJJ Comp", "MMA Conditioning"}),
+        "week": schedule_data.week_for({"Kids BJJ", "Kids Grappling", "Teens Grappling", "Teens BJJ", "Kids BJJ Comp", "Teens BJJ Comp", "MMA Conditioning"}),
         "body_title": "What a class actually looks like",
         "body": [
             "Forty-five minutes, and the shape of it barely changes: a warm-up that is mostly movement games, a technique of the day broken into two or three pieces, drilling that technique with a partner, and then positional rounds: live training from a set starting position, which is how a child learns to apply something under mild resistance without it becoming a fight.",

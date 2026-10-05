@@ -33,6 +33,7 @@ CLASSES = [
     ("Monday", "11:00 AM", "Adult BJJ", "", "Gi", "adult", set()),
     ("Monday", "4:45 PM", "Kids BJJ", "3–6", "Gi", "kids", set()),
     ("Monday", "5:15 PM", "Kids BJJ", "7–12", "Gi", "kids", set()),
+    ("Monday", "5:15 PM", "Teens BJJ", "12–15", "Gi", "kids", set()),
     ("Monday", "6:30 PM", "Adult BJJ", "", "Gi", "adult", set()),
     # ── Tuesday ──
     ("Tuesday", "6:30 AM", "Adult BJJ", "", "No-Gi", "adult", set()),
@@ -45,6 +46,7 @@ CLASSES = [
     ("Wednesday", "11:00 AM", "Adult BJJ", "", "No-Gi", "adult", set()),
     ("Wednesday", "4:45 PM", "Kids BJJ", "3–6", "Gi", "kids", set()),
     ("Wednesday", "5:15 PM", "Kids BJJ", "7–12", "Gi", "kids", set()),
+    ("Wednesday", "5:15 PM", "Teens BJJ", "12–15", "Gi", "kids", set()),
     ("Wednesday", "6:30 PM", "Adult BJJ", "", "Gi", "adult", set()),
     ("Wednesday", "7:30 PM", "Youth Wrestling", "7–17", "", "kids", set()),
     # ── Thursday ──
