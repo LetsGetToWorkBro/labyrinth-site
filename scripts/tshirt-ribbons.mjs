@@ -1,5 +1,5 @@
 // Builds the Rolling for Ribbons t-shirt art (Pink October, women's self defense seminar):
-//   assets/print/tshirt/  FRONT = small chest mark (2400x3000), BACK = the full design (4500x5400 = 15x18in at 300dpi),
+//   assets/print/tshirt/  FRONT = the pocket ribbon alone (2100x3000), BACK = the full design (4500x5400 = 15x18in at 300dpi),
 //   each for dark shirts (white + pink ink) and light shirts (plum + magenta ink), as transparent PNGs,
 //   plus a preview sheet showing the front and the back of each shirt colour.
 // Run: node scripts/tshirt-ribbons.mjs   (needs playwright-core, resolved from the CRM repo when not installed here)
@@ -117,24 +117,21 @@ function back(ink) {
   ${SCRIPT}</body></html>`
 }
 
-// FRONT: a small chest mark, 1000x1250 css px rendered at 2x = 2000x2500 (prints at about 4in wide)
+// FRONT: the pocket graphic, just the ribbon (plain, no emblem, so it stays clean at about 3in tall), 700x1000 css px at 3x = 2100x3000
 function front(ink) {
   const c = INK[ink]
   return `<!doctype html><html><head><meta charset="utf-8"><style>${BASE(c)}
-  html,body{width:1000px;height:1250px} body{padding-top:10px}
-  .rib{width:440px;height:660px;flex:none}
+  html,body{width:700px;height:1000px} body{padding-top:0}
+  .rib{width:667px;height:1000px;flex:none}
 </style></head><body data-ink="${hex(c.main)}">
-  <div class="rib">${ribbonSVG(c.accent, { emblem: true, uid: 'f' })}</div>
-  <div class="t" style="margin-top:10px"><span data-fit="880" data-max="260">Rolling</span></div>
-  <div class="t"><span data-fit="880" data-max="200">for <b class="a">Ribbons</b></span></div>
-  <div class="s" style="margin-top:30px;opacity:.92"><span data-fit="620" data-max="36">Labyrinth BJJ</span></div>
+  <div class="rib">${ribbonSVG(c.accent, { uid: 'f' })}</div>
   ${SCRIPT}</body></html>`
 }
 
 const browser = await chromium.launch({ executablePath: process.env.CHROME ?? '/opt/pw-browsers/chromium' })
 const shots = {}
 for (const [name, html, vw, vh, scale] of [
-  ['front-dark-shirt', front('dark'), 1000, 1250, 2], ['front-light-shirt', front('light'), 1000, 1250, 2],
+  ['front-dark-shirt', front('dark'), 700, 1000, 3], ['front-light-shirt', front('light'), 700, 1000, 3],
   ['back-dark-shirt', back('dark'), 1500, 1800, 3], ['back-light-shirt', back('light'), 1500, 1800, 3],
 ]) {
   const ctx = await browser.newContext({ viewport: { width: vw, height: vh }, deviceScaleFactor: scale })
@@ -156,11 +153,11 @@ const SHIRT = {
 }
 const img = p => `data:image/png;base64,${readFileSync(p).toString('base64')}`
 const shirt = (side, label, fill, shade, art) => {
-  const place = side === 'front' ? 'left:268px;top:118px;width:96px' : 'left:150px;top:96px;width:180px'   // chest mark on the wearer's left, full design across the back
+  const place = side === 'front' ? 'left:292px;top:122px;width:56px' : 'left:150px;top:96px;width:180px'   // chest mark on the wearer's left, full design across the back
   return `<figure style="margin:0;width:480px"><div style="position:relative">${SHIRT[side](fill, shade)}<img src="${img(art)}" style="position:absolute;${place}"></div><figcaption>${label}</figcaption></figure>`
 }
 const COLORS = [['Black', '#141414', '#2b2b2b', 'dark'], ['Soft pink', '#f4c9da', '#e6a9c3', 'light'], ['Plum', '#4a1733', '#6a2a4b', 'dark'], ['Heather grey', '#c9c9cc', '#aeaeb3', 'light']]
-const cells = COLORS.map(([n, f, sh, ink]) => shirt('front', `${n}: FRONT (chest mark)`, f, sh, shots[`front-${ink}-shirt`]) + shirt('back', `${n}: BACK (full design)`, f, sh, shots[`back-${ink}-shirt`])).join('\n')
+const cells = COLORS.map(([n, f, sh, ink]) => shirt('front', `${n}: FRONT (pocket ribbon)`, f, sh, shots[`front-${ink}-shirt`]) + shirt('back', `${n}: BACK (full design)`, f, sh, shots[`back-${ink}-shirt`])).join('\n')
 const sheet = `<!doctype html><html><head><meta charset="utf-8"><style>body{margin:0;padding:36px;background:#e9e6e8;font-family:Helvetica,Arial,sans-serif;display:flex;flex-wrap:wrap;gap:20px 24px;width:2060px}figcaption{text-align:center;font-weight:700;color:#444;margin-top:4px}</style></head><body>${cells}</body></html>`
 const pg = await browser.newPage({ viewport: { width: 2060, height: 1200 } })
 await pg.setContent(sheet, { waitUntil: 'load' })
