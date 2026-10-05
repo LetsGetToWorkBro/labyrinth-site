@@ -1,5 +1,5 @@
 // Builds the Rolling for Ribbons t-shirt art (Pink October, women's self defense seminar):
-//   assets/print/tshirt/  FRONT = the pocket ribbon alone (2100x3000), BACK = the full design (4500x5400 = 15x18in at 300dpi),
+//   assets/print/tshirt/  FRONT = the pocket ribbon alone, 1.05in wide x 1.5in tall (2100x3000 px), BACK = the full design (4500x5400 = 15x18in at 300dpi),
 //   each for dark shirts (white + pink ink) and light shirts (plum + magenta ink), as transparent PNGs,
 //   plus a preview sheet showing the front and the back of each shirt colour.
 // Run: node scripts/tshirt-ribbons.mjs   (needs playwright-core, resolved from the CRM repo when not installed here)
@@ -7,12 +7,24 @@ import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { crc32 } from 'node:zlib'
 const here = dirname(fileURLToPath(import.meta.url))
 const req = createRequire(import.meta.url)
 let chromium
 try { ({ chromium } = req('playwright-core')) } catch { ({ chromium } = req('/home/user/labyrinth-app/node_modules/playwright-core')) }
 const out = join(here, '..', 'assets', 'print', 'tshirt')
 mkdirSync(out, { recursive: true })
+
+// Writes the physical print size into a PNG (a pHYs chunk), so design software opens it at its true size.
+function setPrintSize(file, widthInches) {
+  const buf = readFileSync(file)
+  const width = buf.readUInt32BE(16)
+  const ppm = Math.round(width / widthInches / 0.0254)
+  const data = Buffer.alloc(9); data.writeUInt32BE(ppm, 0); data.writeUInt32BE(ppm, 4); data[8] = 1
+  const body = Buffer.concat([Buffer.from('pHYs'), data])
+  const chunk = Buffer.alloc(12 + 9); chunk.writeUInt32BE(9, 0); body.copy(chunk, 4); chunk.writeUInt32BE(crc32(body), 17)
+  writeFileSync(file, Buffer.concat([buf.subarray(0, 33), chunk, buf.subarray(33)]))
+}
 
 const b64 = (p, mime) => `data:${mime};base64,${readFileSync(p).toString('base64')}`
 const anton = b64(join(here, 'fonts', 'anton-latin-400-normal.woff2'), 'font/woff2')
@@ -142,6 +154,7 @@ for (const [name, html, vw, vh, scale] of [
   await page.waitForTimeout(300)
   const file = join(out, `rolling-for-ribbons-${name}.png`)
   await page.screenshot({ path: file, omitBackground: true })
+  setPrintSize(file, name.startsWith('front') ? 1.05 : 15)
   shots[name] = file
   await ctx.close()
 }
@@ -153,7 +166,7 @@ const SHIRT = {
 }
 const img = p => `data:image/png;base64,${readFileSync(p).toString('base64')}`
 const shirt = (side, label, fill, shade, art) => {
-  const place = side === 'front' ? 'left:292px;top:122px;width:56px' : 'left:150px;top:96px;width:180px'   // chest mark on the wearer's left, full design across the back
+  const place = side === 'front' ? 'left:305px;top:122px;width:28px' : 'left:150px;top:96px;width:180px'   // chest mark on the wearer's left, full design across the back
   return `<figure style="margin:0;width:480px"><div style="position:relative">${SHIRT[side](fill, shade)}<img src="${img(art)}" style="position:absolute;${place}"></div><figcaption>${label}</figcaption></figure>`
 }
 const COLORS = [['Black', '#141414', '#2b2b2b', 'dark'], ['Soft pink', '#f4c9da', '#e6a9c3', 'light'], ['Plum', '#4a1733', '#6a2a4b', 'dark'], ['Heather grey', '#c9c9cc', '#aeaeb3', 'light']]
