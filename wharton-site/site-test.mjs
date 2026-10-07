@@ -540,7 +540,7 @@ const LIVEBLANK = await serve(dirLiveEmpty)   // live, but no timetable yet: the
     const wrongly = []
     for (const [label, respond] of notOk) {
       const r = await run(respond, good)
-      if (r.state.success || r.state.formHidden || !r.state.errorShown || !/\(281\) 393-7983/.test(r.state.errorText) || r.state.btn) wrongly.push(label)
+      if (r.state.success || r.state.formHidden || !r.state.errorShown || !/\(832\) 400-5532/.test(r.state.errorText) || r.state.btn) wrongly.push(label)
     }
     check('B12 success is NEVER shown unless the CRM said ok:true (error + phone number instead, form kept)', wrongly.length === 0, wrongly.join(', '))
     const hp = await run(r => r.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' }), { ...good, company: 'http://spam.example' })

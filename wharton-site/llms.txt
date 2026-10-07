@@ -8,7 +8,7 @@ This file follows the llms.txt convention (https://llmstxt.org). Every fact here
 
 - **Address**: 201 N Houston St, Wharton, TX 77488
 - **Opening**: Classes start February 1, 2027
-- **Phone**: (281) 393-7983
+- **Phone**: (832) 400-5532
 - **Email**: info@labyrinth.vision
 - **First class**: free
 - **Programs**: kids jiu-jitsu, women's self defense jiu-jitsu, adult kickboxing (Tuesday and Thursday), adult jiu-jitsu (adult jiu-jitsu coming soon)

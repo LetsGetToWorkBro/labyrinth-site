@@ -2532,6 +2532,8 @@ def page_privacy(S):
         if src.count(old) != 1:
             raise SystemExit("privacy-policy.html no longer contains exactly one copy of:\n  %s\nUpdate page_privacy() in scripts/build_wharton.py." % old[:100])
         src = src.replace(old, new)
+    # The main site's policy gives the Fulshear number; this site's contact number is Wharton's own.
+    src = src.replace('tel:+12813937983', 'tel:' + S.tel).replace('(281) 393-7983', S.phone)
 
     # Nav and mobile nav: from <!-- NAV --> up to <!-- PAGE HERO -->
     new_nav = f"""<!-- NAV -->

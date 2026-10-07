@@ -163,7 +163,7 @@ try {
     await page.waitForSelector('#bookingForm')
     await fillAndSubmit(page)
     await page.waitForSelector('.booking-error')
-    check('B22 when the CRM refuses, the visitor is told, with the phone number, and is not shown "booked"', (await page.textContent('.booking-error')).includes('(281) 393-7983') && !(await page.$('.booking-success')))
+    check('B22 when the CRM refuses, the visitor is told, with the phone number, and is not shown "booked"', (await page.textContent('.booking-error')).includes('(832) 400-5532') && !(await page.$('.booking-success')))
     await ctx.close()
   }
 
