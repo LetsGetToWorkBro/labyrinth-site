@@ -15,6 +15,11 @@
 /2nd-annniversary-celebration   /                   301
 /sauna-cold-plunge-dashboard    /                   301
 
+# Old Wix-era links to the business name itself (Search Console reports /Labyrinth as a 404). Path matching is
+# case sensitive, so both spellings are listed; neither has a page of its own, so both go home.
+/Labyrinth                      /                   301
+/labyrinth                      /                   301
+
 # Wix leftovers. `fera.admin.js` was a review-app asset on the old platform and
 # `/1/1` is a stray gallery path; neither has an equivalent, so both go home
 # rather than 404.
