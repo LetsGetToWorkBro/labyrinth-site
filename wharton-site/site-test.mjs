@@ -310,7 +310,7 @@ await linkCheck('live', dirLive)
     find("Women's Self Defense Jiu-Jitsu", 'Friday')[0].start === '18:00' && find("Women's Self Defense Jiu-Jitsu", 'Friday')[0].end === '19:00' && find("Women's Self Defense Jiu-Jitsu", 'Monday').length === 0 &&
     find("Women's Self Defense Jiu-Jitsu", 'Wednesday')[0].start === '18:00' && committedCfg.kids_ages === '', JSON.stringify(real).slice(0, 200))
   const times = new Set(htmlFiles(dirReal).flatMap(f => [...strip(read(dirReal, f)).matchAll(/\b\d{1,2}:\d{2}\s?(?:AM|PM)\b/g)].map(m => m[0])).concat([...read(dirReal, 'llms.txt').matchAll(/\b\d{1,2}:\d{2}\s?(?:AM|PM)\b/g)].map(m => m[0])))
-  check('K6 the only clock times anywhere on the real site are 5:00 to 7:00 PM (nothing invented)', [...times].every(t => /^[567]:00 PM$/.test(t)) && times.size === 3, [...times].join(', '))
+  check('K6 the only clock times anywhere on the real site are the class times (5 to 7 PM) and the 4 to 8 PM opening hours (nothing invented)', [...times].every(t => /^[45678]:00 PM$/.test(t)) && times.size === 5, [...times].join(', '))
   const rs = htmlFiles(dirReal).filter(f => f !== 'privacy-policy.html').map(f => f + strip(read(dirReal, f))).join(' ')
   check('K7 the real site: no kids age range is claimed anywhere', !/ages? (3|4|5|6|7|8|9|10|11|12)\b|aged \d|(\d) to (\d+) years/i.test(rs))
   const adultReal = strip(read(dirReal, 'programs/adult-bjj-wharton.html'))
@@ -335,8 +335,11 @@ await linkCheck('live', dirLive)
   const og = read(join(REPO, 'scripts'), 'og-wharton.html')
   check('K14 the OG image text does not mention teens', !/teen/i.test(og))
   const home = strip(read(dirReal, 'index.html'))
-  check('K15 the real home page: price shown once as the single grand opening membership, address shown, no hours or opening date invented',
-    /Grand Opening Membership/.test(home) && /\$150/.test(home) && /201 N Houston St/.test(home) && !/Classes start|Now open in Wharton/.test(home))
+  check('K15 the real home page: the single grand opening membership price, the address, and the owner\'s opening date and hours (Feb 1 2027, 4 to 8 PM Tue to Fri) and nothing else',
+    /Grand Opening Membership/.test(home) && /\$150/.test(home) && /201 N Houston St/.test(home) && /February 1, 2027/.test(home) && /4:00 PM to 8:00 PM/.test(strip(read(dirReal, 'contact.html'))) && !/Now open in Wharton/.test(home))
+  const cdHtml = read(dirReal, 'index.html')
+  check('K16 the home page has the big countdown to 1 Feb 2027 (start of the day, Central) with its four clock units, and the booking calendar will not sell a class before that day',
+    /data-countdown="2027-02-01T00:00:00-06:00"/.test(cdHtml) && ['d', 'h', 'm', 's'].every(k => cdHtml.includes('data-cd="' + k + '"')) && /"firstBookable": "2027-02-01"/.test(cdHtml))
 }
 
 // ── F: nothing forbidden is on any page, in either mode ──

@@ -172,9 +172,11 @@ try {
     // find the second upcoming Tuesday to close, and an opening day three weeks out
     const { ctx, page } = await open('/schedule', {
       patchHtml: html => {
-        const now = new Date()
+        // the second Tuesday the calendar offers: after the gym's first bookable day if there is one, otherwise a week or two out
+        const fb = (html.match(/"firstBookable":\s*"(\d{4}-\d{2}-\d{2})"/) || [])[1]
+        const start = fb ? new Date(fb + 'T12:00:00') : new Date()
         const closed = []
-        const d = new Date(now); d.setDate(d.getDate() + ((2 - d.getDay() + 7) % 7) + 7) // a Tuesday a week or two out
+        const d = new Date(start); d.setDate(d.getDate() + ((2 - d.getDay() + 7) % 7) + 7)
         closed.push({ date: ymdOf(d), reason: 'Seminar' })
         return html.replace(/"closed":\s*\[[^\]]*\]/, '"closed":' + JSON.stringify(closed))
       },

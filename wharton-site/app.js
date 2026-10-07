@@ -92,6 +92,35 @@
     showBar();
   }
 
+  // ===== OPENING COUNTDOWN =====
+  // Fills the big clock on the home page from data-countdown (an ISO time with Central's offset) and, when the
+  // moment arrives, swaps the clock for "We are open". Without JavaScript the headline still states the date.
+  document.querySelectorAll('[data-countdown]').forEach(function (box) {
+    var target = new Date(box.getAttribute('data-countdown')).getTime();
+    if (isNaN(target)) return;
+    var num = function (k) { return box.querySelector('[data-cd="' + k + '"]'); };
+    var pad = function (n) { return n < 10 ? '0' + n : String(n); };
+    function tick() {
+      var left = Math.max(0, target - Date.now());
+      if (left === 0) {
+        box.classList.add('countdown--open');
+        var open = box.querySelector('.countdown__open');
+        if (open) open.hidden = false;
+        var title = box.querySelector('.countdown__title');
+        if (title) title.textContent = 'Labyrinth BJJ Wharton is open';
+        return true;
+      }
+      var s = Math.floor(left / 1000);
+      var d = Math.floor(s / 86400); s -= d * 86400;
+      var h = Math.floor(s / 3600); s -= h * 3600;
+      var m = Math.floor(s / 60); s -= m * 60;
+      num('d').textContent = d; num('h').textContent = pad(h); num('m').textContent = pad(m); num('s').textContent = pad(s);
+      return false;
+    }
+    if (tick()) return;
+    var timer = setInterval(function () { if (tick()) clearInterval(timer); }, 1000);
+  });
+
   // ===== THE ENQUIRY FORM =====
   /*
    * Posts to the same CRM endpoint as labyrinth.vision (the book-trial

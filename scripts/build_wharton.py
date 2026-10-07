@@ -137,6 +137,21 @@ class Site:
         return ("past" if d <= built else "future", pretty)
 
     @property
+    def opening_target(self):
+        """ISO timestamp (Central) of the start of the opening day, for the countdown, or ''."""
+        if not self.live:
+            return ""
+        raw = (self.cfg.get("opening_date") or "").strip()
+        try:
+            d = datetime.date.fromisoformat(raw)
+        except ValueError:
+            return ""
+        from zoneinfo import ZoneInfo
+        t = datetime.datetime(d.year, d.month, d.day, tzinfo=ZoneInfo("America/Chicago"))
+        off = t.strftime("%z")
+        return t.strftime("%Y-%m-%dT%H:%M:%S") + off[:3] + ":" + off[3:]
+
+    @property
     def schedule(self):
         return normalise_schedule(self.cfg.get("schedule") or []) if self.live else []
 
@@ -982,6 +997,35 @@ def price_cards(S, audiences=None, limit=None):
     return "\n".join(out)
 
 
+def countdown_block(S):
+    """The big countdown to opening day. Only while the opening date is in the future; the script (app.js)
+    fills the numbers and swaps in "We are open" the moment the date arrives."""
+    o = S.opening
+    if not o or o[0] != "future" or not S.opening_target:
+        return ""
+    price = ""
+    if S.pricing:
+        p = S.pricing[0]
+        price = f'<p class="countdown__sub">{esc(p["name"])}: <strong>{esc(money(p["price"]))}{esc(period_label(p["period"]))}</strong> &middot; Your first class is free</p>'
+    else:
+        price = '<p class="countdown__sub">Your first class is free</p>'
+    cta = ('<a href="/schedule#book" class="btn btn--gold countdown__btn" data-book-trial>Book Your Free First Class</a>' if S.bookable
+           else '<a href="#free-class" class="btn btn--gold countdown__btn">Get Your Free First Class</a>')
+    units = "".join(f'<div class="countdown__unit"><span class="countdown__num" data-cd="{k}">--</span><span class="countdown__lbl">{l}</span></div>'
+                    for k, l in (("d", "Days"), ("h", "Hours"), ("m", "Minutes"), ("s", "Seconds")))
+    return f"""<section class="countdown" id="opening" data-countdown="{S.opening_target}">
+  <div class="container">
+    <p class="section-label">Grand opening</p>
+    <h2 class="countdown__title">Labyrinth BJJ Wharton opens <span>{esc(o[1])}</span></h2>
+    <div class="countdown__clock" role="timer" aria-label="Time until Labyrinth BJJ Wharton opens">{units}</div>
+    {price}
+    <div class="countdown__open" hidden><strong>We are open!</strong> Come and try a class on us.</div>
+    {cta}
+  </div>
+</section>
+"""
+
+
 def opening_line(S):
     o = S.opening
     if not o:
@@ -1335,6 +1379,7 @@ def page_home(S):
   </div>
 </section>
 
+{countdown_block(S)}
 <section class="prog-section prog-section--surface" id="schedule">
   <div class="container">
 {schedule_head}

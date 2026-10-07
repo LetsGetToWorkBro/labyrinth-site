@@ -26,8 +26,19 @@
     "state": "TX",
     "zip": "77488"
   },
-  "opening_date": "",
-  "hours": [],
+  "opening_date": "2027-02-01",
+  "hours": [
+    {
+      "days": [
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday"
+      ],
+      "opens": "16:00",
+      "closes": "20:00"
+    }
+  ],
   "schedule": [
     {
       "day": "Wednesday",
@@ -121,5 +132,5 @@
     "facebook": ""
   },
   "closed_dates": [],
-  "first_bookable": ""
+  "first_bookable": "2027-02-01"
 }

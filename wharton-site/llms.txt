@@ -7,12 +7,17 @@ This file follows the llms.txt convention (https://llmstxt.org). Every fact here
 ## The essentials
 
 - **Address**: 201 N Houston St, Wharton, TX 77488
+- **Opening**: Classes start February 1, 2027
 - **Phone**: (281) 393-7983
 - **Email**: info@labyrinth.vision
 - **First class**: free
 - **Programs**: kids jiu-jitsu, women's self defense jiu-jitsu, adult kickboxing (Tuesday and Thursday), adult jiu-jitsu (adult jiu-jitsu coming soon)
 - **Lead instructor**: Joe Herrera, brown belt under Prof. Anthony Curry
 - **Map**: https://www.google.com/maps/search/?api=1&query=201+N+Houston+St+Wharton+TX+77488
+
+## Hours
+
+- Tue to Fri: 4:00 PM to 8:00 PM
 
 ## Class schedule
 
