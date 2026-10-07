@@ -12,7 +12,7 @@ This file follows the llms.txt convention (https://llmstxt.org). Every fact here
 - **Email**: info@labyrinth.vision
 - **First class**: free
 - **Programs**: kids jiu-jitsu, women's self defense jiu-jitsu, adult kickboxing (Tuesday and Thursday), adult jiu-jitsu (adult jiu-jitsu coming soon)
-- **Lead instructor**: Joe Herrera, brown belt under Prof. Anthony Curry
+- **Lead instructor**: Joe Herrera, brown belt under Prof. Anthony Curry and a certified Full Instructor in kickboxing and Jeet Kune Do concepts
 - **Map**: https://www.google.com/maps/search/?api=1&query=201+N+Houston+St+Wharton+TX+77488
 
 ## Hours

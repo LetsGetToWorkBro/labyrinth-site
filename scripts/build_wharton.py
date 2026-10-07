@@ -1566,7 +1566,7 @@ def page_adult(S):
 <section class="prog-section prog-section--surface" id="kickboxing">
   <div class="container">
 """ + section_head('Also at Wharton', 'ADULT KICKBOXING') + f"""
-    <p class="prog-prose fade-in" style="max-width:62ch">Adult kickboxing runs at Labyrinth BJJ Wharton on Tuesday and Thursday evenings. Your first class is free, with no commitment. Call or email us if you have questions about what to expect.</p>
+    <p class="prog-prose fade-in" style="max-width:62ch">Adult kickboxing runs at Labyrinth BJJ Wharton on Tuesday and Thursday evenings and is taught by <a href=\"/coaches/joe-herrera#certified\">Joe Herrera, a certified Full Instructor in kickboxing</a>. Your first class is free, with no commitment. Call or email us if you have questions about what to expect.</p>
     {kb_sched}
   </div>
 </section>
@@ -1929,7 +1929,7 @@ def coach_card_joe(S):
           <h3 class="coach-card__name">Joe Herrera</h3>
           <p class="coach-card__role">Lead Instructor, Wharton</p>
           <div class="coach-card__rank">{belt_bar('brown')}<span class="coach-card__rank-label">Brown Belt</span></div>
-          <p class="coach-card__bio">Brown belt under Prof. Anthony Curry and the lead instructor at Labyrinth BJJ Wharton. <a href="/coaches/joe-herrera" class="coach-card__link">About Joe &rarr;</a></p>
+          <p class="coach-card__bio">Brown belt under Prof. Anthony Curry, certified Full Instructor in kickboxing, and the lead instructor at Labyrinth BJJ Wharton. <a href="/coaches/joe-herrera" class="coach-card__link">About Joe &rarr;</a></p>
         </div>
       </div>"""
 
@@ -2016,15 +2016,22 @@ def page_coaches(S):
 
 def page_joe(S):
     trail = [("/coaches/", "Coaches"), ("/coaches/joe-herrera", "Joe Herrera")]
-    desc = "Joe Herrera, brown belt under Prof. Anthony Curry, lead instructor at Labyrinth BJJ Wharton in Wharton, TX."
+    desc = ("Joe Herrera, lead instructor at Labyrinth BJJ Wharton: brown belt under Prof. Anthony Curry, "
+            "certified kickboxing Full Instructor, MMA and BJJ competitor.")
     p = Page("/coaches/joe-herrera", "coaches/joe-herrera.html", "Joe Herrera, Lead Instructor | Labyrinth BJJ Wharton", desc,
              og_title="Joe Herrera: Lead Instructor, Labyrinth BJJ Wharton", crumbs=trail, priority="0.8")
     person = {"@context": "https://schema.org", **joe_person(S),
               "description": desc,
               "worksFor": {"@id": S.url + "/#business", "@type": "SportsActivityLocation", "name": SITE_NAME, "url": S.url},
-              "hasCredential": {"@type": "EducationalOccupationalCredential", "credentialCategory": "Brazilian Jiu-Jitsu Brown Belt"}}
+              "hasCredential": [
+                  {"@type": "EducationalOccupationalCredential", "credentialCategory": "Brazilian Jiu-Jitsu Brown Belt"},
+                  {"@type": "EducationalOccupationalCredential", "credentialCategory": "Full Instructor, Kickboxing and Jeet Kune Do Concepts",
+                   "dateCreated": "2026-04-28",
+                   "recognizedBy": {"@type": "Organization", "name": "Gomez Academy of Martial Arts of Wharton, Texas"}}]}
     faqs = [("Who is Joe Herrera?", "Joe Herrera is a brown belt under Prof. Anthony Curry and the lead instructor at Labyrinth BJJ Wharton."),
             ("Who does Joe train under?", "Prof. Anthony Curry, the owner and head instructor of Labyrinth BJJ, who founded Labyrinth in 2021 and is a black belt under Matt Leighton of Citadel BJJ."),
+            ("Is Joe certified to teach kickboxing?", "Yes. On April 28, 2026 the Gomez Academy of Martial Arts of Wharton, Texas certified Joe as a Full Instructor in kickboxing and Jeet Kune Do concepts."),
+            ("Has Joe competed?", "Yes. Joe had his first cage fight at 22, has competed more than a dozen times in Brazilian jiu-jitsu, and started his MMA journey at 18, after high school football."),
             ("How can I meet Joe?", "Book a free first class on this page. It is the best way to meet the Wharton team.")]
     p.schema = [person, breadcrumb_schema(S, trail), faq_schema(faqs)]
     p.body = crumbs_html([("/", "Home"), ("/coaches/", "Coaches"), (None, "Joe Herrera")]) + f"""
@@ -2034,7 +2041,7 @@ def page_joe(S):
       <div>
         <p class="section-label">Lead Instructor &middot; Labyrinth BJJ Wharton</p>
         <h1 class="prog-hero__title">Joe Herrera</h1>
-        <p class="prog-hero__lead">Joe Herrera, brown belt under Prof. Anthony Curry, lead instructor at Labyrinth BJJ Wharton.</p>
+        <p class="prog-hero__lead">Lead instructor at Labyrinth BJJ Wharton: a brown belt under Prof. Anthony Curry, a certified Full Instructor in kickboxing, and a competitor in both MMA and jiu-jitsu.</p>
         <div class="prog-hero__cta">
           <a href="#free-class" class="btn btn--gold">Train With Us</a>
           <a href="/programs/" class="btn btn--ghost">See the Programs</a>
@@ -2045,13 +2052,46 @@ def page_joe(S):
     <div class="prog-facts">
       <div class="prog-fact"><div class="prog-fact__label">Rank</div><div class="prog-fact__value"><em>Brown belt</em></div></div>
       <div class="prog-fact"><div class="prog-fact__label">Trains under</div><div class="prog-fact__value">Prof. Anthony Curry</div></div>
-      <div class="prog-fact"><div class="prog-fact__label">Role</div><div class="prog-fact__value">Lead instructor</div></div>
-      <div class="prog-fact"><div class="prog-fact__label">Gym</div><div class="prog-fact__value">Labyrinth BJJ Wharton</div></div>
+      <div class="prog-fact"><div class="prog-fact__label">Kickboxing</div><div class="prog-fact__value">Full Instructor</div></div>
+      <div class="prog-fact"><div class="prog-fact__label">Competed</div><div class="prog-fact__value">Cage fights &amp; <em>12+</em> BJJ events</div></div>
     </div>
   </div>
 </header>
 
-<section class="prog-section prog-section--surface">
+<section class="prog-section">
+  <div class="container">
+{section_head('His story', 'FROM FOOTBALL TO THE CAGE')}
+    <div class="split split--portrait">
+      <div class="prog-prose fade-in">
+        <p>Joe started his martial arts journey at 18, right after high school football. At 22 he had his first cage fight, and since then he has competed more than a dozen times in Brazilian jiu-jitsu.</p>
+        <p>Today he trains under Prof. Anthony Curry and leads Labyrinth BJJ Wharton: the kids jiu-jitsu classes, adult kickboxing, and women's self defense. He has competed in the cage and on the jiu-jitsu mat, and he brings that experience to every class.</p>
+      </div>
+      <div class="prog-facts prog-facts--stack stagger">
+        <div class="prog-fact"><div class="prog-fact__label">Started</div><div class="prog-fact__value">MMA at <em>18</em></div></div>
+        <div class="prog-fact"><div class="prog-fact__label">First cage fight</div><div class="prog-fact__value">At <em>22</em></div></div>
+        <div class="prog-fact"><div class="prog-fact__label">Jiu-jitsu competition</div><div class="prog-fact__value"><em>12+</em> times</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="prog-section prog-section--surface" id="certified">
+  <div class="container">
+{section_head('Credentials', 'CERTIFIED FULL INSTRUCTOR', 'Kickboxing and Jeet Kune Do concepts')}
+    <div class="split">
+      <div class="prog-prose fade-in">
+        <p>On April 28, 2026, the Gomez Academy of Martial Arts of Wharton, Texas certified Joe as a <strong>Full Instructor</strong> in the art and science of kickboxing and Jeet Kune Do concepts, after comprehensive training under the academy's standards.</p>
+        <p>That is the kickboxing behind the adult kickboxing classes at Labyrinth BJJ Wharton. His jiu-jitsu rank is a brown belt under Prof. Anthony Curry.</p>
+      </div>
+      <figure class="cert fade-in">
+        {picture('joe-certificate', "Framed certificate from the Gomez Academy of Martial Arts of Wharton, Texas, naming Joe Herrera a Full Instructor in kickboxing and Jeet Kune Do concepts, dated April 28, 2026")}
+        <figcaption>Joe's Full Instructor certificate, Gomez Academy of Martial Arts, April 28, 2026</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section class="prog-section">
   <div class="container">
 {section_head('Lineage', 'WHO HE TRAINS UNDER')}
     <div class="lineage">
@@ -2826,7 +2866,7 @@ Labyrinth BJJ was founded in 2021 by Prof. Anthony Curry and is ranked in the to
         out.append("- **Opening**: " + op)
     out += [f"- **Phone**: {S.phone}", f"- **Email**: {S.email}", "- **First class**: free",
             "- **Programs**: kids jiu-jitsu, women's self defense jiu-jitsu, adult kickboxing (Tuesday and Thursday), adult jiu-jitsu (adult jiu-jitsu coming soon)",
-            "- **Lead instructor**: Joe Herrera, brown belt under Prof. Anthony Curry"]
+            "- **Lead instructor**: Joe Herrera, brown belt under Prof. Anthony Curry and a certified Full Instructor in kickboxing and Jeet Kune Do concepts"]
     if S.kids_ages:
         out.append("- **Kids classes**: %s for now" % S.kids_ages)
     if S.map_url:
