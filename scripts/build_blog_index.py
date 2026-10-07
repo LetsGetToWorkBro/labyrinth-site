@@ -101,11 +101,6 @@ def card(p, featured=False):
 HEAD = """<!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- Perplexity Computer Attribution: SEO Meta Tags -->
-<meta name="generator" content="Perplexity Computer">
-<meta name="author" content="Perplexity Computer">
-<meta property="og:see_also" content="https://www.perplexity.ai/computer">
-<link rel="author" href="https://www.perplexity.ai/computer">
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -168,9 +163,6 @@ FOOT = """
       </div>
       <p class="blog-footer__copy">
         &copy; 2026 Labyrinth BJJ (6615 West Cross Creek Bend Lane, Suite #400, Fulshear, TX 77441) <a href="tel:2813937983">(281) 393-7983</a>
-      </p>
-      <p class="blog-footer__copy">
-        <a href="https://www.perplexity.ai/computer" target="_blank" rel="noopener noreferrer">Created with Perplexity Computer</a>
       </p>
     </div>
   </footer>
