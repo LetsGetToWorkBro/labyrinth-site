@@ -2,9 +2,10 @@
  * The RSVP form on /self-defense-for-women.
  *
  * The page works without this file for everything except sending: the details,
- * the donation link and the phone number are plain HTML. This adds validation,
- * the post to the event-rsvp edge function, the confirmation, and two
- * date-aware touches (a thank-you after a donation, and "this event has passed").
+ * the link to the donation page and the phone number are plain HTML. This adds
+ * validation, the post to the event-rsvp edge function, the confirmation, and a
+ * date-aware touch ("this event has passed"). The fundraiser total and the
+ * thank-you after a gift belong to the donation page now: see fund.js.
  *
  * The checks below are the same ones the server makes, in the same order, so a
  * message the server would send has already been shown next to the field. The
@@ -15,50 +16,6 @@
 
   var form = document.getElementById('rsvp-form');
   if (!form) return;
-
-  // ── Fundraiser total ────────────────────────────────────────────────────────
-  // Real numbers from Stripe via the event-donations function. If it can't be
-  // reached the page keeps its plain "goal" line and says nothing false.
-  (function fundraiser() {
-    var box = document.getElementById('fund');
-    if (!box || !window.fetch) return;
-    var money = function (n) { return '$' + (Math.round(n * 100) % 100 === 0 ? String(Math.round(n)) : n.toFixed(2)); };
-    var bust = /[?&]donated=1\b/.test(window.location.search) ? ('?t=' + Date.now()) : '';
-    var ctrl = typeof AbortController === 'function' ? new AbortController() : null;
-    var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 8000);
-    function fill(listId, rows) {
-      var ol = document.getElementById(listId);
-      ol.textContent = '';
-      rows.forEach(function (r) {
-        var li = document.createElement('li');
-        var who = document.createElement('span'); who.textContent = r.name;
-        var amt = document.createElement('strong'); amt.textContent = money(r.amount);
-        li.appendChild(who); li.appendChild(amt); ol.appendChild(li);
-      });
-    }
-    fetch(box.getAttribute('data-endpoint') + bust, { signal: ctrl ? ctrl.signal : undefined })
-      .then(function (res) { return res.ok ? res.json() : Promise.reject(); })
-      .then(function (d) {
-        clearTimeout(timer);
-        if (typeof d.raised !== 'number' || !(d.goal > 0)) return;
-        var pct = Math.max(0, Math.min(100, Math.round(d.raised / d.goal * 100)));
-        document.getElementById('fund-raised').textContent = money(d.raised);
-        document.getElementById('fund-goal').textContent = money(d.goal);
-        document.getElementById('fund-fill').style.width = pct + '%';
-        document.getElementById('fund-bar').setAttribute('aria-valuenow', String(Math.min(d.raised, d.goal)));
-        if (d.count > 0) {
-          var c = document.getElementById('fund-count');
-          c.textContent = d.count + (d.count === 1 ? ' supporter' : ' supporters');
-          c.hidden = false;
-          document.getElementById('fund-first').hidden = true;
-          fill('fund-top', d.top || []);
-          fill('fund-recent', d.recent || []);
-          document.getElementById('fund-lists').hidden = false;
-        }
-        if (d.raised >= d.goal) document.getElementById('fund-first').hidden = true;
-      })
-      .catch(function () { clearTimeout(timer); });
-  })();
 
   var endpoint = form.getAttribute('data-endpoint');
   var eventSlug = form.getAttribute('data-event');
@@ -176,11 +133,6 @@
       } else { say(pageUrl); }
     });
   })();
-
-  // Stripe sends donors back here with ?donated=1 (set on the Payment Link).
-  try {
-    if (/[?&]donated=1\b/.test(window.location.search)) $('rsvp-donated').hidden = false;
-  } catch (e) { /* the thank-you is a nicety */ }
 
   // ── Validation (mirrors the server) ───────────────────────────────────────
   var hasLetter;

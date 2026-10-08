@@ -63,6 +63,12 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://labyrinth.vision/donate</loc>
+    <lastmod>2026-10-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://labyrinth.vision/schedule</loc>
     <lastmod>2026-08-05</lastmod>
     <changefreq>weekly</changefreq>

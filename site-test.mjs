@@ -33,7 +33,7 @@ const programs = readdirSync(join(ROOT,'programs')).filter(f=>f.endsWith('.html'
 const areas = readdirSync(join(ROOT,'areas')).filter(f=>f.endsWith('.html')&&f!=='index.html').map(f=>'/areas/'+f.replace('.html',''))
 const coaches = readdirSync(join(ROOT,'coaches')).filter(f=>f.endsWith('.html')&&f!=='index.html').map(f=>'/coaches/'+f.replace('.html',''))
 const pages = ['/', '/blog/', '/programs/', '/areas/', '/coaches/', '/schedule', '/pricing',
-  '/support', '/privacy-policy', '/ennova', '/self-defense-for-women', '/pink-october', '/legacy/', '/legacy/transfer',
+  '/support', '/privacy-policy', '/ennova', '/self-defense-for-women', '/donate', '/pink-october', '/legacy/', '/legacy/transfer',
   ...posts, ...programs, ...areas, ...coaches]
 const broken = []
 for (const path of pages) {
@@ -48,7 +48,7 @@ for (const path of pages) {
   }
 }
 check('L1 no broken internal links', broken.length === 0, '\n    ' + broken.slice(0,8).join('\n    '))
-check('L1 all 49 pages served 200', pages.length === 49, 'pages: ' + pages.length)
+check('L1 all 50 pages served 200', pages.length === 50, 'pages: ' + pages.length)
 
 // ── L1b: every program page carries the schema and the canonical it exists for ──
 // A program page whose Service block is missing is still a page, and still
@@ -126,7 +126,7 @@ const fakeAddress = areas.filter(p => {
 check('L1g no area page invents a location', fakeAddress.length === 0, fakeAddress.join(', '))
 
 // ── L1h: the generated pages match their generator ──
-const generated = ['schedule.html','pricing.html','support.html','ennova.html','self-defense-for-women.html','pink-october.html',
+const generated = ['schedule.html','pricing.html','support.html','ennova.html','self-defense-for-women.html','donate.html','pink-october.html',
   'legacy/index.html','legacy/transfer.html','coaches/index.html',
   ...coaches.map(c=>c.slice(1)+'.html')]
 const genBefore = generated.map(f=>readFileSync(join(ROOT,f),'utf8'))
@@ -448,14 +448,15 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   check('L1x it names the cause and where the money goes',
     /breast cancer/i.test(text) && /directly to a family affected by breast cancer/i.test(text))
   check('L1x it says merch will be sold at the event', /selling merch at the event/i.test(text))
-  const OTHER = 'https://donate.stripe.com/14AdRa0tL1Ea1Br3bJgjC0a'
-  const amts = await rp.$$eval('#donate a.rsvp-give__amt', as => as.map(a => [a.textContent.trim(), a.getAttribute('href'), a.target, a.rel]))
-  check('L1x donation buttons: $1, $3, $5, $10, $25, $50, $100 and Other, each its own Stripe link that opens safely',
-    amts.map(a => a[0]).join() === '$1,$3,$5,$10,$25,$50,$100,Other amount'
-      && amts.every(([, h, t, r]) => /^https:\/\/donate\.stripe\.com\/\w+$/.test(h) && t === '_blank' && /noopener/.test(r))
-      && new Set(amts.map(a => a[1])).size === 8 && amts[7][1] === OTHER, JSON.stringify(amts).slice(0, 200))
-  check('L1x the Donate buttons in the header and after RSVPing lead to the amount picker',
-    (await rp.$$eval('a.btn--pink[href="#donate"]', as => as.length)) >= 2 && (await rp.locator('#donate-pick').count()) === 1)
+  const pointer = await rp.evaluate(() => ({
+    btns: [...document.querySelectorAll('a.btn--pink')].map(a => a.getAttribute('href')),
+    section: document.querySelector('#donate')?.textContent || '',
+    sectionLink: document.querySelector('#donate a.btn--pink')?.getAttribute('href') || '',
+    amounts: document.querySelectorAll('.rsvp-give__amt').length, fund: document.querySelectorAll('#fund').length,
+  }))
+  check('L1x the seminar page carries no second copy of the donation: its Donate buttons and its Help a family section lead to /donate',
+    pointer.btns.length === 3 && pointer.btns.every(h => h === '/donate') && pointer.sectionLink === '/donate'
+      && /two anonymous donors/i.test(pointer.section) && pointer.amounts === 0 && pointer.fund === 0, JSON.stringify(pointer))
   const ld = await rp.$$eval('script[type="application/ld+json"]', ss => ss.map(s => JSON.parse(s.textContent)))
   const ev = ld.find(o => o['@type'] === 'Event')
   check('L1x structured data describes a free event at the right time',
@@ -515,35 +516,6 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   check('L1x the calendar links carry the real time (11:00 AM to 12:30 PM Central is 16:00 to 17:30 UTC) and the place',
     /dates=20261024T160000Z\/20261024T173000Z/.test(cal.g) && /DTSTART:20261024T160000Z/.test(cal.ics) && /Fulshear/.test(cal.ics) && /SUMMARY:Rolling for Ribbons/.test(cal.ics), cal.g.slice(0, 160))
 
-  // The fundraiser: honest at $0, and the real feed rendered when there is one.
-  let feed = { raised: 0, count: 0, goal: 500, top: [], recent: [] }, feedFail = false
-  await rp.route('**/functions/v1/event-donations**', route => feedFail
-    ? route.fulfill({ status: 502, contentType: 'application/json', body: '{"error":"x"}' })
-    : route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(feed) }))
-  await fresh()
-  const f0 = await rp.evaluate(() => ({
-    raised: document.getElementById('fund-raised').textContent, goal: document.getElementById('fund-goal').textContent,
-    first: !document.getElementById('fund-first').hidden, lists: !document.getElementById('fund-lists').hidden,
-    width: document.getElementById('fund-fill').style.width }))
-  check('L1x fundraiser at $0: shows $0 of $500, invites the first gift, and invents no donors',
-    f0.raised === '$0' && f0.goal === '$500' && f0.first && !f0.lists && /^0(%|px)?$/.test(f0.width), JSON.stringify(f0))
-  feed = { raised: 135, count: 3, goal: 500, top: [{ name: 'Sam T.', amount: 100 }, { name: 'Anonymous', amount: 25 }, { name: 'Pat <b>x</b>', amount: 10 }],
-    recent: [{ name: 'Pat <b>x</b>', amount: 10 }, { name: 'Anonymous', amount: 25 }, { name: 'Sam T.', amount: 100 }] }
-  await fresh()
-  const f1 = await rp.evaluate(() => ({
-    raised: document.getElementById('fund-raised').textContent, count: document.getElementById('fund-count').textContent,
-    width: document.getElementById('fund-fill').style.width, now: document.getElementById('fund-bar').getAttribute('aria-valuenow'),
-    first: document.getElementById('fund-first').hidden, top: [...document.querySelectorAll('#fund-top li')].map(l => l.textContent),
-    html: document.getElementById('fund-top').innerHTML.includes('<b>') }))
-  check('L1x fundraiser with gifts: total, percent, supporter count and the leaderboard',
-    f1.raised === '$135' && f1.count === '3 supporters' && f1.width === '27%' && f1.now === '135' && f1.first
-      && f1.top[0] === 'Sam T.$100' && f1.top[1] === 'Anonymous$25', JSON.stringify(f1))
-  check('L1x a donor name is shown as text, never as markup', f1.html === false && f1.top[2].includes('<b>'))
-  feedFail = true
-  await fresh()
-  check('L1x if the total cannot load the page stays calm: $0 line, no error, form and buttons still there',
-    (await rp.textContent('#fund-raised')) === '$0' && (await rp.isVisible('#rsvp-form')) && (await rp.locator('#donate a.rsvp-give__amt').count()) === 8)
-  await rp.unroute('**/functions/v1/event-donations**')
   check('L1x no em dashes in what a visitor reads', !/—/.test(text))
   const pink = await rp.evaluate(() => {
     const rgb = c => c.match(/\d+/g).slice(0, 3).map(Number)
@@ -557,12 +529,12 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
       label,
       ribbons: ribbons.length,
       decorative: ribbons.every(r => r.getAttribute('aria-hidden') === 'true'),
-      donateBtns: [...document.querySelectorAll('a[href="#donate"], .rsvp-give__amt')].map(a => a.classList.contains('btn--pink') || a.classList.contains('rsvp-give__amt')),
+      donateBtns: [...document.querySelectorAll('a[href="/donate"]')].map(a => a.classList.contains('btn--pink')),
       ratio: (hi + 0.05) / (lo + 0.05),
     }
   })
   check('L1x the page wears the awareness pink: ribbons, pink labels, pink Donate buttons',
-    pink.label === 'rgb(229, 143, 181)' && pink.ribbons >= 4 && pink.donateBtns.length >= 3 && pink.donateBtns.every(Boolean),
+    pink.label === 'rgb(229, 143, 181)' && pink.ribbons >= 4 && pink.donateBtns.length === 3 && pink.donateBtns.every(Boolean),
     JSON.stringify(pink))
   check('L1x the ribbons are decoration, hidden from screen readers', pink.decorative)
   check('L1x the pink is readable on the page background (WCAG AA, 4.5:1)', pink.ratio >= 4.5, pink.ratio.toFixed(1))
@@ -694,19 +666,25 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   check('L1x a field the server rejects is marked on that field',
     /email/i.test(await rp.textContent('#rsvp-email-err')) && (await rp.getAttribute('#rsvp-email', 'aria-invalid')) === 'true')
 
-  // After a donation Stripe sends people back with ?donated=1.
-  await rp.goto(URL + '?donated=1', { waitUntil: 'networkidle' })
-  check('L1x a returning donor is thanked', await rp.isVisible('#rsvp-donated'))
+  // After a donation Stripe sends people back here with ?donated=1. They gave on the donation page,
+  // so this page passes them on to it, and it is there that they are thanked.
+  await rp.route('**/functions/v1/event-donations**', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ raised: 0, count: 0, goal: 500, top: [], recent: [] }) }))
+  await rp.goto(URL + '?donated=1', { waitUntil: 'commit' }).catch(() => {})
+  await rp.waitForURL('**/donate?donated=1', { timeout: 5000 }).catch(() => {})
+  await rp.waitForLoadState('networkidle')
+  check('L1x a returning donor is sent from here to the donation page and thanked there',
+    new globalThis.URL(rp.url()).pathname === '/donate' && new globalThis.URL(rp.url()).search === '?donated=1' && await rp.isVisible('#donate-thanks'), rp.url())
+  await rp.unroute('**/functions/v1/event-donations**')
 
   // Homepage: the strip is there before the event, and gone after it.
   await rp.goto('http://localhost:4620/', { waitUntil: 'networkidle' })
   check('L1x the homepage links to the event page before the event',
     (await rp.locator('a.event-strip__link[href="/self-defense-for-women"]').count()) === 1
       && await rp.isVisible('#eventStrip'))
-  check('L1x each October strip link carries a pink ribbon and a pink button (the HYROX row has its own volt look)',
-    (await rp.locator('#eventStrip svg.ribbon').count()) === 2
-      && await rp.evaluate(() => [...document.querySelectorAll('.event-strip__link:not(.event-strip__link--hyrox) .event-strip__icon')].every(i => getComputedStyle(i).color === 'rgb(229, 143, 181)')
-        && [...document.querySelectorAll('.event-strip__link:not(.event-strip__link--hyrox) .event-strip__cta')].every(c => getComputedStyle(c).backgroundColor === 'rgb(229, 143, 181)')))
+  check('L1x each October strip link carries a pink ribbon and a pink button (the HYROX row has its own volt look, the donation card is solid pink with a dark button)',
+    (await rp.locator('#eventStrip svg.ribbon').count()) === 3
+      && await rp.evaluate(() => [...document.querySelectorAll('.event-strip__link:not(.event-strip__link--hyrox):not(.event-strip__link--donate) .event-strip__icon')].every(i => getComputedStyle(i).color === 'rgb(229, 143, 181)')
+        && [...document.querySelectorAll('.event-strip__link:not(.event-strip__link--hyrox):not(.event-strip__link--donate) .event-strip__cta')].every(c => getComputedStyle(c).backgroundColor === 'rgb(229, 143, 181)')))
   check('L1x the strip names the event, the date and the cause',
     /Rolling for Ribbons/.test(await rp.textContent('#eventStrip'))
       && /Oct 24/.test(await rp.textContent('#eventStrip')) && /Breast cancer/i.test(await rp.textContent('#eventStrip')))
@@ -1758,13 +1736,13 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
       return getComputedStyle(sec).pointerEvents === 'none' && +getComputedStyle(sec).zIndex < +getComputedStyle(c).zIndex
     }))
   check('L2h the gold turns pumpkin orange', h1.gold === '#ff8a1f', h1.gold)
-  check('L2h Pink October, the seminar and HYROX are three cards right under the hero, in that order',
-    JSON.stringify(h1.cards) === JSON.stringify(['/pink-october', '/self-defense-for-women', '/hyrox-youngstars']) && h1.stripTop < 1000 && /THIS MONTH AT LABYRINTH/i.test(h1.title), JSON.stringify(h1))
+  check('L2h the donation, Pink October, the seminar and HYROX are four cards right under the hero, in that order',
+    JSON.stringify(h1.cards) === JSON.stringify(['/donate', '/pink-october', '/self-defense-for-women', '/hyrox-youngstars']) && h1.stripTop < 1000 && /THIS MONTH AT LABYRINTH/i.test(h1.title), JSON.stringify(h1))
   check('L2h the seminar card counts down the days and the hero has a line that jumps to the cards',
-    h1.badge === '10 days to go' && /Pink October/.test(h1.chip) && /self defense/i.test(h1.chip) && /HYROX/.test(h1.chip), JSON.stringify(h1))
+    h1.badge === '10 days to go' && /Pink October/.test(h1.chip) && /self defense/i.test(h1.chip) && /HYROX/.test(h1.chip) && !/donat/i.test(h1.chip), JSON.stringify(h1))
   const colors = await hh.evaluate(() => [...document.querySelectorAll('#eventStrip .event-strip__cta')].map(c => getComputedStyle(c).backgroundColor))
-  check('L2h each card keeps its own color on the dark page: pink, pink, volt yellow',
-    colors.join('|') === 'rgb(229, 143, 181)|rgb(229, 143, 181)|rgb(227, 255, 46)', colors.join('|'))
+  check('L2h each card keeps its own color on the dark page: a dark Donate button on the solid pink card, then pink, pink, volt yellow',
+    colors.join('|') === 'rgb(26, 11, 18)|rgb(229, 143, 181)|rgb(229, 143, 181)|rgb(227, 255, 46)', colors.join('|'))
   await hh.dispatchEvent('.season-ghost--1', 'click')
   check('L2h tapping a ghost makes it say Boo', await hh.evaluate(() => document.querySelector('.season-ghost--1').classList.contains('is-boo')))
   check('L2h the hero chip leads to the cards', (await hh.getAttribute('#heroChip', 'href')) === '#eventStrip')
@@ -1833,14 +1811,208 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
     offenders.length === 0, [...new Set(offenders)].slice(0,10).join(', '))
 }
 
-// ── R: the short donation link used on posts and print ──
+// ── D: the donation page ──
+// /donate is one page about one thing: the donation, its goal, how far along it is, the amounts and how the
+// match works. The total is Stripe's, through the event-donations function, so it is mocked here and no real
+// total is read. Its own context with a pinned clock, so the page is checked on a day the seminar line is
+// still showing.
 {
+  const ctx = await browser.newContext({ viewport: { width: 1200, height: 900 } })
+  const dp = await ctx.newPage()
+  await dp.clock.setFixedTime(new Date('2026-10-05T15:00:00Z'))
+  const URLD = 'http://localhost:4620/donate'
+  const OTHER = 'https://donate.stripe.com/14AdRa0tL1Ea1Br3bJgjC0a'
+  const EMPTY = { raised: 0, count: 0, goal: 500, top: [], recent: [] }
+  let feed = EMPTY, feedFail = false, asked = []
+  const answer = route => { asked.push(route.request().url()); return feedFail
+    ? route.fulfill({ status: 502, contentType: 'application/json', body: '{"error":"x"}' })
+    : route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(feed) }) }
+  await dp.route('**/functions/v1/event-donations**', answer)
+  const fresh = async (q = '') => { asked = []; await dp.goto(URLD + q, { waitUntil: 'networkidle' }) }
+
+  await fresh()
+  const text = await dp.evaluate(() => document.body.innerText)
+  check('D1 the page is about the donation and nothing else: no RSVP form, no class booking, no schedule',
+    /Donate to\s+Rolling for Ribbons/i.test(await dp.textContent('h1')) && (await dp.locator('#rsvp-form, #rsvp, .rsvp-sticky').count()) === 0
+      && !/RSVP now|save my spot|first class|schedule/i.test(await dp.textContent('main')), (await dp.textContent('h1')))
+  check('D2 it says where the money goes and how the match works, in the words of the posts',
+    /directly to a family affected by breast cancer/i.test(text)
+      && /two anonymous donors will each match every dollar we raise, up to our \$500 goal/i.test(text)
+      && /\$1,500/.test(text) && /Give \$25\s+it becomes \$75/.test(text) && /Give \$100\s+it becomes \$300/.test(text), text.slice(0, 400))
+  check('D3 nothing is claimed that the academy has not said: no tax-deductible wording',
+    !/tax[- ]deductible|501\s?\(c\)|deduct/i.test(text))
+  const amts = await dp.$$eval('#give a.rsvp-give__amt', as => as.map(a => [a.textContent.trim(), a.getAttribute('href'), a.getAttribute('target')]))
+  check('D4 eight ways to give: $1, $3, $5, $10, $25, $50, $100 and Other, each its own Stripe link, opening in the same tab',
+    amts.map(a => a[0]).join() === '$1,$3,$5,$10,$25,$50,$100,Other amount'
+      && amts.every(([, h, t]) => /^https:\/\/donate\.stripe\.com\/\w+$/.test(h) && t === null)
+      && new Set(amts.map(a => a[1])).size === 8 && amts[7][1] === OTHER, JSON.stringify(amts).slice(0, 200))
+
+  // The fundraiser: honest at $0, and the real feed rendered when there is one.
+  const f0 = await dp.evaluate(() => ({
+    raised: document.getElementById('fund-raised').textContent, goal: document.getElementById('fund-goal').textContent,
+    first: !document.getElementById('fund-first').hidden, lists: !document.getElementById('fund-lists').hidden,
+    width: document.getElementById('fund-fill').style.width }))
+  check('D5 fundraiser at $0: shows $0 of $500, invites the first gift, and invents no donors',
+    f0.raised === '$0' && f0.goal === '$500' && f0.first && !f0.lists && /^0(%|px)?$/.test(f0.width), JSON.stringify(f0))
+  feed = { raised: 135, count: 3, goal: 500, top: [{ name: 'Sam T.', amount: 100 }, { name: 'Anonymous', amount: 25 }, { name: 'Pat <b>x</b>', amount: 10 }],
+    recent: [{ name: 'Pat <b>x</b>', amount: 10 }, { name: 'Anonymous', amount: 25 }, { name: 'Sam T.', amount: 100 }] }
+  await fresh()
+  const f1 = await dp.evaluate(() => ({
+    raised: document.getElementById('fund-raised').textContent, count: document.getElementById('fund-count').textContent,
+    width: document.getElementById('fund-fill').style.width, now: document.getElementById('fund-bar').getAttribute('aria-valuenow'),
+    first: document.getElementById('fund-first').hidden, top: [...document.querySelectorAll('#fund-top li')].map(l => l.textContent),
+    html: document.getElementById('fund-top').innerHTML.includes('<b>') }))
+  check('D6 fundraiser with gifts: total, percent, supporter count and the leaderboard',
+    f1.raised === '$135' && f1.count === '3 supporters' && f1.width === '27%' && f1.now === '135' && f1.first
+      && f1.top[0] === 'Sam T.$100' && f1.top[1] === 'Anonymous$25', JSON.stringify(f1))
+  check('D7 a donor name is shown as text, never as markup', f1.html === false && f1.top[2].includes('<b>'))
+  check('D8 the total is asked for once, plainly, on an ordinary visit', asked.length === 1 && !/[?]/.test(asked[0].split('event-donations')[1]), asked.join())
+  feedFail = true
+  await fresh()
+  check('D9 if the total cannot load the page stays calm: $0 line, no error, and every amount is still there',
+    (await dp.textContent('#fund-raised')) === '$0' && (await dp.locator('#give a.rsvp-give__amt').count()) === 8)
+  feedFail = false; feed = EMPTY
+
+  // The thank-you, for the donor Stripe sends back, and nobody else.
+  await fresh()
+  const quiet = await dp.isVisible('#donate-thanks')
+  await fresh('?donated=1')
+  check('D10 a returning donor is thanked, and only a returning donor; their total is fetched fresh',
+    !quiet && (await dp.isVisible('#donate-thanks')) && /goes directly to a family affected by breast cancer/.test(await dp.textContent('#donate-thanks'))
+      && asked.length === 1 && /[?]t=\d+/.test(asked[0]), asked.join())
+
+  // The line about the seminar goes with the seminar.
+  await fresh()
+  const evBefore = await dp.isVisible('a.pink-link-card[href="/self-defense-for-women"]')
+  await dp.clock.setFixedTime(new Date('2026-10-26T15:00:00Z')); await fresh()
+  check('D11 the line that points to the seminar is there before it and gone after it',
+    evBefore && !(await dp.isVisible('a.pink-link-card')))
+  await dp.clock.setFixedTime(new Date('2026-10-05T15:00:00Z'))
+
+  // Looks: the awareness pink, readable.
+  await fresh()
+  const pk = await dp.evaluate(() => {
+    const rgb = c => c.match(/\d+/g).slice(0, 3).map(Number)
+    const lin = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4 }
+    const lum = ([r, g, b]) => 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
+    const label = getComputedStyle(document.querySelector('.rsvp-label')).color
+    const bg = getComputedStyle(document.querySelector('main')).backgroundColor
+    const hi = Math.max(lum(rgb(label)), lum(rgb(bg))), lo = Math.min(lum(rgb(label)), lum(rgb(bg)))
+    return { label, ribbons: document.querySelectorAll('svg.ribbon').length, decorative: [...document.querySelectorAll('svg.ribbon')].every(r => r.getAttribute('aria-hidden') === 'true'), ratio: (hi + 0.05) / (lo + 0.05) }
+  })
+  check('D12 the page wears the awareness pink, with decorative ribbons, readably (WCAG AA, 4.5:1)',
+    pk.label === 'rgb(229, 143, 181)' && pk.ribbons >= 4 && pk.decorative && pk.ratio >= 4.5, JSON.stringify(pk))
+
+  // On a phone the first row of amounts is on the first screen.
+  const pc = await browser.newContext({ viewport: { width: 390, height: 844 } })
+  const ph = await pc.newPage()
+  await ph.clock.setFixedTime(new Date('2026-10-05T15:00:00Z'))
+  await ph.route('**/functions/v1/event-donations**', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(EMPTY) }))
+  await ph.goto(URLD, { waitUntil: 'networkidle' })
+  const row = await ph.evaluate(() => ({
+    bottom: Math.round(Math.max(...[...document.querySelectorAll('#give a.rsvp-give__amt')].slice(0, 4).map(a => a.getBoundingClientRect().bottom))),
+    wide: document.documentElement.scrollWidth > innerWidth }))
+  check('D13 on a phone the first row of amounts is on the first screen, and nothing sticks out sideways', row.bottom <= 844 && !row.wide, JSON.stringify(row))
+  await pc.close()
+
+  // Found, shared and listed.
+  const meta = await dp.evaluate(() => ({
+    canon: document.querySelector('link[rel=canonical]')?.href, og: document.querySelector('meta[property="og:image"]')?.content,
+    noindex: !!document.querySelector('meta[name="robots"][content*="noindex"]'),
+    types: [...document.querySelectorAll('script[type="application/ld+json"]')].map(x => JSON.parse(x.textContent)['@type']) }))
+  const ogRes = await dp.request.get('http://localhost:4620' + new URL(meta.og).pathname)
+  check('D14 indexable, with its own canonical, a breadcrumb, and a link-preview image that exists',
+    meta.canon === 'https://labyrinth.vision/donate' && !meta.noindex && meta.types.includes('BreadcrumbList')
+      && /\/assets\/og-donate\.jpg$/.test(meta.og) && ogRes.status() === 200, JSON.stringify(meta))
+  check('D15 it is in the sitemap', readFileSync(join(ROOT, 'sitemap.xml'), 'utf8').includes('<loc>https://labyrinth.vision/donate</loc>'))
+  check('D16 no em dashes in what a visitor reads', !/—/.test(text))
   const rd = readFileSync(join(ROOT, '_redirects'), 'utf8')
-  const rule = /^\/donate\s+(\S+)\s+(30[12])\s*$/m.exec(rd)
-  const target = rule && rule[1].split('#')
-  const page = target && existsSync(join(ROOT, target[0].replace(/^\//, '') + '.html')) && readFileSync(join(ROOT, target[0].replace(/^\//, '') + '.html'), 'utf8')
-  check('R1 /donate is a temporary redirect to the donation section of the seminar page, and that section exists',
-    !!rule && rule[2] === '302' && target[0] === '/self-defense-for-women' && target[1] === 'donate' && !!page && /id="donate"/.test(page), rule ? rule[0] : 'no /donate rule')
+  check('D17 /donate is served by the page itself (nothing redirects it) and the other ways people say it land there',
+    !/^\/donate\s/m.test(rd) && ['/Donate', '/donations', '/give'].every(x => new RegExp('^' + x + '\\s+/donate\\s+301\\s*$', 'm').test(rd)))
+  await ctx.close()
+}
+
+// ── H: the way in from the homepage ──
+// People could not find where to donate, so the homepage has four ways in and every one of them goes to /donate: a
+// pink bar under the nav (the first thing on the page, at every width), a button in the nav where it fits, the first
+// item in the phone menu, and the full-width card that opens the "this month" strip. One script takes them all away
+// at the end of Pink October, and none of them touches the nav's room (nav-fit.test.mjs checks that).
+{
+  const URLH = 'http://localhost:4620/'
+  const open = async (w, h, when, menu = false) => {
+    const c = await browser.newContext({ viewport: { width: w, height: h } })
+    const pg = await c.newPage()
+    await pg.clock.setFixedTime(new Date(when))
+    await pg.goto(URLH, { waitUntil: 'load' })
+    return pg
+  }
+  const OPEN = '2026-10-05T15:00:00Z'
+  const d = await open(1440, 900, OPEN)
+  const bar = await d.evaluate(() => {
+    const b = document.getElementById('donateBar'), r = b.getBoundingClientRect(), nav = document.querySelector('.nav').getBoundingClientRect()
+    const rgb = c => c.match(/\d+/g).slice(0, 3).map(Number)
+    const lin = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4 }
+    const lum = ([x, y, z]) => 0.2126 * lin(x) + 0.7152 * lin(y) + 0.0722 * lin(z)
+    const cs = getComputedStyle(b), hi = Math.max(lum(rgb(cs.color)), lum(rgb(cs.backgroundColor))), lo = Math.min(lum(rgb(cs.color)), lum(rgb(cs.backgroundColor)))
+    return { href: b.getAttribute('href'), top: Math.round(r.top), navBottom: Math.round(nav.bottom), bottom: Math.round(r.bottom), width: Math.round(r.width), vw: innerWidth,
+      bg: cs.backgroundColor, ratio: (hi + 0.05) / (lo + 0.05), text: b.querySelector('.donate-bar__long').textContent.replace(/\s+/g, ' ').trim(), vis: r.height > 0 }
+  })
+  check('H1 the first thing under the nav is a pink bar the full width of the screen that goes to /donate, and its text is readable',
+    bar.vis && bar.href === '/donate' && bar.top === bar.navBottom && bar.width === bar.vw && bar.bg === 'rgb(229, 143, 181)' && bar.bottom < 140 && bar.ratio >= 4.5, JSON.stringify(bar))
+  check('H2 it says what the drive is and what the match is, the same as everywhere else',
+    /Rolling for Ribbons/.test(bar.text) && /two anonymous donors will each match every dollar we raise, up to \$500/.test(bar.text) && /Give \$25 and it becomes \$75/.test(bar.text), bar.text)
+  const pill = await d.evaluate(() => {
+    const a = document.querySelector('.nav__links a.nav__donate'), r = a.getBoundingClientRect(), cta = document.querySelector('.nav__cta').getBoundingClientRect()
+    return { href: a.getAttribute('href'), shown: r.width > 0, bg: getComputedStyle(a).backgroundColor, beforeCta: r.right <= cta.left, text: a.textContent.trim() }
+  })
+  check('H3 on a desktop the nav has a pink Donate button right before Try a Free Class',
+    pill.href === '/donate' && pill.shown && pill.bg === 'rgb(229, 143, 181)' && pill.beforeCta && pill.text === 'Donate', JSON.stringify(pill))
+  const card = await d.evaluate(() => {
+    const cards = [...document.querySelectorAll('#eventStrip a.event-strip__link:not([hidden])')], first = cards[0], last = cards[cards.length - 1]
+    return { href: first.getAttribute('href'), cls: first.className, wide: first.getBoundingClientRect().width > 2 * last.getBoundingClientRect().width,
+      top: first.getBoundingClientRect().top < last.getBoundingClientRect().top, text: first.textContent.replace(/\s+/g, ' ') }
+  })
+  check('H4 the "this month" strip opens with a card for the donation that spans the whole row',
+    card.href === '/donate' && /--donate/.test(card.cls) && card.wide && card.top && /Triple your gift/.test(card.text) && /two anonymous donors/i.test(card.text), JSON.stringify(card))
+  const links = await d.$$eval('a[href*="donat"]', as => as.map(a => a.getAttribute('href')))
+  check('H5 every donation link on the homepage is /donate itself: the bar, the nav button, the menu item and the card',
+    links.length === 4 && links.every(h => h === '/donate'), links.join())
+
+  // Where the nav has no room for the button, the bar is still there.
+  const mid = await open(1300, 800, OPEN)
+  check('H6 between 1261px and 1339px the nav button steps aside and the bar is still there',
+    !(await mid.isVisible('.nav__links a.nav__donate')) && await mid.isVisible('#donateBar'))
+
+  // A phone: the bar, then the menu opening on Donate.
+  const ph = await open(390, 844, OPEN)
+  const pb = await ph.evaluate(() => {
+    const b = document.getElementById('donateBar'), r = b.getBoundingClientRect(), nav = document.querySelector('.nav').getBoundingClientRect()
+    return { top: Math.round(r.top), navBottom: Math.round(nav.bottom), height: Math.round(r.height), width: Math.round(r.width), vw: innerWidth,
+      long: getComputedStyle(b.querySelector('.donate-bar__long')).display, short: b.querySelector('.donate-bar__short').textContent, wide: document.documentElement.scrollWidth > innerWidth,
+      heroBadgeTop: Math.round(document.querySelector('.hero__badge').getBoundingClientRect().top) }
+  })
+  check('H7 on a phone the bar sits under the nav, says it in a short line, fits (at most two lines) and does not run into the hero',
+    pb.top === pb.navBottom && pb.width === pb.vw && pb.long === 'none' && /Triple your gift/.test(pb.short) && pb.height <= 64 && !pb.wide && pb.heroBadgeTop >= pb.top + pb.height, JSON.stringify(pb))
+  await ph.click('#hamburger')
+  await ph.waitForTimeout(400)
+  const menu = await ph.evaluate(() => {
+    const items = [...document.querySelectorAll('#mobileNav > a')], a = items[0], r = a.getBoundingClientRect()
+    return { href: a.getAttribute('href'), cls: a.className, visible: r.width > 0 && r.top > 0 && r.bottom < innerHeight, bg: getComputedStyle(a).backgroundColor,
+      fits: a.scrollWidth <= a.clientWidth + 1, text: a.textContent.trim() }
+  })
+  check('H8 the phone menu opens with a big pink Donate item, in full',
+    menu.href === '/donate' && /nav__donate--mobile/.test(menu.cls) && menu.visible && menu.bg === 'rgb(229, 143, 181)' && menu.fits && /Donate to Rolling for Ribbons/.test(menu.text), JSON.stringify(menu))
+
+  // The drive ends with October: the last evening it is there, the next morning all four are gone together.
+  const last = await open(1440, 900, '2026-11-01T04:30:00Z')
+  const lastSeen = await last.evaluate(() => [...document.querySelectorAll('#donateBar, .nav__links a.nav__donate, .event-strip__link--donate')].map(e => e.getBoundingClientRect().width > 0))
+  check('H9 at 11:30 PM on October 31 (Central) the bar, the nav button and the card are still there', lastSeen.length === 3 && lastSeen.every(Boolean), JSON.stringify(lastSeen))
+  const late = await open(1440, 900, '2026-11-01T05:30:00Z')
+  const gone = await late.evaluate(() => [...document.querySelectorAll('[data-donate], .event-strip__link--donate')].map(e => e.hidden || getComputedStyle(e).display === 'none'))
+  check('H10 once October is over the bar, the nav button, the menu item and the card all go together',
+    gone.length === 4 && gone.every(Boolean), JSON.stringify(gone))
+  check('H11 and the page underneath is untouched: the hero is still the first thing and nothing is left over', await late.evaluate(() =>
+    !document.getElementById('donateBar').getBoundingClientRect().height && document.querySelector('.hero__badge').getBoundingClientRect().height > 0))
 }
 
 console.log(`\n${pass} passed, ${fail} failed`)

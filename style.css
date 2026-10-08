@@ -5161,3 +5161,67 @@ body {
 .hero__chip b { color: var(--awareness); }
 .hero__chip:hover { border-color: var(--awareness); background: rgba(229, 143, 181, 0.14); }
 @media (max-width: 600px) { .hero__chip { border-radius: 16px; align-items: flex-start; } }
+
+/* The donation drive on the homepage (scripts/build_pages.py: donate_bar, donate_nav,
+   donate_nav_mobile and the first card of event_strip). Three ways in, all to /donate:
+   a pink line under the nav, a button in the nav, and the full-width card at the top
+   of the strip. One script hides them together when the drive is over. */
+.donate-bar {
+  position: absolute; top: var(--nav-height); left: 0; right: 0; z-index: 4;
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  min-height: 46px; padding: 8px var(--space-4);
+  background: var(--awareness); color: #1a0b12;
+  font-size: 15px; line-height: 1.3; text-align: center; text-decoration: none;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+  transition: background 0.2s;
+}
+.donate-bar[hidden] { display: none; }
+.donate-bar:hover, .donate-bar:focus-visible { background: var(--awareness-hover); }
+.donate-bar .ribbon { flex-shrink: 0; }
+.donate-bar strong { font-weight: 800; }
+.donate-bar__text { min-width: 0; }
+.donate-bar__short { display: none; }
+.donate-bar__go {
+  flex-shrink: 0; padding: 6px 14px; border-radius: 999px; background: #1a0b12; color: #fbd3e3;
+  font-size: 13px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase;
+}
+.donate-bar__go::after { content: " \2192"; }
+@media (max-width: 600px) {
+  .donate-bar { gap: 10px; font-size: 14px; padding: 8px 12px; }
+  .donate-bar__long { display: none; }
+  .donate-bar__short { display: inline; }
+}
+
+.nav__donate {
+  display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px;
+  border-radius: var(--radius-sm); background: var(--awareness); color: #1a0b12;
+  font-size: 14px; font-weight: 700; white-space: nowrap;
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+.nav__donate[hidden] { display: none; }
+.nav__donate:hover { background: var(--awareness-hover); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(229, 143, 181, 0.35); }
+/* The desktop nav has no room for it between 1261px and 1339px (nav-fit.test.mjs); the bar
+   under the nav is there at every width, and the phone menu has its own. */
+@media (max-width: 1339px) { .nav__links .nav__donate { display: none; } }
+.nav__mobile a.nav__donate--mobile {
+  display: flex; align-items: center; gap: 12px; padding: 14px 18px; border: 0; border-radius: 14px;
+  background: var(--awareness); color: #1a0b12; font-size: 22px; font-weight: 700; white-space: normal;
+}
+.nav__mobile a.nav__donate--mobile[hidden] { display: none; }
+.nav__mobile a.nav__donate--mobile span { flex: 1; min-width: 0; line-height: 1.15; }
+
+/* The card: solid pink where the others are tinted, and the full width of the strip. */
+.event-strip__link--donate {
+  background: linear-gradient(135deg, #ee9bc0, #d9709f); border-color: #f3b0cd; color: #1a0b12;
+  box-shadow: 0 14px 44px rgba(229, 143, 181, 0.22);
+}
+.event-strip__link--donate:hover, .event-strip__link--donate:focus-visible { border-color: #fff; box-shadow: 0 16px 50px rgba(229, 143, 181, 0.4); }
+.event-strip__link--donate .event-strip__icon, .event-strip__link--donate .event-strip__eyebrow { color: #4a1230; }
+.event-strip__link--donate .event-strip__text { color: #2a0f1c; }
+.event-strip__link--donate .event-strip__text strong { color: #1a0b12; }
+.event-strip__link--donate .event-strip__cta { background: #1a0b12; color: #fbd3e3; }
+@media (min-width: 900px) {
+  .event-strip__link--donate { grid-column: 1 / -1; flex-direction: row; align-items: center; gap: var(--space-6); padding: 24px 28px; }
+  .event-strip__link--donate .event-strip__text strong { font-size: 32px; }
+  .event-strip__link--donate .event-strip__cta { flex-shrink: 0; padding: 14px 28px; font-size: 17px; }
+}

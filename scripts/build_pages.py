@@ -787,8 +787,10 @@ EVENT = {
     # "Other amount": a Payment Link where the donor types any amount ($1 minimum).
     "donate_url": "https://donate.stripe.com/14AdRa0tL1Ea1Br3bJgjC0a",
     # One fixed-amount Payment Link per button, so a tap goes straight to a
-    # checkout for exactly that amount. Each sends the donor back to
-    # /self-defense-for-women?donated=1 for the thank-you.
+    # checkout for exactly that amount. Each still sends the donor back to
+    # /self-defense-for-women?donated=1; that page passes them on to
+    # /donate?donated=1 for the thank-you (see render_event_rsvp), so nothing in
+    # Stripe has to change when the donation page moves.
     "donate_amounts": [
         (1, "https://donate.stripe.com/7sY14ob8pgz44NDdQngjC0b"),
         (3, "https://donate.stripe.com/4gMaEY1xPfv05RH7rZgjC0c"),
@@ -846,6 +848,40 @@ PINK = {
 }
 
 
+# ── /donate ──────────────────────────────────────────────────────────────────
+#
+# The donation page, and only the donation: what it is for, how far along it is,
+# the amounts, and how the match works. It began as a section at the bottom of
+# the seminar page and people could not find it, so it has a page of its own and
+# the homepage points to it from three places: a bar under the nav, a button in
+# the nav and a card in the "this month" strip. The amounts, the Stripe links and
+# the goal are still EVENT's, because it is the same fundraiser.
+#
+# THE MATCH, as the academy described it: two anonymous donors will each match
+# every dollar raised, up to the goal, so a goal of $500 can become $1,500. If
+# the terms change (a deadline, one donor, a different cap), `donors` here and
+# the words in render_donate and donate_bar are the places.
+#
+# What the homepage shows about it hides itself after "closes_utc", the night
+# Pink October ends. The page itself stays up, so a link on an October post still
+# lands somewhere.
+
+DONATE = {
+    "path": "/donate",
+    "closes_utc": PINK["closes_utc"],
+    "donors": 2,
+}
+
+
+def _money(n):
+    return "${:,}".format(n)
+
+
+def _match_total():
+    """The goal plus what each donor adds: $500 and two donors is $1,500."""
+    return EVENT["goal"] * (1 + DONATE["donors"])
+
+
 def ribbon(size=18):
     """The awareness ribbon, drawn once. It takes its color from CSS (`color` on
     the element around it), so the same markup is pink on the event page and on
@@ -857,13 +893,14 @@ def ribbon(size=18):
 
 
 def event_strip():
-    """The homepage's "This month at Labyrinth" block: Pink October, the free
-    self defense seminar and the kids' HYROX list, as three cards right under the
-    hero. Each card hides itself after its own last day, and the whole block after
-    the last of them, so nobody is invited to something that has gone. The same
-    script fills the seminar's "N days to go" badge and the hero chip (the one
-    line under the hero buttons that jumps here), both from the cards that are
-    still showing."""
+    """The homepage's "This month at Labyrinth" block: the donation drive, Pink
+    October, the free self defense seminar and the kids' HYROX list, as cards right
+    under the hero. Each card hides itself after its own last day, and the whole
+    block after the last of them, so nobody is invited to something that has gone.
+    The same script fills the seminar's "N days to go" badge and the hero chip (the
+    one line under the hero buttons that jumps here), both from the cards that are
+    still showing. The donation card is the full-width one on top: the bar under
+    the nav already says it (see donate_bar), so it stays out of the chip."""
     _, short, time = _event_when()
     rng, _ = _event_range()
     return """<section class="event-strip" id="eventStrip" aria-labelledby="tm-title">
@@ -872,6 +909,15 @@ def event_strip():
       <p class="event-strip__kicker">What&rsquo;s happening</p>
       <h2 class="event-strip__title" id="tm-title">THIS MONTH AT LABYRINTH</h2>
     </div>
+    <a class="event-strip__link event-strip__link--donate" href="@@DONATEPATH@@" data-closes="@@DONATECLOSES@@" data-short="Donate" data-nochip>
+      <span class="event-strip__icon">@@RIBBON@@</span>
+      <span class="event-strip__text">
+        <span class="event-strip__eyebrow">Matching gift &middot; Rolling for Ribbons</span>
+        <strong>Triple your gift</strong>
+        <span>Two anonymous donors will each match every dollar we raise, up to @@GOAL@@. Every gift goes directly to a family affected by breast cancer.</span>
+      </span>
+      <span class="event-strip__cta">Donate</span>
+    </a>
     <a class="event-strip__link event-strip__link--pink" href="@@PINK@@" data-closes="@@PINKCLOSES@@" data-short="Pink October">
       <span class="event-strip__icon">@@RIBBON@@</span>
       <span class="event-strip__text">
@@ -905,7 +951,7 @@ def event_strip():
 <script>(function(){
   var s=document.getElementById('eventStrip'),n=0,names=[];
   s.querySelectorAll('a[data-closes]').forEach(function(a){
-    if(Date.now()>Date.parse(a.getAttribute('data-closes')))a.hidden=true;else{n++;names.push(a.getAttribute('data-short'));}
+    if(Date.now()>Date.parse(a.getAttribute('data-closes')))a.hidden=true;else{n++;if(!a.hasAttribute('data-nochip'))names.push(a.getAttribute('data-short'));}
   });
   if(!n)s.hidden=true;
   // "5 days to go" on the seminar card, on the academy's clock (Central).
@@ -919,11 +965,12 @@ def event_strip():
   // The hero chip: one line under the hero buttons that jumps to this block.
   var chip=document.getElementById('heroChip');
   if(chip){
-    if(!n||s.hidden){chip.hidden=true}
+    if(!n||s.hidden||!names.length){chip.hidden=true}
     else{chip.querySelector('span').textContent='This month: '+names.join(' \u00b7 ');chip.hidden=false}
   }
 })()</script>""" \
         .replace("@@RIBBON@@", ribbon(30)).replace("@@BOLT@@", _hyrox_bolt(30)) \
+        .replace("@@DONATEPATH@@", DONATE["path"]).replace("@@DONATECLOSES@@", DONATE["closes_utc"]).replace("@@GOAL@@", _money(EVENT["goal"])) \
         .replace("@@PINK@@", PINK["path"]).replace("@@PINKCLOSES@@", PINK["closes_utc"]) \
         .replace("@@PATH@@", EVENT["path"]).replace("@@NAME@@", EVENT["title"]).replace("@@CLOSES@@", EVENT["closes_utc"]) \
         .replace("@@START@@", EVENT["start"]).replace("@@RANGE@@", rng) \
@@ -935,6 +982,36 @@ def hero_chip():
     it from the cards that are still live (see event_strip)."""
     return ('<a class="hero__chip" id="heroChip" href="#eventStrip" hidden>'
             + ribbon(16) + '<span></span><b aria-hidden="true">&darr;</b></a>')
+
+
+def donate_bar():
+    """The pink line under the nav at the top of the homepage hero: the first thing
+    on the page, whatever the screen. A phone gets the short sentence. The script
+    after it is the one that takes the bar, the nav button and the menu item away
+    when the drive is over, so all three go together (they carry data-donate)."""
+    pays = 25 * (1 + DONATE["donors"])
+    return ('<a class="donate-bar" id="donateBar" href="%(path)s" data-donate data-closes="%(closes)s">%(ribbon)s'
+            '<span class="donate-bar__text">'
+            '<span class="donate-bar__long"><strong>Rolling for Ribbons:</strong> two anonymous donors will each match every dollar we raise, up to %(goal)s. Give $25 and it becomes %(pays)s.</span>'
+            '<span class="donate-bar__short"><strong>Triple your gift</strong> to Rolling for Ribbons</span></span>'
+            '<span class="donate-bar__go">Donate</span></a>\n'
+            '<script>(function(){document.querySelectorAll(\'[data-donate]\').forEach(function(e){'
+            'if(Date.now()>Date.parse(e.getAttribute(\'data-closes\')))e.hidden=true})})()</script>'
+            ) % {"path": DONATE["path"], "closes": DONATE["closes_utc"], "ribbon": ribbon(18),
+                 "goal": _money(EVENT["goal"]), "pays": _money(pays)}
+
+
+def donate_nav():
+    """The pink Donate button beside "Try a Free Class" in the desktop nav."""
+    return ('<a href="%s" class="nav__donate" data-donate data-closes="%s">%s<span>Donate</span></a>'
+            % (DONATE["path"], DONATE["closes_utc"], ribbon(14)))
+
+
+def donate_nav_mobile():
+    """The same, first in the phone menu, where it is the biggest thing on the list."""
+    return ('<a href="%s" class="nav__donate nav__donate--mobile" data-donate data-closes="%s">%s'
+            '<span>Donate to Rolling for Ribbons</span><b aria-hidden="true">&rarr;</b></a>'
+            % (DONATE["path"], DONATE["closes_utc"], ribbon(22)))
 
 
 # ── Seasonal themes (the homepage) ───────────────────────────────────────────
@@ -1198,12 +1275,10 @@ def render_event_rsvp():
     </div>
     <div class="prog-hero__cta">
       <a href="#rsvp" class="btn btn--gold">RSVP Now</a>
-      <a href="#donate" class="btn btn--pink">Donate</a>
+      <a href="@@DONATEPATH@@" class="btn btn--pink">Donate</a>
     </div>
    </div>
    <div class="hero-split__card" id="rsvp">
-    <p class="rsvp__thanks" id="rsvp-donated" hidden>Thank you for your donation. It goes directly to a family affected by breast cancer.</p>
-
     <form class="booking-form rsvp__form" id="rsvp-form" novalidate
           data-event="@@SLUG@@" data-endpoint="@@ENDPOINT@@" data-closes="@@CLOSES@@"
           data-start="@@STARTISO@@" data-minutes="@@MINUTES@@" data-title="@@NAME@@" data-where="@@WHERE@@" data-url="@@PAGEURL@@">
@@ -1281,7 +1356,7 @@ def render_event_rsvp():
       </div>
       <p class="rsvp__shared" id="rsvp-shared" role="status" hidden></p>
       <div class="prog-hero__cta">
-        <a href="#donate" class="btn btn--pink">Donate</a>
+        <a href="@@DONATEPATH@@" class="btn btn--pink">Donate</a>
         <a href="/" class="btn btn--ghost">Back to the site</a>
       </div>
     </div>
@@ -1351,29 +1426,12 @@ def render_event_rsvp():
       <h2 class="section-title section-title--lg">HELP A FAMILY</h2>
     </div>
     <div class="prog-prose">
-      <p>Donations are welcome and never expected. They go directly to a family affected by breast cancer. You choose the amount, and payment is handled securely by Stripe.</p>
+      <p>Donations are welcome and never expected. They go directly to a family affected by breast cancer, and two anonymous donors will each match every dollar we raise, up to our @@GOAL@@ goal.</p>
       <p>We will also be selling merch at the event, and those sales go to the same family.</p>
     </div>
-    <div class="fund" id="fund" data-endpoint="@@DONATIONS@@" data-goal="@@GOAL@@">
-      <div class="fund__head">
-        <p class="fund__raised"><strong id="fund-raised">$0</strong> <span>raised online of <span id="fund-goal">$@@GOAL@@</span> goal</span></p>
-        <p class="fund__count" id="fund-count" hidden></p>
-      </div>
-      <div class="fund__bar" role="progressbar" aria-label="Fundraiser progress" aria-valuemin="0" aria-valuemax="@@GOAL@@" aria-valuenow="0" id="fund-bar"><span id="fund-fill" style="width:0"></span></div>
-      <p class="fund__first" id="fund-first">Be the first to give. Every gift, big or small, moves the bar.</p>
-      <div class="fund__lists" id="fund-lists" hidden>
-        <div><p class="fund__title">Top supporters</p><ol class="fund__list" id="fund-top"></ol></div>
-        <div><p class="fund__title">Latest gifts</p><ol class="fund__list" id="fund-recent"></ol></div>
-      </div>
-      <p class="fund__note">Online gifts only. Cash and merch sales at the event go to the same family and are counted at the event. When you give, you choose whether your name is shown.</p>
+    <div class="prog-hero__cta">
+      <a href="@@DONATEPATH@@" class="btn btn--pink">Go to the donation page</a>
     </div>
-    <p class="rsvp-give__pick" id="donate-pick">Choose an amount</p>
-    <div class="rsvp-give__amounts" role="group" aria-labelledby="donate-pick">
-@@AMOUNTS@@
-      <a href="@@DONATE@@" class="rsvp-give__amt rsvp-give__amt--other" target="_blank" rel="noopener noreferrer">Other amount</a>
-    </div>
-    <p class="rsvp-give__fine">Each button opens Stripe's secure checkout in a new tab for that amount. Other lets you type your own.</p>
-    <p class="rsvp-give__thanks">@@RIBBON20@@<span>Thank you for standing with a family affected by breast cancer.</span></p>
   </div>
 </section>
 
@@ -1412,9 +1470,8 @@ def render_event_rsvp():
 """
     for token, value in {
         "@@RIBBON16@@": ribbon(16), "@@RIBBON18@@": ribbon(18), "@@RIBBON20@@": ribbon(20), "@@RIBBON40@@": ribbon(40), "@@MARK@@": ribbon(320),
-        "@@PINKPATH@@": PINK["path"], "@@TITLE@@": EVENT["title"], "@@SUBTITLE@@": EVENT["subtitle"], "@@SHIRTOPTS@@": _size_options(SHIRT_SIZES, "No shirt"), "@@NAME@@": EVENT["name"], "@@STARTISO@@": EVENT["start"], "@@MINUTES@@": str(EVENT["minutes"]), "@@RANGE@@": _event_range()[0], "@@WHERE@@": "Labyrinth BJJ, " + ADDRESS, "@@PAGEURL@@": url, "@@DONATE@@": EVENT["donate_url"], "@@DONATIONS@@": EVENT["donations_endpoint"], "@@GOAL@@": str(EVENT["goal"]), "@@AMOUNTS@@": "\n".join(
-            '      <a href="%s" class="rsvp-give__amt" target="_blank" rel="noopener noreferrer">$%d</a>' % (u, d)
-            for d, u in EVENT["donate_amounts"]), "@@SHORT@@": short_date,
+        "@@DONATEPATH@@": DONATE["path"], "@@GOAL@@": _money(EVENT["goal"]),
+        "@@PINKPATH@@": PINK["path"], "@@TITLE@@": EVENT["title"], "@@SUBTITLE@@": EVENT["subtitle"], "@@SHIRTOPTS@@": _size_options(SHIRT_SIZES, "No shirt"), "@@NAME@@": EVENT["name"], "@@STARTISO@@": EVENT["start"], "@@MINUTES@@": str(EVENT["minutes"]), "@@RANGE@@": _event_range()[0], "@@WHERE@@": "Labyrinth BJJ, " + ADDRESS, "@@PAGEURL@@": url, "@@SHORT@@": short_date,
         "@@TIME@@": time, "@@LONG@@": long_date, "@@SLUG@@": EVENT["slug"],
         "@@ENDPOINT@@": EVENT["endpoint"], "@@CLOSES@@": EVENT["closes_utc"], "@@PHONE@@": PHONE,
         "@@ADDRESS@@": ADDRESS, "@@MAPS@@": EVENT["maps_url"],
@@ -1422,8 +1479,132 @@ def render_event_rsvp():
         body = body.replace(token, value)
     assert "@@" not in body, "an unreplaced token in the event page"
 
-    head = head.replace("<body>", '<body class="theme-pink">', 1)
+    # Stripe sends donors back to this page with ?donated=1. They gave on the
+    # donation page, so they go back there for their thank-you, and this runs
+    # before anything below has had time to paint.
+    head = head.replace("<body>", '<body class="theme-pink">\n<script>if(/[?&]donated=1\\b/.test(location.search))location.replace("%s?donated=1")</script>' % DONATE["path"], 1)
     return "\n".join([head, NAV, crumbs([(EVENT["title"], EVENT["path"])]), body, TAIL % {"footer": FOOTER}])
+
+
+def render_donate():
+    """/donate: only the donation. The goal and how far along it is (live, from
+    Stripe), the amounts, each one a Payment Link, and how the match works. The
+    hero is built so that on a phone the amounts are on the first screen."""
+    url = SITE + DONATE["path"]
+    goal, total = _money(EVENT["goal"]), _money(_match_total())
+    desc = ("Give to Rolling for Ribbons, Labyrinth BJJ's Pink October fundraiser. Every gift goes directly to a "
+            "family affected by breast cancer, and two anonymous donors will each match every dollar raised, up to %s." % goal)
+    head = HEAD % {
+        "title": "Donate to Rolling for Ribbons | Labyrinth BJJ Fulshear",
+        "description": desc,
+        "url": url,
+        "og_title": "Triple your gift to Rolling for Ribbons",
+        "image": SITE + "/assets/og-donate.jpg",
+        "schema": jsonld(crumb_schema([("Donate", DONATE["path"])])),
+    }
+
+    tiles = ['<div class="match-eq__tile match-eq__tile--raise"><span>We raise</span><b>%s</b></div>' % goal]
+    for n in range(1, DONATE["donors"] + 1):
+        tiles.append('<span class="match-eq__op" aria-hidden="true">+</span>')
+        tiles.append('<div class="match-eq__tile"><span>Donor %d matches</span><b>%s</b></div>' % (n, goal))
+    tiles.append('<span class="match-eq__op" aria-hidden="true">=</span>')
+    tiles.append('<div class="match-eq__total"><b>%s</b><span>for a family affected by breast cancer</span></div>' % total)
+    eq = ('<div class="match-eq" role="group" aria-label="How a %s goal becomes %s">\n      %s\n    </div>'
+          % (goal, total, "\n      ".join(tiles)))
+    examples = "\n".join(
+        '      <li><span>Give <b>%s</b></span><span>it becomes <b>%s</b></span></li>' % (_money(d), _money(d * (1 + DONATE["donors"])))
+        for d in (10, 25, 100))
+
+    body = """
+<header class="prog-hero rsvp-hero pink-hero donate-hero">
+  <span class="rsvp-hero__mark pink-hero__mark" aria-hidden="true">@@MARK@@</span>
+  <div class="container hero-split">
+   <div class="hero-split__text">
+    <p class="section-label rsvp-label">@@RIBBON16@@Rolling for Ribbons &middot; Pink October</p>
+    <h1 class="prog-hero__title">Donate to <span>Rolling for Ribbons</span></h1>
+    <p class="prog-hero__lead">Every gift goes directly to a family affected by breast cancer. <strong>Two anonymous donors will each match every dollar we raise, up to our @@GOAL@@ goal</strong>, so @@GOAL@@ from our community becomes @@TOTAL@@.</p>
+   </div>
+   <div class="hero-split__card donate-card" id="give">
+    <p class="rsvp__thanks" id="donate-thanks" role="status" hidden>Thank you for your donation. It goes directly to a family affected by breast cancer.</p>
+    <div class="fund" id="fund" data-endpoint="@@DONATIONS@@" data-goal="@@GOALN@@">
+      <div class="fund__head">
+        <p class="fund__raised"><strong id="fund-raised">$0</strong> <span>raised online of <span id="fund-goal">@@GOAL@@</span> goal</span></p>
+        <p class="fund__count" id="fund-count" hidden></p>
+      </div>
+      <div class="fund__bar" role="progressbar" aria-label="Fundraiser progress" aria-valuemin="0" aria-valuemax="@@GOALN@@" aria-valuenow="0" id="fund-bar"><span id="fund-fill" style="width:0"></span></div>
+      <p class="fund__first" id="fund-first">Be the first to give. Every gift, big or small, moves the bar.</p>
+    </div>
+    <p class="rsvp-give__pick" id="donate-pick">Choose an amount</p>
+    <div class="rsvp-give__amounts" role="group" aria-labelledby="donate-pick">
+@@AMOUNTS@@
+      <a href="@@OTHER@@" class="rsvp-give__amt rsvp-give__amt--other">Other amount</a>
+    </div>
+    <p class="rsvp-give__fine">Secure checkout by Stripe. Choose Other amount to type your own.</p>
+   </div>
+  </div>
+</header>
+
+<section class="prog-section prog-section--surface" id="match">
+  <div class="container">
+    <div>
+      <p class="section-label rsvp-label">@@RIBBON16@@Matching gift</p>
+      <h2 class="section-title section-title--lg">TRIPLE YOUR GIFT</h2>
+    </div>
+    <div class="prog-prose">
+      <p>Two anonymous donors have each agreed to match every dollar we raise for Rolling for Ribbons, up to our @@GOAL@@ goal. If our community gives @@GOAL@@, that becomes @@TOTAL@@ for a family affected by breast cancer.</p>
+    </div>
+    @@EQ@@
+    <p class="match-ex__title">What that looks like</p>
+    <ul class="match-ex">
+@@EXAMPLES@@
+    </ul>
+  </div>
+</section>
+
+<section class="prog-section donate-where" id="where">
+  <div class="container">
+    <div>
+      <p class="section-label rsvp-label">@@RIBBON16@@Where it goes</p>
+      <h2 class="section-title section-title--lg">STRAIGHT TO A FAMILY</h2>
+    </div>
+    <div class="fund fund--lists">
+      <div class="fund__lists" id="fund-lists" hidden>
+        <div><p class="fund__title">Top supporters</p><ol class="fund__list" id="fund-top"></ol></div>
+        <div><p class="fund__title">Latest gifts</p><ol class="fund__list" id="fund-recent"></ol></div>
+      </div>
+    </div>
+    <div class="prog-prose">
+      <p>Every gift goes directly to a family affected by breast cancer. You choose the amount, Stripe handles the payment securely, and you choose whether your name is shown.</p>
+      <p>The total above counts online gifts only. Cash and merch sales at our seminar go to the same family and are counted at the event.</p>
+      <p>Questions about giving? Call <a href="tel:2813937983">@@PHONE@@</a> or email <a href="mailto:info@labyrinth.vision">info@labyrinth.vision</a>.</p>
+    </div>
+    <a href="@@EVENTPATH@@" class="pink-link-card" data-closes="@@EVENTCLOSES@@">
+      <span class="pink-link-card__ribbon">@@RIBBON40@@</span>
+      <span class="pink-link-card__body">
+        <strong>Free self defense seminar for women</strong>
+        <span>Rolling for Ribbons is also an event: @@SHORT@@ at @@TIME@@ at Labyrinth BJJ in Fulshear. No experience needed.</span>
+      </span>
+      <span class="pink-link-card__cta">RSVP free &rarr;</span>
+    </a>
+  </div>
+</section>
+
+<script src="/fund.js" defer></script>
+"""
+    _, short, time = _event_when()
+    for token, value in {
+        "@@RIBBON16@@": ribbon(16), "@@RIBBON40@@": ribbon(40), "@@MARK@@": ribbon(320),
+        "@@GOAL@@": goal, "@@GOALN@@": str(EVENT["goal"]), "@@TOTAL@@": total,
+        "@@DONATIONS@@": EVENT["donations_endpoint"], "@@OTHER@@": EVENT["donate_url"],
+        "@@AMOUNTS@@": "\n".join('      <a href="%s" class="rsvp-give__amt">$%d</a>' % (u, d) for d, u in EVENT["donate_amounts"]),
+        "@@EQ@@": eq, "@@EXAMPLES@@": examples, "@@PHONE@@": PHONE,
+        "@@EVENTPATH@@": EVENT["path"], "@@EVENTCLOSES@@": EVENT["closes_utc"], "@@SHORT@@": short, "@@TIME@@": time,
+    }.items():
+        body = body.replace(token, value)
+    assert "@@" not in body, "an unreplaced token in the donation page"
+
+    head = head.replace("<body>", '<body class="theme-pink">', 1)
+    return "\n".join([head, NAV, crumbs([("Donate", DONATE["path"])]), body, TAIL % {"footer": FOOTER}])
 
 
 def _pink_picker():
@@ -3209,16 +3390,22 @@ def main():
     splice(index, "EVENT-STRIP", event_strip().replace(
         'aria-labelledby="tm-title">', 'aria-labelledby="tm-title">\n  ' + season_section("eventStrip"), 1))
     splice(index, "HERO-CHIP", hero_chip())
+    splice(index, "DONATE-BAR", donate_bar())
+    splice(index, "DONATE-NAV", donate_nav())
+    splice(index, "DONATE-NAV-MOBILE", donate_nav_mobile())
     splice(index, "SEASON-HERO", season_hero())
     splice(index, "SEASON-FOOTER", season_footer())
     for sec_id in SEASON_SECTIONS:
         if sec_id == "eventStrip":
             continue
         splice(index, "SEASON-SEC-" + sec_id, season_section(sec_id))
-    print("wrote the this-month cards, hero chip and seasonal decoration into index.html")
+    print("wrote the this-month cards, hero chip, donation bar and nav buttons, and seasonal decoration into index.html")
     with open(os.path.join(ROOT, "self-defense-for-women.html"), "w", encoding="utf-8") as fh:
         fh.write(stamp(render_event_rsvp()))
     print("wrote self-defense-for-women.html")
+    with open(os.path.join(ROOT, "donate.html"), "w", encoding="utf-8") as fh:
+        fh.write(stamp(render_donate()))
+    print("wrote donate.html")
     with open(os.path.join(ROOT, "pink-october.html"), "w", encoding="utf-8") as fh:
         fh.write(stamp(render_pink_october()))
     print("wrote pink-october.html")

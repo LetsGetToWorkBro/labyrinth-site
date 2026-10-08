@@ -2,6 +2,7 @@
 // so $500 from the community becomes $1,500 for a family affected by breast cancer.
 //   assets/social/donation-match-feed.png    1080x1350 (4:5, Facebook and Instagram feed)
 //   assets/social/donation-match-story.png   1080x1920 (9:16, Stories and Reels; everything that matters sits between 270px and 1580px, clear of the Stories header and reply bar)
+//   assets/og-donate.jpg                     1200x630 (the preview card when labyrinth.vision/donate is shared; the donation page names it)
 // Run: node scripts/ad-donation-match.mjs   (needs playwright-core, resolved from the CRM repo when not installed here)
 import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
@@ -88,8 +89,8 @@ body{height:1350px}
     <div class="plus">+</div>
     <div class="card c3"><span class="l">Donor 2 matches</span><span class="n">$500</span></div>
   </div>
-  <div class="abs total" style="position:absolute"><span class="eqs">=</span><span class="t">$1,500</span><span class="u">for a family<br>in our community</span></div>
-  <div class="abs for" style="position:absolute">Every gift goes directly to a family affected by breast cancer.</div>
+  <div class="abs total" style="position:absolute"><span class="eqs">=</span><span class="t">$1,500</span><span class="u">for a family<br>affected by breast cancer</span></div>
+  <div class="abs for" style="position:absolute">Every gift goes directly to the family.</div>
   <div class="abs cta" style="position:absolute"><div class="btn">Give now &rarr;</div><div class="url">${URL_TEXT}<small>Any amount counts</small></div></div>
   <div class="abs foot" style="position:absolute"><span>Labyrinth BJJ &middot; Fulshear, TX</span><span>Pink October</span></div>
 </body></html>`
@@ -128,19 +129,62 @@ body{height:1920px}
     <div class="plus">+</div>
     <div class="card c3"><span class="l">Donor 2 matches</span><span class="n">$500</span></div>
   </div>
-  <div class="abs total" style="position:absolute"><span class="eqs">=</span><span class="t">$1,500</span><span class="u">for a family<br>in our community</span></div>
-  <div class="abs for" style="position:absolute">Every gift goes directly to a family affected by breast cancer.</div>
+  <div class="abs total" style="position:absolute"><span class="eqs">=</span><span class="t">$1,500</span><span class="u">for a family<br>affected by breast cancer</span></div>
+  <div class="abs for" style="position:absolute">Every gift goes directly to the family.</div>
+  <div class="abs cta" style="position:absolute"><div class="btn">Give now &rarr;</div><div class="url">${URL_TEXT}<small>Any amount counts</small></div></div>
+</body></html>`
+
+const og = () => `<!doctype html><html><head><meta charset="utf-8"><style>${CSS}
+body{width:1200px;height:630px}
+.wm{right:-120px;top:-60px;width:560px}
+.kick{left:60px;right:auto;top:42px;font-size:26px;gap:14px}
+.kick .ico{width:26px}
+.h{left:60px;right:auto;top:88px}
+.h .a{font-size:200px}
+.h .b{font-size:98px;margin-top:-4px}
+.sub{left:60px;right:auto;width:580px;top:392px;font-size:31px;line-height:1.26}
+.col{left:690px;right:60px;top:56px;display:flex;flex-direction:column}
+.col .card{flex:none;height:82px;flex-direction:row;justify-content:space-between;align-items:center;padding:0 30px}
+.col .card .l{font-size:25px;text-align:left}
+.col .card .n{font-size:62px}
+.col .plus{height:36px;font-size:42px}
+.col .total{position:static;height:138px;margin-top:8px;flex-direction:column;gap:0;border-radius:26px;padding:0 8px}
+.col .total .t{font-size:84px;display:block}
+.col .total .eqs{font-size:84px}
+.col .total .tt{display:flex;align-items:center;justify-content:center;gap:20px;line-height:1}
+.col .total .u{font-size:18px;letter-spacing:.07em;margin-top:8px;white-space:nowrap;text-align:center;line-height:1}
+.cta{left:60px;right:auto;top:520px}
+.btn{font-size:48px;padding:18px 44px 16px}
+.url{font-size:32px}
+.url small{font-size:22px}
+</style></head><body>
+  <div class="wm">${ribbonSVG('#ffffff', { uid: 'wo' })}</div>
+  <div class="abs kick" style="position:absolute"><span class="ico">${ribbonSVG(PINK, { uid: 'ko' })}</span><span>Rolling for Ribbons</span></div>
+  <div class="abs h" style="position:absolute"><span class="a">Triple</span><span class="b">your gift</span></div>
+  <div class="abs sub" style="position:absolute">Two anonymous donors will <b>each match every dollar</b> we raise, up to our $500 goal.</div>
+  <div class="abs col" style="position:absolute">
+    <div class="card c1"><span class="l">We raise</span><span class="n">$500</span></div>
+    <div class="plus">+</div>
+    <div class="card c2"><span class="l">Donor 1 matches</span><span class="n">$500</span></div>
+    <div class="plus">+</div>
+    <div class="card c3"><span class="l">Donor 2 matches</span><span class="n">$500</span></div>
+    <div class="total"><div class="tt"><span class="eqs">=</span><span class="t">$1,500</span></div><span class="u">for a family affected by breast cancer</span></div>
+  </div>
   <div class="abs cta" style="position:absolute"><div class="btn">Give now &rarr;</div><div class="url">${URL_TEXT}<small>Any amount counts</small></div></div>
 </body></html>`
 
 const browser = await chromium.launch({ executablePath: process.env.CHROME ?? '/opt/pw-browsers/chromium' })
-for (const [name, h, html] of [['donation-match-feed', 1350, feed()], ['donation-match-story', 1920, story()]]) {
-  const page = await browser.newPage({ viewport: { width: 1080, height: h } })
+for (const [file, w, h, html, jpeg] of [
+  [join(out, 'donation-match-feed.png'), 1080, 1350, feed()],
+  [join(out, 'donation-match-story.png'), 1080, 1920, story()],
+  [join(out, '..', 'og-donate.jpg'), 1200, 630, og(), true],
+]) {
+  const page = await browser.newPage({ viewport: { width: w, height: h } })
   await page.setContent(html, { waitUntil: 'load' })
   await page.evaluate(() => document.fonts.ready)
   await page.waitForTimeout(300)
-  await page.screenshot({ path: join(out, name + '.png') })
-  console.log('wrote assets/social/' + name + '.png')
+  await page.screenshot(jpeg ? { path: file, type: 'jpeg', quality: 90 } : { path: file })
+  console.log('wrote ' + file.replace(join(here, '..') + '/', ''))
   await page.close()
 }
 await browser.close()
