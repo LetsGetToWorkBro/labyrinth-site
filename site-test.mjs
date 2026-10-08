@@ -2015,6 +2015,43 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
     !document.getElementById('donateBar').getBoundingClientRect().height && document.querySelector('.hero__badge').getBoundingClientRect().height > 0))
 }
 
+// ── E: the matching-gift email (scripts/email-donation-match.html and .txt) ──
+// It is pasted into the CRM's Broadcast screen and goes to the whole roster, so it is checked as the CRM will treat it:
+// the merge tag it fills in, the placeholder it swaps for each person's unsubscribe link, links that go somewhere that
+// exists, and a banner that is where the email says it is. Nobody sees it before it is sent.
+{
+  const html = readFileSync(join(ROOT, 'scripts/email-donation-match.html'), 'utf8')
+  const txt = readFileSync(join(ROOT, 'scripts/email-donation-match.txt'), 'utf8')
+  const urls = [...html.matchAll(/(?:href|src)="(https:\/\/[^"]+)"/g)].map(m => m[1])
+  const here = urls.filter(u => u.startsWith('https://labyrinth.vision'))
+  const exists = u => { const q = new globalThis.URL(u).pathname; return q === '/' || (existsSync(join(ROOT, q)) && !q.endsWith('/')) || existsSync(join(ROOT, q + '.html')) }
+  check('E1 every link and image in the email is on labyrinth.vision and exists in this repository',
+    urls.length >= 6 && here.length === urls.length && here.every(exists), urls.filter(u => !u.startsWith('https://labyrinth.vision') || !exists(u)).join(', '))
+  check('E2 the donation page is the link: on the banner, the button and in the words, and in the plain text too',
+    (html.match(/href="https:\/\/labyrinth\.vision\/donate"/g) || []).length >= 3 && txt.includes('https://labyrinth.vision/donate') && existsSync(join(ROOT, 'donate.html')))
+  check('E3 it uses the CRM\'s own tags and nothing else: one {First Name} greeting, one {{unsubscribe}}, no stray placeholders',
+    (html.match(/\{First Name\}/g) || []).length === 1 && (html.match(/\{\{unsubscribe\}\}/g) || []).length === 1 && /\{First Name\}/.test(txt)
+      && !/\[First name\]|\[name\]|%%|\{\{(?!unsubscribe)/i.test(html + txt) && (html.replace(/\{First Name\}|\{\{unsubscribe\}\}/g, '').match(/[{}]/g) || []).length === 0)
+  const banner = readFileSync(join(ROOT, 'assets/social/donation-email-banner.jpg'))
+  let bw = 0, bh = 0
+  for (let i = 2; i < banner.length;) { if (banner[i] !== 0xFF) { i++; continue } const m = banner[i + 1]; if (m >= 0xC0 && m <= 0xC2) { bh = banner.readUInt16BE(i + 5); bw = banner.readUInt16BE(i + 7); break } i += 2 + banner.readUInt16BE(i + 2) }
+  check('E4 the banner is a 1200x600 picture under 200 KB, shown at 600 wide with a description for the apps that do not load images',
+    bw === 1200 && bh === 600 && banner.length < 200000 && /<img[^>]+width="600"[^>]+alt="[^"]{30,}"/.test(html) && html.includes('/assets/social/donation-email-banner.jpg'), `${bw}x${bh} ${banner.length}`)
+  check('E5 it is plain, safe mail: no scripts, forms, external styles or <style> blocks, and small enough that Gmail does not clip it',
+    !/<(script|form|link|style|iframe|object)\b/i.test(html) && html.length < 60000, String(html.length))
+  const nums = ['$500', '$1,500', '$10', '$30', '$25', '$75', '$100', '$300']
+  check('E6 the html and the plain text tell the same story: the same match, the same examples, the same date',
+    nums.every(n => html.includes(n) && txt.includes(n)) && /two anonymous donors will each match every dollar we raise, up to our \$500 goal/i.test(html.replace(/<[^>]+>/g, ''))
+      && /two anonymous donors will each match every dollar we raise, up to our \$500 goal/i.test(txt) && /Saturday, October 24, 11:00 AM to 12:30 PM/.test(html + txt))
+  const subject = (txt.match(/^Subject: (.+)$/m) || [])[1] || ''
+  const pre = (html.match(/Preview text[^]*?<div style="display:none[^>]*>([^<]+)<\/div>/) || [])[1] || ''
+  check('E7 a subject that fits an inbox and a preview line that adds to it, with no em dashes anywhere',
+    subject.length > 20 && subject.length <= 60 && pre.length > 40 && pre.length <= 140 && !/—/.test(html + txt), `${subject.length}: ${subject} / ${pre.length}`)
+  check('E8 it promises nothing the academy has not said: no deadline invented, no tax wording, the donors stay anonymous',
+    !/tax[- ]deductible|deduct|501\s?\(c\)/i.test(html + txt) && !/\b(by|before|until|through) (oct(ober)?\.? ?\d|friday|sunday|midnight)/i.test(html.replace(/<[^>]+>/g, ' ') + txt.replace(/Saturday, October 24/g, ''))
+      && !/Donor (1|2) (is|are|named)/i.test(html + txt))
+}
+
 console.log(`\n${pass} passed, ${fail} failed`)
 await browser.close(); server.close()
 process.exit(fail?1:0)
