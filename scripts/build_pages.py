@@ -892,6 +892,14 @@ def ribbon(size=18):
             'fill="currentColor" fill-opacity=".18"/></svg>') % (size, size)
 
 
+def trophy(size=18):
+    """A small trophy for the donation leaderboard. Like the ribbon it takes its color from CSS."""
+    return ('<svg class="lb__trophy" width="%d" height="%d" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+            'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'
+            '<path d="M8 4h8v5a4 4 0 0 1-8 0V4z" fill="currentColor" fill-opacity=".22"/>'
+            '<path d="M8 6H5.5a2.5 2.5 0 0 0 2.9 3.6M16 6h2.5a2.5 2.5 0 0 1-2.9 3.6M12 13.2V17M9 20h6M10 17h4"/></svg>') % (size, size)
+
+
 def event_strip():
     """The homepage's "This month at Labyrinth" block: the donation drive, Pink
     October, the free self defense seminar and the kids' HYROX list, as cards right
@@ -1533,6 +1541,17 @@ def render_donate():
       </div>
       <div class="fund__bar" role="progressbar" aria-label="Fundraiser progress" aria-valuemin="0" aria-valuemax="@@GOALN@@" aria-valuenow="0" id="fund-bar"><span id="fund-fill" style="width:0"></span></div>
       <p class="fund__first" id="fund-first">Be the first to give. Every gift, big or small, moves the bar.</p>
+      <section class="lb" id="fund-board" aria-label="Leaderboard" hidden>
+        <div class="lb__head">
+          <p class="lb__title">@@TROPHY@@Leaderboard</p>
+          <p class="lb__live"><i aria-hidden="true"></i>Live</p>
+        </div>
+        <ol class="lb__top" id="fund-top" aria-label="Top supporters"></ol>
+        <div class="lb__latest" id="fund-latest">
+          <p class="lb__sub">Latest gifts</p>
+          <ul class="lb__chips" id="fund-recent" aria-label="Latest gifts"></ul>
+        </div>
+      </section>
     </div>
     <p class="rsvp-give__pick" id="donate-pick">Choose an amount</p>
     <div class="rsvp-give__amounts" role="group" aria-labelledby="donate-pick">
@@ -1567,12 +1586,6 @@ def render_donate():
       <p class="section-label rsvp-label">@@RIBBON16@@Where it goes</p>
       <h2 class="section-title section-title--lg">STRAIGHT TO A FAMILY</h2>
     </div>
-    <div class="fund fund--lists">
-      <div class="fund__lists" id="fund-lists" hidden>
-        <div><p class="fund__title">Top supporters</p><ol class="fund__list" id="fund-top"></ol></div>
-        <div><p class="fund__title">Latest gifts</p><ol class="fund__list" id="fund-recent"></ol></div>
-      </div>
-    </div>
     <div class="prog-prose">
       <p>Every gift goes directly to a family affected by breast cancer. You choose the amount, Stripe handles the payment securely, and you choose whether your name is shown.</p>
       <p>The total above counts online gifts only. Cash and merch sales at our seminar go to the same family and are counted at the event.</p>
@@ -1593,7 +1606,7 @@ def render_donate():
 """
     _, short, time = _event_when()
     for token, value in {
-        "@@RIBBON16@@": ribbon(16), "@@RIBBON40@@": ribbon(40), "@@MARK@@": ribbon(320),
+        "@@RIBBON16@@": ribbon(16), "@@RIBBON40@@": ribbon(40), "@@MARK@@": ribbon(320), "@@TROPHY@@": trophy(18),
         "@@GOAL@@": goal, "@@GOALN@@": str(EVENT["goal"]), "@@TOTAL@@": total,
         "@@DONATIONS@@": EVENT["donations_endpoint"], "@@OTHER@@": EVENT["donate_url"],
         "@@AMOUNTS@@": "\n".join('      <a href="%s" class="rsvp-give__amt">$%d</a>' % (u, d) for d, u in EVENT["donate_amounts"]),

@@ -1850,28 +1850,161 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
   // The fundraiser: honest at $0, and the real feed rendered when there is one.
   const f0 = await dp.evaluate(() => ({
     raised: document.getElementById('fund-raised').textContent, goal: document.getElementById('fund-goal').textContent,
-    first: !document.getElementById('fund-first').hidden, lists: !document.getElementById('fund-lists').hidden,
+    first: !document.getElementById('fund-first').hidden, board: !document.getElementById('fund-board').hidden,
     width: document.getElementById('fund-fill').style.width }))
-  check('D5 fundraiser at $0: shows $0 of $500, invites the first gift, and invents no donors',
-    f0.raised === '$0' && f0.goal === '$500' && f0.first && !f0.lists && /^0(%|px)?$/.test(f0.width), JSON.stringify(f0))
-  feed = { raised: 135, count: 3, goal: 500, top: [{ name: 'Sam T.', amount: 100 }, { name: 'Anonymous', amount: 25 }, { name: 'Pat <b>x</b>', amount: 10 }],
-    recent: [{ name: 'Pat <b>x</b>', amount: 10 }, { name: 'Anonymous', amount: 25 }, { name: 'Sam T.', amount: 100 }] }
+  check('D5 fundraiser at $0: shows $0 of $500, invites the first gift, shows no leaderboard and invents no donors',
+    f0.raised === '$0' && f0.goal === '$500' && f0.first && !f0.board && /^0(%|px)?$/.test(f0.width), JSON.stringify(f0))
+  // `at` is a few minutes, an hour and a morning before the pinned clock (15:00 UTC), for "just now", "40m ago" and "6h ago".
+  const FEED3 = { raised: 135, count: 3, goal: 500, top: [{ name: 'Sam T.', amount: 100 }, { name: 'Anonymous', amount: 25 }, { name: 'Pat <b>x</b>', amount: 10 }],
+    recent: [{ name: 'Pat <b>x</b>', amount: 10, at: '2026-10-05T14:59:00Z' }, { name: 'Anonymous', amount: 25, at: '2026-10-05T14:20:00Z' }, { name: 'Sam T.', amount: 100, at: '2026-10-05T09:00:00Z' }] }
+  feed = FEED3
   await fresh()
-  const f1 = await dp.evaluate(() => ({
+  const board = () => dp.evaluate(() => ({
     raised: document.getElementById('fund-raised').textContent, count: document.getElementById('fund-count').textContent,
     width: document.getElementById('fund-fill').style.width, now: document.getElementById('fund-bar').getAttribute('aria-valuenow'),
-    first: document.getElementById('fund-first').hidden, top: [...document.querySelectorAll('#fund-top li')].map(l => l.textContent),
-    html: document.getElementById('fund-top').innerHTML.includes('<b>') }))
-  check('D6 fundraiser with gifts: total, percent, supporter count and the leaderboard',
-    f1.raised === '$135' && f1.count === '3 supporters' && f1.width === '27%' && f1.now === '135' && f1.first
-      && f1.top[0] === 'Sam T.$100' && f1.top[1] === 'Anonymous$25', JSON.stringify(f1))
-  check('D7 a donor name is shown as text, never as markup', f1.html === false && f1.top[2].includes('<b>'))
+    first: document.getElementById('fund-first').hidden, shown: !document.getElementById('fund-board').hidden,
+    busy: document.getElementById('fund-board').hasAttribute('aria-busy'),
+    rows: [...document.querySelectorAll('#fund-top > li')].map(li => ({
+      rank: li.querySelector('.lb__medal').textContent, medal: li.querySelector('.lb__medal').className.replace('lb__medal ', ''),
+      name: li.querySelector('.lb__name').textContent, amt: li.querySelector('.lb__amt').textContent,
+      gold: li.classList.contains('lb__row--first'), anon: li.querySelector('.lb__name').classList.contains('lb__name--anon') })),
+    chips: [...document.querySelectorAll('#fund-recent > li')].map(li => li.textContent.replace(/\s+/g, ' ').trim()),
+    injected: !!document.querySelector('#fund-top b, #fund-top em, .lb__name b, .lb__chip em b') }))
+  const f1 = await board()
+  check('D6 fundraiser with gifts: total, percent, supporter count, and the leaderboard instead of the invitation',
+    f1.raised === '$135' && f1.count === '3 supporters' && f1.width === '27%' && f1.now === '135' && f1.first && f1.shown && !f1.busy, JSON.stringify(f1))
+  check('D6a the leaderboard ranks the biggest gifts with medals: gold, silver, bronze, the first one picked out, Anonymous toned down',
+    JSON.stringify(f1.rows.map(r => [r.rank, r.medal, r.name, r.amt, r.gold, r.anon]))
+      === JSON.stringify([['1', 'lb__medal--1', 'Sam T.', '$100', true, false], ['2', 'lb__medal--2', 'Anonymous', '$25', false, true], ['3', 'lb__medal--3', 'Pat <b>x</b>', '$10', false, false]]),
+    JSON.stringify(f1.rows))
+  check('D6b the latest gifts follow, newest first, with how long ago and the name only when the donor chose to show it',
+    JSON.stringify(f1.chips) === JSON.stringify(['Pat <b>x</b> $10 just now', '$25 40m ago', 'Sam T. $100 6h ago']), JSON.stringify(f1.chips))
+  check('D7 a donor name is shown as text, never as markup', f1.injected === false && f1.rows[2].name.includes('<b>') && f1.chips[0].includes('<b>'))
+  // Equal gifts share a rank, and the next one is placed after them; past third there is no medal, only the number.
+  feed = { raised: 525, count: 5, goal: 500,
+    top: [{ name: 'A', amount: 250 }, { name: 'B', amount: 100 }, { name: 'Anonymous', amount: 100 }, { name: 'C', amount: 50 }, { name: 'Anonymous', amount: 25 }], recent: [] }
+  await fresh()
+  const f2 = await board()
+  check('D6c equal gifts share a rank (1, 2, 2, 4, 5), and only the first three places get a medal',
+    JSON.stringify(f2.rows.map(r => [r.rank, r.medal])) === JSON.stringify([['1', 'lb__medal--1'], ['2', 'lb__medal--2'], ['2', 'lb__medal--2'], ['4', 'lb__medal--n'], ['5', 'lb__medal--n']])
+      && f2.rows.filter(r => r.gold).length === 1 && f2.width === '100%' && f2.chips.length === 0, JSON.stringify(f2.rows))
+  feed = { raised: 203, count: 3, goal: 500, top: [{ name: 'Anonymous', amount: 100 }, { name: 'Anonymous', amount: 100 }, { name: 'Anonymous', amount: 3 }], recent: [] }
+  await fresh()
+  const f3 = await board()
+  check('D6d two gifts of the same size are both first (two gold rows), and the next is third',
+    JSON.stringify(f3.rows.map(r => [r.rank, r.medal, r.gold])) === JSON.stringify([['1', 'lb__medal--1', true], ['1', 'lb__medal--1', true], ['3', 'lb__medal--3', false]]), JSON.stringify(f3.rows))
+  // Right by the goal: inside the card, under the bar, over the amounts, and on the screen with them.
+  feed = FEED3
+  await fresh()
+  const place = await dp.evaluate(() => {
+    const give = document.getElementById('give'), bar = document.getElementById('fund-bar'), bd = document.getElementById('fund-board'), pick = document.getElementById('donate-pick')
+    const r = e => e.getBoundingClientRect()
+    return { inside: give.contains(bd), afterBar: !!(bar.compareDocumentPosition(bd) & Node.DOCUMENT_POSITION_FOLLOWING),
+      beforeAmounts: !!(bd.compareDocumentPosition(pick) & Node.DOCUMENT_POSITION_FOLLOWING), gap: Math.round(r(bd).top - r(bar).bottom),
+      clear: Math.round(r(pick).top - r(bd).bottom), onScreen: r(bd).bottom <= innerHeight, copies: document.querySelectorAll('#fund-top').length,
+      footer: document.querySelectorAll('#where ol, #where .lb').length }
+  })
+  check('D6e the leaderboard is in the card right under the goal bar (within 40px) and above the amounts, and nowhere else on the page',
+    place.inside && place.afterBar && place.beforeAmounts && place.gap >= 0 && place.gap <= 40 && place.clear >= 0 && place.onScreen && place.copies === 1 && place.footer === 0, JSON.stringify(place))
   check('D8 the total is asked for once, plainly, on an ordinary visit', asked.length === 1 && !/[?]/.test(asked[0].split('event-donations')[1]), asked.join())
   feedFail = true
   await fresh()
-  check('D9 if the total cannot load the page stays calm: $0 line, no error, and every amount is still there',
-    (await dp.textContent('#fund-raised')) === '$0' && (await dp.locator('#give a.rsvp-give__amt').count()) === 8)
+  const down = await dp.evaluate(() => ({ board: !document.getElementById('fund-board').hidden, first: !document.getElementById('fund-first').hidden }))
+  check('D9 if the total cannot load the page stays calm: $0 line, no error, no half-empty leaderboard, and every amount is still there',
+    (await dp.textContent('#fund-raised')) === '$0' && (await dp.locator('#give a.rsvp-give__amt').count()) === 8 && !down.board && down.first, JSON.stringify(down))
   feedFail = false; feed = EMPTY
+
+  // While the answer is on its way the board holds grey placeholders, so the amounts do not jump down when it arrives.
+  {
+    const lp = await ctx.newPage()
+    await lp.clock.setFixedTime(new Date('2026-10-05T15:00:00Z'))
+    let release
+    const gate = new Promise(r => { release = r })
+    await lp.route('**/functions/v1/event-donations**', async route => { await gate; await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(FEED3) }) })
+    await lp.goto(URLD, { waitUntil: 'domcontentloaded' })
+    await lp.waitForSelector('#fund-board:not([hidden])')
+    const probe = () => lp.evaluate(() => ({
+      busy: document.getElementById('fund-board').getAttribute('aria-busy'), first: !document.getElementById('fund-first').hidden,
+      ghostRows: document.querySelectorAll('#fund-top .lb__row--ghost').length, ghostChips: document.querySelectorAll('#fund-recent .lb__chip--ghost').length,
+      rows: document.querySelectorAll('#fund-top > li:not(.lb__row--ghost)').length,
+      amountsTop: Math.round(document.querySelector('#give a.rsvp-give__amt').getBoundingClientRect().top + scrollY) }))
+    const during = await probe()
+    release()
+    await lp.waitForSelector('#fund-board:not([aria-busy])')
+    const after = await probe()
+    await lp.close()
+    check('D6f until the answer comes the board shows placeholders (and not the invitation), and when it comes the amounts have not moved',
+      during.busy === 'true' && during.ghostRows === 3 && during.ghostChips === 3 && during.rows === 0 && !during.first
+        && after.ghostRows === 0 && after.rows === 3 && Math.abs(after.amountsTop - during.amountsTop) <= 2, JSON.stringify({ during, after }))
+  }
+
+  // A long name is cut with an ellipsis and never pushes the page sideways, on the narrowest phone.
+  {
+    const nc = await browser.newContext({ viewport: { width: 320, height: 700 } })
+    const np = await nc.newPage()
+    await np.clock.setFixedTime(new Date('2026-10-05T15:00:00Z'))
+    const LONG = 'Maximiliano-Alexander-Bartholomew W.'
+    await np.route('**/functions/v1/event-donations**', route => route.fulfill({ status: 200, contentType: 'application/json',
+      body: JSON.stringify({ raised: 400, count: 4, goal: 500, top: [{ name: LONG, amount: 250 }, { name: 'Anonymous', amount: 100 }], recent: [{ name: LONG, amount: 250, at: '2026-10-05T14:00:00Z' }] }) }))
+    await np.goto(URLD, { waitUntil: 'networkidle' })
+    const lng = await np.evaluate(() => {
+      const n = document.querySelector('#fund-top .lb__name'), c = document.querySelector('#fund-recent em')
+      return { cut: n.scrollWidth > n.clientWidth && getComputedStyle(n).textOverflow === 'ellipsis', chipCut: c.scrollWidth > c.clientWidth,
+        wide: document.documentElement.scrollWidth > innerWidth, boardFits: document.getElementById('fund-board').getBoundingClientRect().right <= innerWidth,
+        cardFits: document.getElementById('give').getBoundingClientRect().right <= innerWidth,
+        amountsFit: [...document.querySelectorAll('#give a.rsvp-give__amt')].every(a => a.getBoundingClientRect().right <= innerWidth) }
+    })
+    await nc.close()
+    check('D6g a very long name is cut with an ellipsis, and the card, the board and every amount fit a 320px phone', lng.cut && lng.chipCut && !lng.wide && lng.boardFits && lng.cardFits && lng.amountsFit, JSON.stringify(lng))
+  }
+
+  // Left open (on a screen at the seminar, say) the page asks again once a minute and shows what is new.
+  {
+    const rc = await browser.newContext({ viewport: { width: 1200, height: 900 } })
+    const rp = await rc.newPage()
+    await rp.clock.install({ time: new Date('2026-10-05T15:00:00Z') })
+    const SECOND = { raised: 160, count: 4, goal: 500, top: [{ name: 'Sam T.', amount: 100 }, { name: 'Jo L.', amount: 25 }, { name: 'Anonymous', amount: 25 }, { name: 'Pat <b>x</b>', amount: 10 }],
+      recent: [{ name: 'Jo L.', amount: 25, at: '2026-10-05T15:00:30Z' }] }
+    let asks = 0
+    await rp.route('**/functions/v1/event-donations**', route => { asks++; return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(asks === 1 ? FEED3 : SECOND) }) })
+    await rp.goto(URLD, { waitUntil: 'networkidle' })
+    const until = async fn => { for (let i = 0; i < 60; i++) { if (await rp.evaluate(fn)) return true; await new Promise(r => setTimeout(r, 50)) } return false }
+    const before = await rp.evaluate(() => document.getElementById('fund-raised').textContent)
+    await rp.clock.runFor(30000)
+    const quiet = asks
+    await rp.clock.runFor(31000)
+    const updated = await until(() => document.getElementById('fund-raised').textContent === '$160')
+    const now = await rp.evaluate(() => ({ count: document.getElementById('fund-count').textContent, rows: document.querySelectorAll('#fund-top > li').length,
+      settled: document.getElementById('fund-board').classList.contains('lb--settled'), anim: getComputedStyle(document.querySelector('#fund-top > li')).animationName }))
+    await rc.close()
+    check('D6h left open, the page asks again once a minute and shows the new gift, without replaying the entrances',
+      before === '$135' && quiet === 1 && asks === 2 && updated && now.count === '4 supporters' && now.rows === 4 && now.settled && now.anim === 'none', JSON.stringify({ before, quiet, asks, updated, now }))
+  }
+
+  // With reduced motion asked for, and for anyone reading it: nothing moves, and the small print is readable.
+  {
+    const mc = await browser.newContext({ viewport: { width: 1200, height: 900 }, reducedMotion: 'reduce' })
+    const mp = await mc.newPage()
+    await mp.clock.setFixedTime(new Date('2026-10-05T15:00:00Z'))
+    await mp.route('**/functions/v1/event-donations**', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(FEED3) }))
+    await mp.goto(URLD, { waitUntil: 'networkidle' })
+    const calm = await mp.evaluate(() => {
+      const moving = [...document.querySelectorAll('#fund-top > li, #fund-recent > li, .lb__live i')].map(e => getComputedStyle(e).animationName)
+      // Text colour against the lightest the panel gets (its pink glow over the card), so the real thing is at least this readable.
+      const rgb = c => c.match(/[\d.]+/g).slice(0, 3).map(Number)
+      const lin = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4 }
+      const lum = ([r, g, b]) => 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
+      const worst = lum([74, 42, 58])
+      const ratios = Object.fromEntries(['.lb__title', '.lb__live', '.lb__sub', '.lb__name', '.lb__name--anon', '.lb__amt', '.lb__chip b', '.lb__chip span'].map(sel => {
+        const L = lum(rgb(getComputedStyle(document.querySelector(sel)).color))
+        return [sel, Math.round((Math.max(L, worst) + 0.05) / (Math.min(L, worst) + 0.05) * 10) / 10]
+      }))
+      return { moving, ratios }
+    })
+    await mc.close()
+    check('D6i with reduced motion asked for nothing on the board moves, and every piece of its text is at least 4.5:1 on the panel',
+      calm.moving.length >= 6 && calm.moving.every(a => a === 'none') && Object.values(calm.ratios).every(r => r >= 4.5), JSON.stringify(calm))
+  }
 
   // The thank-you, for the donor Stripe sends back, and nobody else.
   await fresh()
@@ -1907,12 +2040,34 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
   const pc = await browser.newContext({ viewport: { width: 390, height: 844 } })
   const ph = await pc.newPage()
   await ph.clock.setFixedTime(new Date('2026-10-05T15:00:00Z'))
-  await ph.route('**/functions/v1/event-donations**', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(EMPTY) }))
+  let phoneFeed = EMPTY
+  await ph.route('**/functions/v1/event-donations**', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(phoneFeed) }))
   await ph.goto(URLD, { waitUntil: 'networkidle' })
   const row = await ph.evaluate(() => ({
     bottom: Math.round(Math.max(...[...document.querySelectorAll('#give a.rsvp-give__amt')].slice(0, 4).map(a => a.getBoundingClientRect().bottom))),
     wide: document.documentElement.scrollWidth > innerWidth }))
   check('D13 on a phone the first row of amounts is on the first screen, and nothing sticks out sideways', row.bottom <= 844 && !row.wide, JSON.stringify(row))
+  // With gifts the leaderboard is what the first screen holds, right under the goal: the amounts follow within a thumb's reach of the fold.
+  const phoneBoard = async feedBody => {
+    phoneFeed = feedBody
+    await ph.goto(URLD, { waitUntil: 'networkidle' })
+    return ph.evaluate(() => {
+      const r = s => document.querySelector(s).getBoundingClientRect()
+      const rows = [...document.querySelectorAll('#fund-top > li')].filter(li => li.offsetParent !== null).length
+      const chips = [...document.querySelectorAll('#fund-recent > li')].filter(li => li.offsetParent !== null).length
+      return { barBottom: Math.round(r('#fund-bar').bottom), boardTop: Math.round(r('#fund-board').top), boardBottom: Math.round(r('#fund-board').bottom),
+        amountsTop: Math.round(Math.min(...[...document.querySelectorAll('#give a.rsvp-give__amt')].map(a => a.getBoundingClientRect().top))),
+        rows, chips, wide: document.documentElement.scrollWidth > innerWidth }
+    })
+  }
+  const live3 = await phoneBoard({ raised: 203, count: 3, goal: 500, top: [{ name: 'Anonymous', amount: 100 }, { name: 'Anonymous', amount: 100 }, { name: 'Anonymous', amount: 3 }],
+    recent: [{ name: 'Anonymous', amount: 100, at: '2026-10-05T14:00:00Z' }, { name: 'Anonymous', amount: 3, at: '2026-10-05T13:00:00Z' }, { name: 'Anonymous', amount: 100, at: '2026-10-05T12:00:00Z' }] })
+  check('D13b on a phone the whole leaderboard is on the first screen, under the goal bar, and the amounts start within 100px of the fold',
+    live3.boardTop - live3.barBottom <= 40 && live3.boardBottom <= 844 && live3.amountsTop <= 944 && live3.rows === 3 && live3.chips === 2 && !live3.wide, JSON.stringify(live3))
+  const five = await phoneBoard({ raised: 437.5, count: 9, goal: 500, top: [{ name: 'A', amount: 250 }, { name: 'B', amount: 100 }, { name: 'C', amount: 100 }, { name: 'D', amount: 50 }, { name: 'E', amount: 25 }],
+    recent: [1, 2, 3, 4, 5].map(i => ({ name: 'Anonymous', amount: i * 10, at: '2026-10-05T14:00:00Z' })) })
+  check('D13c with five gifts a phone still shows only the best three and the latest two, so the amounts stay close',
+    five.rows === 3 && five.chips === 2 && five.boardTop - five.barBottom <= 40 && !five.wide, JSON.stringify(five))
   await pc.close()
 
   // Found, shared and listed.

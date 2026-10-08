@@ -11,7 +11,7 @@
 <noscript><link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=general-sans@300,400,500,600,700&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="/base.css?v=04502d32">
 <link rel="stylesheet" href="/style.css?v=c90bfa9f">
-<link rel="stylesheet" href="/programs.css?v=61f39633">
+<link rel="stylesheet" href="/programs.css?v=91a95eaa">
 <link rel="stylesheet" href="/booking.css?v=6073b089">
 
 <title>Donate to Rolling for Ribbons | Labyrinth BJJ Fulshear</title>
@@ -114,6 +114,17 @@
       </div>
       <div class="fund__bar" role="progressbar" aria-label="Fundraiser progress" aria-valuemin="0" aria-valuemax="500" aria-valuenow="0" id="fund-bar"><span id="fund-fill" style="width:0"></span></div>
       <p class="fund__first" id="fund-first">Be the first to give. Every gift, big or small, moves the bar.</p>
+      <section class="lb" id="fund-board" aria-label="Leaderboard" hidden>
+        <div class="lb__head">
+          <p class="lb__title"><svg class="lb__trophy" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 4h8v5a4 4 0 0 1-8 0V4z" fill="currentColor" fill-opacity=".22"/><path d="M8 6H5.5a2.5 2.5 0 0 0 2.9 3.6M16 6h2.5a2.5 2.5 0 0 1-2.9 3.6M12 13.2V17M9 20h6M10 17h4"/></svg>Leaderboard</p>
+          <p class="lb__live"><i aria-hidden="true"></i>Live</p>
+        </div>
+        <ol class="lb__top" id="fund-top" aria-label="Top supporters"></ol>
+        <div class="lb__latest" id="fund-latest">
+          <p class="lb__sub">Latest gifts</p>
+          <ul class="lb__chips" id="fund-recent" aria-label="Latest gifts"></ul>
+        </div>
+      </section>
     </div>
     <p class="rsvp-give__pick" id="donate-pick">Choose an amount</p>
     <div class="rsvp-give__amounts" role="group" aria-labelledby="donate-pick">
@@ -164,12 +175,6 @@
       <p class="section-label rsvp-label"><svg class="ribbon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7" fill="currentColor" fill-opacity=".18"/></svg>Where it goes</p>
       <h2 class="section-title section-title--lg">STRAIGHT TO A FAMILY</h2>
     </div>
-    <div class="fund fund--lists">
-      <div class="fund__lists" id="fund-lists" hidden>
-        <div><p class="fund__title">Top supporters</p><ol class="fund__list" id="fund-top"></ol></div>
-        <div><p class="fund__title">Latest gifts</p><ol class="fund__list" id="fund-recent"></ol></div>
-      </div>
-    </div>
     <div class="prog-prose">
       <p>Every gift goes directly to a family affected by breast cancer. You choose the amount, Stripe handles the payment securely, and you choose whether your name is shown.</p>
       <p>The total above counts online gifts only. Cash and merch sales at our seminar go to the same family and are counted at the event.</p>
@@ -186,7 +191,7 @@
   </div>
 </section>
 
-<script src="/fund.js?v=cc25c6be" defer></script>
+<script src="/fund.js?v=de3ab4c3" defer></script>
 
 </main>
 

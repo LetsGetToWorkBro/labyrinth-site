@@ -1471,7 +1471,7 @@ body.theme-pink main .prog-section--surface {
   .rsvp-photo figcaption { padding: 40px 28px 20px; font-size: 17px; }
 }
 
-/* Fundraiser progress: real numbers from Stripe, filled in by rsvp.js. */
+/* Fundraiser progress: real numbers from Stripe, filled in by fund.js. */
 .fund { margin-top: var(--space-6); padding: 22px; border: 1px solid var(--awareness-line); border-radius: 16px; background: var(--awareness-soft); }
 .fund__head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; }
 .fund__raised { margin: 0; color: var(--text-muted); font-size: 15px; }
@@ -1480,15 +1480,9 @@ body.theme-pink main .prog-section--surface {
 .fund__bar { height: 14px; margin-top: 14px; border-radius: 999px; background: rgba(229, 143, 181, 0.16); overflow: hidden; }
 .fund__bar span { display: block; height: 100%; border-radius: 999px; background: var(--awareness); transition: width 0.8s ease; }
 .fund__first { margin: 14px 0 0; color: var(--text); font-weight: 600; }
-.fund__lists { display: grid; gap: 18px; margin-top: 20px; }
-.fund__title { margin: 0 0 8px; color: var(--awareness); font-size: 13px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; }
-.fund__list { list-style: none; margin: 0; padding: 0; }
-.fund__list li { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--awareness-line); color: var(--text-muted); font-size: 15px; }
-.fund__list li:last-child { border-bottom: 0; }
-.fund__list strong { color: var(--text); }
 .fund__note { margin: 16px 0 0; color: var(--text-muted); font-size: 13px; line-height: 1.5; }
 .fund [hidden] { display: none !important; }
-@media (min-width: 760px) { .fund__lists { grid-template-columns: 1fr 1fr; gap: 32px; } .fund { max-width: 760px; } }
+@media (min-width: 760px) { .fund { max-width: 760px; } }
 
 /* ── /donate ────────────────────────────────────────────────────────────────
    Only the donation (scripts/build_pages.py, render_donate). The card in the hero is the
@@ -1499,12 +1493,94 @@ body.theme-pink main .prog-section--surface {
 .donate-card .fund__raised strong { font-size: 44px; }
 .donate-card .fund__first { font-size: 15px; }
 .donate-card .rsvp-give__pick { margin-top: 18px; font-size: 13px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--awareness); }
-.donate-card .rsvp-give__amounts { grid-template-columns: repeat(4, 1fr); max-width: none; }
+.donate-card .rsvp-give__amounts { grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: none; }
 .donate-card .rsvp-give__amt { min-height: 60px; font-size: 22px; }
 .donate-card .rsvp-give__amt--other { font-size: 15px; }
 .donate-card .rsvp-give__fine { margin-bottom: 0; }
-.fund--lists { margin: 0; padding: 0; border: 0; background: none; max-width: none; }
-.fund--lists .fund__lists { margin: var(--space-6) 0 var(--space-8); }
+/* On a phone the card comes straight after the title and the paragraph under the title follows the card, so the goal,
+   the leaderboard and the amounts are what the first screen holds. On a desk the words sit beside the card, centred on it. */
+@media (max-width: 959px) {
+  .donate-hero .hero-split { gap: 0; grid-template-columns: minmax(0, 1fr); }
+  .donate-hero .hero-split__text { display: contents; }
+  .donate-hero .hero-split__card { order: 2; margin-top: 4px; }
+  .donate-hero .prog-hero__lead { order: 3; margin: 28px 0 0; }
+}
+@media (min-width: 960px) { .donate-hero .hero-split__text { align-self: center; } }
+
+/* The leaderboard. Right under the goal bar, inside the card, so it is the second thing a visitor sees and not
+   a list at the foot of the page. fund.js fills it from the same answer as the bar: the biggest gifts ranked with
+   medals (a tie shares a rank), then the latest ones. While that answer is on its way the same space holds grey
+   placeholders, so the amounts below do not jump when it arrives. */
+.lb {
+  position: relative; margin-top: 18px; padding: 14px 14px 12px; overflow: hidden;
+  border: 1.5px solid var(--awareness-line); border-radius: 18px;
+  background: radial-gradient(130% 100% at 0% 0%, rgba(229, 143, 181, 0.26), transparent 62%), rgba(20, 8, 14, 0.62);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 12px 32px rgba(0, 0, 0, 0.28);
+}
+.lb__head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+.lb__title { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 12.5px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--awareness); }
+.lb__trophy { flex: none; color: var(--gold); }
+.lb__live { display: inline-flex; align-items: center; gap: 7px; margin: 0; font-size: 11.5px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #cdb7c2; }
+.lb__live i { width: 7px; height: 7px; border-radius: 50%; background: var(--awareness); animation: lbPulse 2.4s ease-out infinite; }
+.lb__top { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.lb__row {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 7px 14px 7px 8px;
+  border: 1px solid rgba(229, 143, 181, 0.22); border-radius: 14px; background: rgba(255, 247, 250, 0.05);
+}
+.lb__row--first { padding-top: 9px; padding-bottom: 9px; border-color: rgba(200, 162, 76, 0.7); background: linear-gradient(90deg, rgba(200, 162, 76, 0.32), rgba(200, 162, 76, 0.08)); }
+.lb__medal {
+  display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; font-size: 15px; font-weight: 900; line-height: 1; color: #2b1d03;
+  box-shadow: inset 0 -2px 3px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.55), 0 2px 6px rgba(0, 0, 0, 0.35);
+}
+.lb__medal--1 { background: radial-gradient(circle at 32% 26%, #fff1bd 0%, #e8c563 38%, #c8a24c 66%, #94742a 100%); }
+.lb__medal--2 { color: #1b2130; background: radial-gradient(circle at 32% 26%, #ffffff 0%, #dde1e8 38%, #b3b9c5 66%, #838a99 100%); }
+.lb__medal--3 { color: #2c1608; background: radial-gradient(circle at 32% 26%, #ffe1c6 0%, #e2a577 40%, #c98558 66%, #8a4f27 100%); }
+.lb__medal--n { color: var(--awareness); border: 1.5px solid var(--awareness-line); background: transparent; box-shadow: none; }
+.lb__name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 16px; font-weight: 700; color: var(--text); }
+.lb__name--anon { font-weight: 600; color: #e4cbd8; }
+.lb__amt { font-size: 22px; font-weight: 900; line-height: 1.1; letter-spacing: -0.01em; color: var(--text); font-variant-numeric: tabular-nums; }
+.lb__row--first .lb__amt { font-size: 26px; color: #ffe7a1; }
+/* One row, always: the chips that do not fit fade out at the edge, so the board is the same height whoever gave. */
+.lb__latest { display: flex; align-items: center; gap: 8px 12px; margin-top: 12px; padding-top: 11px; border-top: 1px dashed var(--awareness-line); }
+.lb__sub { flex: none; margin: 0; font-size: 11.5px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: #cdb7c2; }
+.lb__chips {
+  flex: 1 1 0; min-width: 0; list-style: none; margin: 0; padding: 0; display: flex; gap: 6px; overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 26px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 26px), transparent);
+}
+.lb__chip {
+  display: inline-flex; flex: none; align-items: baseline; gap: 6px; padding: 5px 11px; white-space: nowrap; line-height: 18px;
+  border: 1px solid rgba(229, 143, 181, 0.34); border-radius: 999px; background: rgba(229, 143, 181, 0.14); font-size: 13px; color: var(--text);
+}
+.lb__chip b { font-weight: 800; }
+.lb__chip em { max-width: 11ch; overflow: hidden; text-overflow: ellipsis; font-style: normal; font-weight: 600; }
+.lb__chip span { font-size: 12px; color: #cdb7c2; }
+/* Placeholders, until the answer comes. */
+.lb__row--ghost .lb__medal { background: rgba(255, 247, 250, 0.1); box-shadow: none; }
+.lb__row--ghost .lb__name, .lb__row--ghost .lb__amt { height: 14px; border-radius: 7px; background: rgba(255, 247, 250, 0.1); }
+.lb__row--ghost .lb__name { width: 46%; }
+.lb__row--ghost .lb__amt { width: 46px; }
+.lb__chip--ghost { width: 76px; height: 30px; padding: 0; border-color: transparent; background: rgba(255, 247, 250, 0.08); }
+.lb[aria-busy="true"] .lb__row--ghost, .lb[aria-busy="true"] .lb__chip--ghost { animation: lbShimmer 1.4s ease-in-out infinite; }
+/* The gifts arrive one after the other. */
+.lb__row:not(.lb__row--ghost), .lb__chip:not(.lb__chip--ghost) { animation: lbIn 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; animation-delay: calc(var(--i, 0) * 70ms); }
+.lb--settled .lb__row, .lb--settled .lb__chip { animation: none; }
+@keyframes lbIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes lbShimmer { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+@keyframes lbPulse { 0% { box-shadow: 0 0 0 0 rgba(229, 143, 181, 0.55); } 70%, 100% { box-shadow: 0 0 0 8px rgba(229, 143, 181, 0); } }
+@media (prefers-reduced-motion: reduce) { .lb__row, .lb__chip, .lb__live i { animation: none !important; } }
+/* On a phone the board is the three best gifts, so the amounts are not pushed far down. */
+@media (max-width: 520px) {
+  .lb { margin-top: 16px; padding: 12px 12px 10px; }
+  .lb__row { gap: 10px; padding-right: 12px; }
+  .lb__name { font-size: 15px; }
+  .lb__amt { font-size: 20px; }
+  .lb__row--first .lb__amt { font-size: 24px; }
+  .lb__top > li:nth-child(n + 4), .lb__chips > li:nth-child(n + 3) { display: none; }
+  .lb__latest { flex-direction: column; align-items: stretch; margin-top: 10px; padding-top: 9px; }
+  .lb__chips { flex: none; }
+  .lb__chip { padding: 4px 10px; font-size: 12.5px; }
+  .lb__chip--ghost { height: 28px; }
+}
 
 /* Goal + each donor's match = what the family gets. A column on a phone, a row on a desk. */
 .match-eq { display: flex; flex-direction: column; gap: 8px; margin-top: var(--space-6); }
