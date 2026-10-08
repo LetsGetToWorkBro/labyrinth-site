@@ -82,6 +82,7 @@
       chip.setAttribute('aria-hidden', 'true');
       ul.appendChild(chip);
     }
+    if (more) { more.hidden = false; more.className = 'lb__more lb__more--ghost'; more.textContent = '\u2193 0 more'; }
     board.hidden = false;
     board.setAttribute('aria-busy', 'true');
     showFirst(false);
@@ -92,16 +93,49 @@
     board.removeAttribute('aria-busy');
   }
 
-  // 1 plus the number of bigger gifts: two gifts of $100 are both first, and the next one is third.
+  // Who ranks above whom: a donor who chose to show their name comes before everybody who did not, and within each group
+  // the bigger gift comes first. The function sends the gifts in that order already; sorting again here keeps the page
+  // right whichever answer it is handed (an older one may still be remembered for a minute).
+  function isNamed(r) { return !!r.name && r.name !== 'Anonymous'; }
+  function compare(a, b) { return (isNamed(b) ? 1 : 0) - (isNamed(a) ? 1 : 0) || (Number(b.amount) || 0) - (Number(a.amount) || 0); }
+  function ordered(rows) {
+    return rows.map(function (r, i) { return { r: r, i: i }; })
+      .sort(function (a, b) { return compare(a.r, b.r) || a.i - b.i; })
+      .map(function (x) { return x.r; });
+  }
+  // 1 plus the number of gifts that rank above this one: two equal gifts share a rank, and the next one is placed after both.
   function rank(rows, i) {
     var n = 1;
-    rows.forEach(function (r) { if (r.amount > rows[i].amount) n++; });
+    rows.forEach(function (r) { if (compare(r, rows[i]) < 0) n++; });
     return n;
   }
 
+  // Three rows show and the rest are a scroll away. The board is the same height whoever gave, so it can be a skeleton first.
+  var scroller = $('fund-top'), more = $('fund-more');
+  function hints() {
+    var scrollable = scroller.scrollHeight > scroller.clientHeight + 1;
+    var edge = scroller.scrollTop + scroller.clientHeight;
+    var below = 0;
+    [].forEach.call(scroller.children, function (li) { if (li.offsetTop + li.offsetHeight > edge + 2) below++; });
+    // A list that scrolls can be reached by keyboard too.
+    if (scrollable) scroller.setAttribute('tabindex', '0'); else scroller.removeAttribute('tabindex');
+    scroller.className = scroller.className.replace(/\s*lb__top--more/, '') + (scrollable && below ? ' lb__top--more' : '');
+    if (!more) return;
+    more.hidden = !scrollable;
+    more.className = 'lb__more' + (below ? '' : ' lb__more--end');
+    more.textContent = below ? '\u2193 ' + below + ' more' : 'That\u2019s everyone';
+  }
+  scroller.addEventListener('scroll', hints, { passive: true });
+  // ...and once more when the rows have settled, in case anything moved while they came in.
+  scroller.addEventListener('animationend', hints);
+
   function fillTop(rows) {
-    var ol = $('fund-top');
+    rows = ordered(rows);
+    var ol = scroller;
+    // A minute's refresh must not throw somebody back to the top of the list they are reading.
+    var keep = ol.scrollTop;
     ol.textContent = '';
+    ol.setAttribute('aria-label', 'Top supporters, ' + rows.length + (rows.length === 1 ? ' gift' : ' gifts'));
     rows.forEach(function (r, i) {
       var n = rank(rows, i);
       var name = String(r.name || 'Anonymous');
@@ -112,6 +146,8 @@
       li.appendChild(el('strong', 'lb__amt', money(Number(r.amount) || 0)));
       ol.appendChild(li);
     });
+    ol.scrollTop = keep;
+    hints();
   }
 
   function ago(iso) {

@@ -1602,6 +1602,7 @@ def render_donate():
           <p class="lb__live"><i aria-hidden="true"></i>Live</p>
         </div>
         <ol class="lb__top" id="fund-top" aria-label="Top supporters"></ol>
+        <p class="lb__more" id="fund-more" aria-hidden="true" hidden></p>
         <div class="lb__latest" id="fund-latest">
           <p class="lb__sub">Latest gifts</p>
           <ul class="lb__chips" id="fund-recent" aria-label="Latest gifts"></ul>

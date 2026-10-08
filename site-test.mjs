@@ -1873,21 +1873,26 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
   const f1 = await board()
   check('D6 fundraiser with gifts: total, percent, supporter count, and the leaderboard instead of the invitation',
     f1.raised === '$135' && f1.count === '3 supporters' && f1.width === '27%' && f1.now === '135' && f1.first && f1.shown && !f1.busy, JSON.stringify(f1))
-  check('D6a the leaderboard ranks the biggest gifts with medals: gold, silver, bronze, the first one picked out, Anonymous toned down',
+  check('D6a the leaderboard ranks with medals, gold, silver, bronze, the first one picked out, Anonymous toned down, and the donors who gave their name come before the anonymous $25',
     JSON.stringify(f1.rows.map(r => [r.rank, r.medal, r.name, r.amt, r.gold, r.anon]))
-      === JSON.stringify([['1', 'lb__medal--1', 'Sam T.', '$100', true, false], ['2', 'lb__medal--2', 'Anonymous', '$25', false, true], ['3', 'lb__medal--3', 'Pat <b>x</b>', '$10', false, false]]),
+      === JSON.stringify([['1', 'lb__medal--1', 'Sam T.', '$100', true, false], ['2', 'lb__medal--2', 'Pat <b>x</b>', '$10', false, false], ['3', 'lb__medal--3', 'Anonymous', '$25', false, true]]),
     JSON.stringify(f1.rows))
   check('D6b the latest gifts follow, newest first, with how long ago and the name only when the donor chose to show it',
     JSON.stringify(f1.chips) === JSON.stringify(['Pat <b>x</b> $10 just now', '$25 40m ago', 'Sam T. $100 6h ago']), JSON.stringify(f1.chips))
-  check('D7 a donor name is shown as text, never as markup', f1.injected === false && f1.rows[2].name.includes('<b>') && f1.chips[0].includes('<b>'))
-  // Equal gifts share a rank, and the next one is placed after them; past third there is no medal, only the number.
+  check('D7 a donor name is shown as text, never as markup', f1.injected === false && f1.rows[1].name.includes('<b>') && f1.chips[0].includes('<b>'))
+  // A donor who gave their name outranks every anonymous gift, whatever its size; past third there is no medal, only the number.
   feed = { raised: 525, count: 5, goal: 500,
     top: [{ name: 'A', amount: 250 }, { name: 'B', amount: 100 }, { name: 'Anonymous', amount: 100 }, { name: 'C', amount: 50 }, { name: 'Anonymous', amount: 25 }], recent: [] }
   await fresh()
   const f2 = await board()
-  check('D6c equal gifts share a rank (1, 2, 2, 4, 5), and only the first three places get a medal',
-    JSON.stringify(f2.rows.map(r => [r.rank, r.medal])) === JSON.stringify([['1', 'lb__medal--1'], ['2', 'lb__medal--2'], ['2', 'lb__medal--2'], ['4', 'lb__medal--n'], ['5', 'lb__medal--n']])
+  check('D6c a named $50 ranks above an anonymous $100 (A $250, B $100, C $50, then Anonymous $100 and $25: 1 to 5), and only the first three places get a medal',
+    JSON.stringify(f2.rows.map(r => [r.rank, r.medal, r.name, r.amt])) === JSON.stringify([['1', 'lb__medal--1', 'A', '$250'], ['2', 'lb__medal--2', 'B', '$100'], ['3', 'lb__medal--3', 'C', '$50'], ['4', 'lb__medal--n', 'Anonymous', '$100'], ['5', 'lb__medal--n', 'Anonymous', '$25']])
       && f2.rows.filter(r => r.gold).length === 1 && f2.width === '100%' && f2.chips.length === 0, JSON.stringify(f2.rows))
+  feed = { raised: 300, count: 4, goal: 500, top: [{ name: 'Anonymous', amount: 100 }, { name: 'B', amount: 100 }, { name: 'A', amount: 100 }, { name: 'Anonymous', amount: 100 }], recent: [] }
+  await fresh()
+  const f2b = await board()
+  check('D6c2 equal gifts share a rank only inside their group: two named $100 are both first, and the anonymous $100s, which come after them, are both third',
+    JSON.stringify(f2b.rows.map(r => [r.rank, r.name])) === JSON.stringify([['1', 'B'], ['1', 'A'], ['3', 'Anonymous'], ['3', 'Anonymous']]), JSON.stringify(f2b.rows))
   feed = { raised: 203, count: 3, goal: 500, top: [{ name: 'Anonymous', amount: 100 }, { name: 'Anonymous', amount: 100 }, { name: 'Anonymous', amount: 3 }], recent: [] }
   await fresh()
   const f3 = await board()
@@ -1915,27 +1920,102 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
   feedFail = false; feed = EMPTY
 
   // While the answer is on its way the board holds grey placeholders, so the amounts do not jump down when it arrives.
+  const FEED9 = { raised: 318, count: 9, goal: 500,
+    // as the function used to send them, by amount alone: the page puts the donors who gave a name first itself
+    top: [{ name: 'Anonymous', amount: 100 }, { name: 'Anonymous', amount: 100 }, { name: 'Sam T.', amount: 50 }, { name: 'Priya R.', amount: 50 }, { name: 'Anonymous', amount: 25 },
+      { name: 'Jo L.', amount: 10 }, { name: 'Anonymous', amount: 10 }, { name: 'Anonymous', amount: 3 }, { name: 'Pat K.', amount: 3 }],
+    recent: [{ name: 'Pat K.', amount: 3, at: '2026-10-05T14:59:00Z' }, { name: 'Anonymous', amount: 10, at: '2026-10-05T14:20:00Z' }, { name: 'Jo L.', amount: 10, at: '2026-10-05T09:00:00Z' }] }
   {
-    const lp = await ctx.newPage()
-    await lp.clock.setFixedTime(new Date('2026-10-05T15:00:00Z'))
-    let release
-    const gate = new Promise(r => { release = r })
-    await lp.route('**/functions/v1/event-donations**', async route => { await gate; await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(FEED3) }) })
-    await lp.goto(URLD, { waitUntil: 'domcontentloaded' })
-    await lp.waitForSelector('#fund-board:not([hidden])')
-    const probe = () => lp.evaluate(() => ({
-      busy: document.getElementById('fund-board').getAttribute('aria-busy'), first: !document.getElementById('fund-first').hidden,
-      ghostRows: document.querySelectorAll('#fund-top .lb__row--ghost').length, ghostChips: document.querySelectorAll('#fund-recent .lb__chip--ghost').length,
-      rows: document.querySelectorAll('#fund-top > li:not(.lb__row--ghost)').length,
-      amountsTop: Math.round(document.querySelector('#give a.rsvp-give__amt').getBoundingClientRect().top + scrollY) }))
-    const during = await probe()
-    release()
-    await lp.waitForSelector('#fund-board:not([aria-busy])')
-    const after = await probe()
-    await lp.close()
+    const jump = async feedBody => {
+      const lp = await ctx.newPage()
+      await lp.clock.setFixedTime(new Date('2026-10-05T15:00:00Z'))
+      let release
+      const gate = new Promise(r => { release = r })
+      await lp.route('**/functions/v1/event-donations**', async route => { await gate; await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(feedBody) }) })
+      await lp.goto(URLD, { waitUntil: 'domcontentloaded' })
+      await lp.waitForSelector('#fund-board:not([hidden])')
+      const probe = () => lp.evaluate(() => ({
+        busy: document.getElementById('fund-board').getAttribute('aria-busy'), first: !document.getElementById('fund-first').hidden,
+        ghostRows: document.querySelectorAll('#fund-top .lb__row--ghost').length, ghostChips: document.querySelectorAll('#fund-recent .lb__chip--ghost').length,
+        rows: document.querySelectorAll('#fund-top > li:not(.lb__row--ghost)').length,
+        amountsTop: Math.round(document.querySelector('#give a.rsvp-give__amt').getBoundingClientRect().top + scrollY) }))
+      const during = await probe()
+      release()
+      await lp.waitForSelector('#fund-board:not([aria-busy])')
+      const after = await probe()
+      await lp.close()
+      return { during, after }
+    }
+    // A board that scrolls (more than three gifts: the usual case once the drive is going) arrives without moving anything.
+    const j9 = await jump(FEED9)
     check('D6f until the answer comes the board shows placeholders (and not the invitation), and when it comes the amounts have not moved',
-      during.busy === 'true' && during.ghostRows === 3 && during.ghostChips === 3 && during.rows === 0 && !during.first
-        && after.ghostRows === 0 && after.rows === 3 && Math.abs(after.amountsTop - during.amountsTop) <= 2, JSON.stringify({ during, after }))
+      j9.during.busy === 'true' && j9.during.ghostRows === 3 && j9.during.ghostChips === 3 && j9.during.rows === 0 && !j9.during.first
+        && j9.after.ghostRows === 0 && j9.after.rows === 9 && Math.abs(j9.after.amountsTop - j9.during.amountsTop) <= 2, JSON.stringify(j9))
+    // With three gifts or fewer there is nothing to scroll, so the "N more" line the placeholders kept room for is not needed: the page closes up by that line and no more.
+    const j3 = await jump(FEED3)
+    check('D6f2 with three gifts the placeholders close up by the width of one small line, no more', j3.after.rows === 3 && j3.during.amountsTop - j3.after.amountsTop >= 0 && j3.during.amountsTop - j3.after.amountsTop <= 26, JSON.stringify(j3))
+  }
+
+  // Named first, whatever order the answer comes in; three rows show and the rest scroll.
+  {
+    const sc = await browser.newContext({ viewport: { width: 1200, height: 900 } })
+    const sp = await sc.newPage()
+    await sp.clock.setFixedTime(new Date('2026-10-05T15:00:00Z'))
+    await sp.route('**/functions/v1/event-donations**', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(FEED9) }))
+    await sp.goto(URLD, { waitUntil: 'networkidle' })
+    const read = () => sp.evaluate(() => {
+      const l = document.getElementById('fund-top'), lr = l.getBoundingClientRect(), more = document.getElementById('fund-more')
+      const rows = [...l.children]
+      return { order: rows.map(li => li.querySelector('.lb__medal').textContent + ' ' + li.querySelector('.lb__name').textContent + ' ' + li.querySelector('.lb__amt').textContent),
+        h: l.clientHeight, sh: l.scrollHeight, top: l.scrollTop, tab: l.getAttribute('tabindex'), label: l.getAttribute('aria-label'), more: more.textContent, moreShown: !more.hidden && getComputedStyle(more).visibility !== 'hidden',
+        inWindow: rows.filter(li => { const r = li.getBoundingClientRect(); return r.top >= lr.top - 1 && r.bottom <= lr.bottom + 1 }).length, fade: l.classList.contains('lb__top--more'), pageY: scrollY }
+    })
+    const a = await read()
+    check('D6h donors who gave their name are first (biggest first), then the anonymous gifts (biggest first), whatever order the answer came in, and equal gifts share a rank',
+      JSON.stringify(a.order) === JSON.stringify(['1 Sam T. $50', '1 Priya R. $50', '3 Jo L. $10', '4 Pat K. $3', '5 Anonymous $100', '5 Anonymous $100', '7 Anonymous $25', '8 Anonymous $10', '9 Anonymous $3']), JSON.stringify(a.order))
+    check('D6i the board shows three rows at a time (all three whole) and the other six are there to scroll to, with a hint that says how many and a fade at the foot',
+      Math.abs(a.h - 156) <= 1 && a.sh > a.h + 200 && a.inWindow === 3 && a.more === '\u2193 6 more' && a.moreShown && a.fade && a.top === 0, JSON.stringify(a))
+    check('D6j it can be reached by keyboard and says what it is: focusable, "Top supporters, 9 gifts"', a.tab === '0' && a.label === 'Top supporters, 9 gifts', JSON.stringify({ tab: a.tab, label: a.label }))
+    await sp.locator('#fund-top').hover()
+    await sp.mouse.wheel(0, 120)
+    await sp.waitForTimeout(400)
+    const b = await read()
+    check('D6k a turn of the wheel over the board scrolls the board and not the page, and the hint counts down', b.top > 40 && b.pageY === a.pageY && /^\u2193 [1-5] more$/.test(b.more), JSON.stringify({ top: b.top, pageY: b.pageY, more: b.more }))
+    await sp.evaluate(() => { const l = document.getElementById('fund-top'); l.scrollTop = l.scrollHeight })
+    await sp.waitForTimeout(300)
+    const c = await read()
+    check('D6l at the foot the last gift is whole in the window, the fade is gone and the hint says that is everyone', c.inWindow === 3 && c.order[8].endsWith('Anonymous $3') && !c.fade && /everyone/.test(c.more), JSON.stringify(c))
+    await sp.evaluate(() => { document.getElementById('fund-top').scrollTop = 0 })
+    await sp.focus('#fund-top')
+    await sp.keyboard.press('PageDown')
+    await sp.waitForTimeout(400)
+    check('D6m the arrow and page keys scroll it too (a keyboard visitor can see everybody)', (await read()).top > 40)
+    await sc.close()
+  }
+  // Three gifts or fewer: nothing to scroll, so no scrollbar, no hint and no extra tab stop.
+  {
+    await fresh()
+    feed = FEED3
+    await fresh()
+    const few = await dp.evaluate(() => { const l = document.getElementById('fund-top'); return { scrolls: l.scrollHeight > l.clientHeight + 1, tab: l.getAttribute('tabindex'), more: document.getElementById('fund-more').hidden, fade: l.classList.contains('lb__top--more') } })
+    check('D6n with three gifts or fewer the board does not scroll and offers no hint, no fade and no tab stop', !few.scrolls && few.tab === null && few.more === true && !few.fade, JSON.stringify(few))
+  }
+  // A minute's refresh must not throw the visitor back to the top of the list they are reading.
+  {
+    const rc2 = await browser.newContext({ viewport: { width: 1200, height: 900 } })
+    const rp2 = await rc2.newPage()
+    await rp2.clock.install({ time: new Date('2026-10-05T15:00:00Z') })
+    let asks2 = 0
+    await rp2.route('**/functions/v1/event-donations**', route => { asks2++; const f = JSON.parse(JSON.stringify(FEED9)); if (asks2 > 1) { f.count = 10; f.raised = 328; f.top.push({ name: 'Lee M.', amount: 10 }) } return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(f) }) })
+    await rp2.goto(URLD, { waitUntil: 'networkidle' })
+    await rp2.evaluate(() => { document.getElementById('fund-top').scrollTop = 216 })
+    await rp2.waitForTimeout(300)
+    const before2 = await rp2.evaluate(() => document.getElementById('fund-top').scrollTop)
+    await rp2.clock.runFor(61000)
+    for (let i = 0; i < 60 && (await rp2.evaluate(() => document.getElementById('fund-top').children.length)) !== 10; i++) await new Promise(r => setTimeout(r, 50))
+    const after2 = await rp2.evaluate(() => ({ top: document.getElementById('fund-top').scrollTop, rows: document.getElementById('fund-top').children.length, lee: [...document.querySelectorAll('#fund-top .lb__name')].some(n => n.textContent === 'Lee M.') }))
+    check('D6o when the minute\'s answer brings a new gift the list keeps its place (it is not thrown back to the top)', before2 > 100 && after2.rows === 10 && after2.lee && Math.abs(after2.top - before2) <= 60, JSON.stringify({ before2, after2 }))
+    await rc2.close()
   }
 
   // A long name is cut with an ellipsis and never pushes the page sideways, on the narrowest phone.
@@ -1977,7 +2057,7 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
     const now = await rp.evaluate(() => ({ count: document.getElementById('fund-count').textContent, rows: document.querySelectorAll('#fund-top > li').length,
       settled: document.getElementById('fund-board').classList.contains('lb--settled'), anim: getComputedStyle(document.querySelector('#fund-top > li')).animationName }))
     await rc.close()
-    check('D6h left open, the page asks again once a minute and shows the new gift, without replaying the entrances',
+    check('D6p left open, the page asks again once a minute and shows the new gift, without replaying the entrances',
       before === '$135' && quiet === 1 && asks === 2 && updated && now.count === '4 supporters' && now.rows === 4 && now.settled && now.anim === 'none', JSON.stringify({ before, quiet, asks, updated, now }))
   }
 
@@ -2002,7 +2082,7 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
       return { moving, ratios }
     })
     await mc.close()
-    check('D6i with reduced motion asked for nothing on the board moves, and every piece of its text is at least 4.5:1 on the panel',
+    check('D6q with reduced motion asked for nothing on the board moves, and every piece of its text is at least 4.5:1 on the panel',
       calm.moving.length >= 6 && calm.moving.every(a => a === 'none') && Object.values(calm.ratios).every(r => r >= 4.5), JSON.stringify(calm))
   }
 
@@ -2053,21 +2133,23 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
     await ph.goto(URLD, { waitUntil: 'networkidle' })
     return ph.evaluate(() => {
       const r = s => document.querySelector(s).getBoundingClientRect()
-      const rows = [...document.querySelectorAll('#fund-top > li')].filter(li => li.offsetParent !== null).length
+      const list = document.getElementById('fund-top'), lr = list.getBoundingClientRect()
+      const total = list.children.length
+      const rows = [...list.children].filter(li => { const q = li.getBoundingClientRect(); return q.top >= lr.top - 1 && q.bottom <= lr.bottom + 1 }).length
       const chips = [...document.querySelectorAll('#fund-recent > li')].filter(li => li.offsetParent !== null).length
       return { barBottom: Math.round(r('#fund-bar').bottom), boardTop: Math.round(r('#fund-board').top), boardBottom: Math.round(r('#fund-board').bottom),
         amountsTop: Math.round(Math.min(...[...document.querySelectorAll('#give a.rsvp-give__amt')].map(a => a.getBoundingClientRect().top))),
-        rows, chips, wide: document.documentElement.scrollWidth > innerWidth }
+        rows, total, scrolls: list.scrollHeight > list.clientHeight + 1, chips, wide: document.documentElement.scrollWidth > innerWidth }
     })
   }
   const live3 = await phoneBoard({ raised: 203, count: 3, goal: 500, top: [{ name: 'Anonymous', amount: 100 }, { name: 'Anonymous', amount: 100 }, { name: 'Anonymous', amount: 3 }],
     recent: [{ name: 'Anonymous', amount: 100, at: '2026-10-05T14:00:00Z' }, { name: 'Anonymous', amount: 3, at: '2026-10-05T13:00:00Z' }, { name: 'Anonymous', amount: 100, at: '2026-10-05T12:00:00Z' }] })
   check('D13b on a phone the whole leaderboard is on the first screen, under the goal bar, and the amounts start within 100px of the fold',
-    live3.boardTop - live3.barBottom <= 40 && live3.boardBottom <= 844 && live3.amountsTop <= 944 && live3.rows === 3 && live3.chips === 2 && !live3.wide, JSON.stringify(live3))
+    live3.boardTop - live3.barBottom <= 40 && live3.boardBottom <= 844 && live3.amountsTop <= 944 && live3.rows === 3 && live3.total === 3 && !live3.scrolls && live3.chips === 2 && !live3.wide, JSON.stringify(live3))
   const five = await phoneBoard({ raised: 437.5, count: 9, goal: 500, top: [{ name: 'A', amount: 250 }, { name: 'B', amount: 100 }, { name: 'C', amount: 100 }, { name: 'D', amount: 50 }, { name: 'E', amount: 25 }],
     recent: [1, 2, 3, 4, 5].map(i => ({ name: 'Anonymous', amount: i * 10, at: '2026-10-05T14:00:00Z' })) })
-  check('D13c with five gifts a phone still shows only the best three and the latest two, so the amounts stay close',
-    five.rows === 3 && five.chips === 2 && five.boardTop - five.barBottom <= 40 && !five.wide, JSON.stringify(five))
+  check('D13c with five gifts a phone shows three at a time (the other two are a scroll away) and the latest two, so the amounts stay close',
+    five.rows === 3 && five.total === 5 && five.scrolls && five.chips === 2 && five.boardTop - five.barBottom <= 40 && five.amountsTop <= 1010 && !five.wide, JSON.stringify(five))
   await pc.close()
 
   // Found, shared and listed.

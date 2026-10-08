@@ -1522,12 +1522,27 @@ body.theme-pink main .prog-section--surface {
 .lb__trophy { flex: none; color: var(--gold); }
 .lb__live { display: inline-flex; align-items: center; gap: 7px; margin: 0; font-size: 11.5px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #cdb7c2; }
 .lb__live i { width: 7px; height: 7px; border-radius: 50%; background: var(--awareness); animation: lbPulse 2.4s ease-out infinite; }
-.lb__top { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.lb__top {
+  position: relative; list-style: none; margin: 0; padding: 0 4px 0 0; display: grid; gap: 6px; align-content: start;
+  /* Three rows (48px each) and the two gaps between them. Whoever else is on the board is a scroll away. */
+  max-height: 156px; overflow-y: auto; scroll-snap-type: y proximity;
+  scrollbar-width: thin; scrollbar-color: rgba(229, 143, 181, 0.75) rgba(255, 255, 255, 0.07);
+}
+.lb__top > li { scroll-snap-align: start; }
+.lb__top::-webkit-scrollbar { width: 6px; }
+.lb__top::-webkit-scrollbar-track { border-radius: 999px; background: rgba(255, 255, 255, 0.07); }
+.lb__top::-webkit-scrollbar-thumb { border-radius: 999px; background: rgba(229, 143, 181, 0.75); }
+/* More below: the last row fades into the edge, and says how many. */
+.lb__top--more { -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 14px), transparent); mask-image: linear-gradient(180deg, #000 calc(100% - 14px), transparent); }
+.lb__top:focus-visible { outline: 2px solid var(--awareness); outline-offset: 3px; border-radius: 14px; }
+.lb__more { height: 16px; margin: 8px 0 0; font-size: 12px; font-weight: 800; line-height: 16px; letter-spacing: 0.08em; text-align: center; text-transform: uppercase; color: #e9c9d8; }
+.lb__more--end { color: #b99fae; }
+.lb__more--ghost { visibility: hidden; }
 .lb__row {
   display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 7px 14px 7px 8px;
   border: 1px solid rgba(229, 143, 181, 0.22); border-radius: 14px; background: rgba(255, 247, 250, 0.05);
 }
-.lb__row--first { padding-top: 9px; padding-bottom: 9px; border-color: rgba(200, 162, 76, 0.7); background: linear-gradient(90deg, rgba(200, 162, 76, 0.32), rgba(200, 162, 76, 0.08)); }
+.lb__row--first { border-color: rgba(200, 162, 76, 0.7); background: linear-gradient(90deg, rgba(200, 162, 76, 0.32), rgba(200, 162, 76, 0.08)); }
 .lb__medal {
   display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; font-size: 15px; font-weight: 900; line-height: 1; color: #2b1d03;
   box-shadow: inset 0 -2px 3px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.55), 0 2px 6px rgba(0, 0, 0, 0.35);
@@ -1564,18 +1579,19 @@ body.theme-pink main .prog-section--surface {
 /* The gifts arrive one after the other. */
 .lb__row:not(.lb__row--ghost), .lb__chip:not(.lb__chip--ghost) { animation: lbIn 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) both; animation-delay: calc(var(--i, 0) * 70ms); }
 .lb--settled .lb__row, .lb--settled .lb__chip { animation: none; }
-@keyframes lbIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+/* Rows drop in from above, never up from below: a row sliding down past the foot of the list would count as something to scroll to. */
+@keyframes lbIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
 @keyframes lbShimmer { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
 @keyframes lbPulse { 0% { box-shadow: 0 0 0 0 rgba(229, 143, 181, 0.55); } 70%, 100% { box-shadow: 0 0 0 8px rgba(229, 143, 181, 0); } }
 @media (prefers-reduced-motion: reduce) { .lb__row, .lb__chip, .lb__live i { animation: none !important; } }
-/* On a phone the board is the three best gifts, so the amounts are not pushed far down. */
+/* On a phone the board is three rows and two latest gifts, so the amounts are not pushed far down. */
 @media (max-width: 520px) {
   .lb { margin-top: 16px; padding: 12px 12px 10px; }
   .lb__row { gap: 10px; padding-right: 12px; }
   .lb__name { font-size: 15px; }
   .lb__amt { font-size: 20px; }
   .lb__row--first .lb__amt { font-size: 24px; }
-  .lb__top > li:nth-child(n + 4), .lb__chips > li:nth-child(n + 3) { display: none; }
+  .lb__chips > li:nth-child(n + 3) { display: none; }
   .lb__latest { flex-direction: column; align-items: stretch; margin-top: 10px; padding-top: 9px; }
   .lb__chips { flex: none; }
   .lb__chip { padding: 4px 10px; font-size: 12.5px; }
