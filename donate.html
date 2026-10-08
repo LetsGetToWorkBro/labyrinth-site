@@ -10,8 +10,8 @@
 <link rel="preload" as="style" href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=general-sans@300,400,500,600,700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=general-sans@300,400,500,600,700&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="/base.css?v=04502d32">
-<link rel="stylesheet" href="/style.css?v=c90bfa9f">
-<link rel="stylesheet" href="/programs.css?v=91a95eaa">
+<link rel="stylesheet" href="/style.css?v=03e04d1a">
+<link rel="stylesheet" href="/programs.css?v=2fe48801">
 <link rel="stylesheet" href="/booking.css?v=6073b089">
 
 <title>Donate to Rolling for Ribbons | Labyrinth BJJ Fulshear</title>
@@ -46,6 +46,7 @@
 </script>
 </head>
 <body class="theme-pink">
+<script>(function(){var d=document.documentElement;try{if(/[?&]preview=goal\b/.test(location.search)){d.setAttribute("data-goal","reached");d.setAttribute("data-preview","goal")}else if(sessionStorage.getItem("goalReached")==="1")d.setAttribute("data-goal","reached")}catch(e){}})()</script>
 
 <a href="#main" class="skip-link">Skip to main content</a>
 <nav class="nav" id="nav" role="navigation" aria-label="Main navigation">
@@ -101,11 +102,26 @@
   <span class="rsvp-hero__mark pink-hero__mark" aria-hidden="true"><svg class="ribbon" width="320" height="320" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7" fill="currentColor" fill-opacity=".18"/></svg></span>
   <div class="container hero-split">
    <div class="hero-split__text">
-    <p class="section-label rsvp-label"><svg class="ribbon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7" fill="currentColor" fill-opacity=".18"/></svg>Rolling for Ribbons &middot; Pink October</p>
+    <p class="section-label rsvp-label" data-goal-not><svg class="ribbon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7" fill="currentColor" fill-opacity=".18"/></svg>Rolling for Ribbons &middot; Pink October</p>
+    <p class="section-label rsvp-label" data-goal-only><svg class="ribbon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7" fill="currentColor" fill-opacity=".18"/></svg>Rolling for Ribbons &middot; Goal reached</p>
     <h1 class="prog-hero__title">Donate to <span>Rolling for Ribbons</span></h1>
-    <p class="prog-hero__lead">Every gift goes directly to a family affected by breast cancer. <strong>Two anonymous donors will each match every dollar we raise, up to our $500 goal</strong>, so $500 from our community becomes $1,500.</p>
+    <div class="goal-hype" data-goal-only role="group" aria-label="Goal reached: $500 raised, matched twice, makes $1,500">
+      <p class="goal-hype__pill"><svg class="goal-star" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z"/></svg>Goal reached</p>
+      <div class="goal-eq">
+        <div class="goal-eq__tile"><b>$500</b><span>Raised</span></div>
+        <span class="goal-eq__op" aria-hidden="true">+</span>
+        <div class="goal-eq__tile"><b>$500</b><span>Donor 1</span></div>
+        <span class="goal-eq__op" aria-hidden="true">+</span>
+        <div class="goal-eq__tile"><b>$500</b><span>Donor 2</span></div>
+        <div class="goal-eq__total"><span class="goal-eq__eq" aria-hidden="true">=</span><b id="goal-total" data-to="1500">$1,500</b><span>for a family affected by breast cancer</span></div>
+      </div>
+      <p class="goal-hype__line">Both matches are unlocked. Thank you to everyone who gave.</p>
+    </div>
+    <p class="prog-hero__lead" data-goal-not>Every gift goes directly to a family affected by breast cancer. <strong>Two anonymous donors will each match every dollar we raise, up to our $500 goal</strong>, so $500 from our community becomes $1,500.</p>
+    <p class="prog-hero__lead" data-goal-only>Our community hit the <strong>$500 goal</strong>, so both matches are unlocked: <strong>$1,500 for a family affected by breast cancer</strong>. Gifts from here on are not matched, but every dollar still goes directly to the family.</p>
    </div>
    <div class="hero-split__card donate-card" id="give">
+    <p class="sr-only" id="goal-status" role="status"></p>
     <p class="rsvp__thanks" id="donate-thanks" role="status" hidden>Thank you for your donation. It goes directly to a family affected by breast cancer.</p>
     <div class="fund" id="fund" data-endpoint="https://jctufxvmuvobaggxcwfn.supabase.co/functions/v1/event-donations" data-goal="500">
       <div class="fund__head">
@@ -113,6 +129,7 @@
         <p class="fund__count" id="fund-count" hidden></p>
       </div>
       <div class="fund__bar" role="progressbar" aria-label="Fundraiser progress" aria-valuemin="0" aria-valuemax="500" aria-valuenow="0" id="fund-bar"><span id="fund-fill" style="width:0"></span></div>
+      <p class="fund__pct" id="fund-pct" data-goal-only></p>
       <p class="fund__first" id="fund-first">Be the first to give. Every gift, big or small, moves the bar.</p>
       <section class="lb" id="fund-board" aria-label="Leaderboard" hidden>
         <div class="lb__head">
@@ -126,7 +143,8 @@
         </div>
       </section>
     </div>
-    <p class="rsvp-give__pick" id="donate-pick">Choose an amount</p>
+    <p class="rsvp-give__pick" id="donate-pick"><span data-goal-not>Choose an amount</span><span data-goal-only>Keep it going</span></p>
+    <p class="goal-note" data-goal-only>Every dollar still goes directly to the family. The match is complete, so new gifts are not matched.</p>
     <div class="rsvp-give__amounts" role="group" aria-labelledby="donate-pick">
       <a href="https://donate.stripe.com/7sY14ob8pgz44NDdQngjC0b" class="rsvp-give__amt">$1</a>
       <a href="https://donate.stripe.com/4gMaEY1xPfv05RH7rZgjC0c" class="rsvp-give__amt">$3</a>
@@ -146,10 +164,12 @@
   <div class="container">
     <div>
       <p class="section-label rsvp-label"><svg class="ribbon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7" fill="currentColor" fill-opacity=".18"/></svg>Matching gift</p>
-      <h2 class="section-title section-title--lg">TRIPLE YOUR GIFT</h2>
+      <h2 class="section-title section-title--lg" data-goal-not>TRIPLE YOUR GIFT</h2>
+      <h2 class="section-title section-title--lg" data-goal-only>MATCH UNLOCKED</h2>
     </div>
     <div class="prog-prose">
-      <p>Two anonymous donors have each agreed to match every dollar we raise for Rolling for Ribbons, up to our $500 goal. If our community gives $500, that becomes $1,500 for a family affected by breast cancer.</p>
+      <p data-goal-not>Two anonymous donors have each agreed to match every dollar we raise for Rolling for Ribbons, up to our $500 goal. If our community gives $500, that becomes $1,500 for a family affected by breast cancer.</p>
+      <p data-goal-only>Two anonymous donors each agreed to match every dollar we raise for Rolling for Ribbons, up to our $500 goal. Our community got there, so $500 became $1,500 for a family affected by breast cancer. Thank you.</p>
     </div>
     <div class="match-eq" role="group" aria-label="How a $500 goal becomes $1,500">
       <div class="match-eq__tile match-eq__tile--raise"><span>We raise</span><b>$500</b></div>
@@ -160,12 +180,13 @@
       <span class="match-eq__op" aria-hidden="true">=</span>
       <div class="match-eq__total"><b>$1,500</b><span>for a family affected by breast cancer</span></div>
     </div>
-    <p class="match-ex__title">What that looks like</p>
-    <ul class="match-ex">
+    <p class="match-ex__title" data-goal-not>What that looks like</p>
+    <ul class="match-ex" data-goal-not>
       <li><span>Give <b>$10</b></span><span>it becomes <b>$30</b></span></li>
       <li><span>Give <b>$25</b></span><span>it becomes <b>$75</b></span></li>
       <li><span>Give <b>$100</b></span><span>it becomes <b>$300</b></span></li>
     </ul>
+    <p class="goal-after" data-goal-only>Gifts from here on are not matched, but every dollar still goes directly to the family. <a href="#give">Give now</a></p>
   </div>
 </section>
 
@@ -191,7 +212,7 @@
   </div>
 </section>
 
-<script src="/fund.js?v=de3ab4c3" defer></script>
+<script src="/fund.js?v=969aa0e5" defer></script>
 
 </main>
 

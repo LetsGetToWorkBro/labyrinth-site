@@ -1582,6 +1582,76 @@ body.theme-pink main .prog-section--surface {
   .lb__chip--ghost { height: 28px; }
 }
 
+/* ── The goal reached (/donate) ─────────────────────────────────────────────────────────────────────
+   The same page once the online total passes the goal. The match is used up, so the words change (data-goal-only in
+   scripts/build_pages.py) and the page celebrates: a gold panel with the sum, a gold bar, and a count-up and confetti from
+   fund.js. Everything here is shown only under <html data-goal="reached"> (style.css), or sits in an element that is. */
+.goal-hype {
+  position: relative; margin-top: var(--space-6); padding: 20px 18px 18px; overflow: hidden;
+  border: 2px solid var(--gold); border-radius: 22px;
+  background: radial-gradient(120% 140% at 0% 0%, rgba(246, 220, 142, 0.32), transparent 60%), linear-gradient(160deg, rgba(229, 143, 181, 0.26), rgba(20, 8, 14, 0.74));
+  box-shadow: 0 0 0 5px rgba(246, 220, 142, 0.1), 0 24px 64px rgba(246, 220, 142, 0.22);
+}
+.goal-hype::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; transform: translateX(-130%);
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 244, 200, 0.42) 50%, transparent 62%);
+  animation: goalSweep 3.4s ease-in-out 0.5s 2;
+}
+.goal-hype__pill {
+  display: inline-flex; align-items: center; gap: 8px; margin: 0 0 14px; padding: 8px 16px; border-radius: 999px;
+  background: linear-gradient(180deg, #fbe7a1, #c8a24c); color: #2b1d03; font-size: 13px; font-weight: 900; letter-spacing: 0.16em; text-transform: uppercase;
+  box-shadow: 0 8px 24px rgba(200, 162, 76, 0.5); animation: goalPulse 2.4s ease-in-out infinite;
+}
+.goal-star { flex: none; }
+.goal-eq { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 8px 6px; align-items: stretch; }
+.goal-eq__tile {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; min-width: 0; padding: 12px 4px 10px;
+  border: 1.5px solid var(--awareness-line); border-radius: 14px; background: rgba(255, 247, 250, 0.07); text-align: center;
+}
+.goal-eq__tile b { font-size: clamp(22px, 6vw, 32px); font-weight: 900; line-height: 1; letter-spacing: -0.02em; color: var(--text); }
+.goal-eq__tile span { font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--awareness); }
+.goal-eq__op { align-self: center; font-size: 24px; font-weight: 900; line-height: 1; color: #f6dc8e; }
+.goal-eq__total {
+  grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 10px 12px; border-radius: 16px; text-align: center;
+  background: linear-gradient(180deg, #fff3c2, #f2d27a 55%, #d9b04f); box-shadow: 0 0 0 2px #fff3c2, 0 14px 40px rgba(246, 220, 142, 0.38);
+}
+.goal-eq__eq { font-size: 22px; font-weight: 900; line-height: 1; color: #4a3206; }
+.goal-eq__total b { font-size: clamp(44px, 12vw, 72px); font-weight: 900; line-height: 1; letter-spacing: -0.03em; color: #2b1d03; font-variant-numeric: tabular-nums; }
+.goal-eq__total span:last-child { font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #4a3206; }
+.goal-hype__line { margin: 14px 0 0; font-size: 15.5px; font-weight: 600; line-height: 1.4; color: #fbe9b5; }
+.goal-hype + .prog-hero__lead { margin-top: 22px; }
+/* On a phone the panel comes first, then the card, then the paragraph (see the order rules above). */
+@media (max-width: 959px) { .donate-hero .goal-hype { order: 1; margin: 4px 0 18px; } }
+@media (min-width: 560px) { .goal-eq__tile b { font-size: 32px; } }
+
+html[data-goal="reached"] body.theme-pink .donate-hero {
+  background:
+    radial-gradient(ellipse 60% 80% at 12% 0%, rgba(246, 220, 142, 0.28), transparent 70%),
+    radial-gradient(ellipse 70% 90% at 88% 25%, rgba(229, 143, 181, 0.38), transparent 70%),
+    linear-gradient(135deg, #52173a 0%, #2a0f1d 52%, #140a10 100%);
+}
+html[data-goal="reached"] .pink-hero .prog-hero__title span {
+  --flow: 420px; background-image: linear-gradient(90deg, #E58FB5, #F6DC8E, #E58FB5); background-size: 420px 100%;
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent; animation: goalFlow 5s linear infinite;
+}
+html[data-goal="reached"] .donate-card { border-color: var(--gold); box-shadow: 0 22px 64px rgba(246, 220, 142, 0.28), 0 0 0 6px rgba(246, 220, 142, 0.12); }
+html[data-goal="reached"] .fund__raised strong { color: #ffe7a1; text-shadow: 0 0 26px rgba(246, 220, 142, 0.5); }
+html[data-goal="reached"] .fund__bar { background: rgba(246, 220, 142, 0.18); box-shadow: 0 0 0 1px rgba(246, 220, 142, 0.4), 0 0 22px rgba(246, 220, 142, 0.25); }
+html[data-goal="reached"] .fund__bar span {
+  --flow: 320px; background-image: linear-gradient(90deg, #E58FB5 0%, #F6DC8E 25%, #FFF1BF 50%, #F6DC8E 75%, #E58FB5 100%); background-size: 320px 100%;
+  animation: goalFlow 2.6s linear infinite;
+}
+.fund__pct { margin: 10px 0 0; font-size: 14px; font-weight: 800; letter-spacing: 0.02em; color: #ffe7a1; }
+.goal-note { margin: 8px 0 0; font-size: 14px; line-height: 1.45; color: #e4cbd8; }
+.goal-after { margin: var(--space-5) 0 0; font-size: 17px; font-weight: 600; color: var(--text); }
+.goal-after a { color: #ffe7a1; text-decoration: underline; text-underline-offset: 3px; }
+@keyframes goalSweep { from { transform: translateX(-130%); } to { transform: translateX(130%); } }
+@keyframes goalPulse { 0%, 100% { transform: none; box-shadow: 0 8px 24px rgba(200, 162, 76, 0.5); } 50% { transform: scale(1.04); box-shadow: 0 8px 38px rgba(246, 220, 142, 0.9); } }
+@keyframes goalFlow { from { background-position: 0 0; } to { background-position: var(--flow, 320px) 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .goal-hype::before, .goal-hype__pill, html[data-goal="reached"] .fund__bar span, html[data-goal="reached"] .pink-hero .prog-hero__title span { animation: none !important; }
+}
+
 /* Goal + each donor's match = what the family gets. A column on a phone, a row on a desk. */
 .match-eq { display: flex; flex-direction: column; gap: 8px; margin-top: var(--space-6); }
 .match-eq__tile, .match-eq__total {

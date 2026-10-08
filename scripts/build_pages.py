@@ -900,6 +900,35 @@ def trophy(size=18):
             '<path d="M8 6H5.5a2.5 2.5 0 0 0 2.9 3.6M16 6h2.5a2.5 2.5 0 0 1-2.9 3.6M12 13.2V17M9 20h6M10 17h4"/></svg>') % (size, size)
 
 
+def star(size=16):
+    """A solid star for the goal-reached pill. Like the ribbon it takes its color from CSS."""
+    return ('<svg class="goal-star" width="%d" height="%d" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" '
+            'focusable="false"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z"/></svg>') % (size, size)
+
+
+# ── When the goal is reached ─────────────────────────────────────────────────────────────────────────
+#
+# The match is used up at the goal, so from then on nothing on the site may say "triple your gift" or "give $25 and it
+# becomes $75". The state is data-goal="reached" on <html>. /donate sets it from fund.js, which already has the total;
+# every other page that talks about the match loads goal.js, which asks the same function once a minute at most. A page
+# marks the pieces of each state in its markup: data-goal-not for what is true while the drive is on, data-goal-only for
+# what is true once the goal is reached (style.css hides only the wrong one, so each keeps its own display).
+# GOAL_EARLY is the first thing on such a page: it puts the state back from this visit's earlier answer before anything
+# is painted, so a second page does not flash the old words. ?preview=goal shows the reached version ahead of time, with a
+# tag that says it is a preview, and is never remembered.
+
+GOAL_EARLY = ('<script>(function(){var d=document.documentElement;try{'
+              'if(/[?&]preview=goal\\b/.test(location.search)){d.setAttribute("data-goal","reached");d.setAttribute("data-preview","goal")}'
+              'else if(sessionStorage.getItem("goalReached")==="1")d.setAttribute("data-goal","reached")'
+              '}catch(e){}})()</script>')
+
+
+def goal_loader():
+    """goal.js, for a page that is not /donate and still mentions the match."""
+    # Stamped here as well as with the page: the homepage's copy of this tag is spliced in, and nothing stamps a splice.
+    return stamp('<script src="/goal.js" defer data-endpoint="%s"></script>' % EVENT["donations_endpoint"])
+
+
 def event_strip():
     """The homepage's "This month at Labyrinth" block: the donation drive, Pink
     October, the free self defense seminar and the kids' HYROX list, as cards right
@@ -920,11 +949,15 @@ def event_strip():
     <a class="event-strip__link event-strip__link--donate" href="@@DONATEPATH@@" data-closes="@@DONATECLOSES@@" data-short="Donate" data-nochip>
       <span class="event-strip__icon">@@RIBBON@@</span>
       <span class="event-strip__text">
-        <span class="event-strip__eyebrow">Matching gift &middot; Rolling for Ribbons</span>
-        <strong>Triple your gift</strong>
-        <span>Two anonymous donors will each match every dollar we raise, up to @@GOAL@@. Every gift goes directly to a family affected by breast cancer.</span>
+        <span class="event-strip__eyebrow" data-goal-not>Matching gift &middot; Rolling for Ribbons</span>
+        <span class="event-strip__eyebrow" data-goal-only>Goal reached &middot; Rolling for Ribbons</span>
+        <strong data-goal-not>Triple your gift</strong>
+        <strong data-goal-only>We hit @@GOAL@@!</strong>
+        <span data-goal-not>Two anonymous donors will each match every dollar we raise, up to @@GOAL@@. Every gift goes directly to a family affected by breast cancer.</span>
+        <span data-goal-only>Both matches are unlocked: @@TOTAL@@ for a family affected by breast cancer. Every gift from here still goes directly to them.</span>
       </span>
-      <span class="event-strip__cta">Donate</span>
+      <span class="event-strip__cta" data-goal-not>Donate</span>
+      <span class="event-strip__cta" data-goal-only>Keep giving</span>
     </a>
     <a class="event-strip__link event-strip__link--pink" href="@@PINK@@" data-closes="@@PINKCLOSES@@" data-short="Pink October">
       <span class="event-strip__icon">@@RIBBON@@</span>
@@ -978,7 +1011,7 @@ def event_strip():
   }
 })()</script>""" \
         .replace("@@RIBBON@@", ribbon(30)).replace("@@BOLT@@", _hyrox_bolt(30)) \
-        .replace("@@DONATEPATH@@", DONATE["path"]).replace("@@DONATECLOSES@@", DONATE["closes_utc"]).replace("@@GOAL@@", _money(EVENT["goal"])) \
+        .replace("@@DONATEPATH@@", DONATE["path"]).replace("@@DONATECLOSES@@", DONATE["closes_utc"]).replace("@@GOAL@@", _money(EVENT["goal"])).replace("@@TOTAL@@", _money(_match_total())) \
         .replace("@@PINK@@", PINK["path"]).replace("@@PINKCLOSES@@", PINK["closes_utc"]) \
         .replace("@@PATH@@", EVENT["path"]).replace("@@NAME@@", EVENT["title"]).replace("@@CLOSES@@", EVENT["closes_utc"]) \
         .replace("@@START@@", EVENT["start"]).replace("@@RANGE@@", rng) \
@@ -998,15 +1031,19 @@ def donate_bar():
     after it is the one that takes the bar, the nav button and the menu item away
     when the drive is over, so all three go together (they carry data-donate)."""
     pays = 25 * (1 + DONATE["donors"])
-    return ('<a class="donate-bar" id="donateBar" href="%(path)s" data-donate data-closes="%(closes)s">%(ribbon)s'
+    return (GOAL_EARLY + '\n'
+            '<a class="donate-bar" id="donateBar" href="%(path)s" data-donate data-closes="%(closes)s">%(ribbon)s'
             '<span class="donate-bar__text">'
-            '<span class="donate-bar__long"><strong>Rolling for Ribbons:</strong> two anonymous donors will each match every dollar we raise, up to %(goal)s. Give $25 and it becomes %(pays)s.</span>'
-            '<span class="donate-bar__short"><strong>Triple your gift</strong> to Rolling for Ribbons</span></span>'
-            '<span class="donate-bar__go">Donate</span></a>\n'
+            '<span class="donate-bar__long" data-goal-not><strong>Rolling for Ribbons:</strong> two anonymous donors will each match every dollar we raise, up to %(goal)s. Give $25 and it becomes %(pays)s.</span>'
+            '<span class="donate-bar__short" data-goal-not><strong>Triple your gift</strong> to Rolling for Ribbons</span>'
+            '<span class="donate-bar__long" data-goal-only><strong>We hit %(goal)s!</strong> Rolling for Ribbons unlocked both matches: %(total)s for a family affected by breast cancer. Every gift still goes straight to them.</span>'
+            '<span class="donate-bar__short" data-goal-only><strong>Goal reached!</strong> %(total)s for Rolling for Ribbons</span></span>'
+            '<span class="donate-bar__go" data-goal-not>Donate</span><span class="donate-bar__go" data-goal-only>Keep giving</span></a>\n'
+            + goal_loader() + '\n'
             '<script>(function(){document.querySelectorAll(\'[data-donate]\').forEach(function(e){'
             'if(Date.now()>Date.parse(e.getAttribute(\'data-closes\')))e.hidden=true})})()</script>'
             ) % {"path": DONATE["path"], "closes": DONATE["closes_utc"], "ribbon": ribbon(18),
-                 "goal": _money(EVENT["goal"]), "pays": _money(pays)}
+                 "goal": _money(EVENT["goal"]), "pays": _money(pays), "total": _money(_match_total())}
 
 
 def donate_nav():
@@ -1434,7 +1471,8 @@ def render_event_rsvp():
       <h2 class="section-title section-title--lg">HELP A FAMILY</h2>
     </div>
     <div class="prog-prose">
-      <p>Donations are welcome and never expected. They go directly to a family affected by breast cancer, and two anonymous donors will each match every dollar we raise, up to our @@GOAL@@ goal.</p>
+      <p data-goal-not>Donations are welcome and never expected. They go directly to a family affected by breast cancer, and two anonymous donors will each match every dollar we raise, up to our @@GOAL@@ goal.</p>
+      <p data-goal-only>Donations are welcome and never expected. They go directly to a family affected by breast cancer. We reached our @@GOAL@@ goal, so both anonymous donors matched every dollar: @@TOTAL@@ for the family.</p>
       <p>We will also be selling merch at the event, and those sales go to the same family.</p>
     </div>
     <div class="prog-hero__cta">
@@ -1442,6 +1480,7 @@ def render_event_rsvp():
     </div>
   </div>
 </section>
+@@GOALJS@@
 
 <section class="prog-section pink-more" id="october">
   <div class="container">
@@ -1478,7 +1517,7 @@ def render_event_rsvp():
 """
     for token, value in {
         "@@RIBBON16@@": ribbon(16), "@@RIBBON18@@": ribbon(18), "@@RIBBON20@@": ribbon(20), "@@RIBBON40@@": ribbon(40), "@@MARK@@": ribbon(320),
-        "@@DONATEPATH@@": DONATE["path"], "@@GOAL@@": _money(EVENT["goal"]),
+        "@@DONATEPATH@@": DONATE["path"], "@@GOAL@@": _money(EVENT["goal"]), "@@TOTAL@@": _money(_match_total()), "@@GOALJS@@": goal_loader(),
         "@@PINKPATH@@": PINK["path"], "@@TITLE@@": EVENT["title"], "@@SUBTITLE@@": EVENT["subtitle"], "@@SHIRTOPTS@@": _size_options(SHIRT_SIZES, "No shirt"), "@@NAME@@": EVENT["name"], "@@STARTISO@@": EVENT["start"], "@@MINUTES@@": str(EVENT["minutes"]), "@@RANGE@@": _event_range()[0], "@@WHERE@@": "Labyrinth BJJ, " + ADDRESS, "@@PAGEURL@@": url, "@@SHORT@@": short_date,
         "@@TIME@@": time, "@@LONG@@": long_date, "@@SLUG@@": EVENT["slug"],
         "@@ENDPOINT@@": EVENT["endpoint"], "@@CLOSES@@": EVENT["closes_utc"], "@@PHONE@@": PHONE,
@@ -1490,7 +1529,7 @@ def render_event_rsvp():
     # Stripe sends donors back to this page with ?donated=1. They gave on the
     # donation page, so they go back there for their thank-you, and this runs
     # before anything below has had time to paint.
-    head = head.replace("<body>", '<body class="theme-pink">\n<script>if(/[?&]donated=1\\b/.test(location.search))location.replace("%s?donated=1")</script>' % DONATE["path"], 1)
+    head = head.replace("<body>", '<body class="theme-pink">\n<script>if(/[?&]donated=1\\b/.test(location.search))location.replace("%s?donated=1")</script>\n%s' % (DONATE["path"], GOAL_EARLY), 1)
     return "\n".join([head, NAV, crumbs([(EVENT["title"], EVENT["path"])]), body, TAIL % {"footer": FOOTER}])
 
 
@@ -1528,11 +1567,26 @@ def render_donate():
   <span class="rsvp-hero__mark pink-hero__mark" aria-hidden="true">@@MARK@@</span>
   <div class="container hero-split">
    <div class="hero-split__text">
-    <p class="section-label rsvp-label">@@RIBBON16@@Rolling for Ribbons &middot; Pink October</p>
+    <p class="section-label rsvp-label" data-goal-not>@@RIBBON16@@Rolling for Ribbons &middot; Pink October</p>
+    <p class="section-label rsvp-label" data-goal-only>@@RIBBON16@@Rolling for Ribbons &middot; Goal reached</p>
     <h1 class="prog-hero__title">Donate to <span>Rolling for Ribbons</span></h1>
-    <p class="prog-hero__lead">Every gift goes directly to a family affected by breast cancer. <strong>Two anonymous donors will each match every dollar we raise, up to our @@GOAL@@ goal</strong>, so @@GOAL@@ from our community becomes @@TOTAL@@.</p>
+    <div class="goal-hype" data-goal-only role="group" aria-label="Goal reached: @@GOAL@@ raised, matched twice, makes @@TOTAL@@">
+      <p class="goal-hype__pill">@@STAR@@Goal reached</p>
+      <div class="goal-eq">
+        <div class="goal-eq__tile"><b>@@GOAL@@</b><span>Raised</span></div>
+        <span class="goal-eq__op" aria-hidden="true">+</span>
+        <div class="goal-eq__tile"><b>@@GOAL@@</b><span>Donor 1</span></div>
+        <span class="goal-eq__op" aria-hidden="true">+</span>
+        <div class="goal-eq__tile"><b>@@GOAL@@</b><span>Donor 2</span></div>
+        <div class="goal-eq__total"><span class="goal-eq__eq" aria-hidden="true">=</span><b id="goal-total" data-to="@@TOTALN@@">@@TOTAL@@</b><span>for a family affected by breast cancer</span></div>
+      </div>
+      <p class="goal-hype__line">Both matches are unlocked. Thank you to everyone who gave.</p>
+    </div>
+    <p class="prog-hero__lead" data-goal-not>Every gift goes directly to a family affected by breast cancer. <strong>Two anonymous donors will each match every dollar we raise, up to our @@GOAL@@ goal</strong>, so @@GOAL@@ from our community becomes @@TOTAL@@.</p>
+    <p class="prog-hero__lead" data-goal-only>Our community hit the <strong>@@GOAL@@ goal</strong>, so both matches are unlocked: <strong>@@TOTAL@@ for a family affected by breast cancer</strong>. Gifts from here on are not matched, but every dollar still goes directly to the family.</p>
    </div>
    <div class="hero-split__card donate-card" id="give">
+    <p class="sr-only" id="goal-status" role="status"></p>
     <p class="rsvp__thanks" id="donate-thanks" role="status" hidden>Thank you for your donation. It goes directly to a family affected by breast cancer.</p>
     <div class="fund" id="fund" data-endpoint="@@DONATIONS@@" data-goal="@@GOALN@@">
       <div class="fund__head">
@@ -1540,6 +1594,7 @@ def render_donate():
         <p class="fund__count" id="fund-count" hidden></p>
       </div>
       <div class="fund__bar" role="progressbar" aria-label="Fundraiser progress" aria-valuemin="0" aria-valuemax="@@GOALN@@" aria-valuenow="0" id="fund-bar"><span id="fund-fill" style="width:0"></span></div>
+      <p class="fund__pct" id="fund-pct" data-goal-only></p>
       <p class="fund__first" id="fund-first">Be the first to give. Every gift, big or small, moves the bar.</p>
       <section class="lb" id="fund-board" aria-label="Leaderboard" hidden>
         <div class="lb__head">
@@ -1553,7 +1608,8 @@ def render_donate():
         </div>
       </section>
     </div>
-    <p class="rsvp-give__pick" id="donate-pick">Choose an amount</p>
+    <p class="rsvp-give__pick" id="donate-pick"><span data-goal-not>Choose an amount</span><span data-goal-only>Keep it going</span></p>
+    <p class="goal-note" data-goal-only>Every dollar still goes directly to the family. The match is complete, so new gifts are not matched.</p>
     <div class="rsvp-give__amounts" role="group" aria-labelledby="donate-pick">
 @@AMOUNTS@@
       <a href="@@OTHER@@" class="rsvp-give__amt rsvp-give__amt--other">Other amount</a>
@@ -1567,16 +1623,19 @@ def render_donate():
   <div class="container">
     <div>
       <p class="section-label rsvp-label">@@RIBBON16@@Matching gift</p>
-      <h2 class="section-title section-title--lg">TRIPLE YOUR GIFT</h2>
+      <h2 class="section-title section-title--lg" data-goal-not>TRIPLE YOUR GIFT</h2>
+      <h2 class="section-title section-title--lg" data-goal-only>MATCH UNLOCKED</h2>
     </div>
     <div class="prog-prose">
-      <p>Two anonymous donors have each agreed to match every dollar we raise for Rolling for Ribbons, up to our @@GOAL@@ goal. If our community gives @@GOAL@@, that becomes @@TOTAL@@ for a family affected by breast cancer.</p>
+      <p data-goal-not>Two anonymous donors have each agreed to match every dollar we raise for Rolling for Ribbons, up to our @@GOAL@@ goal. If our community gives @@GOAL@@, that becomes @@TOTAL@@ for a family affected by breast cancer.</p>
+      <p data-goal-only>Two anonymous donors each agreed to match every dollar we raise for Rolling for Ribbons, up to our @@GOAL@@ goal. Our community got there, so @@GOAL@@ became @@TOTAL@@ for a family affected by breast cancer. Thank you.</p>
     </div>
     @@EQ@@
-    <p class="match-ex__title">What that looks like</p>
-    <ul class="match-ex">
+    <p class="match-ex__title" data-goal-not>What that looks like</p>
+    <ul class="match-ex" data-goal-not>
 @@EXAMPLES@@
     </ul>
+    <p class="goal-after" data-goal-only>Gifts from here on are not matched, but every dollar still goes directly to the family. <a href="#give">Give now</a></p>
   </div>
 </section>
 
@@ -1606,8 +1665,8 @@ def render_donate():
 """
     _, short, time = _event_when()
     for token, value in {
-        "@@RIBBON16@@": ribbon(16), "@@RIBBON40@@": ribbon(40), "@@MARK@@": ribbon(320), "@@TROPHY@@": trophy(18),
-        "@@GOAL@@": goal, "@@GOALN@@": str(EVENT["goal"]), "@@TOTAL@@": total,
+        "@@RIBBON16@@": ribbon(16), "@@RIBBON40@@": ribbon(40), "@@MARK@@": ribbon(320), "@@TROPHY@@": trophy(18), "@@STAR@@": star(15),
+        "@@GOAL@@": goal, "@@GOALN@@": str(EVENT["goal"]), "@@TOTAL@@": total, "@@TOTALN@@": str(_match_total()),
         "@@DONATIONS@@": EVENT["donations_endpoint"], "@@OTHER@@": EVENT["donate_url"],
         "@@AMOUNTS@@": "\n".join('      <a href="%s" class="rsvp-give__amt">$%d</a>' % (u, d) for d, u in EVENT["donate_amounts"]),
         "@@EQ@@": eq, "@@EXAMPLES@@": examples, "@@PHONE@@": PHONE,
@@ -1616,7 +1675,7 @@ def render_donate():
         body = body.replace(token, value)
     assert "@@" not in body, "an unreplaced token in the donation page"
 
-    head = head.replace("<body>", '<body class="theme-pink">', 1)
+    head = head.replace("<body>", '<body class="theme-pink">\n' + GOAL_EARLY, 1)
     return "\n".join([head, NAV, crumbs([("Donate", DONATE["path"])]), body, TAIL % {"footer": FOOTER}])
 
 

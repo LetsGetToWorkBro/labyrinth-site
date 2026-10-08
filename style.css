@@ -5225,3 +5225,30 @@ body {
   .event-strip__link--donate .event-strip__text strong { font-size: 32px; }
   .event-strip__link--donate .event-strip__cta { flex-shrink: 0; padding: 14px 28px; font-size: 17px; }
 }
+
+/* ── Goal reached ─────────────────────────────────────────────────────────────────────────────────────
+   Two anonymous donors match every dollar up to the goal, so passing it ends the match and every page that talks about
+   it needs a second set of words (scripts/build_pages.py, goal.js, fund.js). <html data-goal="reached"> says which set
+   shows. Only the set for the OTHER state is hidden, so an element keeps whatever display it has. */
+html:not([data-goal="reached"]) [data-goal-only] { display: none !important; }
+html[data-goal="reached"] [data-goal-not] { display: none !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+/* ?preview=goal: a tag, so nobody takes the preview for the real thing. */
+html[data-preview="goal"]::after {
+  content: "Preview of the goal-reached page"; position: fixed; left: 12px; bottom: 12px; z-index: 9999; padding: 8px 14px;
+  border: 1.5px solid var(--gold); border-radius: 999px; background: #120a0e; color: #fff; pointer-events: none;
+  font: 800 11px/1 Arial, Helvetica, sans-serif; letter-spacing: 0.1em; text-transform: uppercase; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+/* The homepage, in gold where it was pink: the bar under the nav shimmers and the card goes gold. */
+html[data-goal="reached"] .donate-bar {
+  background-image: linear-gradient(100deg, #E58FB5 0%, #F6DC8E 30%, #FFF1BF 50%, #F6DC8E 70%, #E58FB5 100%);
+  background-size: 900px 100%; animation: goalBar 7s linear infinite;
+}
+html[data-goal="reached"] .donate-bar:hover, html[data-goal="reached"] .donate-bar:focus-visible { background-image: none; background-color: #F6DC8E; }
+html[data-goal="reached"] .event-strip__link--donate {
+  background: linear-gradient(135deg, #f8e3a0, #ecc1d1 55%, #e58fb5); border-color: #fff3c2;
+  box-shadow: 0 0 0 4px rgba(246, 220, 142, 0.2), 0 18px 60px rgba(246, 220, 142, 0.32);
+}
+html[data-goal="reached"] .event-strip__link--donate:hover, html[data-goal="reached"] .event-strip__link--donate:focus-visible { border-color: #fff; box-shadow: 0 0 0 5px rgba(246, 220, 142, 0.35), 0 20px 64px rgba(246, 220, 142, 0.5); }
+@keyframes goalBar { from { background-position: 0 0; } to { background-position: 900px 0; } }
+@media (prefers-reduced-motion: reduce) { html[data-goal="reached"] .donate-bar { animation: none; } }

@@ -10,8 +10,8 @@
 <link rel="preload" as="style" href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=general-sans@300,400,500,600,700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=general-sans@300,400,500,600,700&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="/base.css?v=04502d32">
-<link rel="stylesheet" href="/style.css?v=c90bfa9f">
-<link rel="stylesheet" href="/programs.css?v=91a95eaa">
+<link rel="stylesheet" href="/style.css?v=03e04d1a">
+<link rel="stylesheet" href="/programs.css?v=2fe48801">
 <link rel="stylesheet" href="/booking.css?v=6073b089">
 
 <title>Rolling for Ribbons: BJJ for Self Defense for Women | Free Seminar, Oct 24 | Labyrinth BJJ Fulshear</title>
@@ -100,6 +100,7 @@
 </head>
 <body class="theme-pink">
 <script>if(/[?&]donated=1\b/.test(location.search))location.replace("/donate?donated=1")</script>
+<script>(function(){var d=document.documentElement;try{if(/[?&]preview=goal\b/.test(location.search)){d.setAttribute("data-goal","reached");d.setAttribute("data-preview","goal")}else if(sessionStorage.getItem("goalReached")==="1")d.setAttribute("data-goal","reached")}catch(e){}})()</script>
 
 <a href="#main" class="skip-link">Skip to main content</a>
 <nav class="nav" id="nav" role="navigation" aria-label="Main navigation">
@@ -322,7 +323,8 @@
       <h2 class="section-title section-title--lg">HELP A FAMILY</h2>
     </div>
     <div class="prog-prose">
-      <p>Donations are welcome and never expected. They go directly to a family affected by breast cancer, and two anonymous donors will each match every dollar we raise, up to our $500 goal.</p>
+      <p data-goal-not>Donations are welcome and never expected. They go directly to a family affected by breast cancer, and two anonymous donors will each match every dollar we raise, up to our $500 goal.</p>
+      <p data-goal-only>Donations are welcome and never expected. They go directly to a family affected by breast cancer. We reached our $500 goal, so both anonymous donors matched every dollar: $1,500 for the family.</p>
       <p>We will also be selling merch at the event, and those sales go to the same family.</p>
     </div>
     <div class="prog-hero__cta">
@@ -330,6 +332,7 @@
     </div>
   </div>
 </section>
+<script src="/goal.js?v=c6331752" defer data-endpoint="https://jctufxvmuvobaggxcwfn.supabase.co/functions/v1/event-donations"></script>
 
 <section class="prog-section pink-more" id="october">
   <div class="container">

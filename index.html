@@ -270,7 +270,7 @@ button {
   if(name){document.documentElement.setAttribute('data-season',name);
     if(name==='halloween'){var l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Creepster&display=swap';document.head.appendChild(l)}}
 })()</script>
-<link rel="stylesheet" href="./style.css?v=c90bfa9f">
+<link rel="stylesheet" href="./style.css?v=03e04d1a">
 <link rel="stylesheet" href="./season.css?v=c67a099d">
 <link rel="stylesheet" href="./booking.css?v=6073b089">
 
@@ -564,7 +564,9 @@ button {
      scripts/jits_data.py. Nothing rewrites them at page load any more. -->
 <section class="hero" id="hero">
   <!-- DONATE-BAR:START generated from scripts/build_pages.py; do not edit -->
-  <a class="donate-bar" id="donateBar" href="/donate" data-donate data-closes="2026-11-01T05:00:00Z"><svg class="ribbon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7" fill="currentColor" fill-opacity=".18"/></svg><span class="donate-bar__text"><span class="donate-bar__long"><strong>Rolling for Ribbons:</strong> two anonymous donors will each match every dollar we raise, up to $500. Give $25 and it becomes $75.</span><span class="donate-bar__short"><strong>Triple your gift</strong> to Rolling for Ribbons</span></span><span class="donate-bar__go">Donate</span></a>
+  <script>(function(){var d=document.documentElement;try{if(/[?&]preview=goal\b/.test(location.search)){d.setAttribute("data-goal","reached");d.setAttribute("data-preview","goal")}else if(sessionStorage.getItem("goalReached")==="1")d.setAttribute("data-goal","reached")}catch(e){}})()</script>
+<a class="donate-bar" id="donateBar" href="/donate" data-donate data-closes="2026-11-01T05:00:00Z"><svg class="ribbon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7" fill="currentColor" fill-opacity=".18"/></svg><span class="donate-bar__text"><span class="donate-bar__long" data-goal-not><strong>Rolling for Ribbons:</strong> two anonymous donors will each match every dollar we raise, up to $500. Give $25 and it becomes $75.</span><span class="donate-bar__short" data-goal-not><strong>Triple your gift</strong> to Rolling for Ribbons</span><span class="donate-bar__long" data-goal-only><strong>We hit $500!</strong> Rolling for Ribbons unlocked both matches: $1,500 for a family affected by breast cancer. Every gift still goes straight to them.</span><span class="donate-bar__short" data-goal-only><strong>Goal reached!</strong> $1,500 for Rolling for Ribbons</span></span><span class="donate-bar__go" data-goal-not>Donate</span><span class="donate-bar__go" data-goal-only>Keep giving</span></a>
+<script src="/goal.js?v=c6331752" defer data-endpoint="https://jctufxvmuvobaggxcwfn.supabase.co/functions/v1/event-donations"></script>
 <script>(function(){document.querySelectorAll('[data-donate]').forEach(function(e){if(Date.now()>Date.parse(e.getAttribute('data-closes')))e.hidden=true})})()</script>
   <!-- DONATE-BAR:END -->
   <canvas id="hero-maze-canvas"></canvas>
@@ -721,11 +723,15 @@ button {
     <a class="event-strip__link event-strip__link--donate" href="/donate" data-closes="2026-11-01T05:00:00Z" data-short="Donate" data-nochip>
       <span class="event-strip__icon"><svg class="ribbon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7" fill="currentColor" fill-opacity=".18"/></svg></span>
       <span class="event-strip__text">
-        <span class="event-strip__eyebrow">Matching gift &middot; Rolling for Ribbons</span>
-        <strong>Triple your gift</strong>
-        <span>Two anonymous donors will each match every dollar we raise, up to $500. Every gift goes directly to a family affected by breast cancer.</span>
+        <span class="event-strip__eyebrow" data-goal-not>Matching gift &middot; Rolling for Ribbons</span>
+        <span class="event-strip__eyebrow" data-goal-only>Goal reached &middot; Rolling for Ribbons</span>
+        <strong data-goal-not>Triple your gift</strong>
+        <strong data-goal-only>We hit $500!</strong>
+        <span data-goal-not>Two anonymous donors will each match every dollar we raise, up to $500. Every gift goes directly to a family affected by breast cancer.</span>
+        <span data-goal-only>Both matches are unlocked: $1,500 for a family affected by breast cancer. Every gift from here still goes directly to them.</span>
       </span>
-      <span class="event-strip__cta">Donate</span>
+      <span class="event-strip__cta" data-goal-not>Donate</span>
+      <span class="event-strip__cta" data-goal-only>Keep giving</span>
     </a>
     <a class="event-strip__link event-strip__link--pink" href="/pink-october" data-closes="2026-11-01T05:00:00Z" data-short="Pink October">
       <span class="event-strip__icon"><svg class="ribbon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7" fill="currentColor" fill-opacity=".18"/></svg></span>

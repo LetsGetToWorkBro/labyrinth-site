@@ -1740,7 +1740,7 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
     JSON.stringify(h1.cards) === JSON.stringify(['/donate', '/pink-october', '/self-defense-for-women', '/hyrox-youngstars']) && h1.stripTop < 1000 && /THIS MONTH AT LABYRINTH/i.test(h1.title), JSON.stringify(h1))
   check('L2h the seminar card counts down the days and the hero has a line that jumps to the cards',
     h1.badge === '10 days to go' && /Pink October/.test(h1.chip) && /self defense/i.test(h1.chip) && /HYROX/.test(h1.chip) && !/donat/i.test(h1.chip), JSON.stringify(h1))
-  const colors = await hh.evaluate(() => [...document.querySelectorAll('#eventStrip .event-strip__cta')].map(c => getComputedStyle(c).backgroundColor))
+  const colors = await hh.evaluate(() => [...document.querySelectorAll('#eventStrip .event-strip__cta')].filter(c => c.offsetParent !== null).map(c => getComputedStyle(c).backgroundColor))
   check('L2h each card keeps its own color on the dark page: a dark Donate button on the solid pink card, then pink, pink, volt yellow',
     colors.join('|') === 'rgb(26, 11, 18)|rgb(229, 143, 181)|rgb(229, 143, 181)|rgb(227, 255, 46)', colors.join('|'))
   await hh.dispatchEvent('.season-ghost--1', 'click')
@@ -2085,6 +2085,182 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
   check('D17 /donate is served by the page itself (nothing redirects it) and the other ways people say it land there',
     !/^\/donate\s/m.test(rd) && ['/Donate', '/donations', '/give'].every(x => new RegExp('^' + x + '\\s+/donate\\s+301\\s*$', 'm').test(rd)))
   await ctx.close()
+}
+
+// ── G: the goal reached ──
+// Two anonymous donors match every dollar up to the goal, so passing it ends the match, and from then on nothing on the site may
+// say "triple your gift" or "give $25 and it becomes $75". /donate turns into a celebration; the homepage and the seminar page
+// swap their words. The total is Stripe's (mocked here); the state is data-goal="reached" on <html>, set by fund.js on /donate and by
+// goal.js elsewhere, and remembered for the visit so the next page does not flash the old words.
+{
+  const FEED = (raised, count = 4) => ({ raised, count, goal: 500,
+    top: [{ name: 'Anonymous', amount: 100 }, { name: 'Sam T.', amount: 100 }, { name: 'Anonymous', amount: 25 }],
+    recent: [{ name: 'Sam T.', amount: 100, at: '2026-10-05T14:00:00Z' }] })
+  const PIN = new Date('2026-10-05T15:00:00Z')
+  const visit = async (path, raised, o = {}) => {
+    const c = await browser.newContext({ viewport: o.viewport ?? { width: 1200, height: 900 }, reducedMotion: o.reducedMotion })
+    const pg = await c.newPage()
+    await pg.clock.setFixedTime(PIN)
+    const w = { asks: 0 }
+    await pg.route('**/functions/v1/event-donations**', route => {
+      w.asks++
+      if (o.fail) return route.fulfill({ status: 502, contentType: 'application/json', body: '{"error":"x"}' })
+      return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(FEED(raised)) })
+    })
+    await pg.goto('http://localhost:4620' + path, { waitUntil: 'networkidle' })
+    return { c, pg, w }
+  }
+  const look = pg => pg.evaluate(() => ({ goal: document.documentElement.getAttribute('data-goal'), text: document.body.innerText.replace(/\s+/g, ' ') }))
+
+  // The drive is on until the last dollar of the goal: $499 is not "reached".
+  let v = await visit('/donate', 499)
+  let t = await look(v.pg)
+  check('G1 at $499 the drive is still on: the old words, no celebration',
+    t.goal === null && /TRIPLE YOUR GIFT/.test(t.text) && /Give \$25 it becomes \$75/.test(t.text) && /Choose an amount/i.test(t.text)
+      && !/GOAL REACHED|MATCH UNLOCKED|Keep it going/i.test(t.text) && !(await v.pg.isVisible('.goal-hype')), t.text.slice(0, 200))
+  await v.c.close()
+
+  // At the goal itself, and over it.
+  v = await visit('/donate', 500)
+  t = await look(v.pg)
+  const amts500 = await v.pg.$$eval('#give a.rsvp-give__amt', as => as.length)
+  const title500 = await v.pg.title()
+  check('G2 at $500 the page is the goal-reached version: the sum, "match unlocked", "keep it going", and none of the old promises',
+    t.goal === 'reached' && /^We hit \$500! Donate to Rolling for Ribbons/.test(title500) && /Goal reached/i.test(t.text) && /\$500\s+Raised/i.test(t.text) && /\$500\s+Donor 1/i.test(t.text) && /\$500\s+Donor 2/i.test(t.text) && /\$1,500/.test(t.text)
+      && /MATCH UNLOCKED/.test(t.text) && /Keep it going/i.test(t.text) && /100% of our \$500 goal/.test(t.text)
+      && /The match is complete, so new gifts are not matched/.test(t.text) && /Gifts from here on are not matched, but every dollar still goes directly to the family/.test(t.text)
+      && !/TRIPLE YOUR GIFT|it becomes \$75|Choose an amount|will each match every dollar we raise/i.test(t.text) && amts500 === 8, t.text.slice(0, 300))
+  await v.c.close()
+
+  v = await visit('/donate', 612)
+  await v.pg.waitForFunction(() => document.getElementById('fund-raised').textContent === '$612' && document.getElementById('goal-total').textContent === '$1,500', null, { timeout: 8000 }).catch(() => {})
+  const over = await v.pg.evaluate(() => ({ raised: document.getElementById('fund-raised').textContent, total: document.getElementById('goal-total').textContent,
+    pct: document.getElementById('fund-pct').textContent, width: document.getElementById('fund-fill').style.width, now: document.getElementById('fund-bar').getAttribute('aria-valuenow'),
+    status: document.getElementById('goal-status').textContent, canvas: !!document.querySelector('body > canvas[aria-hidden="true"]') }))
+  check('G3 over the goal ($612): the numbers count up and land on the real figures, 122% of the goal, a full bar, and the moment is announced',
+    over.raised === '$612' && over.total === '$1,500' && over.pct === '122% of our $500 goal' && over.width === '100%' && over.now === '500'
+      && /Goal reached/.test(over.status), JSON.stringify(over))
+  check('G4 confetti falls once when the goal is first seen, then goes away, and is not replayed on a reload in the same visit',
+    over.canvas && await v.pg.waitForFunction(() => !document.querySelector('body > canvas'), null, { timeout: 9000 }).then(() => true).catch(() => false))
+  await v.pg.reload({ waitUntil: 'networkidle' })
+  await v.pg.waitForTimeout(600)
+  check('G4b ...and a reload does not throw it again', !(await v.pg.evaluate(() => !!document.querySelector('body > canvas'))) && (await look(v.pg)).goal === 'reached')
+  await v.c.close()
+
+  v = await visit('/donate', 612, { reducedMotion: 'reduce' })
+  const calm = await v.pg.evaluate(() => ({ raised: document.getElementById('fund-raised').textContent, total: document.getElementById('goal-total').textContent, canvas: !!document.querySelector('body > canvas'),
+    anim: [...document.querySelectorAll('.goal-hype__pill, .fund__bar span, .goal-hype')].map(e => getComputedStyle(e).animationName) }))
+  check('G5 with reduced motion asked for there is no confetti, no count-up, and nothing animates: the page just shows the figures',
+    calm.raised === '$612' && calm.total === '$1,500' && !calm.canvas && calm.anim.every(a => a === 'none'), JSON.stringify(calm))
+  await v.c.close()
+
+  // The moment itself, seen by somebody who has the page open.
+  {
+    const c = await browser.newContext({ viewport: { width: 1200, height: 900 } })
+    const pg = await c.newPage()
+    await pg.clock.install({ time: PIN })
+    let asks = 0
+    await pg.route('**/functions/v1/event-donations**', route => { asks++; return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(FEED(asks === 1 ? 480 : 505)) }) })
+    await pg.goto('http://localhost:4620/donate', { waitUntil: 'networkidle' })
+    const before = await look(pg)
+    await pg.clock.runFor(61000)
+    let after = null
+    for (let i = 0; i < 60 && !(after && after.goal === 'reached'); i++) { after = await look(pg); await new Promise(r => setTimeout(r, 50)) }
+    const said = await pg.evaluate(() => ({ status: document.getElementById('goal-status').textContent, canvas: !!document.querySelector('body > canvas') }))
+    check('G6 a page left open flips the minute the total passes the goal: the old words go, the new ones come, the moment is announced and celebrated',
+      before.goal === null && /TRIPLE YOUR GIFT/.test(before.text) && after.goal === 'reached' && !/TRIPLE YOUR GIFT/.test(after.text) && /MATCH UNLOCKED/.test(after.text)
+        && /Goal reached/.test(said.status) && said.canvas, JSON.stringify({ before: before.goal, after: after && after.goal, said }))
+    await c.close()
+  }
+
+  // Early access: ?preview=goal, tagged as a preview and never remembered.
+  v = await visit('/donate?preview=goal', 203)
+  await v.pg.waitForFunction(() => document.getElementById('fund-raised').textContent === '$500', null, { timeout: 8000 }).catch(() => {})
+  const pv = await v.pg.evaluate(() => ({ goal: document.documentElement.getAttribute('data-goal'), pv: document.documentElement.getAttribute('data-preview'),
+    tag: getComputedStyle(document.documentElement, '::after').content, kept: sessionStorage.getItem('goalReached'), raised: document.getElementById('fund-raised').textContent,
+    pct: document.getElementById('fund-pct').textContent }))
+  await v.pg.goto('http://localhost:4620/', { waitUntil: 'load' })
+  const afterPv = await look(v.pg)
+  check('G7 ?preview=goal shows the reached page early with a tag that says it is a preview, shows the goal as the total, and is not remembered for other pages',
+    pv.goal === 'reached' && pv.pv === 'goal' && /Preview/.test(pv.tag) && pv.kept === null && pv.raised === '$500' && pv.pct === '100% of our $500 goal' && afterPv.goal === null
+      && /Give \$25 and it becomes \$75/.test(await v.pg.textContent('#donateBar')), JSON.stringify({ pv, home: afterPv.goal }))
+  await v.c.close()
+
+  // The homepage: the bar under the nav and the donation card.
+  v = await visit('/', 203)
+  let home = await v.pg.evaluate(() => ({ goal: document.documentElement.getAttribute('data-goal'), bar: document.getElementById('donateBar').innerText.replace(/\s+/g, ' '),
+    card: document.querySelector('.event-strip__link--donate').innerText.replace(/\s+/g, ' ') }))
+  check('G8 homepage while the drive is on: the bar and the card promise the match',
+    home.goal === null && /Give \$25 and it becomes \$75/.test(home.bar) && /Triple your gift/.test(home.card) && !/We hit/.test(home.bar + home.card), JSON.stringify(home))
+  await v.c.close()
+  v = await visit('/', 500)
+  await v.pg.waitForFunction(() => document.documentElement.getAttribute('data-goal') === 'reached', null, { timeout: 5000 }).catch(() => {})
+  home = await v.pg.evaluate(() => ({ goal: document.documentElement.getAttribute('data-goal'), bar: document.getElementById('donateBar').innerText.replace(/\s+/g, ' '),
+    card: document.querySelector('.event-strip__link--donate').innerText.replace(/\s+/g, ' '), href: [document.getElementById('donateBar').getAttribute('href'), document.querySelector('.event-strip__link--donate').getAttribute('href')] }))
+  check('G9 homepage once the goal is reached: the bar and the card say "We hit $500", $1,500, and "Keep giving", promise nothing more, and still go to /donate',
+    home.goal === 'reached' && /We hit \$500!/.test(home.bar) && /\$1,500/.test(home.bar) && /Keep giving/i.test(home.bar) && !/becomes \$75|Triple your gift/.test(home.bar)
+      && /We hit \$500!/.test(home.card) && /Keep giving/i.test(home.card) && !/Triple your gift|will each match/.test(home.card) && home.href.every(h => h === '/donate'), JSON.stringify(home))
+  // The next page of the same visit has it before it paints, without asking again.
+  await v.pg.route('**/functions/v1/event-donations**', route => route.abort())
+  await v.pg.goto('http://localhost:4620/self-defense-for-women', { waitUntil: 'domcontentloaded' })
+  const sem = await v.pg.evaluate(() => ({ goal: document.documentElement.getAttribute('data-goal'), text: document.getElementById('donate').innerText.replace(/\s+/g, ' ') }))
+  check('G10 the next page of the visit already has it (remembered, no second question): the seminar page says the goal was reached, not that a match is coming',
+    sem.goal === 'reached' && /We reached our \$500 goal, so both anonymous donors matched every dollar: \$1,500 for the family/.test(sem.text) && !/will each match every dollar we raise/.test(sem.text), JSON.stringify(sem))
+  await v.c.close()
+  v = await visit('/self-defense-for-women', 203)
+  const sem0 = await v.pg.evaluate(() => document.getElementById('donate').innerText.replace(/\s+/g, ' '))
+  check('G11 the seminar page while the drive is on: the match is promised', /two anonymous donors will each match every dollar we raise, up to our \$500 goal/.test(sem0) && !/We reached/.test(sem0), sem0)
+  await v.c.close()
+
+  // A visit asks at most once a minute, and a page that cannot find out keeps the old words.
+  v = await visit('/', 203)
+  await v.pg.goto('http://localhost:4620/self-defense-for-women', { waitUntil: 'networkidle' })
+  check('G12 a visit asks the total once a minute at most, whichever pages it opens', v.w.asks === 1, 'asked ' + v.w.asks)
+  await v.c.close()
+  v = await visit('/', 203, { fail: true })
+  home = await v.pg.evaluate(() => ({ goal: document.documentElement.getAttribute('data-goal'), bar: document.getElementById('donateBar').innerText.replace(/\s+/g, ' ') }))
+  check('G13 if the total cannot be read the homepage keeps the words of a drive that is on, and says nothing false', home.goal === null && /Give \$25 and it becomes \$75/.test(home.bar), JSON.stringify(home))
+  await v.c.close()
+  for (const path of ['/', '/self-defense-for-women']) {
+    v = await visit(path + '?preview=goal', 203)
+    const e = await v.pg.evaluate(() => ({ goal: document.documentElement.getAttribute('data-goal'), tag: getComputedStyle(document.documentElement, '::after').content }))
+    check('G14 ' + path + '?preview=goal previews the reached words, tagged as a preview', e.goal === 'reached' && /Preview/.test(e.tag), JSON.stringify(e))
+    await v.c.close()
+  }
+
+  // Looks, on a phone and on the narrowest one: the panel comes first, nothing sticks out, the sum fits.
+  for (const w of [390, 320]) {
+    v = await visit('/donate', 560, { viewport: { width: w, height: 800 } })
+    await v.pg.waitForTimeout(2300)
+    const ph = await v.pg.evaluate(() => {
+      const r = s => document.querySelector(s).getBoundingClientRect()
+      const tot = document.querySelector('.goal-eq__total b'), eqRow = [...document.querySelectorAll('.goal-eq__tile b')]
+      return { hypeBottom: Math.round(r('.goal-hype').bottom), cardTop: Math.round(r('#give').top), cardBottom: Math.round(r('#give').bottom), leadTop: Math.round(r('.prog-hero__lead[data-goal-only]').top),
+        wide: document.documentElement.scrollWidth > innerWidth, totalFits: tot.scrollWidth <= tot.parentElement.clientWidth, tilesFit: eqRow.every(b => b.scrollWidth <= b.parentElement.clientWidth),
+        right: Math.round(r('.goal-hype').right), vw: innerWidth }
+    })
+    check('G15 at ' + w + 'px the celebration comes first, then the card, then the paragraph, and the sum fits without sticking out',
+      ph.hypeBottom <= ph.cardTop && ph.cardBottom <= ph.leadTop && !ph.wide && ph.totalFits && ph.tilesFit && ph.right <= ph.vw, JSON.stringify(ph))
+    await v.c.close()
+  }
+
+  // What every goal-reached sentence says: only what the academy has said, in the site's own style.
+  v = await visit('/donate', 203)
+  const words = await v.pg.evaluate(() => [...document.querySelectorAll('[data-goal-only]')].map(e => e.textContent.replace(/\s+/g, ' ').trim()).join(' | '))
+  check('G16 the goal-reached words promise nothing the academy has not said: no tax wording, no em dashes, no new deadline, the donors stay anonymous',
+    words.length > 400 && !/tax|deduct|501|—/i.test(words) && !/deadline|ends|until|by (october|friday)/i.test(words) && !/Donor (1|2) (is|are|named)/i.test(words), words.slice(0, 200))
+  // The colours that carry words are readable (WCAG AA, 4.5:1), against the lightest their background gets.
+  await v.pg.goto('http://localhost:4620/donate?preview=goal', { waitUntil: 'networkidle' })
+  const ink = await v.pg.evaluate(() => {
+    const rgb = c => c.match(/[\d.]+/g).slice(0, 3).map(Number)
+    const lin = x => { x /= 255; return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4 }
+    const lum = ([r, g, b]) => 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b)
+    const ratio = (sel, bg) => { const a = lum(rgb(getComputedStyle(document.querySelector(sel)).color)), b = lum(bg); return Math.round((Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05) * 10) / 10 }
+    return { pill: ratio('.goal-hype__pill', [200, 162, 76]), total: ratio('.goal-eq__total b', [217, 176, 79]), caption: ratio('.goal-eq__total span:last-child', [217, 176, 79]),
+      tiles: ratio('.goal-eq__tile span', [74, 42, 58]), line: ratio('.goal-hype__line', [74, 42, 58]), pct: ratio('#fund-pct', [74, 42, 58]), note: ratio('.goal-note', [74, 42, 58]) }
+  })
+  check('G17 the gold panel, the percentage line and the note are readable: every text colour is at least 4.5:1 on its background', Object.values(ink).every(r => r >= 4.5), JSON.stringify(ink))
+  await v.c.close()
 }
 
 // ── H: the way in from the homepage ──
