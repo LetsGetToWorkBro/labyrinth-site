@@ -1,6 +1,6 @@
 ROLLING FOR RIBBONS: MATCHING GIFT POST
 Images: donation-match-feed.png (Facebook and Instagram feed), donation-match-story.png (Stories and Reels)
-Link for everything: https://labyrinth.vision/donate  (opens the donation section, with the live progress bar and amount buttons)
+Link for everything: https://labyrinth.vision/donate  (the donation page: the live goal bar, the amounts and how the match works)
 
 How the match is described in everything below: two anonymous donors will each match every dollar raised, up to the $500 goal,
 so $500 from the community becomes $1,500. If it works differently (a deadline, all-or-nothing, a different cap), change the
