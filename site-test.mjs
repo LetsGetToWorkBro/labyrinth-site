@@ -1833,6 +1833,16 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
     offenders.length === 0, [...new Set(offenders)].slice(0,10).join(', '))
 }
 
+// ── R: the short donation link used on posts and print ──
+{
+  const rd = readFileSync(join(ROOT, '_redirects'), 'utf8')
+  const rule = /^\/donate\s+(\S+)\s+(30[12])\s*$/m.exec(rd)
+  const target = rule && rule[1].split('#')
+  const page = target && existsSync(join(ROOT, target[0].replace(/^\//, '') + '.html')) && readFileSync(join(ROOT, target[0].replace(/^\//, '') + '.html'), 'utf8')
+  check('R1 /donate is a temporary redirect to the donation section of the seminar page, and that section exists',
+    !!rule && rule[2] === '302' && target[0] === '/self-defense-for-women' && target[1] === 'donate' && !!page && /id="donate"/.test(page), rule ? rule[0] : 'no /donate rule')
+}
+
 console.log(`\n${pass} passed, ${fail} failed`)
 await browser.close(); server.close()
 process.exit(fail?1:0)

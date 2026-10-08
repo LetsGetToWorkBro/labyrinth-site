@@ -44,6 +44,11 @@
 /free-trial                     /#contact           301
 /trial                          /#contact           301
 
+# A short link for the Rolling for Ribbons fundraiser, for posts, print and word of mouth. It lands on the
+# donation section of the seminar page (the live progress bar and the amount buttons), not on the bare Stripe
+# link, so people see how close the goal is. A 302, because the campaign ends and the target may change.
+/donate                         /self-defense-for-women#donate   302
+
 # labyrinth.vision/ennova is printed on the resident card. The QR code carries
 # the exact URL, but anybody typing it off the card is reading a proper noun and
 # will reasonably capitalise it. Path matching here is case sensitive, so /Ennova
