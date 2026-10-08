@@ -3,13 +3,14 @@ Images: donation-match-feed.png (Facebook and Instagram feed), donation-match-st
 Link for everything: https://labyrinth.vision/donate  (opens the donation section, with the live progress bar and amount buttons)
 
 How the match is described in everything below: two anonymous donors will each match every dollar raised, up to the $500 goal,
-so $500 from the community becomes $1,500. If the match works differently, change the lines marked [MATCH].
+so $500 from the community becomes $1,500. If it works differently (a deadline, all-or-nothing, a different cap), change the
+sentences that mention the match before you post, and the numbers in the images if the amounts change.
 
 ==================== FACEBOOK POST ====================
 
 🎀 TRIPLE YOUR GIFT 🎀
 
-Two anonymous donors have stepped up to match every dollar we raise for Rolling for Ribbons, up to our $500 goal. [MATCH] Each one is matching in full, so $500 from our community becomes $1,500 for a family in our community affected by breast cancer.
+Two anonymous donors have stepped up to match every dollar we raise for Rolling for Ribbons, up to our $500 goal. Each one is matching in full, so $500 from our community becomes $1,500 for a family in our community affected by breast cancer.
 
 What that looks like:
 💗 Give $1 and it becomes $3
@@ -31,7 +32,7 @@ Rolling for Ribbons is part of Pink October at Labyrinth BJJ, and a free women's
 
 Triple your gift 🎀
 
-Two anonymous donors will each match every dollar we raise for Rolling for Ribbons, up to our $500 goal. [MATCH] That turns $500 into $1,500 for a family in our community affected by breast cancer.
+Two anonymous donors will each match every dollar we raise for Rolling for Ribbons, up to our $500 goal. That turns $500 into $1,500 for a family in our community affected by breast cancer.
 
 💗 Give $1, it becomes $3
 💗 Give $25, it becomes $75
@@ -58,4 +59,4 @@ Give here: labyrinth.vision/donate 🎀 Every dollar is matched twice, up to $50
 ==================== WHEN YOU HIT THE GOAL ====================
 
 WE DID IT! 🎀 Thanks to everyone who gave, and to our two anonymous donors, we reached our $500 goal and the matches are in: $1,500 for a family in our community affected by breast cancer. Thank you, Fulshear. See you Saturday at Rolling for Ribbons. 💗
-[Edit the total if gifts go past $500 or the donors change their amounts.]
+(Note for you, not part of the post: edit the total if gifts go past $500 or the donors change their amounts.)
