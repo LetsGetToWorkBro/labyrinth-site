@@ -7,8 +7,10 @@ for that), no hashtags. Dates are written out because the profile's own posts do
 The muse prompt for this standing job (scratchpad build script) is built from the blocks below and checks them, so edit them here.
 
 ORDER OF USE
-  First run: A and B (both are tied to dates), then one evergreen post a week in this order:
-  E1, E3, E9, E2, E4, E5, E6, E7, E8. When the list runs out the muse says so and I send a new one.
+  First run: A and B (both are tied to dates), then one post a week in this order:
+  P3, P2, E1, E3, E9, P1, E2, E4, E5, E6, E7, E8. When the list runs out the muse says so and I send a new one.
+  P1 to P3 look back at three events and take their photo from the matching Lightroom album (see PHOTO ALBUMS). They carry no date in
+  the text: Google shows each post's own date, and the album dates are on the albums, not in anything the muse was told.
 
 ==================== POST A ====================
 Type: Offer
@@ -104,6 +106,30 @@ Photo: https://labyrinth.vision/assets/coach-tony.jpg
 Button: Learn more https://labyrinth.vision/coaches/
 Text:
 Meet Professor Anthony Curry, our founder and head instructor. Tony is a BJJ black belt with more than 14 years of training, and he started Labyrinth in Fulshear in 2021. Come and say hello at your first class, which is free.
+
+==================== POST P3 ====================
+Type: Update
+Window: any time
+Photo: album Open House
+Button: Book https://labyrinth.vision/#book
+Text:
+Thank you to everyone who came to our open house. New students met the coaches and trained open mat with us. If you missed it, your first class is free, and open mat is every Sunday at 10:30 AM.
+
+==================== POST P2 ====================
+Type: Update
+Window: any time
+Photo: album Welcome Party
+Button: Learn more https://labyrinth.vision/legacy/
+Text:
+We held a welcome party to celebrate Team Legacy Martial Arts merging with Labyrinth BJJ. Two schools in Fulshear are now one team, with two head coaches on one mat, Coach Scott Jones and Professor Tony. Thank you to everyone who came to meet and celebrate.
+
+==================== POST P1 ====================
+Type: Update
+Window: any time
+Photo: album Anniversary
+Button: Book https://labyrinth.vision/#book
+Text:
+We celebrated our 4th anniversary at Labyrinth BJJ in Fulshear. Thank you to every student, parent and coach who has been part of the mat over these four years. Here is to the next one. If you have not trained with us yet, your first class is free.
 
 ==================== STARTER PHOTOS (the fallback, if the albums cannot be opened or downloaded) ====================
 Team | https://labyrinth.vision/assets/adult-card.jpg
