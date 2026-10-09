@@ -1,0 +1,113 @@
+GOOGLE BUSINESS PROFILE: THE POST LIBRARY AND THE STARTER PHOTOS (Labyrinth BJJ, Fulshear)
+Profile: https://maps.google.com/?cid=7150744267965161030
+
+Everything below comes from the program, schedule, seminar, Pink October, HYROX, pricing and coaches pages and the MMA Conditioning email.
+No prices, no results, no rankings, no fundraiser or donation wording, no phone numbers or links inside the text (Google wants the button
+for that), no hashtags. Dates are written out because the profile's own posts do not know what day it is.
+The muse prompt for this standing job (scratchpad build script) is built from the blocks below and checks them, so edit them here.
+
+ORDER OF USE
+  First run: A and B (both are tied to dates), then one evergreen post a week in this order:
+  E1, E3, E9, E2, E4, E5, E6, E7, E8. When the list runs out the muse says so and I send a new one.
+
+==================== POST A ====================
+Type: Offer
+Window: first run until Oct 28, 2026 (the offer ends Oct 31). After Oct 28, skip it.
+Title: 50% off your first month for women
+Start: the day you post
+End: Oct 31, 2026
+Photo: https://labyrinth.vision/assets/social/pink-october-email-banner.jpg
+Button: Learn more https://labyrinth.vision/pink-october
+Terms: Offer runs October 1 to 31, 2026. Mention Pink October when you book or at the front desk.
+Text:
+Pink October at Labyrinth BJJ in Fulshear. Every woman who joins in October gets 50% off her first month, whether or not she has a child enrolled. Moms of current and new students train free all month. No experience needed and no child required. Mention Pink October when you book.
+
+==================== POST B ====================
+Type: Event
+Window: first run until Oct 23, 2026. The seminar is Oct 24. After Oct 23, skip it.
+Title: Free women's self defense seminar
+Start: Oct 24, 2026 11:00 AM
+End: Oct 24, 2026 12:30 PM
+Photo: https://labyrinth.vision/assets/og-self-defense.jpg
+Button: Sign up https://labyrinth.vision/self-defense-for-women
+Text:
+A free, beginner-friendly self defense seminar for women, built on the jiu-jitsu we teach every day at Labyrinth BJJ. No experience and no gear needed. Come on your own or bring a friend, with up to five people on one RSVP. Led by Coach Scott and Professor Tony. Hosted for Pink October and breast cancer awareness. Free to attend.
+
+==================== POST E1 ====================
+Type: Update
+Window: any time
+Photo: https://labyrinth.vision/assets/hero-poster-logo.jpg
+Button: Book https://labyrinth.vision/#book
+Text:
+Never trained? Good. Almost everybody who walks in as an adult has never done a combat sport, and our adult classes are built around that. Your first class is free, in any class on the timetable. We lend you a gi on Gi days and pair you with a partner who looks after you. Brazilian jiu-jitsu in Fulshear: mornings, middays and evenings, Gi and No-Gi, all levels.
+
+==================== POST E3 ====================
+Type: Update
+Window: any time
+Photo: https://labyrinth.vision/assets/coach-scott-portrait.jpg
+Button: Book https://labyrinth.vision/#book
+Text:
+MMA Conditioning is Saturday at 9:00 AM, open to all ages, and beginners are welcome. Coach Scott Jones, a 7th dan Taekwondo black belt and BJJ brown belt with more than 27 years in MMA, teaches anybody, child or adult, to stand, move and defend themselves. Wear comfortable workout clothes. If you have never trained with us, your first class is free.
+
+==================== POST E9 ====================
+Type: Update
+Window: Oct 12 to Nov 30, 2026. After Nov 30, skip it and tell me it needs updating.
+Photo: https://labyrinth.vision/assets/social/hyrox-facebook-cover.jpg
+Button: Sign up https://labyrinth.vision/hyrox-youngstars
+Text:
+Kids ages 8 to 15: we are putting together a group of Labyrinth kids to train for HYROX Youngstars Houston, April 3 to 4, 2027. It is a kids' fitness race with running, sled push and pull, rowing, carries and lunges, scaled for each age group. Joining the interest list is free, takes a minute, and there is nothing to commit to.
+
+==================== POST E2 ====================
+Type: Update
+Window: any time
+Photo: https://labyrinth.vision/assets/kids-nogi.jpg
+Button: Learn more https://labyrinth.vision/programs/kids-bjj-fulshear
+Text:
+Kids Brazilian jiu-jitsu in Fulshear, for ages 3 to 15, in three separate age groups: Little Grapplers (3 to 6), Kids BJJ (7 to 12) and Teens (12 to 15). Taught by black belts, with belt progression tracked so a child can see how far they have come. Your child's first class is free, and trial classes are on Fridays and Saturdays.
+
+==================== POST E4 ====================
+Type: Update
+Window: any time
+Photo: https://labyrinth.vision/assets/adult-nogi.jpg
+Button: Learn more https://labyrinth.vision/schedule
+Text:
+Open mat is Sunday at 10:30 AM. It is free rolling for all levels and all affiliations, including visitors from other academies. Come and roll with us.
+
+==================== POST E5 ====================
+Type: Update
+Window: any time
+Photo: https://labyrinth.vision/assets/strength-conditioning.jpg
+Button: Book https://labyrinth.vision/#book
+Text:
+Strength & Conditioning runs Tuesday and Thursday at 4:15 PM and is open to all ages. If you have never trained with us, your first class is free.
+
+==================== POST E6 ====================
+Type: Update
+Window: any time
+Photo: https://labyrinth.vision/assets/wrestling-card.jpg
+Button: Learn more https://labyrinth.vision/programs/youth-wrestling-fulshear
+Text:
+Youth Wrestling runs Wednesday, Thursday and Sunday for ages 7 to 17, coached by Malik Pickett, a Texas National Team wrestler. No wrestling background is needed, it is included in every kids and teens membership, and the first class is free.
+
+==================== POST E7 ====================
+Type: Update
+Window: any time
+Photo: https://labyrinth.vision/assets/adult-card.jpg
+Button: Learn more https://labyrinth.vision/programs/bjj-competition-team
+Text:
+The Labyrinth Competition Team has dedicated competition classes for kids, teens and adults. It is included in unlimited memberships, and nobody is ever made to compete.
+
+==================== POST E8 ====================
+Type: Update
+Window: any time
+Photo: https://labyrinth.vision/assets/coach-tony.jpg
+Button: Learn more https://labyrinth.vision/coaches/
+Text:
+Meet Professor Anthony Curry, our founder and head instructor. Tony is a BJJ black belt with more than 14 years of training, and he started Labyrinth in Fulshear in 2021. Come and say hello at your first class, which is free.
+
+==================== STARTER PHOTOS ====================
+Team | https://labyrinth.vision/assets/adult-card.jpg
+Team | https://labyrinth.vision/assets/hero-team.jpg
+Team | https://labyrinth.vision/assets/community-real.jpg
+At work | https://labyrinth.vision/assets/strength-conditioning.jpg
+At work | https://labyrinth.vision/assets/hero-poster-logo.jpg
