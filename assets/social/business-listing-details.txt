@@ -1,0 +1,58 @@
+BUSINESS LISTING DETAILS: THE MASTER COPY (Labyrinth BJJ, Fulshear)
+
+One place for the name, address and phone number, and the words about the business, so every listing site gets the same thing. Everything
+comes from the home page's own business data, the program pages, the pricing page and the coaches page. No prices, rankings, medal
+counts, awards, events or fundraiser wording: those change, and a directory never gets updated. Hours are NOT here on purpose: the home
+page's hidden business data holds two different sets of hours, so the Google Business Profile is the source for hours until the site is fixed.
+The muse prompt for listings (scratchpad build script) is built from the blocks below and checks them, so edit them here.
+
+==================== DETAILS ====================
+Name: Labyrinth BJJ
+Also known as: Labyrinth Brazilian Jiu-Jitsu
+Address: 6615 West Cross Creek Bend Lane, Suite 400
+City: Fulshear
+State: TX
+ZIP: 77441
+Phone: (281) 393-7983
+Website: https://labyrinth.vision
+Email: info@labyrinth.vision
+Year established: 2021
+Languages: English
+Price range, only if a site asks: $$
+Map pin guide: 29.6898, -95.8963
+Facebook: https://www.facebook.com/labyrinthbjj
+Instagram: https://www.instagram.com/labyrinthbjj
+YouTube: https://www.youtube.com/@labyrinthbjj
+
+==================== CATEGORIES ====================
+Martial Arts School
+Brazilian Jiu-Jitsu School
+Gym
+
+==================== SPECIALTIES ====================
+Brazilian jiu-jitsu
+Kids jiu-jitsu
+Teen jiu-jitsu
+No-Gi grappling
+Youth wrestling
+MMA conditioning
+Strength and conditioning
+Competition team
+Private lessons
+Open mat
+
+==================== SHORT DESCRIPTION ====================
+Brazilian jiu-jitsu for kids and adults in Fulshear, TX. Gi and No-Gi, all levels, beginners welcome. Your first class is free.
+
+==================== MEDIUM DESCRIPTION ====================
+Labyrinth BJJ teaches Brazilian jiu-jitsu to adults and kids (ages 3 to 15) in Fulshear, Texas: Gi and No-Gi classes for every level, a competition team, youth wrestling, MMA conditioning, strength and conditioning, and open mat. Black belt instructors, beginners welcome, and your first class is free.
+
+==================== LONG DESCRIPTION ====================
+Labyrinth BJJ is a Brazilian jiu-jitsu academy in Fulshear, Texas, teaching adults and kids from age 3. Adults train Gi and No-Gi in morning, midday and evening classes, with open mat on Sundays. Kids train in three age groups (3 to 6, 7 to 12 and teens), and youth wrestling is for ages 7 to 17. We also run a competition team, MMA conditioning and strength and conditioning classes. Our instructors include black belts and brown belts, and nobody is ever made to compete. Beginners are welcome and your first class is free. Memberships are month-to-month with no long-term contract, and sauna and cold plunge access is available as an add-on. Serving Fulshear, Katy, Cinco Ranch, Richmond and the west Houston area.
+
+==================== PHOTOS ====================
+Logo | https://labyrinth.vision/assets/logo-maze.jpg
+Photo | https://labyrinth.vision/assets/adult-card.jpg
+Photo | https://labyrinth.vision/assets/hero-team.jpg
+Photo | https://labyrinth.vision/assets/strength-conditioning.jpg
+Photo | https://labyrinth.vision/assets/hero-poster-logo.jpg
