@@ -1,0 +1,105 @@
+ADULT CLASSES: GOOGLE SEARCH AD (responsive search ad)
+Landing page: https://labyrinth.vision/programs/adult-bjj-fulshear   (how a first class goes, the timetable, the booking button)
+
+Everything below comes from the adult program page and the pricing page: the first class is free, any class on the timetable; no experience needed;
+a loaner gi on a Gi day; a first-timer is paired with a partner who looks after them; Gi and No-Gi, all levels; three black belts and two brown
+belts teach across the week; memberships are month-to-month with no long-term contract. No prices, no results, no health claims, no superlatives.
+Lengths are Google's limits: headlines 30 characters, descriptions 90, display paths 15, sitelink text 25 and its two description lines 35,
+callouts 25. The muse prompt for this (scratchpad build script) is built from the blocks below and checks every limit, so edit them here.
+
+==================== HEADLINES ====================
+Adult Jiu-Jitsu in Fulshear
+Your First Class Is Free
+No Experience Needed
+Never Trained? Good.
+Learn Brazilian Jiu-Jitsu
+Gi and No-Gi Classes
+Beginners Welcome
+Labyrinth BJJ Fulshear
+Black Belt Instructors
+Mornings, Middays, Evenings
+Loaner Gi Provided
+Book Your Free Class
+Month-to-Month Membership
+Jiu-Jitsu for Adults
+Start Jiu-Jitsu This Week
+
+==================== DESCRIPTIONS ====================
+Adult Brazilian jiu-jitsu in Fulshear. Your first class is free. No experience needed.
+Gi and No-Gi classes mornings, middays and evenings. All levels welcome.
+We lend you a gi on Gi days. A partner looks after you in your first class.
+Taught by black belts. Month-to-month, no long-term contract. Book your free class.
+
+==================== DISPLAY PATH ====================
+adult-bjj
+free-class
+
+==================== KEYWORDS ====================
+"bjj fulshear"
+[bjj fulshear]
+"jiu jitsu fulshear"
+[jiu jitsu fulshear]
+"brazilian jiu jitsu fulshear"
+"bjj near me"
+"jiu jitsu near me"
+"bjj classes near me"
+"adult bjj classes"
+"adult jiu jitsu classes"
+"beginner jiu jitsu classes"
+"beginner bjj"
+"jiu jitsu for beginners"
+"brazilian jiu jitsu katy"
+"bjj katy tx"
+"bjj richmond tx"
+"bjj cinco ranch"
+
+==================== NEGATIVE KEYWORDS ====================
+kids
+kid
+children
+child
+toddler
+teen
+teens
+youth
+wrestling
+wharton
+jobs
+job
+career
+salary
+hiring
+"for sale"
+buy
+shop
+store
+online
+youtube
+video
+videos
+dvd
+pdf
+tutorial
+tutorials
+course
+courses
+certification
+wiki
+history
+rules
+game
+app
+
+==================== SITELINKS ====================
+Class Timetable | Mornings, middays, evenings | Gi and No-Gi, all levels | https://labyrinth.vision/schedule
+Membership Options | Month-to-month plans | No long-term contract | https://labyrinth.vision/pricing
+Meet the Coaches | Three black belts teach | Plus two brown belts | https://labyrinth.vision/coaches/
+
+==================== CALLOUTS ====================
+First Class Free
+No Experience Needed
+Gi and No-Gi
+All Levels Welcome
+Loaner Gi on Gi Days
+Month-to-Month
+Black Belt Instructors
