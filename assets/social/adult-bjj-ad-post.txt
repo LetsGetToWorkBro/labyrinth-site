@@ -1,0 +1,37 @@
+ADULT CLASSES: INSTAGRAM AD "NEVER TRAINED? GOOD."
+Images: adult-bjj-ad-feed.png (feed, 1080x1350, 4:5), adult-bjj-ad-story.png (Stories and Reels placements, 1080x1920, 9:16)
+Link: https://labyrinth.vision/programs/adult-bjj-fulshear  (the adult program page: how a first class goes, the timetable, the booking button)
+  or  https://labyrinth.vision/#book  (opens the free-class picker straight away; the printed flyers use this one)
+
+Everything below comes from the adult program page: the first class is free, any class on the timetable; a loaner gi on a Gi day; a first-timer
+is paired with an experienced partner who has been asked to look after them. If the timetable or the offer changes, change the sentences below
+and the words in the image (scripts/ad-adult-bjj.mjs).
+
+==================== AD SETUP (Ads Manager) ====================
+
+Primary text:
+Never trained? Good.
+
+Almost everyone who walks into Labyrinth has never done a combat sport. Your first class is free, we lend you the gi, and you train with a partner who looks after you.
+
+Adult Brazilian jiu-jitsu in Fulshear: mornings, middays and evenings, Gi and No-Gi, all levels.
+
+Headline: Your first class is free
+Description: No experience needed
+Button: Book now
+
+==================== ORGANIC POST (same image, optional) ====================
+
+Never trained? Good. 🥋
+
+Almost everybody who walks in as an adult has never done a combat sport. They're thirty-four, they have a desk job and a bad shoulder, and they've been meaning to do this for two years. That's the normal case here, and the classes are built around it.
+
+✅ No experience needed
+✅ Loaner gi on Gi days
+✅ Your first class is free, any class on the timetable
+✅ Mornings (6:30 AM), middays (11:00 AM) and evenings (6:30 PM), Gi and No-Gi
+
+👉 Book yours: labyrinth.vision/#book
+
+📍 Labyrinth BJJ, 6615 West Cross Creek Bend Lane, Suite #400, Fulshear, TX
+#BJJ #BrazilianJiuJitsu #AdultBJJ #BJJBeginner #Fulshear #FulshearTX #Katy #RichmondTX #LabyrinthBJJ
