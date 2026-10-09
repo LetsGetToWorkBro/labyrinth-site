@@ -105,9 +105,16 @@ Button: Learn more https://labyrinth.vision/coaches/
 Text:
 Meet Professor Anthony Curry, our founder and head instructor. Tony is a BJJ black belt with more than 14 years of training, and he started Labyrinth in Fulshear in 2021. Come and say hello at your first class, which is free.
 
-==================== STARTER PHOTOS ====================
+==================== STARTER PHOTOS (the fallback, if the albums cannot be opened or downloaded) ====================
 Team | https://labyrinth.vision/assets/adult-card.jpg
 Team | https://labyrinth.vision/assets/hero-team.jpg
 Team | https://labyrinth.vision/assets/community-real.jpg
 At work | https://labyrinth.vision/assets/strength-conditioning.jpg
 At work | https://labyrinth.vision/assets/hero-poster-logo.jpg
+
+==================== PHOTO ALBUMS ====================
+Anniversary | https://adobe.ly/48WNFpZ
+Welcome Party | https://adobe.ly/4y7oHyv
+Open House | https://adobe.ly/4tQmQvN
+9-9-2026 | https://adobe.ly/4r5OzYM
+9-14-2026 | https://adobe.ly/4y11duO
