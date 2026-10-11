@@ -61,6 +61,17 @@ from anywhere.
 The endpoint only ever writes. There is nothing secret in this repository, and
 nothing here can read a member's details back out.
 
+### Counting bookings for Google Ads
+
+`booking.js` counts a booking as the **Booking** conversion in Google Ads (account `AW-18504205012`, label in `BOOKING_CONVERSION`) at
+the one place a booking is known to have been saved: after the CRM replies `ok`. A booking the CRM refused is not counted, and a retry
+that succeeds is counted once. The value is the fixed $1 the conversion action is set to in Google Ads; if it is changed there, change
+`countBooking()` with it.
+
+`index.html` carries Google's own snippet. `booking.js` is on every page that can book, including the page the Google ad lands on, so it
+sets the tag up on pages that do not have it: the tag has to run on the page an ad click arrives at, or a booking made later cannot be
+credited to the ad. `booking.test.mjs` and `L1t` in `site-test.mjs` keep the two in step.
+
 ### What this replaced
 
 Worth recording, because both failures were silent:

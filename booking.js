@@ -496,6 +496,39 @@
 
   var lastBookingData = null;
 
+  // ===== GOOGLE ADS =====
+  // The Google tag for the ad account, and the "Booking" conversion it counts.
+  //
+  // index.html carries Google's snippet exactly as Google gave it. This file is on every page that can book, and that includes the
+  // page the Google ad lands on, so it makes sure the tag is there too. The tag has to run on the page an ad click arrives at: that
+  // is where it keeps the click's gclid, and without it a booking made a minute later cannot be credited to the ad. A page that
+  // already has the tag (the front page) is left alone, so the tag is never set up twice.
+  var GOOGLE_TAG = 'AW-18504205012';
+  var BOOKING_CONVERSION = GOOGLE_TAG + '/cJvGCNeNupgdENSFv_dE';
+
+  (function loadGoogleTag() {
+    if (typeof window.gtag === 'function') return;
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { window.dataLayer.push(arguments); };
+    window.gtag('js', new Date());
+    window.gtag('config', GOOGLE_TAG);
+    var tag = document.createElement('script');
+    tag.async = true;
+    tag.src = 'https://www.googletagmanager.com/gtag/js?id=' + GOOGLE_TAG;
+    document.head.appendChild(tag);
+  })();
+
+  /**
+   * Tell Google a booking happened. Called once the CRM has said it recorded the lead, never before, so a failed save is not
+   * counted. The value is the fixed $1 the conversion action in Google Ads is set to; it is not what a booking is worth.
+   * A blocked or broken tag must never turn a booking into an error, hence the try.
+   */
+  function countBooking() {
+    try {
+      window.gtag('event', 'conversion', { send_to: BOOKING_CONVERSION, value: 1.0, currency: 'USD' });
+    } catch (e) { /* counting is optional; the booking is not */ }
+  }
+
   // ===== LABYRINTH CRM =====
   // Bookings land on the Leads board at crm.labyrinth.vision.
   var CRM_BOOKING_URL = 'https://jctufxvmuvobaggxcwfn.supabase.co/functions/v1/book-trial';
@@ -786,6 +819,7 @@
       note: (data.tag ? data.tag.toUpperCase() + ': ' : '') + data.className + ', ' + data.classDay + ' ' + data.classTime + ', booked from the website'
     }).then(function (ok) {
       if (ok) {
+        countBooking();
         showBookingSuccess(data);
       } else {
         if (submitBtn) {

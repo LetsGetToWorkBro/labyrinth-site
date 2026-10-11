@@ -904,6 +904,20 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   }
 }
 
+// ── L1t: the Google Ads account is written in two places and must be the same account ──
+// index.html carries Google's snippet as Google gave it; booking.js sets the tag up on every other page that can book and counts the
+// booking. If the two ever name different accounts, bookings would be counted for one and pages tagged for the other, and nothing
+// would say so. The conversion label belongs to the account that comes before the slash.
+{
+  const home = readFileSync(join(ROOT, 'index.html'), 'utf8'), js = readFileSync(join(ROOT, 'booking.js'), 'utf8')
+  const homeIds = [...new Set([...home.matchAll(/AW-\d+/g)].map(m => m[0]))]
+  const jsIds = [...new Set([...js.matchAll(/AW-\d+/g)].map(m => m[0]))]
+  const label = /BOOKING_CONVERSION = GOOGLE_TAG \+ '\/([A-Za-z0-9_-]+)'/.exec(js)
+  check('L1t index.html and booking.js name the same Google Ads account', homeIds.length === 1 && jsIds.length === 1 && homeIds[0] === jsIds[0], JSON.stringify({ homeIds, jsIds }))
+  check('L1t the Booking conversion label is written once, in booking.js', !!label && label[1].length > 10 && !home.includes(label[1]))
+  check('L1t booking.js counts a booking only after the CRM has saved it', /if \(ok\) \{\s*countBooking\(\);\s*showBookingSuccess\(data\);/.test(js))
+}
+
 // ── L1s: the Team Legacy transfer ──
 // The announcement is public and indexable; the transfer form is a billing
 // page for people already enrolled somewhere else, so it is noindex and stays
