@@ -76,6 +76,16 @@ async function open(path) {
   return { page, ctx, errors, posted: () => posted }
 }
 
+/** What the page has told Google so far: the conversion events (Arguments objects in dataLayer, so they are copied out). */
+const conversions = (page) => page.evaluate(() => (window.dataLayer || []).map(e => Array.from(e))
+  .filter(a => a[0] === 'event' && a[1] === 'conversion').map(a => a[2]))
+/** Is the Google tag set up, and how many times? (The harness blocks the network, so only what the page itself did can be seen.) */
+const googleSetup = (page) => page.evaluate(() => ({
+  gtag: typeof window.gtag,
+  configs: (window.dataLayer || []).map(e => Array.from(e)).filter(a => a[0] === 'config' && a[1] === 'AW-18504205012').length,
+  scripts: [...document.scripts].filter(x => /googletagmanager\.com\/gtag\/js\?id=AW-18504205012/.test(x.src)).length,
+}))
+
 const isOpen = (page) => page.evaluate(() =>
   !!document.querySelector('.booking-overlay.open'))
 const heading = (page) => page.evaluate(() =>
@@ -112,6 +122,42 @@ console.log('\nA blog post, the thing that was broken:')
   await page.click('#bookingSubmitBtn')
   await page.waitForTimeout(600)
   check('it reaches the success screen', await heading(page), 'You’re Booked!')
+
+  // Google Ads. A blog post has no tag of its own, so booking.js sets it up, once.
+  check('this page has no Google tag of its own, so booking.js set it up once',
+    await googleSetup(page), { gtag: 'function', configs: 1, scripts: 1 })
+  check('the saved booking is counted as exactly one Google Ads conversion', (await conversions(page)).length, 1)
+  check('with the Booking conversion label and the fixed $1 the action is set to',
+    (await conversions(page))[0], { send_to: 'AW-18504205012/cJvGCNeNupgdENSFv_dE', value: 1, currency: 'USD' })
+  await ctx.close()
+}
+
+// ── Google Ads counts bookings that were saved, and only those ─────────────────
+console.log('\nA booking the CRM did not save is not counted:')
+{
+  const { page, ctx, errors } = await open('/blog/is-bjj-good-for-adhd-kids.html')
+  let saved = false
+  await page.route('**/functions/v1/book-trial', route => route.fulfill({
+    status: 200, contentType: 'application/json', body: saved ? '{"ok":true}' : '{"ok":false}' }))
+  await page.click('.article-cta__btn')
+  await page.waitForTimeout(250)
+  await page.click('.booking-category-btn[data-category="adult"]')
+  await page.waitForTimeout(200)
+  await page.click('.booking-class-row')
+  await page.waitForTimeout(200)
+  await page.fill('#bookingName', 'Test Person')
+  await page.fill('#bookingEmail', 'test@example.com')
+  await page.fill('#bookingPhone', '2815550000')
+  await page.click('#bookingSubmitBtn')
+  await page.waitForTimeout(600)
+  check('a booking the CRM refused shows the error', await heading(page), 'Something Went Wrong')
+  check('and is not counted', (await conversions(page)).length, 0)
+  saved = true
+  await page.click('#bookingRetryBtn')
+  await page.waitForTimeout(600)
+  check('trying again and succeeding reaches the success screen', await heading(page), 'You’re Booked!')
+  check('and the booking is counted once, not once per try', (await conversions(page)).length, 1)
+  check('with no page errors', errors, [])
   await ctx.close()
 }
 
@@ -378,6 +424,8 @@ console.log('\nArriving at the front page on #book:')
   const { page, ctx } = await open('/index.html#book')
   check('the picker is already open', await isOpen(page), true)
   check('and it is the picker', await heading(page), 'Book Your Free Trial')
+  check('the front page keeps Google\'s own snippet, and booking.js does not set the tag up a second time',
+    await googleSetup(page), { gtag: 'function', configs: 1, scripts: 1 })
   await ctx.close()
 }
 
