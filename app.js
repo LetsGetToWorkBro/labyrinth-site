@@ -5,6 +5,11 @@
 (function () {
   'use strict';
 
+  // The map's tiles come from CARTO. Its free basemaps now want an API key: without one every tile is a grey square reading "API KEY
+  // REQUIRED". The key is meant to sit in the page (anyone can read it in the source, as with any map key), so restrict it to
+  // labyrinth.vision in CARTO's dashboard if it offers that. {r} asks for the sharp @2x tile on retina screens, which this endpoint serves.
+  var MAP_TILES = 'https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png?key=cb1_4gp4_1_5746eaefa49ffa38c867af47';
+
   // The Google Sheet behind the upcoming tournaments list.
   //
   // It used to feed the ranking, medal counts and athlete cards as well, from
@@ -527,7 +532,7 @@
       attributionControl: true
     });
 
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    L.tileLayer(MAP_TILES, {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> &copy; <a href="https://carto.com/" target="_blank" rel="noopener noreferrer">CARTO</a>',
       maxZoom: 19
     }).addTo(map);
@@ -1416,7 +1421,7 @@
         attributionControl: false
       });
 
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      L.tileLayer(MAP_TILES, {
         maxZoom: 19
       }).addTo(map);
 

@@ -918,6 +918,17 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   check('L1ads booking.js counts a booking only after the CRM has saved it', /if \(ok\) \{\s*countBooking\(\);\s*showBookingSuccess\(data\);/.test(js))
 }
 
+// ── L1map: the map asks CARTO for its tiles with a key, in one place ──
+// CARTO's free basemaps now want an API key. Without one every tile is a grey square reading "API KEY REQUIRED", on the page and
+// nowhere in the console, so nothing but looking at the map would say so. The URL lives in app.js once (MAP_TILES) and both maps use it.
+{
+  const js = readFileSync(join(ROOT, 'app.js'), 'utf8')
+  const urls = [...js.matchAll(/https:\/\/[^'"\s]*cartocdn\.com[^'"\s]*/g)].map(m => m[0])
+  check('L1map the site names CARTO\'s tile address once, on the keyed endpoint, with the retina {r}',
+    urls.length === 1 && /^https:\/\/basemaps\.cartocdn\.com\/rastertiles\/dark_all\/\{z\}\/\{x\}\/\{y\}\{r\}\.png\?key=[A-Za-z0-9_]{12,}$/.test(urls[0]), JSON.stringify(urls))
+  check('L1map both maps use that one address', (js.match(/L\.tileLayer\(MAP_TILES,/g) || []).length === 2 && !/L\.tileLayer\('https/.test(js))
+}
+
 // ── L1s: the Team Legacy transfer ──
 // The announcement is public and indexable; the transfer form is a billing
 // page for people already enrolled somewhere else, so it is noindex and stays
