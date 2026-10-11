@@ -10,6 +10,13 @@
   // labyrinth.vision in CARTO's dashboard if it offers that. {r} asks for the sharp @2x tile on retina screens, which this endpoint serves.
   var MAP_TILES = 'https://basemaps.cartocdn.com/rastertiles/dark_all/{z}/{x}/{y}{r}.png?key=cb1_4gp4_1_5746eaefa49ffa38c867af47';
 
+  // Where the pins go: the coordinates of each street address as printed on the page, from address-point geocoding (two geocoders agree).
+  // They were once the middle of old downtown Fulshear (a mile and a half from the gym) and the middle of Katy (a mile from its
+  // address), so the dot sat on the wrong road. index.html's geo tags and structured data carry the Fulshear pair too, and the tests
+  // keep all of them in step.
+  var GYM_FULSHEAR = { lat: 29.694132, lng: -95.871867 };   // 6615 West Cross Creek Bend Lane
+  var GYM_KATY = { lat: 29.798309, lng: -95.824537 };       // 1806 Avenue D
+
   // The Google Sheet behind the upcoming tournaments list.
   //
   // It used to feed the ranking, medal counts and athlete cards as well, from
@@ -522,8 +529,8 @@
     var mapEl = document.getElementById('map');
     if (!mapEl) return;
 
-    var lat = 29.6898;
-    var lng = -95.8963;
+    var lat = GYM_FULSHEAR.lat;
+    var lng = GYM_FULSHEAR.lng;
 
     var map = L.map('map', {
       center: [lat, lng],
@@ -1439,8 +1446,8 @@
       entries.forEach(function (entry) {
         if (entry.isIntersecting && !mapsInitialized) {
           mapsInitialized = true;
-          createLocationMap('map-fulshear', 29.6898, -95.8963);
-          createLocationMap('map-katy', 29.7858, -95.8172);
+          createLocationMap('map-fulshear', GYM_FULSHEAR.lat, GYM_FULSHEAR.lng);
+          createLocationMap('map-katy', GYM_KATY.lat, GYM_KATY.lng);
           locObserver.unobserve(entry.target);
         }
       });
