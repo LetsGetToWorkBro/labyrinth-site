@@ -1,6 +1,9 @@
 ROLLING FOR RIBBONS: WE HIT THE GOAL (the celebration post and video)
 Files: goal-reached-feed.png (Facebook and Instagram feed, 1080x1350), goal-reached-story.png (Stories, 1080x1920),
-       goal-reached-video.mp4 (Reels, Stories and Facebook, 1080x1920, 15 seconds, silent: add Instagram's own music if you want sound)
+       goal-reached-video-sound.mp4 (Reels, Stories and Facebook, 1080x1920, 15 seconds: the one to post. Original music and sound effects,
+                                     made for this video, so nothing for Instagram or Facebook to flag)
+       goal-reached-video-effects.mp4 (the same with the sound effects only: use this one if you want to put Instagram's own music under it)
+       goal-reached-video.mp4 (the same with no sound at all)
 Links: https://labyrinth.vision/self-defense-for-women  (the call to action in all three: the free seminar, Saturday, October 24)
        https://labyrinth.vision/donate                  (gifts are still open; the page already shows the goal reached)
 

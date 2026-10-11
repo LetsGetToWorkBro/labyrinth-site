@@ -1,5 +1,6 @@
-// The "we hit the goal" video for Rolling for Ribbons: 1080x1920 (9:16, Reels, Stories and the Facebook feed), 15 seconds, H.264 MP4, silent
-// (Instagram's own music library is the one a business account is allowed to use, and a silent file never trips a copyright claim).
+// The "we hit the goal" video for Rolling for Ribbons: 1080x1920 (9:16, Reels, Stories and the Facebook feed), 15 seconds, H.264 MP4. This file is
+// the picture with no sound. scripts/audio-goal-reached.py reads the timeline below (the `const T` block), makes the sound effects and an original
+// music bed to match it, and joins them to this picture without re-encoding it: goal-reached-video-sound.mp4 and goal-reached-video-effects.mp4.
 // The story it tells is the one the donation page tells once the goal is reached: the community raises $500, two anonymous donors each
 // match it, $500 becomes $1,500 for a family affected by breast cancer, thank you. No donor names, no total beyond the $500 goal (new
 // gifts keep arriving, and a video does not update).
