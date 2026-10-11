@@ -929,6 +929,31 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   check('L1map both maps use that one address', (js.match(/L\.tileLayer\(MAP_TILES,/g) || []).length === 2 && !/L\.tileLayer\('https/.test(js))
 }
 
+// ── L1pin: the map pins are at the street addresses printed on the page ──
+// The Fulshear pin was in the middle of old downtown Fulshear, a mile and a half from the gym, and the Katy pin a mile from its address.
+// Nothing but looking at the map says so. The reference points are address-point geocodes of the printed addresses (two geocoders agree).
+// app.js holds each pin once; index.html's geo tags and structured data carry the Fulshear pair and must be the same point.
+{
+  const js = readFileSync(join(ROOT, 'app.js'), 'utf8'), home = readFileSync(join(ROOT, 'index.html'), 'utf8')
+  const pair = (re, s) => { const m = re.exec(s); return m ? [Number(m[1]), Number(m[2])] : null }
+  const fulshear = pair(/GYM_FULSHEAR = \{ lat: (-?[\d.]+), lng: (-?[\d.]+) \}/, js)
+  const katy = pair(/GYM_KATY = \{ lat: (-?[\d.]+), lng: (-?[\d.]+) \}/, js)
+  const metas = [pair(/name="geo\.position" content="(-?[\d.]+);(-?[\d.]+)"/, home), pair(/name="ICBM" content="(-?[\d.]+), (-?[\d.]+)"/, home)]
+  const jsonld = [...home.matchAll(/"latitude": (-?[\d.]+),\s*"longitude": (-?[\d.]+)/g)].map(m => [Number(m[1]), Number(m[2])])
+  const metres = (a, b) => {
+    const R = 6371000, rad = x => x * Math.PI / 180, dLat = rad(b[0] - a[0]), dLng = rad(b[1] - a[1])
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a[0])) * Math.cos(rad(b[0])) * Math.sin(dLng / 2) ** 2
+    return 2 * R * Math.asin(Math.sqrt(h))
+  }
+  const FULSHEAR = [29.694132, -95.871867], KATY = [29.798309, -95.824537]   // 6615 West Cross Creek Bend Lane; 1806 Avenue D
+  check('L1pin the Fulshear pin is within 150 m of 6615 West Cross Creek Bend Lane', !!fulshear && metres(fulshear, FULSHEAR) < 150, JSON.stringify(fulshear))
+  check('L1pin the Katy pin is within 150 m of 1806 Avenue D', !!katy && metres(katy, KATY) < 150, JSON.stringify(katy))
+  check('L1pin the geo tags and both structured-data blocks on the home page give the same Fulshear point as the map',
+    !!fulshear && metas.every(Boolean) && jsonld.length === 2 && [...metas, ...jsonld].every(q => metres(q, fulshear) < 1), JSON.stringify({ metas, jsonld }))
+  check('L1pin the maps and the location cards take their pins from those two constants',
+    (js.match(/GYM_FULSHEAR\.lat/g) || []).length === 2 && (js.match(/GYM_KATY\.lat/g) || []).length === 1)
+}
+
 // ── L1s: the Team Legacy transfer ──
 // The announcement is public and indexable; the transfer form is a billing
 // page for people already enrolled somewhere else, so it is noindex and stays
