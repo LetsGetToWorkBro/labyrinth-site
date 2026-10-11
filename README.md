@@ -72,6 +72,40 @@ that succeeds is counted once. The value is the fixed $1 the conversion action i
 sets the tag up on pages that do not have it: the tag has to run on the page an ad click arrives at, or a booking made later cannot be
 credited to the ad. `booking.test.mjs` and `L1ads` in `site-test.mjs` keep the two in step.
 
+### Knowing where bookings come from
+
+Instagram counts the people who tapped through and the CRM counts the people who booked, and nothing joined the two. So `booking.js` now
+writes where each booking's person came from into the lead's note, which the Leads board shows on the lead:
+
+    Adult BJJ, Gi, Monday 6:30 PM, booked from the website. Came from: instagram / adult-ad. Heard about us: Friend or family.
+
+- **Came from** is worked out, not asked. A link with tags names itself (`utm_source`, `utm_medium`, `utm_campaign`, each cut to 40
+  characters of letters, digits, spaces, dots, dashes and underscores). A click on a Google ad is recognised from Google's own click id
+  (`gclid`, `gbraid`, `wbraid`) with no tags needed. Otherwise it is the site that sent the visitor (`google.com`, `yelp.com`), and a click
+  out of Facebook or Instagram (`fbclid`) reads "Instagram link" or "Facebook link". A direct visit adds nothing.
+- **Heard about us** is the optional menu on the form (the `HEARD_OPTIONS` list, in the CRM's words). It is the person's own answer and is
+  kept apart from the above, since the two often disagree and both are worth seeing.
+- What the landing page saw is kept in this browser (`localStorage`, key `labyrinth.source`) for 30 days, because people land on one page and
+  book from another, or come back days later. A tagged link or a Google ad click outranks a referrer and is replaced only by another one;
+  a later referrer replaces an earlier referrer; direct visits and clicks inside the site change nothing. If storage is blocked the page's
+  own memory is used.
+- The booking endpoint keeps the first 400 characters of the note and cuts the rest silently. The class always comes first and the extras are
+  trimmed to fit (`NOTE_LIMIT`). The endpoint itself is unchanged: this is all in the note it already took.
+
+**Links for ads** go in the ad's destination: add `?utm_source=<where>&utm_campaign=<name>` to the end of the address, for example
+`https://labyrinth.vision/programs/adult-bjj-fulshear?utm_source=instagram&utm_campaign=adult-ad`. Use the same spelling every time, because
+the CRM shows exactly what the link said. The tags work on any page that loads `booking.js` (the page the ad lands on must; `L1src` in
+`site-test.mjs` checks the usual landing pages do).
+
+**Reading it:** the lead's timeline entry on the Leads board says it. To count bookings by source, count the leads whose timeline holds the
+wording (`booking.test.mjs` has it under test), for example, in the CRM's database:
+
+    select count(*) from leads
+    where source = 'web' and created_at >= '2026-10-12' and timeline::text ilike '%Came from: instagram%';
+
+(`Heard about us: Instagram` is the person's own answer; the two counts are not expected to match.) Bookings made before this went live carry
+neither line, so count from the day it went live.
+
 ### What this replaced
 
 Worth recording, because both failures were silent:
