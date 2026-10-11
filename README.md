@@ -70,7 +70,7 @@ that succeeds is counted once. The value is the fixed $1 the conversion action i
 
 `index.html` carries Google's own snippet. `booking.js` is on every page that can book, including the page the Google ad lands on, so it
 sets the tag up on pages that do not have it: the tag has to run on the page an ad click arrives at, or a booking made later cannot be
-credited to the ad. `booking.test.mjs` and `L1t` in `site-test.mjs` keep the two in step.
+credited to the ad. `booking.test.mjs` and `L1ads` in `site-test.mjs` keep the two in step.
 
 ### What this replaced
 
