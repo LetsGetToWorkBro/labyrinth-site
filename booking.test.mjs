@@ -51,11 +51,16 @@ const check = (label, got, want) => {
     (ok ? '' : `\n          got ${JSON.stringify(got)}\n          want ${JSON.stringify(want)}`))
 }
 
-/** A page with the CRM stubbed out and console errors collected. */
-async function open(path) {
+/**
+ * A page with the CRM stubbed out and console errors collected.
+ * `referer` is what the first page believes sent the visitor; `init` is a function (with `arg`) run in the page before any of its own
+ * scripts, for seeding or breaking browser storage.
+ */
+async function open(path, { referer, init, arg } = {}) {
   const ctx = await browser.newContext()
   const errors = []
   let posted = null
+  if (init) await ctx.addInitScript(init, arg)
   // Order matters: Playwright matches routes in REVERSE registration order, so
   // the catch-all goes on first and the CRM stub last, or the catch-all eats it.
   // Anything else off-box (fonts, maps, sheets) is not what is under test.
@@ -71,7 +76,7 @@ async function open(path) {
     // Resource failures are this harness blocking the network, not the page.
     if (m.type() === 'error' && !/Failed to load resource/.test(m.text())) errors.push(m.text())
   })
-  await page.goto(BASE + path, { waitUntil: 'domcontentloaded' })
+  await page.goto(BASE + path, { waitUntil: 'domcontentloaded', ...(referer ? { referer } : {}) })
   await page.waitForTimeout(500)
   return { page, ctx, errors, posted: () => posted }
 }
@@ -85,6 +90,26 @@ const googleSetup = (page) => page.evaluate(() => ({
   configs: (window.dataLayer || []).map(e => Array.from(e)).filter(a => a[0] === 'config' && a[1] === 'AW-18504205012').length,
   scripts: [...document.scripts].filter(x => /googletagmanager\.com\/gtag\/js\?id=AW-18504205012/.test(x.src)).length,
 }))
+
+/** Open the adult list on whatever page this is, take the first class, fill the form (choosing from the menu when asked), submit; the note posted. */
+async function bookFirstAdultClass(page, posted, { heard } = {}) {
+  await page.evaluate(() => window.LabyrinthBooking.openAdultList())
+  await page.waitForTimeout(250)
+  await page.click('.booking-class-row')
+  await page.waitForTimeout(250)
+  await page.fill('#bookingName', 'Test Person')
+  await page.fill('#bookingEmail', 'test@example.com')
+  await page.fill('#bookingPhone', '2815550000')
+  if (heard) await page.selectOption('#bookingHeard', heard)
+  await page.click('#bookingSubmitBtn')
+  await page.waitForTimeout(500)
+  return posted().note
+}
+/** Go to another page of the same site, as a visitor browsing on would (nothing external sent them). */
+const goOn = async (page, path, referer) => {
+  await page.goto(BASE + path, { waitUntil: 'domcontentloaded', ...(referer ? { referer } : {}) })
+  await page.waitForTimeout(300)
+}
 
 const isOpen = (page) => page.evaluate(() =>
   !!document.querySelector('.booking-overlay.open'))
@@ -426,6 +451,235 @@ console.log('\nArriving at the front page on #book:')
   check('and it is the picker', await heading(page), 'Book Your Free Trial')
   check('the front page keeps Google\'s own snippet, and booking.js does not set the tag up a second time',
     await googleSetup(page), { gtag: 'function', configs: 1, scripts: 1 })
+  await ctx.close()
+}
+
+// ── Where each booking came from ─────────────────────────────────────────────
+//
+// Instagram counts the people who tapped through, Google counts clicks, and the CRM counts the people who booked, and nothing joined
+// them: there was no telling which ad had booked anybody. A booking now carries where its person came from (a tagged link, a click on
+// a Google ad, or the site that sent them) and, if they chose to say, what they picked in the menu. It rides in the lead's note, which
+// the booking endpoint cuts at 400 characters, so the class stays first and the whole has to fit.
+console.log('\nA booking says where its person came from:')
+{
+  const CLASS = String.raw`Adult BJJ, Gi, [A-Z][a-z]+ \d{1,2}:\d{2} [AP]M, booked from the website`
+  const AD = '/programs/adult-bjj-fulshear.html?utm_source=Instagram&utm_campaign=adult-ad&fbclid=IwAR0x'
+  const noteFrom = async (path, opts = {}, then = []) => {
+    const { page, ctx, posted, errors } = await open(path, opts)
+    for (const [to, referer] of then) await goOn(page, to, referer)
+    const note = await bookFirstAdultClass(page, posted, opts.book)
+    await ctx.close()
+    return { note, errors }
+  }
+
+  // The ad link, read on the landing page, is still there when they book from another page.
+  {
+    const { note, errors } = await noteFrom(AD, {}, [['/schedule.html']])
+    check('the ad link is remembered on the next page and named in the note',
+      new RegExp(`^${CLASS}\\. Came from: instagram / adult-ad\\.$`).test(note), true)
+    check('and no page errors came with it', errors, [])
+  }
+  // The same link, booked from the page it landed on.
+  check('booked from the landing page itself, it is named too',
+    new RegExp(`^${CLASS}\\. Came from: instagram / adult-ad\\.$`).test((await noteFrom(AD)).note), true)
+  // Nothing known: the note is exactly what it always was.
+  check('a direct visit leaves the note exactly as it was, with nothing added',
+    new RegExp(`^${CLASS}$`).test((await noteFrom('/schedule.html')).note), true)
+  // The booking is otherwise untouched.
+  {
+    const { page, ctx, posted } = await open(AD)
+    await bookFirstAdultClass(page, posted)
+    const body = posted()
+    check('nothing else about the booking changed', Object.keys(body).sort(), ['email', 'name', 'note', 'phone', 'program', 'trialAt'])
+    check('the program is still the CRM\'s own value, not read off the note', body.program, 'Adult BJJ')
+    await ctx.close()
+  }
+
+  // Source, medium and campaign are all kept, in that order, when a link has them.
+  check('a link with source, medium and campaign names all three',
+    (await noteFrom('/schedule.html?utm_source=google&utm_medium=cpc&utm_campaign=adult-search&gclid=abc')).note.endsWith('. Came from: google / cpc / adult-search.'), true)
+  // Google's own click id is enough when there are no tags.
+  for (const q of ['gclid=Cj0KCQ', 'gbraid=0AAAA', 'wbraid=CjkKCQ'])
+    check(`a Google ad click is recognised from ${q.split('=')[0]} alone`,
+      (await noteFrom('/schedule.html?' + q)).note.endsWith('. Came from: Google Ads click.'), true)
+  // Facebook and Instagram add fbclid to every link, ad or not: it says only which of the two, from who sent them.
+  for (const [ref, want] of [['https://l.instagram.com/?u=x', 'Instagram link'], ['https://l.facebook.com/l.php?u=x', 'Facebook link'], [undefined, 'Facebook or Instagram link']])
+    check(`fbclid from ${ref ? new URL(ref).hostname : 'no referrer'} reads "${want}"`,
+      (await noteFrom('/schedule.html?fbclid=IwAR0x', { referer: ref })).note.endsWith(`. Came from: ${want}.`), true)
+
+  // The site that sent them, when nothing carries tags.
+  check('a visitor sent by Google search is named by the site, without www',
+    (await noteFrom('/schedule.html', { referer: 'https://www.google.com/' })).note.endsWith('. Came from: google.com.'), true)
+  check('the academy\'s own pages are not a way of finding it',
+    new RegExp(`^${CLASS}$`).test((await noteFrom('/schedule.html', { referer: 'https://www.labyrinth.vision/pricing' })).note), true)
+  check('nor is the page Stripe sends people back from after they pay',
+    new RegExp(`^${CLASS}$`).test((await noteFrom('/schedule.html', { referer: 'https://checkout.stripe.com/c/pay/cs_live_x' })).note), true)
+  check('nor a click from one page of this site to another',
+    new RegExp(`^${CLASS}$`).test((await noteFrom('/schedule.html', {}, [['/pricing.html', BASE + '/schedule.html']])).note), true)
+
+  // Which one wins when there are several: a tag outranks a referrer, and the latest of each kind replaces the earlier.
+  check('a tagged link is not overwritten by a later visit from Google search',
+    (await noteFrom(AD, {}, [['/schedule.html', 'https://www.google.com/']])).note.endsWith('. Came from: instagram / adult-ad.'), true)
+  check('a visit from Google search is replaced by a later tagged link',
+    (await noteFrom('/schedule.html', { referer: 'https://www.google.com/' }, [[AD.replace('Instagram', 'x'), 'https://www.google.com/']])).note.endsWith('. Came from: x / adult-ad.'), true)
+  check('one referrer is replaced by a later one',
+    (await noteFrom('/schedule.html', { referer: 'https://www.google.com/' }, [['/pricing.html', 'https://www.yelp.com/biz/x']])).note.endsWith('. Came from: yelp.com.'), true)
+  check('a click out of Instagram is only a referrer, so a later visit from Google search replaces it',
+    (await noteFrom('/schedule.html?fbclid=IwAR0x', { referer: 'https://l.instagram.com/' }, [['/pricing.html', 'https://www.google.com/']])).note.endsWith('. Came from: google.com.'), true)
+  check('a click on a Google ad is a tag, so a later visit from Google search does not replace it',
+    (await noteFrom('/schedule.html?gclid=Cj0KCQ', {}, [['/pricing.html', 'https://www.google.com/']])).note.endsWith('. Came from: Google Ads click.'), true)
+  check('of two tagged links, the later one is the one named',
+    (await noteFrom('/schedule.html?utm_source=facebook&utm_campaign=first', {}, [['/pricing.html?utm_source=instagram&utm_campaign=second']])).note.endsWith('. Came from: instagram / second.'), true)
+
+  // Anything in a link is stranger-typed, and it is printed in the CRM between quote marks.
+  {
+    const evil = encodeURIComponent('"><script>alert(1)</script>\n')
+    const { note } = await noteFrom(`/schedule.html?utm_source=${evil}&utm_medium=${'m'.repeat(500)}&utm_campaign=${'c'.repeat(500)}`)
+    check('markup, quote marks and line breaks in a tag do not reach the note', /[<>"\n\r]/.test(note), false)
+    check('each part of a tag is cut to 40 characters', note.endsWith('. Came from: script alert 1 script / ' + 'm'.repeat(40) + ' / ' + 'c'.repeat(40) + '.'), true)
+    check('and the whole note stays under the 400 the endpoint keeps, with the class first',
+      note.length < 400 && new RegExp(`^${CLASS}\\. Came from: `).test(note), true)
+  }
+
+  // Blocked storage (private modes, some in-app browsers) falls back to the page's own memory.
+  {
+    const { page, ctx, posted, errors } = await open(AD, { init: () => {
+      Storage.prototype.getItem = () => { throw new Error('blocked') }
+      Storage.prototype.setItem = () => { throw new Error('blocked') }
+    } })
+    const note = await bookFirstAdultClass(page, posted)
+    check('with storage blocked, the page still names the ad it landed from', note.endsWith('. Came from: instagram / adult-ad.'), true)
+    check('and the booking goes through without a page error', errors, [])
+    await ctx.close()
+  }
+  // A visit is remembered for 30 days, not forever.
+  for (const [days, remembered] of [[29, true], [31, false]]) {
+    const { page, ctx, posted } = await open('/schedule.html', { init: ({ days }) => {
+      localStorage.setItem('labyrinth.source', JSON.stringify({ k: 'tag', v: 'instagram / old-ad', t: Date.now() - days * 864e5 }))
+    }, arg: { days } })
+    const note = await bookFirstAdultClass(page, posted)
+    check(`an ad link seen ${days} days ago is ${remembered ? 'still' : 'no longer'} named`, note.includes('Came from: instagram / old-ad'), remembered)
+    await ctx.close()
+  }
+  // Whatever else is in that storage slot, it is not trusted.
+  for (const junk of ['not json', '{"k":"tag","v":"x"}', '{"k":"evil","v":"x","t":1}', '{"k":"tag","v":"<b>x</b>","t":"now"}']) {
+    const { page, ctx, posted, errors } = await open('/schedule.html', { init: ({ junk }) => localStorage.setItem('labyrinth.source', junk), arg: { junk } })
+    const note = await bookFirstAdultClass(page, posted)
+    check(`a stored value of ${JSON.stringify(junk)} is ignored and nothing breaks`, new RegExp(`^${CLASS}$`).test(note) && errors.length === 0, true)
+    await ctx.close()
+  }
+  // A well-formed entry with markup in it is cleaned on the way out, the same as a tag that came in on a link.
+  {
+    const { page, ctx, posted } = await open('/schedule.html', { init: () => localStorage.setItem('labyrinth.source',
+      JSON.stringify({ k: 'tag', v: '<b>x</b>\n"q"', t: Date.now() })) })
+    const note = await bookFirstAdultClass(page, posted)
+    check('markup in a remembered value never reaches the note', /[<>"\n\r]/.test(note) === false && note.includes('Came from: b x /b q.'), true)
+    await ctx.close()
+  }
+}
+
+console.log('\nThe optional "How did you hear about us?" menu:')
+{
+  const CLASS = String.raw`Adult BJJ, Gi, [A-Z][a-z]+ \d{1,2}:\d{2} [AP]M, booked from the website`
+  const { page, ctx, posted } = await open('/schedule.html')
+  await page.evaluate(() => window.LabyrinthBooking.openAdultList())
+  await page.waitForTimeout(250)
+  await page.click('.booking-class-row')
+  await page.waitForTimeout(250)
+  const menu = await page.evaluate(() => {
+    const sel = document.getElementById('bookingHeard'), lab = document.querySelector('label[for="bookingHeard"]')
+    return { tag: sel && sel.tagName, required: sel && sel.required, value: sel && sel.value,
+             label: lab && lab.textContent.trim(), options: sel ? [...sel.options].map(o => o.textContent) : [],
+             after: !!document.querySelector('#bookingPhone').closest('.booking-form__group').nextElementSibling.contains(sel) }
+  })
+  check('the form has the menu, and it follows the phone number', [menu.tag, menu.after], ['SELECT', true])
+  check('it is labelled and says it is optional', menu.label, 'How did you hear about us? (optional)')
+  check('it does not have to be filled in, and starts empty', [menu.required, menu.value], [false, ''])
+  check('and offers these, in this order', menu.options, ['Choose one', 'Instagram', 'Facebook', 'Google search', 'Google Maps',
+    'Friend or family', 'Saw the gym', 'Flyer or poster', 'An event or seminar', 'Other'])
+  await page.fill('#bookingName', 'Test Person')
+  await page.fill('#bookingEmail', 'test@example.com')
+  await page.fill('#bookingPhone', '2815550000')
+  await page.click('#bookingSubmitBtn')
+  await page.waitForTimeout(500)
+  check('leaving it alone adds nothing to the note', new RegExp(`^${CLASS}$`).test(posted().note), true)
+  await ctx.close()
+}
+{
+  const CLASS = String.raw`Adult BJJ, Gi, [A-Z][a-z]+ \d{1,2}:\d{2} [AP]M, booked from the website`
+  const { note } = await (async () => {
+    const { page, ctx, posted } = await open('/schedule.html')
+    const note = await bookFirstAdultClass(page, posted, { heard: 'friend' })
+    await ctx.close()
+    return { note }
+  })()
+  check('an answer is added to the note, in the CRM\'s words', new RegExp(`^${CLASS}\\. Heard about us: Friend or family\\.$`).test(note), true)
+
+  const both = await (async () => {
+    const { page, ctx, posted } = await open('/programs/adult-bjj-fulshear.html?utm_source=Instagram&utm_campaign=adult-ad&fbclid=IwAR0x')
+    const note = await bookFirstAdultClass(page, posted, { heard: 'instagram' })
+    await ctx.close()
+    return note
+  })()
+  check('beside where the visit came from, which stays separate', both.endsWith('. Came from: instagram / adult-ad. Heard about us: Instagram.'), true)
+
+  // The select carries a slug and only the academy's own labels can be sent: an edited option reaches the CRM as nothing.
+  const { page, ctx, posted } = await open('/schedule.html')
+  await page.evaluate(() => window.LabyrinthBooking.openAdultList())
+  await page.waitForTimeout(250)
+  await page.click('.booking-class-row')
+  await page.waitForTimeout(250)
+  await page.evaluate(() => { const o = document.querySelector('#bookingHeard option:nth-child(2)'); o.value = '<b>free gym</b>'; o.textContent = 'Everything is free' })
+  await page.fill('#bookingName', 'Test Person')
+  await page.fill('#bookingEmail', 'test@example.com')
+  await page.fill('#bookingPhone', '2815550000')
+  await page.selectOption('#bookingHeard', { index: 1 })
+  await page.click('#bookingSubmitBtn')
+  await page.waitForTimeout(500)
+  check('an option edited in the page cannot put its own words in the note', new RegExp(`^${CLASS}$`).test(posted().note), true)
+  await ctx.close()
+}
+{
+  // The same menu on a kids class, and the Pink October tag still goes first.
+  const { page, ctx, posted } = await open('/index.html')
+  await page.evaluate(() => window.LabyrinthBooking.openForm('Kids BJJ Comp (7–12)', 'Gi', 'Fri', '5:15 PM', undefined, 'Pink October'))
+  await page.waitForTimeout(300)
+  await page.fill('#bookingName', 'Test Person')
+  await page.fill('#bookingEmail', 'test@example.com')
+  await page.fill('#bookingPhone', '2815550000')
+  await page.selectOption('#bookingHeard', 'google-maps')
+  await page.click('#bookingSubmitBtn')
+  await page.waitForTimeout(500)
+  check('a kids class has the menu too, and the page tag stays at the front',
+    /^PINK OCTOBER: Kids BJJ Comp \(7–12\), Gi, Friday 5:15 PM, booked from the website\. Heard about us: Google Maps\.$/.test(posted().note), true)
+  check('and the program is still the one the form chose', posted().program.startsWith('Kids'), true)
+  await ctx.close()
+}
+{
+  // A refused booking and the try again send the same answer, not an emptied form's.
+  const { page, ctx, errors } = await open('/programs/adult-bjj-fulshear.html?utm_source=Instagram&utm_campaign=adult-ad&fbclid=IwAR0x')
+  const bodies = []
+  let saved = false
+  await page.route('**/functions/v1/book-trial', route => {
+    bodies.push(JSON.parse(route.request().postData() ?? '{}'))
+    return route.fulfill({ status: 200, contentType: 'application/json', body: saved ? '{"ok":true}' : '{"ok":false}' })
+  })
+  await page.evaluate(() => window.LabyrinthBooking.openAdultList())
+  await page.waitForTimeout(250)
+  await page.click('.booking-class-row')
+  await page.waitForTimeout(250)
+  await page.fill('#bookingName', 'Test Person')
+  await page.fill('#bookingEmail', 'test@example.com')
+  await page.fill('#bookingPhone', '2815550000')
+  await page.selectOption('#bookingHeard', 'instagram')
+  await page.click('#bookingSubmitBtn')
+  await page.waitForTimeout(500)
+  saved = true
+  await page.click('#bookingRetryBtn')
+  await page.waitForTimeout(500)
+  check('the retry sends the same note as the first try', bodies.length === 2 && bodies[0].note === bodies[1].note, true)
+  check('with where it came from and what they said, both', bodies[1].note.endsWith('. Came from: instagram / adult-ad. Heard about us: Instagram.'), true)
+  check('and the page is clean throughout', errors, [])
   await ctx.close()
 }
 

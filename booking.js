@@ -496,6 +496,135 @@
 
   var lastBookingData = null;
 
+  // ===== WHERE EACH BOOKING CAME FROM =====
+  // Instagram's ad screen counts the people who tapped through to the site, Google's counts clicks, and the CRM counts the people who
+  // booked. Nothing joined them, so there was no telling which ad had booked anybody. Each booking now says where its person came
+  // from, in the note the Leads board shows on the lead:
+  //
+  //   Adult BJJ, Gi, Monday 6:30 PM, booked from the website. Came from: instagram / adult-ad. Heard about us: Friend or family.
+  //
+  // "Came from" is worked out, not asked. A link that carries tags (?utm_source=instagram&utm_campaign=adult-ad) names itself. A click
+  // on a Google ad carries Google's own click id and is recognised without any tags. Otherwise it is the site that sent the visitor
+  // (google.com, l.instagram.com). "Heard about us" is the optional menu on the form: the person's own answer, kept apart from the above.
+  //
+  // People land on one page and book from another, or come back days later, so what the landing page saw is kept in this browser for
+  // 30 days. A tagged link is stronger than a referrer: it replaces anything, and only another tagged link replaces it, so someone who
+  // clicked the ad and later came back through a Google search is still credited to the ad that introduced them. A direct visit, or a
+  // click from one page of this site to another, changes nothing. None of it is personal: a campaign name, or the host of a site.
+  // Blocked storage falls back to the page's own memory, and a failure anywhere in here must never stop a booking.
+  var SOURCE_KEY = 'labyrinth.source';
+  var SOURCE_DAYS = 30;
+  // The booking endpoint keeps the first 400 characters of the note and cuts the rest without saying so.
+  var NOTE_LIMIT = 400;
+  // The menu on the form. The slug is what the select carries; the label is what the CRM shows. Only these labels can ever be sent.
+  var HEARD_OPTIONS = [
+    ['instagram', 'Instagram'],
+    ['facebook', 'Facebook'],
+    ['google-search', 'Google search'],
+    ['google-maps', 'Google Maps'],
+    ['friend', 'Friend or family'],
+    ['saw-gym', 'Saw the gym'],
+    ['flyer', 'Flyer or poster'],
+    ['event', 'An event or seminar'],
+    ['other', 'Other']
+  ];
+  var visitSource = null; // what this page load decided, used when localStorage is blocked
+
+  /** Anything out of a URL, made safe to print in the CRM: lower case, letters, digits, spaces, dots, dashes, underscores; 40 at most. */
+  function tidyTag(v) {
+    return String(v == null ? '' : v).toLowerCase().replace(/[^a-z0-9 ._-]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 40);
+  }
+
+  function storedSource() {
+    try {
+      var s = JSON.parse(window.localStorage.getItem(SOURCE_KEY));
+      if (s && typeof s.v === 'string' && (s.k === 'tag' || s.k === 'ref') && typeof s.t === 'number' && isFinite(s.t)) {
+        // Only this file writes here, but what is read back is printed in the CRM, so it is cleaned like what came in off a link.
+        var v = s.v.replace(/[^A-Za-z0-9 ._\/-]+/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 130);
+        if (v) return { k: s.k, v: v, t: s.t };
+      }
+    } catch (e) { /* storage blocked, or something else wrote here: start clean */ }
+    return null;
+  }
+
+  /** A remembered source, if it is still inside its 30 days (and not stamped in the future by a clock that was wrong). */
+  function liveSource(s) {
+    var now = Date.now();
+    return s && s.t <= now + 864e5 && now - s.t < SOURCE_DAYS * 864e5 ? s : null;
+  }
+
+  /** What the page being loaded right now says about where the visitor came from, or null when it says nothing. */
+  function landingSource() {
+    var q, ref = '';
+    try { q = new URLSearchParams(window.location.search); } catch (e) { return null; }
+    try {
+      if (document.referrer) {
+        var host = new URL(document.referrer).hostname.toLowerCase().replace(/^www\./, '');
+        var own = window.location.hostname.toLowerCase().replace(/^www\./, '');
+        // Not ways of finding the academy: its own pages, and the page Stripe sends people back from after they pay.
+        if (host && host !== own && !/(^|\.)labyrinth\.vision$/.test(host) && !/(^|\.)stripe\.com$/.test(host)) ref = tidyTag(host);
+      }
+    } catch (e) { ref = ''; }
+    var tags = [tidyTag(q.get('utm_source')), tidyTag(q.get('utm_medium')), tidyTag(q.get('utm_campaign'))].filter(Boolean);
+    if (tags.length) return { k: 'tag', v: tags.join(' / ') };
+    if (q.get('gclid') || q.get('gbraid') || q.get('wbraid')) return { k: 'tag', v: 'Google Ads click' };
+    // Facebook and Instagram add fbclid to every link they send people through, ad or not, so it is no better than a referrer.
+    if (q.get('fbclid')) return { k: 'ref', v: /instagram/.test(ref) ? 'Instagram link' : /facebook|(^|\.)fb\.com$/.test(ref) ? 'Facebook link' : 'Facebook or Instagram link' };
+    if (ref) return { k: 'ref', v: ref };
+    return null;
+  }
+
+  (function rememberVisit() {
+    try {
+      var now = landingSource();
+      var kept = liveSource(storedSource());
+      if (now && (!kept || now.k === 'tag' || kept.k === 'ref')) {
+        now.t = Date.now();
+        visitSource = now;
+        try { window.localStorage.setItem(SOURCE_KEY, JSON.stringify(now)); } catch (e) { /* blocked: this page's own copy will do */ }
+      } else if (kept) {
+        visitSource = kept;
+      }
+    } catch (e) { /* never let this stop a page */ }
+  })();
+
+  /** The text for "Came from", or '' when there is nothing to say (a direct visit is not worth a line on every lead). */
+  function cameFrom() {
+    try {
+      var a = liveSource(visitSource), b = liveSource(storedSource());
+      var s = a && b ? (b.t > a.t ? b : a) : (a || b);
+      return s ? s.v : '';
+    } catch (e) { return ''; }
+  }
+
+  function heardLabel(slug) {
+    for (var i = 0; i < HEARD_OPTIONS.length; i++) if (HEARD_OPTIONS[i][0] === slug) return HEARD_OPTIONS[i][1];
+    return '';
+  }
+
+  function heardMenuHTML() {
+    var h = '<select class="booking-form__input booking-form__select" id="bookingHeard" name="heard">';
+    h += '<option value="">Choose one</option>';
+    HEARD_OPTIONS.forEach(function (o) { h += '<option value="' + o[0] + '">' + o[1] + '</option>'; });
+    return h + '</select>';
+  }
+
+  /**
+   * The note the CRM files with the lead. The class comes first, exactly as it always has; what is worked out and what the person said
+   * follow it. The extras are trimmed to fit under the endpoint's cut-off, so the class is never what gets lost.
+   */
+  function bookingNote(data) {
+    var note = (data.tag ? data.tag.toUpperCase() + ': ' : '') + data.className + ', ' + data.classDay + ' ' + data.classTime + ', booked from the website';
+    var extra = '';
+    var from = cameFrom();
+    if (from) extra += '. Came from: ' + from;
+    if (data.heard) extra += '. Heard about us: ' + data.heard;
+    if (!extra) return note;
+    extra += '.';
+    var room = NOTE_LIMIT - note.length;
+    return note + (extra.length <= room ? extra : room > 1 ? extra.slice(0, room - 1) + '.' : '');
+  }
+
   // ===== GOOGLE ADS =====
   // The Google tag for the ad account, and the "Booking" conversion it counts.
   //
@@ -664,6 +793,9 @@
     html += '<div class="booking-form__group"><label class="booking-form__label" for="bookingName">Full Name</label><input class="booking-form__input" type="text" id="bookingName" name="name" placeholder="Your full name" required autocomplete="name"></div>';
     html += '<div class="booking-form__group"><label class="booking-form__label" for="bookingEmail">Email</label><input class="booking-form__input" type="email" id="bookingEmail" name="email" placeholder="you@email.com" required autocomplete="email"></div>';
     html += '<div class="booking-form__group"><label class="booking-form__label" for="bookingPhone">Phone</label><input class="booking-form__input" type="tel" id="bookingPhone" name="phone" placeholder="(281) 555-0000" required autocomplete="tel"></div>';
+    // Optional, and last of the fields so nobody has to decide anything before the three they cannot skip. The answer goes into the
+    // lead's note beside where the visit was worked out to have come from (see WHERE EACH BOOKING CAME FROM).
+    html += '<div class="booking-form__group"><label class="booking-form__label" for="bookingHeard">How did you hear about us? <span class="booking-form__optional">(optional)</span></label>' + heardMenuHTML() + '</div>';
     // Booking now sends a confirmation text as well as the email, so the form
     // has to say so before the number is handed over. A person who is told
     // what a message is for does not report it as spam, and the carriers treat
@@ -773,6 +905,8 @@
 
       if (!valid) return;
 
+      // The menu is optional extra; if it were ever missing, the booking still goes.
+      var heardEl = document.getElementById('bookingHeard');
       lastBookingData = {
         name: nameVal,
         email: emailVal,
@@ -782,7 +916,9 @@
         classDay: classInfo.classDay,
         classTime: classInfo.classTime,
         classDate: chosenDate(),
-        tag: classInfo.tag
+        tag: classInfo.tag,
+        // The label for the slug the menu carries, '' when nothing was chosen; kept here so a retry sends the same answer.
+        heard: heardEl ? heardLabel(heardEl.value) : ''
       };
 
       submitBooking(lastBookingData);
@@ -816,7 +952,7 @@
       // at "Trial Booked" with the right time, and the confirmation email
       // names that class instead of promising to be in touch.
       trialAt: toCentralISO(data.classDate, data.classTime),
-      note: (data.tag ? data.tag.toUpperCase() + ': ' : '') + data.className + ', ' + data.classDay + ' ' + data.classTime + ', booked from the website'
+      note: bookingNote(data)
     }).then(function (ok) {
       if (ok) {
         countBooking();
