@@ -64,3 +64,7 @@ Sticker text: RSVP free
 ==================== FIRST COMMENT (Facebook and Instagram) ====================
 
 RSVP for the free seminar: labyrinth.vision/self-defense-for-women 🎀 Still want to give? labyrinth.vision/donate
+
+==================== IMAGE ALT TEXT (the feed image and the story image; 100 characters at most, which is Instagram's limit) ====================
+
+We did it. $500 goal hit, plus two $500 matches: $1,500 for a family affected by breast cancer.
