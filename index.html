@@ -281,18 +281,18 @@ button {
     {name:'memorial',from:[5,16],to:[6,1]},
     {name:'independence',from:[7,1],to:[8,1]}
   ];
-  var KIT=["./season-kit.css?v=f4c7032f","./season-kit.js?v=ffe46524"];
+  var KIT=["./season-kit.css?v=97367374","./season-kit.js?v=2ff51617"];
   var PACKS={
     columbus:["./season-columbus.css?v=3a6ee446","./season-columbus.js?v=a55c09d7"],
-    thanksgiving:["./season-thanksgiving.css?v=fab0f4b3","./season-thanksgiving.js?v=b3394683"],
-    christmas:["./season-christmas.css?v=00000000","./season-christmas.js?v=00000000"],
-    newyear:["./season-newyear.css?v=00000000","./season-newyear.js?v=00000000"],
-    valentines:["./season-valentines.css?v=00000000","./season-valentines.js?v=00000000"],
-    easter:["./season-easter.css?v=00000000","./season-easter.js?v=00000000"],
-    stpatricks:["./season-stpatricks.css?v=00000000","./season-stpatricks.js?v=00000000"],
-    cinco:["./season-cinco.css?v=00000000","./season-cinco.js?v=00000000"],
-    memorial:["./season-memorial.css?v=00000000","./season-memorial.js?v=00000000"],
-    independence:["./season-independence.css?v=00000000","./season-independence.js?v=00000000"]
+    thanksgiving:["./season-thanksgiving.css?v=6f5adbfd","./season-thanksgiving.js?v=96438e6c"],
+    christmas:["./season-christmas.css?v=f6e9dd59","./season-christmas.js?v=1c026979"],
+    newyear:["./season-newyear.css?v=882d1592","./season-newyear.js?v=4c4d02e4"],
+    valentines:["./season-valentines.css?v=634b7b79","./season-valentines.js?v=41e417a6"],
+    easter:["./season-easter.css?v=03f70ff5","./season-easter.js?v=995f65b8"],
+    stpatricks:["./season-stpatricks.css?v=11bdc353","./season-stpatricks.js?v=049c66b4"],
+    cinco:["./season-cinco.css?v=43f058cd","./season-cinco.js?v=844dfc32"],
+    memorial:["./season-memorial.css?v=60a85598","./season-memorial.js?v=135c8dc0"],
+    independence:["./season-independence.css?v=ed559eab","./season-independence.js?v=cf93c426"]
   };
   // Easter Sunday as month*100+day (the anonymous Gregorian computus).
   function easter(y){var a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),n=h+l-7*m+114;return Math.floor(n/31)*100+n%31+1}

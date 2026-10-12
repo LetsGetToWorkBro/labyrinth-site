@@ -143,9 +143,15 @@ export async function checkPack({ browser, base, check, name, iso }) {
       const b = t.querySelector('.sk-bubble')
       // wait (up to 1.2 s; the bubble stays 1.4 s) until it is fully shown, so a slow machine does not fail a pack that is right
       for (const t0 = performance.now(); performance.now() - t0 < 1200 && !(t.classList.contains('is-tap') && b && getComputedStyle(b).opacity === '1');) await new Promise(r => setTimeout(r, 40))
-      // (measured with the little wiggle a tap gives its decoration stopped: it turns the whole thing a few degrees for a moment, which is not where the bubble stays)
+      // (measured with the little wiggle a tap gives its decoration stopped: it turns the whole thing a few degrees for a moment, which is not where the bubble stays;
+      // and once the bubble has stopped moving: a pack may show it at full strength while it is still growing into place)
       const was = t.style.animation; t.style.animation = 'none'
-      const br = b ? b.getBoundingClientRect() : null
+      let br = b ? b.getBoundingClientRect() : null
+      for (let still = 0, t1 = performance.now(); b && still < 3 && performance.now() - t1 < 1000;) {
+        await new Promise(r => setTimeout(r, 60))
+        const r2 = b.getBoundingClientRect()
+        still = r2.left === br.left && r2.right === br.right && r2.top === br.top ? still + 1 : 0; br = r2
+      }
       t.style.animation = was
       return { on: t.classList.contains('is-tap'), text: b ? b.textContent : '', shown: b ? getComputedStyle(b).opacity : '0', inView: !!br && br.left >= -1 && br.right <= document.documentElement.clientWidth + 1, cls: [...t.classList].filter(c => c !== 'sk-tap').join('.') }
     }, i)

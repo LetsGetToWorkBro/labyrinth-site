@@ -180,11 +180,18 @@
   document.addEventListener('click', function (e) {
     var t = e.target && e.target.closest && e.target.closest('[data-tap]');
     if (!t) return;
-    // A decoration in a margin has its bubble start at the screen's edge instead of being centred over it (and cut off).
+    // A decoration in a margin has its bubble start at the screen's edge instead of being centred over it (and cut off). One that is itself partly off the screen
+    // (peeking round the edge, or hopping in from it) has the bubble start at the screen's edge, --sk-bx past the decoration's own. It is worked out at every tap,
+    // because a decoration that moves is somewhere else each time, and the bubble is put there without a transition: it appears where it stays instead of sliding in.
     var b = t.querySelector('.sk-bubble');
-    if (b && !/\bsk-edge-[lr]\b/.test(t.className)) {
+    if (b) {
       var tr = t.getBoundingClientRect(), mid = tr.left + tr.width / 2, half = b.offsetWidth / 2, vw = document.documentElement.clientWidth;
-      if (mid - half < 4) t.classList.add('sk-edge-l'); else if (mid + half > vw - 4) t.classList.add('sk-edge-r');
+      var side = mid - half < 4 ? 'l' : mid + half > vw - 4 ? 'r' : '';
+      t.style.setProperty('--sk-bx', (side === 'l' ? Math.max(0, 4 - tr.left) : side === 'r' ? Math.max(0, tr.right - (vw - 4)) : 0) + 'px');
+      b.style.transition = 'none';
+      t.classList.toggle('sk-edge-l', side === 'l'); t.classList.toggle('sk-edge-r', side === 'r');
+      void b.offsetWidth;
+      b.style.transition = '';
     }
     t.classList.add('is-tap');
     clearTimeout(t._skTimer);
