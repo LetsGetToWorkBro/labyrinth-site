@@ -176,14 +176,14 @@
     return '<i class="id-fw' + (cls ? ' ' + cls : '') + '" style="left:' + x + '%;top:' + y + '%;--z:' + size + ';--c:' + c + ';--c2:' + c2 + ';--dl:' + delay + 's;--cy:' + cycle + 's">' +
       '<svg viewBox="0 0 128 128" aria-hidden="true" focusable="false"><use href="#' + sym + '"/></svg><i class="id-tr"></i></i>';
   }
-  var BIG = 'clamp(190px,29vw,600px)', MID = 'clamp(170px,22vw,440px)', SMALL = 'clamp(130px,15vw,300px)';
+  var BIG = 'clamp(190px,29vw,600px)', MID = 'clamp(170px,22vw,440px)', SMALL = 'clamp(140px,17vw,330px)';
   // sym, left %, top %, size, colour, second colour, delay (s), extra class: seven in turn, one every 1.6 s of a 13 s round. The gold ones keep to the empty sky
   // (the headline and the numbers are gold too), and the ones at the edges are cut by the screen, as if they were going off just out of sight.
   var HERO_FW = [
     ['id-bD', 90, 36, BIG, C.gold, '#fff', 0.2, 'id-fw--a'],
-    ['id-bA', 66, 15, 'clamp(120px,13vw,260px)', C.redHi, '#fff', 1.8, 'id-fw--x sk-hide-m'],
+    ['id-bA', 66, 15, 'clamp(130px,15vw,300px)', C.redHi, '#fff', 1.8, 'id-fw--x sk-hide-m'],
     ['id-bC', 3, 50, MID, C.blueHi, '#fff', 3.4, 'sk-hide-m'],
-    ['id-bE', 61, 53, SMALL, '#ffffff', C.gold, 5.0, 'id-fw--x sk-hide-m'],
+    ['id-bE', 72, 54, SMALL, '#ffffff', C.gold, 5.0, 'id-fw--x sk-hide-m'],
     ['id-bB', 97, 70, MID, '#ffffff', C.gold, 6.6, 'id-fw--b'],
     ['id-bA', 86, 14, SMALL, C.blueHi, '#fff', 8.2, 'id-fw--x sk-hide-m'],
     ['id-bE', 3, 78, SMALL, C.redHi, '#fff', 9.8, 'id-fw--x sk-hide-m']
@@ -285,25 +285,25 @@
   // bunt:kind[:top px]   bunting along the top (flags, flags2, stars, lights)          rib:t|b   a red, white and blue ribbon along the top or the foot
   // fw:side:top%:hue:size:delay:shell[:m]   a firework going off by the edge, in turn with the others (m: it stays on a phone)    pin:side:top%:width   a spinning pinwheel
   // flags:side:n   little flags in a corner at the foot       spk:side:top%:width:tilt   a sparkler       stars:side:top%:n:seed   twinkles in the margin       sky:n:seed   faint stars everywhere
-  // rose:side:at:len:w and pstar:side:at:len:w   an award rosette or a gold star swinging on a string        tap:kind:side:top%:width   a decoration that answers a tap
+  // rose:side:at:len:w and pstar:side:at:len:w   an award rosette or a gold star swinging on a string        tap:kind:side:top px:width   a decoration that answers a tap (they stand in the top band, beside the heading: the bubble shows over free background)
   // conf:n:seed:side   glitter falling        rise:n:seed:side   sparks rising        comet:top%   a comet crossing the layer
   var SECTIONS = {
     eventStrip:     ['bunt:flags:7', 'fw:r:20:gold:200:-1:id-bD:m', 'rose:l:0.9:70:40', 'stars:r:56:4:1', 'fw:l:66:blue:170:-6:id-bC', 'spk:l:34:44:-12', 'conf:3:1:l', 'sky:6:1', 'rib:b'],
-    programs:       ['bunt:stars', 'stars:l:5:4:2', 'fw:l:20:blue:210:-4:id-bC:m', 'spk:l:40:44:-14', 'fw:l:62:gold:200:-9:id-bB', 'flags:l:3', 'fw:r:9:red:190:-2:id-bA', 'pin:r:29:46', 'tap:star:r:50:56',
+    programs:       ['bunt:stars', 'stars:l:5:4:2', 'fw:l:20:blue:210:-4:id-bC:m', 'spk:l:40:44:-14', 'fw:l:62:gold:200:-9:id-bB', 'flags:l:3', 'fw:r:14:red:190:-2:id-bA', 'pin:r:29:46', 'tap:star:r:84:56',
                      'fw:r:72:white:200:-6:id-bE', 'flags:r:3', 'conf:3:2:r', 'rise:3:21:l', 'comet:36', 'comet:80', 'sky:6:7'],
-    competition:    ['rib:t', 'fw:l:13:red:200:-2:id-bA:m', 'pin:l:33:46', 'tap:rocket:l:52:46', 'flags:l:2', 'stars:l:76:4:3', 'pstar:r:0.9:96:34', 'fw:r:38:gold:200:-7:id-bD', 'spk:r:60:44:12', 'stars:r:84:4:13',
+    competition:    ['rib:t', 'fw:l:26:red:200:-2:id-bA:m', 'pin:l:40:46', 'tap:rocket:l:78:46', 'flags:l:2', 'stars:l:76:4:3', 'pstar:r:0.9:96:34', 'fw:r:38:gold:200:-7:id-bD', 'spk:r:60:44:12', 'stars:r:84:4:13',
                      'rise:3:3:r', 'comet:46', 'sky:6:8'],
-    coaches:        ['bunt:lights', 'pin:l:27:46', 'fw:l:52:blue:200:-6:id-bB', 'stars:l:78:4:4', 'tap:spk:r:20:46', 'fw:r:40:gold:200:-3:id-bC:m', 'flags:r:2', 'stars:r:66:4:14', 'rose:l:0.8:60:36',
+    coaches:        ['bunt:lights', 'pin:l:27:46', 'fw:l:52:blue:200:-6:id-bB', 'stars:l:78:4:4', 'tap:spk:r:90:46', 'fw:r:40:gold:200:-3:id-bC:m', 'flags:r:2', 'stars:r:66:4:14', 'rose:l:0.8:60:36',
                      'rib:b', 'conf:3:4:l', 'comet:72', 'sky:6:9'],
     gallery:        ['bunt:flags2', 'rose:l:0.8:70:38', 'rose:r:0.8:104:40', 'fw:r:78:red:190:-1:id-bE:m', 'fw:l:58:gold:170:-8:id-bA', 'comet:14', 'stars:l:28:4:5', 'rise:3:5:l', 'flags:l:2', 'sky:6:10'],
-    'belt-journey': ['rib:t', 'fw:r:10:white:180:-5:id-bC:m', 'flags:r:2', 'spk:l:54:44:-12', 'stars:r:42:4:6', 'tap:star:l:20:56', 'conf:3:6:r', 'fw:l:78:blue:170:-2:id-bD', 'pin:r:64:44', 'sky:6:11'],
-    locations:      ['bunt:stars', 'pin:r:12:46', 'fw:l:44:blue:200:-3:id-bD:m', 'flags:l:3', 'rise:3:7:r', 'tap:rocket:r:46:46', 'comet:50', 'fw:r:72:gold:180:-9:id-bB', 'spk:l:68:44:10', 'stars:l:14:4:7', 'sky:6:12'],
+    'belt-journey': ['rib:t', 'fw:r:10:white:180:-5:id-bC:m', 'flags:r:2', 'spk:l:54:44:-12', 'stars:r:42:4:6', 'tap:star:l:82:56', 'conf:3:6:r', 'fw:l:78:blue:170:-2:id-bD', 'pin:r:64:44', 'sky:6:11'],
+    locations:      ['bunt:stars', 'pin:r:30:46', 'fw:l:44:blue:200:-3:id-bD:m', 'flags:l:3', 'rise:3:7:r', 'tap:rocket:r:74:46', 'comet:50', 'fw:r:72:gold:180:-9:id-bB', 'spk:l:68:44:10', 'stars:l:14:4:7', 'sky:6:12'],
     faq:            ['bunt:lights', 'fw:l:12:gold:190:-7:id-bA:m', 'pstar:l:0.9:110:34', 'rib:b', 'conf:3:8:l', 'stars:r:30:4:8', 'spk:r:62:44:10', 'fw:r:48:red:180:-2:id-bE', 'pin:l:56:44', 'sky:6:13'],
-    schedule:       ['bunt:flags', 'spk:r:30:44:12', 'fw:l:70:red:190:-2:id-bB:m', 'pin:l:44:46', 'comet:20', 'tap:spk:l:26:44', 'stars:r:70:4:9', 'fw:r:50:blue:180:-8:id-bC', 'flags:r:3', 'sky:6:14'],
-    testimonials:   ['rib:t', 'rose:l:0.8:92:38', 'fw:r:20:blue:180:-4:id-bE:m', 'fw:l:78:gold:160:-8:id-bC', 'flags:r:3', 'stars:l:40:4:10', 'tap:star:r:50:56', 'conf:3:10:r', 'sky:6:15'],
+    schedule:       ['bunt:flags', 'spk:r:30:44:12', 'fw:l:70:red:190:-2:id-bB:m', 'pin:l:44:46', 'comet:20', 'tap:spk:l:88:44', 'stars:r:70:4:9', 'fw:r:50:blue:180:-8:id-bC', 'flags:r:3', 'sky:6:14'],
+    testimonials:   ['rib:t', 'rose:l:0.8:92:38', 'fw:r:46:blue:180:-4:id-bE:m', 'fw:l:78:gold:160:-8:id-bC', 'flags:r:3', 'stars:l:40:4:10', 'tap:star:r:80:56', 'conf:3:10:r', 'sky:6:15'],
     pricing:        ['bunt:stars', 'fw:l:18:gold:200:-6:id-bD:m', 'pin:l:38:46', 'spk:l:58:44:-10', 'stars:l:84:4:11', 'flags:l:2', 'pin:r:28:46', 'fw:r:50:red:210:-1:id-bA', 'rose:r:0.8:80:38', 'stars:r:14:4:21',
                      'fw:r:84:blue:180:-9:id-bB', 'rise:3:11:l', 'comet:66', 'comet:24', 'rib:b', 'sky:6:16'],
-    contact:        ['bunt:lights', 'flags:l:3', 'flags:r:3', 'pstar:r:0.9:90:34', 'spk:l:24:44:-10', 'fw:r:60:red:190:-1:id-bA:m', 'tap:rocket:l:50:46', 'conf:3:12:l', 'fw:l:76:blue:180:-7:id-bC', 'stars:r:28:4:12', 'sky:6:17']
+    contact:        ['bunt:lights', 'flags:l:3', 'flags:r:3', 'pstar:r:0.9:90:34', 'spk:l:24:44:-10', 'fw:r:60:red:190:-1:id-bA:m', 'tap:rocket:l:76:46', 'conf:3:12:l', 'fw:l:76:blue:180:-7:id-bC', 'stars:r:28:4:12', 'sky:6:17']
   };
   var HUES = { red: [C.redHi, '#fff'], blue: [C.blueHi, '#fff'], gold: [C.gold, '#fff'], white: ['#ffffff', C.gold] };
   var TAPS = { rocket: ['id-rocket', '0 0 40 124', 'Boom!'], spk: ['id-sparkler', '0 0 60 130', 'Sparkle!'], star: ['id-starstick', '0 0 64 132', 'Hooray!'] };
@@ -341,7 +341,7 @@
         o = k.pendant(k.use('id-bstar', '', '0 0 64 64'), { side: a[1], at: +a[2], len: +a[3], w: +a[4], cls: 'id-pstar id-p' + (++pends) });
       } else if (kind === 'tap') {
         t = TAPS[a[1]];
-        o = k.tap(k.use(t[0], '', t[1]) + (a[1] === 'spk' ? '<i class="id-spk__g"></i>' : ''), t[2], 'id-tap id-t-' + a[1] + ' sk-hide-m', (a[2] === 'l' ? 'left' : 'right') + ':0.4%;top:' + a[3] + '%;width:' + a[4] + 'px');
+        o = k.tap(k.use(t[0], '', t[1]) + (a[1] === 'spk' ? '<i class="id-spk__g"></i>' : ''), t[2], 'id-tap id-t-' + a[1] + ' sk-hide-m', (a[2] === 'l' ? 'left' : 'right') + ':0.4%;top:' + a[3] + 'px;width:' + a[4] + 'px');
       } else if (kind === 'conf') {
         o = k.particles(+a[1], { id: ['id-glint', 'sk-star', 'sk-sparkle', 'sk-dot'], colors: SPARKS, size: [8, 16], dur: [16, 28], drift: 60, sway: 24, area: a[3] === 'l' ? [0, 9] : [91, 100], seed: 100 + +a[2], mobile: 0.5, opacity: [0.45, 0.85] });
       } else if (kind === 'rise') {
