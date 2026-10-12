@@ -2147,6 +2147,39 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
   check('L2s a made-up or inherited name in ?season= loads nothing', bogusFetched.length === 0 && inheritedFetched.length === 0 && bogus === 'bogus', JSON.stringify({ bogus, bogusFetched, inherited, inheritedFetched }))
   check('L2s ?season=off turns every season off on the day it would be on', (await at('2026-12-10T18:00:00Z', '?season=off')) === '' && asked.length === 0 && (await at('2026-12-10T18:00:00Z')) === 'christmas')
 
+  // New Year welcomes the year that is coming: all through January it is that January's year (2027 in January 2027), and looked at at any other time (a preview in the autumn, say)
+  // it is the next one, never the year that is over. Everywhere it shows: the balloons, the outline behind the headline, the year above the footer and the "Hello" bubble. And it is the
+  // year on the academy's clock (Central), not the visitor's: in Honolulu it is still January 31 for ten hours after the academy's February 1 begins.
+  {
+    const yearAt = async (page, iso, q = '') => {
+      await page.clock.setFixedTime(new Date(iso))
+      await page.goto('http://localhost:4620/' + q, { waitUntil: 'load' })
+      await page.waitForSelector('.sk-hero .ny-year', { state: 'attached', timeout: 8000 }).catch(() => {})
+      return page.evaluate(() => {
+        const digits = sel => [...document.querySelectorAll(sel)].map(u => (u.getAttribute('href') || '').replace(/^#ny-[od]/, '')).join('')
+        return { season: document.documentElement.dataset.season || '', outline: digits('.sk-hero .ny-year use'), balloons: digits('.sk-hero .ny-bn use[href^="#ny-d"]'), foot: digits('.sk-footer .ny-fyear use'),
+          hello: [...new Set([...document.querySelectorAll('.sk-bubble')].map(b => b.textContent).filter(t => /^Hello/.test(t)))].join('|') }
+      })
+    }
+    const honolulu = await browser.newContext({ timezoneId: 'Pacific/Honolulu' })
+    const hp = await honolulu.newPage()
+    const rows = [
+      [sp, '2027-01-01T06:00:01Z', '', 2027, 'January 1, 2027, a second after Central midnight'], [sp, '2027-01-31T17:00:00Z', '', 2027, 'January 31, 2027'], [sp, '2028-01-15T18:00:00Z', '', 2028, 'January 15, 2028'],
+      [sp, '2026-10-12T20:00:00Z', '?season=newyear', 2027, 'previewed in October 2026'], [sp, '2026-12-31T20:00:00Z', '?season=newyear', 2027, 'previewed on December 31, 2026'],
+      [sp, '2027-02-01T20:00:00Z', '?season=newyear', 2028, 'previewed on February 1, 2027 (the January one is over)'], [sp, '2027-07-10T18:00:00Z', '?season=newyear', 2028, 'previewed in July 2027'],
+      [hp, '2027-01-01T06:00:01Z', '', 2027, 'January 1, 2027, seen from Honolulu (December 31 there)'], [hp, '2027-02-01T06:30:00Z', '?season=newyear', 2028, 'February 1 on the academy\'s clock, still January 31 in Honolulu'],
+    ]
+    const bad = []
+    for (const [page, iso, q, want, what] of rows) {
+      const got = await yearAt(page, iso, q)
+      const ok = got.outline === String(want) && got.balloons === String(want) && got.foot === String(want) && got.hello === `Hello ${want}!` && got.season === 'newyear'
+      if (!ok) bad.push(`${what}: wanted ${want} everywhere, got ${JSON.stringify(got)}`)
+    }
+    await honolulu.close()
+    check('L2s the New Year theme says the year that is coming everywhere it shows it: 2027 in January 2027 and in a preview before it (October or December 2026), 2028 after it and in January 2028, by the academy\'s clock and not the visitor\'s',
+      bad.length === 0, '\n    ' + bad.join('\n    '))
+  }
+
   // the head names every season's two files with a current version, and the files exist
   const refs = [...idx.matchAll(/"\.\/(season-[a-z]+\.(?:css|js))\?v=([0-9a-f]{8})"/g)].map(m => [m[1], m[2]])
   const names = Object.keys(PACKS)
