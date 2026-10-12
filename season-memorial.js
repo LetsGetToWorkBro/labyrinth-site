@@ -2,7 +2,7 @@
    season-kit.js and season-memorial.css, which draws it). A calm, dignified dusk: deep navy and soft starlight over the hero photograph, a large flag
    waving slowly, an eagle soaring across very slowly, a few red and white petals drifting down, a field of red poppies with a row of small flags along the
    foot of the hero, a quiet layer behind every section (ribbon bows, small flags and poppies in the corners, a few stars, a swaying stem) and a field at
-   dusk above the footer with four banners. Tap a poppy, the flag or a star and it answers, softly.
+   dusk above the footer with four banners hung from a rail. Tap a poppy, the flag or a star and it answers, softly.
    Nothing here reads or writes anything about a visitor, and nothing is built unless the page is in the season. */
 (function () {
   var C = {
@@ -371,7 +371,7 @@
     return out;
   }
 
-  /* ── the field at dusk above the footer: four banners on poles among the poppies and small flags, a flag on a tall pole and a wreath on its easel ── */
+  /* ── the field at dusk above the footer: four banners hung from a rail between two posts, among the poppies and small flags, a flag on a tall pole and a wreath on its easel ── */
   var SAYINGS = ['those who served', 'of those we lost', 'to every family', 'in our hearts'];
   var TITLES = ['HONOR', 'MEMORY', 'THANKS', 'ALWAYS'];
   function footer(k) {
