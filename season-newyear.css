@@ -1,4 +1,12 @@
-/* New Year: work in progress */
+/* ══ New Year: the homepage for all of January ═══════════════════════════════════════════════════════════════════════════════
+   index.html's <head> sets <html data-season="newyear"> from the date on the academy's clock (Central), from January 1 through
+   January 31, and only then loads season-kit.css, season-kit.js, this file and season-newyear.js. On every other day none of them
+   is fetched, so the page is exactly what it always was. Preview any time with /?season=newyear (and /?season=off for no theme).
+   Everything here is under that attribute (or under a .ny- class that only season-newyear.js creates), and the decoration is
+   aria-hidden, sits behind the content and never takes a tap away from it. To retire it: delete this file, season-newyear.js, the
+   "newyear" window and pack lines in index.html's <head>, and its entry in season-theme-checks.mjs. */
+
+/* ── The colours: midnight navy, champagne gold and silver, with hot pink, cyan and violet for the fireworks and confetti ─────── */
 :root[data-season="newyear"] {
   --bg: #070a16;
   --surface: #0d1226;
@@ -8,7 +16,269 @@
   --text-muted: #a3acc6;
   --gold: #f0d58a;
   --gold-hover: #f8e4a6;
+  --ny-pink: #ff4fa3;
+  --ny-cyan: #3fe0ff;
+  --ny-violet: #9b6bff;
+  --ny-silver: #dfe4f5;
+  --ny-champagne: #f6e7b8;
   --sk-bubble-bg: #f6e7b8;
   --sk-bubble-fg: #0e1430;
   --sk-string: rgba(223, 228, 245, 0.55);
+}
+[data-season="newyear"] body {
+  background:
+    radial-gradient(900px 620px at 4% 0, rgba(155, 107, 255, 0.2), transparent 70%),
+    radial-gradient(760px 520px at 100% 600px, rgba(255, 79, 163, 0.09), transparent 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='560' height='560'%3E%3Cg fill='white'%3E%3Ccircle cx='22' cy='34' r='1' fill-opacity='.5'/%3E%3Ccircle cx='96' cy='12' r='.8' fill-opacity='.38'/%3E%3Ccircle cx='170' cy='58' r='1.1' fill-opacity='.46'/%3E%3Ccircle cx='212' cy='140' r='.8' fill-opacity='.38'/%3E%3Ccircle cx='60' cy='118' r='.9' fill-opacity='.42'/%3E%3Ccircle cx='132' cy='170' r='1' fill-opacity='.46'/%3E%3Ccircle cx='28' cy='206' r='.8' fill-opacity='.38'/%3E%3Ccircle cx='190' cy='222' r='1' fill-opacity='.46'/%3E%3Ccircle cx='301' cy='41' r='.9' fill-opacity='.44'/%3E%3Ccircle cx='367' cy='97' r='1.1' fill-opacity='.5'/%3E%3Ccircle cx='452' cy='23' r='.8' fill-opacity='.36'/%3E%3Ccircle cx='518' cy='160' r='1' fill-opacity='.46'/%3E%3Ccircle cx='333' cy='203' r='.8' fill-opacity='.38'/%3E%3Ccircle cx='412' cy='258' r='1' fill-opacity='.5'/%3E%3Ccircle cx='494' cy='311' r='.9' fill-opacity='.42'/%3E%3Ccircle cx='260' cy='288' r='1.1' fill-opacity='.48'/%3E%3Ccircle cx='81' cy='322' r='.8' fill-opacity='.38'/%3E%3Ccircle cx='166' cy='361' r='1' fill-opacity='.46'/%3E%3Ccircle cx='232' cy='402' r='.9' fill-opacity='.44'/%3E%3Ccircle cx='330' cy='371' r='.8' fill-opacity='.36'/%3E%3Ccircle cx='441' cy='419' r='1.1' fill-opacity='.5'/%3E%3Ccircle cx='527' cy='478' r='.9' fill-opacity='.42'/%3E%3Ccircle cx='41' cy='447' r='1' fill-opacity='.46'/%3E%3Ccircle cx='119' cy='508' r='.8' fill-opacity='.38'/%3E%3Ccircle cx='205' cy='466' r='1' fill-opacity='.48'/%3E%3Ccircle cx='298' cy='531' r='.9' fill-opacity='.42'/%3E%3Ccircle cx='384' cy='512' r='.8' fill-opacity='.36'/%3E%3Ccircle cx='486' cy='541' r='1' fill-opacity='.46'/%3E%3Ccircle cx='66' cy='260' r='.8' fill-opacity='.36'/%3E%3Ccircle cx='560' cy='90' r='.9' fill-opacity='.4'/%3E%3C/g%3E%3Cpath d='M97 211l1.6 4.4 4.4 1.6-4.4 1.6-1.6 4.4-1.6-4.4-4.4-1.6 4.4-1.6z' fill='%23f0d58a' fill-opacity='.5'/%3E%3Cpath d='M401 377l1.6 4.4 4.4 1.6-4.4 1.6-1.6 4.4-1.6-4.4-4.4-1.6 4.4-1.6z' fill='%23dfe4f5' fill-opacity='.45'/%3E%3C/svg%3E"),
+    var(--bg);
+}
+[data-season="newyear"] .nav--scrolled { background: rgba(7, 10, 22, 0.92); }
+
+/* ── The hero: the photograph goes to midnight blue, the headline catches the light, the city comes up along the bottom ─────────── */
+[data-season="newyear"] .hero__still img { filter: saturate(0.55) brightness(0.62) contrast(1.08); }
+[data-season="newyear"] .hero__bg::after {
+  background:
+    radial-gradient(ellipse 70% 38% at 50% 100%, rgba(255, 160, 70, 0.2), transparent 70%),
+    linear-gradient(to bottom, rgba(4, 7, 24, 0.86) 0%, rgba(9, 13, 40, 0.62) 38%, rgba(18, 12, 46, 0.68) 70%, #070a16 100%);
+}
+[data-season="newyear"] .hero { padding-bottom: clamp(150px, 19vw, 520px); }
+[data-season="newyear"] .hero__h1-visual span { color: var(--gold); text-shadow: 0 0 28px rgba(240, 213, 138, 0.5), 0 0 4px rgba(255, 244, 214, 0.45); }
+[data-season="newyear"] .hero__badge { border-color: rgba(240, 213, 138, 0.55); }
+
+.ny-aurora {
+  inset: 0;
+  background:
+    radial-gradient(ellipse 55% 50% at 10% 26%, rgba(155, 107, 255, 0.22), transparent 70%),
+    radial-gradient(ellipse 48% 44% at 90% 20%, rgba(255, 79, 163, 0.16), transparent 70%),
+    radial-gradient(ellipse 40% 36% at 62% 62%, rgba(63, 224, 255, 0.07), transparent 70%);
+}
+
+/* The year, very large and very faint, in outline behind the headline. */
+.ny-year { left: 33%; top: 10%; width: min(67vw, 940px); height: auto; color: var(--gold); opacity: 0.12; animation: ny-glimmer 8s ease-in-out infinite alternate; }
+@keyframes ny-glimmer { from { opacity: 0.08; } to { opacity: 0.17; } }
+
+/* Fireworks: a rocket climbs, the burst opens and fades. Seven near ones go off in turn on a 14 second loop, three faint ghosts far back.
+   Left alone (reduced motion) every burst simply stands in the sky. */
+.ny-fw {
+  left: calc(var(--x) * 1%); top: calc(var(--y) * 1%); width: calc(clamp(110px, 17vw, 250px) * var(--k, 1)); aspect-ratio: 1; translate: -50% -50%;
+  --rise: calc(var(--h, 900) * (100 - var(--y)) * 0.01px - clamp(110px, 17vw, 230px));
+}
+.ny-fw--far { --pk: 0.27; }
+.ny-fw > svg {
+  display: block; width: 100%; height: 100%; opacity: calc(var(--pk, 1) * 0.62);
+  animation: ny-grow 14s cubic-bezier(0.12, 0.8, 0.25, 1) var(--dl, 0s) infinite both, ny-fade 14s linear var(--dl, 0s) infinite both;
+}
+@keyframes ny-grow { 0% { transform: scale(0.05); } 5% { transform: scale(1); } 100% { transform: scale(1.12); } }
+@keyframes ny-fade { 0% { opacity: 0; } 1% { opacity: var(--pk, 1); } 7% { opacity: var(--pk, 1); } 19% { opacity: 0; } 100% { opacity: 0; } }
+.ny-trail {
+  position: absolute; left: 50%; top: 50%; width: 3px; height: 90px; margin-left: -1.5px; border-radius: 3px; opacity: 0;
+  background: linear-gradient(to bottom, #fff 0, currentColor 18%, transparent);
+  animation: ny-rocket 14s cubic-bezier(0.25, 0.6, 0.4, 1) calc(var(--dl, 1s) - 0.85s) infinite both;
+}
+@keyframes ny-rocket { 0% { transform: translateY(var(--rise)); opacity: 0; } 1% { opacity: 1; } 6% { transform: translateY(0); opacity: 1; } 6.6% { opacity: 0; } 100% { transform: translateY(0); opacity: 0; } }
+
+/* Shooting stars now and then, and the twinkles, the big glints, the confetti that tumbles as it falls. */
+.ny-shoot { width: 130px; height: 2px; border-radius: 2px; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.95)); rotate: 24deg; opacity: 0; animation: ny-shoot 11s linear infinite; }
+.ny-shoot::after { content: ""; position: absolute; right: -1px; top: -2px; width: 6px; height: 6px; border-radius: 50%; background: #fff; box-shadow: 0 0 8px 2px rgba(255, 255, 255, 0.8); }
+.ny-shoot--1 { left: 56%; top: 9%; }
+.ny-shoot--2 { left: 86%; top: 40%; animation-duration: 13s; animation-delay: -6s; }
+@keyframes ny-shoot { 0% { translate: -120px -52px; opacity: 0; } 1% { opacity: 1; } 5% { translate: 160px 69px; opacity: 0; } 100% { translate: 160px 69px; opacity: 0; } }
+.ny-bigtw { filter: drop-shadow(0 0 6px currentColor); }
+.ny-flip svg { animation: ny-tumble calc(var(--sd, 5s) / 3) ease-in-out infinite alternate; }
+@keyframes ny-tumble { from { transform: scaleX(1) rotate(0deg); } to { transform: scaleX(0.3) rotate(24deg); } }
+
+/* The city: three rows of towers with lit windows (some blink) and the clock tower, whose face glows and reads midnight. */
+.ny-city { left: 50%; bottom: -1px; width: max(100%, 780px); aspect-ratio: 1440 / 270; translate: -50% 0; }
+.ny-city > svg { display: block; width: 100%; height: 100%; }
+.ny-blink { position: absolute; width: 0.45%; height: 3.3%; border-radius: 1px; animation: ny-blink 4s ease-in-out infinite; }
+.ny-blink--beacon { width: 0.5%; height: 2.6%; border-radius: 50%; background: #ff4fa3; animation-duration: 2.2s; }
+@keyframes ny-blink { 0%, 100% { opacity: 0.12; } 50% { opacity: 1; } }
+.ny-tower > svg { filter: drop-shadow(0 0 14px rgba(255, 214, 120, 0.35)); }
+.ny-halo {
+  position: absolute; left: 50%; top: 39%; width: 380%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(255, 228, 150, 0.52) 0, rgba(255, 200, 90, 0.22) 30%, transparent 62%); animation: ny-pulse 3.4s ease-in-out infinite;
+}
+@keyframes ny-pulse { 0%, 100% { opacity: 0.68; scale: 0.94; } 50% { opacity: 1; scale: 1.08; } }
+
+/* Foil balloons that carry the digits of the year, bobbing at the right edge; and the party popper at the left. */
+.ny-bn { width: clamp(52px, 6.2vw, 88px); transform-origin: 50% 88%; animation: ny-bob var(--bt, 7s) ease-in-out var(--bd0, 0s) infinite; }
+.ny-bn svg { display: block; width: 100%; height: auto; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.38)); }
+@keyframes ny-bob { 0%, 100% { transform: translateY(0) rotate(var(--r0, -4deg)); } 50% { transform: translateY(-14px) rotate(var(--r1, 4deg)); } }
+.ny-hero .ny-tap { width: clamp(52px, 5.6vw, 80px); }
+.ny-popper { filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.5)); transform-origin: 20% 90%; animation: ny-wobble 6s ease-in-out infinite; }
+@keyframes ny-wobble { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg) translateY(-3px); } }
+
+/* A bubble that would run off the edge of the page opens toward the middle instead. */
+.ny-edge-r .sk-bubble { left: auto; right: 0; transform: translate(0, 6px) scale(0.6); transform-origin: 100% 100%; }
+.ny-edge-r.is-tap .sk-bubble { transform: translate(0, 0) scale(1); }
+.ny-edge-l .sk-bubble { left: 0; transform: translate(0, 6px) scale(0.6); transform-origin: 0 100%; }
+.ny-edge-l.is-tap .sk-bubble { transform: translate(0, 0) scale(1); }
+
+/* ── This month: the cards under the hero get a confetti-striped edge and a firework ────────────────────────────────────────── */
+[data-season="newyear"] .event-strip { background: linear-gradient(to bottom, #070a16, rgba(13, 18, 38, 0.72)); }
+[data-season="newyear"] .event-strip::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 7px;
+  background: repeating-linear-gradient(90deg, #f0d58a 0 22px, #ff4fa3 22px 44px, #3fe0ff 44px 66px, #9b6bff 66px 88px, #dfe4f5 88px 110px);
+}
+[data-season="newyear"] .event-strip__title { font-size: clamp(36px, 6vw, 60px); text-shadow: 0 0 24px rgba(240, 213, 138, 0.4); }
+[data-season="newyear"] .event-strip__title::after { content: " \1F386"; }
+[data-season="newyear"] .event-strip__link { box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45); }
+
+/* ── The rest of the page: every section has its own layer, behind its content ──────────────────────────────────────────────────
+   A garland along the top (stars, pennants, lights, a foil fringe or beads), party hats, horns and clocks in a corner, curly streamers,
+   mirror balls and stars on strings, sparklers, balloons rising, confetti coming down, and here and there something that answers a tap. */
+.ny-gar { position: absolute; left: 0; top: 0; width: 100%; height: 64px; display: block; opacity: 0.85; }
+.ny-gar--flag { height: 56px; }
+.ny-gar--fringe { height: 96px; opacity: 0.78; }
+.ny-gar--bead, .ny-gar--light { height: 50px; }
+.ny-gar--c1 { animation: ny-chase 2.8s ease-in-out infinite; }
+.ny-gar--c2 { animation: ny-chase 2.8s ease-in-out -1.4s infinite; }
+@keyframes ny-chase { 0%, 100% { opacity: 0.1; } 50% { opacity: 1; } }
+#eventStrip .ny-gar { top: 7px; }
+.ny-floorconf { left: 0; bottom: 0; width: 100%; height: 30px; opacity: 0.85; }
+
+.ny-pile { bottom: -2px; display: flex; align-items: flex-end; gap: clamp(0px, 0.5vw, 8px); opacity: 0.85; }
+.ny-pile--l { left: clamp(4px, 1.6vw, 28px); }
+.ny-pile--r { right: clamp(4px, 1.6vw, 28px); }
+.ny-i { display: block; height: auto; flex-shrink: 0; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.35)); }
+.ny-i--hat { width: clamp(34px, 4.4vw, 58px); }
+.ny-i--horn { width: clamp(52px, 6.6vw, 90px); rotate: -14deg; translate: 0 -4px; }
+.ny-i--blower { width: clamp(50px, 6.2vw, 84px); rotate: 8deg; }
+.ny-i--clock { width: clamp(34px, 4.2vw, 56px); }
+.ny-i--star { width: clamp(30px, 3.8vw, 50px); rotate: -10deg; }
+.ny-sec .sk-pend > svg { filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4)); }
+.ny-pd--glint > svg { filter: drop-shadow(0 0 8px rgba(240, 213, 138, 0.8)); color: #f0d58a; }
+.ny-pd--star > svg { filter: drop-shadow(0 0 8px rgba(240, 213, 138, 0.45)); }
+
+.ny-curls { top: 0; width: 56px; height: 1px; }
+@media (max-width: 1229px) { .ny-curls { display: none; } }
+.ny-curls--l { left: clamp(0px, 1vw, 14px); }
+.ny-curls--r { right: clamp(0px, 1vw, 14px); }
+.ny-curl { position: absolute; top: 0; width: var(--w, 30px); height: auto; transform-origin: 50% 0; opacity: 0.92; animation: ny-sway 4.6s ease-in-out infinite alternate; }
+@keyframes ny-sway { from { transform: rotate(-5deg); } to { transform: rotate(5deg); } }
+
+.ny-spk__art { display: block; width: 100%; height: auto; filter: drop-shadow(0 0 10px rgba(255, 214, 120, 0.5)); }
+.ny-tick { height: auto; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.35)); opacity: 0.92; }
+.ny-tick .ny-mh { transform-origin: 30px 31px; animation: ny-turn 12s linear calc(var(--cd, 0s) - 11s) infinite; }
+.ny-tick .ny-hh { transform-origin: 30px 31px; animation: ny-turn 144s linear calc(var(--cd, 0s) - 143s) infinite; }
+@keyframes ny-turn { to { transform: rotate(360deg); } }
+
+.ny-fwx { width: 150px; aspect-ratio: 1; opacity: 0.3; animation: ny-breathe 6s ease-in-out infinite alternate; }
+.ny-fwx svg { display: block; width: 100%; height: 100%; }
+@keyframes ny-breathe { from { scale: 0.88; opacity: 0.2; } to { scale: 1.08; opacity: 0.4; } }
+.ny-sec .ny-tap { opacity: 0.8; animation: ny-wobble 7s ease-in-out infinite; filter: drop-shadow(0 0 10px rgba(240, 213, 138, 0.3)); }
+.ny-sec .ny-tap.is-tap { opacity: 1; animation: sk-wiggle 0.4s ease-in-out 2; }
+/* the layer is behind the cards, so the bubble of a section's tap stays within the margin beside them: a few short lines, centred on the decoration */
+.ny-sec .sk-bubble { left: 50%; right: auto; transform: translate(-50%, 6px) scale(0.6); white-space: normal; width: max-content; max-width: 70px; text-align: center; font-size: 13px; line-height: 1.15; padding: 4px 7px; border-radius: 14px; }
+.ny-sec .ny-tap.is-tap .sk-bubble { transform: translate(-50%, 0) scale(1); }
+
+/* ── The party stage above the footer: lights and beams, balloons and confetti cannons, four lit signs and a glittering floor ──────── */
+.ny-footer { display: flex; align-items: flex-end; justify-content: center; gap: clamp(8px, 2vw, 22px); padding: 122px 16px 56px; }
+[data-season="newyear"] .footer { background: #04060f; }
+.ny-fbg {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 60% 55% at 50% 100%, rgba(155, 107, 255, 0.24), transparent 72%),
+    linear-gradient(to bottom, transparent 0, rgba(255, 79, 163, 0.06) 62%, rgba(240, 213, 138, 0.1));
+}
+.ny-fl { top: 4px; }
+.ny-fdisco { position: absolute; top: 44px; margin-left: -29px; }
+.ny-fdisco > svg { filter: drop-shadow(0 0 14px rgba(255, 255, 255, 0.55)); }
+.ny-fyear { position: absolute; left: 50%; top: 58px; width: min(62vw, 760px); height: auto; translate: -50% 0; color: var(--gold); opacity: 0.09; }
+.ny-beams { position: absolute; inset: 0; overflow: hidden; }
+.ny-beam {
+  position: absolute; top: 46px; width: 160px; height: 240px; margin-left: -80px; transform-origin: 50% 0; opacity: 0.2;
+  background: linear-gradient(to bottom, currentColor, transparent 88%); clip-path: polygon(47% 0, 53% 0, 100% 100%, 0 100%); animation: ny-sweep 8s ease-in-out infinite alternate;
+}
+@keyframes ny-sweep { from { rotate: -10deg; } to { rotate: 10deg; } }
+.ny-lamp { position: absolute; top: 40px; width: 14px; height: 10px; margin-left: -7px; border-radius: 3px 3px 7px 7px; background: currentColor; box-shadow: 0 2px 12px 2px currentColor; }
+
+.ny-props { position: relative; z-index: 1; display: flex; align-items: flex-end; gap: clamp(2px, 0.8vw, 10px); }
+.ny-cannon { position: relative; width: clamp(44px, 5.2vw, 66px); filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45)); }
+.ny-cannon > svg { display: block; width: 100%; height: auto; }
+.ny-cannon--r > svg { transform: scaleX(-1); }
+.ny-shot { position: absolute; left: 50%; top: 27%; width: 9px; height: 15px; margin-left: -4px; opacity: 0; animation: ny-shx 6.5s cubic-bezier(0.1, 0.62, 0.3, 1) var(--dl, 0s) infinite, ny-shy 6.5s linear var(--dl, 0s) infinite; }
+.ny-shot svg { display: block; width: 100%; height: 100%; }
+@keyframes ny-shx { 0% { translate: 0 0; } 45% { translate: var(--dx) 0; } 100% { translate: calc(var(--dx) * 1.35) 0; } }
+@keyframes ny-shy {
+  0% { transform: translateY(0) rotate(0deg); opacity: 0; animation-timing-function: cubic-bezier(0.12, 0.7, 0.3, 1); }
+  1% { opacity: 1; }
+  20% { transform: translateY(var(--dy)) rotate(var(--r1)); animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.55); }
+  52% { opacity: 1; }
+  64% { transform: translateY(80px) rotate(var(--r2)); opacity: 0; }
+  100% { transform: translateY(80px) rotate(var(--r2)); opacity: 0; }
+}
+.ny-bunch { position: relative; width: clamp(70px, 9vw, 114px); height: clamp(118px, 14.6vw, 172px); }
+.ny-bb { position: absolute; bottom: 0; height: auto; transform-origin: 50% 100%; animation: ny-bob 6s ease-in-out infinite; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.35)); }
+.ny-bb--0 { left: 0; width: 46%; --r0: -9deg; --r1: -3deg; }
+.ny-bb--1 { left: 28%; bottom: 12%; width: 46%; --r0: 2deg; --r1: 7deg; animation-delay: -2s; }
+.ny-bb--2 { right: 0; width: 42%; --r0: 6deg; --r1: 11deg; animation-delay: -4s; }
+
+.ny-signs { position: relative; z-index: 1; }
+.ny-sign {
+  position: relative; margin-bottom: 40px; padding: 13px 8px 12px; text-align: center; border-radius: 10px; border: 2px solid var(--sg);
+  background: linear-gradient(#1a2152, #0b1030); box-shadow: 0 0 24px -2px var(--sgg), inset 0 0 0 3px rgba(255, 255, 255, 0.05);
+}
+.ny-sign::before { content: ""; position: absolute; inset: -9px; border-radius: 16px; border: 4px dotted var(--sg); opacity: 0.85; animation: ny-bulbs 2.2s ease-in-out infinite alternate; }
+.ny-sign::after { content: ""; position: absolute; left: 50%; top: 100%; width: 10px; height: 50px; translate: -50% 0; background: linear-gradient(90deg, #5b6494, #2a3058 60%, #1b2046); }
+.ny-sign span { display: block; font: 700 clamp(14px, 2vw, 20px) / 1 var(--font-display), sans-serif; color: var(--sgt); letter-spacing: 0.1em; text-shadow: 0 0 14px var(--sgg); }
+.ny-sign em { display: block; margin-top: 7px; font-style: normal; font-size: clamp(10.5px, 1.4vw, 13px); line-height: 1.25; color: #e9edfb; }
+.ny-sign--0 { --sg: #f0d58a; --sgt: #f7e4ac; --sgg: rgba(240, 213, 138, 0.45); }
+.ny-sign--1 { --sg: #ff4fa3; --sgt: #ff8cc4; --sgg: rgba(255, 79, 163, 0.5); margin-bottom: 52px; }
+.ny-sign--1::before { animation-delay: -1.1s; }
+.ny-sign--2 { --sg: #3fe0ff; --sgt: #8aeeff; --sgg: rgba(63, 224, 255, 0.45); margin-bottom: 46px; }
+.ny-sign--3 { --sg: #9b6bff; --sgt: #c3a9ff; --sgg: rgba(155, 107, 255, 0.5); margin-bottom: 56px; }
+.ny-sign--3::before { animation-delay: -1.1s; }
+@keyframes ny-bulbs { from { opacity: 0.45; } to { opacity: 0.95; } }
+.ny-floor { position: absolute; left: 0; right: 0; bottom: 0; height: 78px; overflow: hidden; background: linear-gradient(to bottom, rgba(26, 32, 88, 0) 0, #1a2058 12%, #0e1334 58%, #070a16 100%); border-top: 1px solid rgba(240, 213, 138, 0.3); }
+.ny-floor::before {
+  content: ""; position: absolute; inset: 0; opacity: 0.55;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.7) 0 1px, transparent 1.7px) 0 0 / 26px 17px, radial-gradient(circle, rgba(240, 213, 138, 0.6) 0 1px, transparent 1.7px) 13px 8px / 26px 17px;
+  -webkit-mask-image: linear-gradient(to bottom, #000, transparent); mask-image: linear-gradient(to bottom, #000, transparent);
+}
+.ny-sheen { position: absolute; left: 0; top: 0; width: 34%; height: 100%; background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.16), transparent); animation: ny-slide 8s linear infinite; }
+@keyframes ny-slide { from { translate: -110% 0; } to { translate: 340% 0; } }
+
+/* ── Phones: fewer things, nothing wider than the screen ────────────────────────────────────────────────────────────────────── */
+@media (max-width: 1099px) {
+  .ny-spk, .ny-tick, .ny-fwx { display: none; }
+}
+@media (max-width: 999px) {
+  .ny-bn { display: none; }
+}
+/* on the stage the balloons give way first, then the cannons (the kit takes every prop away at 520px) */
+@media (max-width: 899px) {
+  .ny-bunch { display: none; }
+}
+@media (max-width: 559px) {
+  .ny-props { display: none; }
+}
+@media (max-width: 700px) {
+  .ny-year { left: 4%; top: 8%; width: 92%; opacity: 0.12; }
+  .ny-fw { left: calc(var(--xm, var(--x)) * 1%); top: calc(var(--ym, var(--y)) * 1%); width: calc(clamp(96px, 34vw, 150px) * var(--km, var(--k, 1))); --pk: 0.62; --rise: calc(var(--h, 900) * (100 - var(--ym, var(--y))) * 0.01px - 150px); }
+  .ny-fw--far { --pk: 0.26; }
+  .ny-gar { max-width: none; width: 125%; transform: scale(0.8); transform-origin: 0 0; opacity: 0.85; }
+  .ny-gar--fringe { transform: scale(0.62); width: 162%; }
+  .ny-pile .ny-i:nth-child(n+3) { display: none; }
+  .ny-curls--l, .ny-curls--r { display: none; }
+  .ny-footer { padding-top: 96px; padding-bottom: 50px; }
+  .ny-fyear, .ny-fdisco { display: none; }
+  .ny-props { margin-bottom: 4px; }
+  .ny-beam { height: 180px; }
+}
+@media (max-width: 520px) {
+  .ny-sign { padding: 10px 2px 8px; }
+  .ny-sign::before { inset: -6px; border-width: 3px; }
+  .ny-sign em { font-size: 10px; }
+  .ny-sign span { font-size: 12px; letter-spacing: 0.04em; }
+  .ny-sign { margin-bottom: 36px; }
+  .ny-sign--1 { margin-bottom: 44px; }
+  .ny-sign--2 { margin-bottom: 40px; }
+  .ny-sign--3 { margin-bottom: 48px; }
+  .ny-sign::after { height: 42px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ny-sign::before { animation: none; }
+  /* the still picture: a few bursts around the edges of the sky, none behind the paragraph or on the balloons, no searchlights */
+  .ny-fw--far, .ny-fw--x { display: none; }
 }

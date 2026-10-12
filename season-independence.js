@@ -174,19 +174,19 @@
   // A firework: it climbs (a bright streak), pops into one of the five shells, spreads, and fades, then waits its turn. Each has its own place, colours and delay.
   function fw(sym, x, y, size, c, c2, delay, cycle, cls) {
     return '<i class="id-fw' + (cls ? ' ' + cls : '') + '" style="left:' + x + '%;top:' + y + '%;--z:' + size + ';--c:' + c + ';--c2:' + c2 + ';--dl:' + delay + 's;--cy:' + cycle + 's">' +
-      '<svg viewBox="-64 -64 128 128" aria-hidden="true" focusable="false"><use href="#' + sym + '"/></svg><i class="id-tr"></i></i>';
+      '<svg viewBox="0 0 128 128" aria-hidden="true" focusable="false"><use href="#' + sym + '"/></svg><i class="id-tr"></i></i>';
   }
   var BIG = 'clamp(190px,29vw,420px)', MID = 'clamp(170px,22vw,320px)', SMALL = 'clamp(130px,15vw,230px)';
-  // sym, left %, top %, size, colour, second colour, delay (s), extra class: eight in turn, one every 1.6 s of a 13 s round
+  // sym, left %, top %, size, colour, second colour, delay (s), extra class: seven in turn, one every 1.6 s of a 13 s round. The gold ones keep to the empty sky
+  // (the headline and the numbers are gold too), and the ones at the edges are cut by the screen, as if they were going off just out of sight.
   var HERO_FW = [
-    ['id-bD', 77, 27, BIG, C.gold, '#fff', 0.2, ''],
-    ['id-bA', 55, 15, MID, C.redHi, '#fff', 1.8, 'sk-hide-m'],
-    ['id-bC', 92, 56, MID, C.blueHi, '#fff', 3.4, ''],
-    ['id-bE', 66, 74, SMALL, C.gold, '#fff', 5.0, 'id-fw--x sk-hide-m'],
-    ['id-bB', 18, 79, MID, '#ffffff', C.gold, 6.6, 'id-fw--x'],
-    ['id-bA', 85, 12, SMALL, C.blueHi, '#fff', 8.2, 'id-fw--x'],
-    ['id-bE', 40, 78, SMALL, C.redHi, '#fff', 9.8, 'sk-hide-m'],
-    ['id-bC', 7, 36, SMALL, C.gold, '#fff', 11.4, 'sk-hide-m']
+    ['id-bD', 90, 36, BIG, C.gold, '#fff', 0.2, 'id-fw--a'],
+    ['id-bA', 57, 17, 'clamp(130px,15vw,230px)', C.redHi, '#fff', 1.8, 'id-fw--x'],
+    ['id-bC', 3, 50, MID, C.blueHi, '#fff', 3.4, 'sk-hide-m'],
+    ['id-bE', 61, 53, SMALL, '#ffffff', C.gold, 5.0, 'id-fw--x'],
+    ['id-bB', 97, 70, MID, '#ffffff', C.gold, 6.6, ''],
+    ['id-bA', 78, 21, SMALL, C.blueHi, '#fff', 8.2, 'id-fw--x'],
+    ['id-bE', 3, 78, SMALL, C.redHi, '#fff', 9.8, 'id-fw--x sk-hide-m']
   ];
 
   // The bottom of the hero is a night field seen from the grass: layers of hills and trees, grass at the front, and rockets and sparklers standing in it.
@@ -199,13 +199,16 @@
     for (i = 0; i < 3; i++) { yb = b - h * (0.08 + i * 0.28); yt = b - h * (0.5 + i * 0.25); hw = w * (0.5 - i * 0.1); d += 'M' + f(x - hw) + ' ' + f(yb) + 'L' + f(x) + ' ' + f(yt) + 'L' + f(x + hw) + ' ' + f(yb) + 'Z'; }
     return d + 'M' + f(x - 3) + ' ' + f(b) + 'V' + f(b - h * 0.12) + 'H' + f(x + 3) + 'V' + f(b) + 'Z';
   }
+  function cypress(x, b, w, h) {
+    return 'M' + f(x - w / 2) + ' ' + f(b) + 'C' + f(x - w / 2) + ' ' + f(b - h * 0.62) + ' ' + f(x - w * 0.18) + ' ' + f(b - h * 0.92) + ' ' + f(x) + ' ' + f(b - h) + 'C' + f(x + w * 0.18) + ' ' + f(b - h * 0.92) + ' ' + f(x + w / 2) + ' ' + f(b - h * 0.62) + ' ' + f(x + w / 2) + ' ' + f(b) + 'Z';
+  }
   function trees(r, base, h0, h1, pines, framed) {
-    var d = '', x = -20, h, w;
+    var d = '', x = -20, h, w, edge, q;
     while (x < 1470) {
-      h = h0 + (h1 - h0) * r();
-      if (framed && (x < 170 || x > 1270)) h *= 1.45 + r() * 0.35;
+      h = h0 + (h1 - h0) * r(); edge = framed && (x < 190 || x > 1250); q = r();
+      if (edge) { h *= 1.5 + r() * 0.5; d += fir(x, base, h * 0.5, h); x += h * 0.2 + 14; continue; }
       w = h * (0.55 + r() * 0.3);
-      d += r() < pines ? fir(x, base, w * 0.9, h) : oak(x, base, w, h);
+      d += q < pines ? fir(x, base, w * 0.9, h) : (q < pines + 0.2 ? cypress(x, base, w * 0.42, h * 1.15) : oak(x, base, w, h));
       x += w * (0.42 + r() * 0.34);
     }
     return d + 'M-20 ' + base + 'H1470V270H-20Z';
@@ -215,6 +218,7 @@
     while (x < 1450) { d += 'L' + f(x + 2) + ' ' + f(y - 4 - r() * 11) + 'L' + f(x + 5.5) + ' ' + y; x += 6 + r() * 4; }
     return d + 'V270Z';
   }
+  var SPARKLERS = [[212, 78, -14], [412, 66, 10], [704, 84, -8], [898, 70, 14], [1086, 80, -12], [1256, 66, 9]];   // x, height, tilt
   function field(k) {
     var r = k.rng(4), out = '<svg viewBox="0 0 1440 260" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">', i;
     out += '<path d="M0 150Q220 120 460 140T930 128T1440 146V260H0Z" fill="#101c58"/>';
@@ -227,12 +231,20 @@
       var w = p[1] / 3.1;
       out += '<use href="#id-rocket' + p[3] + '" x="' + f(p[0] - w / 2) + '" y="' + (246 - p[1]) + '" width="' + f(w) + '" height="' + p[1] + '" transform="rotate(' + p[2] + ' ' + p[0] + ' 246)"/>';
     });
-    [[212, 78, -14], [412, 66, 10], [704, 84, -8], [898, 70, 14], [1086, 80, -12], [1256, 66, 9]].forEach(function (p, j) {
-      var w = p[1] / 2.16, tx = p[0], ty = 246 - p[1] + p[1] * 0.185;
-      out += '<g transform="rotate(' + p[2] + ' ' + p[0] + ' 246)"><use href="#id-sparkler" x="' + f(p[0] - w / 2) + '" y="' + (246 - p[1]) + '" width="' + f(w) + '" height="' + p[1] + '"/>' +
-        '<use class="id-spw" href="#id-glint" x="' + f(tx - 10) + '" y="' + f(ty - 10) + '" width="20" height="20" style="color:#fff;--d:' + (1 + j * 0.23).toFixed(2) + 's;--o:-' + (j * 0.37).toFixed(2) + 's"/></g>';
+    SPARKLERS.forEach(function (p) {
+      var w = p[1] / 2.16;
+      out += '<use href="#id-sparkler" x="' + f(p[0] - w / 2) + '" y="' + (246 - p[1]) + '" width="' + f(w) + '" height="' + p[1] + '" transform="rotate(' + p[2] + ' ' + p[0] + ' 246)"/>';
     });
     out += '<path d="' + grass(r, 240) + '" fill="#030822"/>';
+    return out + '</svg>';
+  }
+  // The same sparklers' tips, twinkling: a layer of its own over the field, drawn the same size, with nothing else in it.
+  function glints() {
+    var out = '<svg viewBox="0 0 1440 260" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">';
+    SPARKLERS.forEach(function (p, j) {
+      var ty = 246 - p[1] + p[1] * 0.185;
+      out += '<g transform="rotate(' + p[2] + ' ' + p[0] + ' 246)"><use class="id-spw" href="#id-glint" x="' + f(p[0] - 10) + '" y="' + f(ty - 10) + '" width="20" height="20" style="color:#fff;--d:' + (1 + j * 0.23).toFixed(2) + 's;--o:-' + (j * 0.37).toFixed(2) + 's"/></g>';
+    });
     return out + '</svg>';
   }
 
@@ -254,69 +266,80 @@
     var fws = '';
     HERO_FW.forEach(function (b) { fws += fw(b[0], b[1], b[2], b[3], b[4], b[5], b[6], 13, b[7]); });
     return '<div class="id-glow"></div>' +
-      k.twinkles(24, { id: ['id-glint', 'sk-star'], size: [7, 15], dur: [2.6, 5.2], colors: ['#ffffff', C.gold, '#bcd0ff'], areaY: [3, 66], seed: 3, mobile: 0.5 }) +
+      k.twinkles(6, { id: ['id-glint', 'sk-star'], size: [7, 15], dur: [2.6, 5.2], colors: ['#ffffff', C.gold, '#bcd0ff'], area: [40, 100], areaY: [13, 24], seed: 3, mobile: 0.5 }) +
+      k.twinkles(5, { id: ['id-glint', 'sk-star'], size: [7, 16], dur: [2.6, 5.2], colors: ['#ffffff', C.gold, '#bcd0ff'], area: [80, 99], areaY: [26, 66], seed: 4, mobile: 0.5 }) +
+      k.twinkles(3, { id: ['id-glint', 'sk-star'], size: [7, 14], dur: [2.6, 5.2], colors: ['#ffffff', C.gold, '#bcd0ff'], area: [0.5, 6], areaY: [20, 68], seed: 5, mobile: 0.5, cls: 'sk-hide-m' }) +
+      k.twinkles(4, { id: ['id-glint', 'sk-star'], size: [6, 12], dur: [2.6, 5.2], colors: ['#ffffff', C.gold, '#bcd0ff'], areaY: [68, 80], seed: 6, mobile: 0.5 }) +
       fws +
       '<div class="id-bunt id-bunt--hero"></div>' +
       '<div class="id-pole"><i class="id-pole__rod"></i><i class="id-pole__ball"></i>' + waveFlag() + '</div>' +
-      k.particles(16, { id: ['id-glint', 'sk-star', 'sk-sparkle'], colors: SPARKS, size: [8, 17], dur: [11, 20], drift: 70, sway: 24, seed: 21, mobile: 0.5, opacity: [0.5, 0.9] }) +
-      '<div class="id-field">' + field(k) + '</div>' +
-      k.particles(10, { dir: 'rise', id: ['sk-dot', 'id-glint'], colors: [C.gold, '#ffffff', C.goldHi], size: [4, 9], dur: [7, 13], drift: 40, sway: 12, seed: 33, mobile: 0.5, opacity: [0.55, 0.95], spin: 0 }) +
-      k.tap(k.use('id-rocket', '', '0 0 40 124') , 'Boom!', 'id-tap id-t-rocket', 'right:clamp(120px,19vw,330px);bottom:6px;width:clamp(34px,4.6vw,60px)') +
-      k.tap(k.use('id-sparkler', '', '0 0 60 130') + '<i class="id-spk__g"></i>', 'Sparkle!', 'id-tap id-t-spk', 'left:2.4%;bottom:8px;width:clamp(36px,5vw,66px)') +
-      k.tap(k.use('id-starstick', '', '0 0 64 132'), 'Hooray!', 'id-tap id-t-star', 'left:clamp(120px,17vw,260px);bottom:6px;width:clamp(36px,4.6vw,60px)');
+      k.particles(10, { id: ['id-glint', 'sk-star', 'sk-sparkle'], colors: SPARKS, size: [8, 17], dur: [11, 20], drift: 70, sway: 24, seed: 21, mobile: 0.5, opacity: [0.5, 0.9] }) +
+      '<div class="id-field">' + field(k) + '</div><div class="id-field id-field--g">' + glints() + '</div>' +
+      k.particles(6, { dir: 'rise', id: ['sk-dot', 'id-glint'], colors: [C.gold, '#ffffff', C.goldHi], size: [4, 9], dur: [7, 13], drift: 40, sway: 12, seed: 33, mobile: 0.5, opacity: [0.55, 0.95], spin: 0 }) +
+      k.tap(k.use('id-rocket', '', '0 0 40 124'), 'Boom!', 'id-tap id-t-rocket', 'right:clamp(120px,19vw,330px)') +
+      k.tap(k.use('id-sparkler', '', '0 0 60 130') + '<i class="id-spk__g"></i>', 'Sparkle!', 'id-tap id-t-spk', 'left:2.4%') +
+      k.tap(k.use('id-starstick', '', '0 0 64 132'), 'Hooray!', 'id-tap id-t-star', 'left:clamp(120px,17vw,260px)');
   }
 
   // ── A layer behind each section: different on every one so the page does not repeat itself ─────────────────────────────────
-  // bunt:kind:top   bunting along the top (flags, flags2, stars, lights)       rib:t|b   a red, white and blue ribbon along the top or the foot
-  // fw:side:top%:colour:size:delay[:shell]   a firework going off in a corner (staggered)                  pin:side:top%:width      a spinning pinwheel
-  // flags:side:n    little flags in a corner at the foot               spk:side:top%:width:tilt   a sparkler          stars:side:top%:n:seed   twinkles in the margin
-  // rose:side:at:len:w and pstar:side:at:len:w   an award rosette or a gold star swinging on a string            tap:kind:side:top%:width   a decoration that answers a tap
-  // conf:n:seed:side   glitter falling        rise:n:seed:side   sparks rising         comet:top%   a comet crossing the layer
+  // bunt:kind[:top px]   bunting along the top (flags, flags2, stars, lights)          rib:t|b   a red, white and blue ribbon along the top or the foot
+  // fw:side:top%:hue:size:delay:shell[:m]   a firework going off by the edge, in turn with the others (m: it stays on a phone)    pin:side:top%:width   a spinning pinwheel
+  // flags:side:n   little flags in a corner at the foot       spk:side:top%:width:tilt   a sparkler       stars:side:top%:n:seed   twinkles in the margin       sky:n:seed   faint stars everywhere
+  // rose:side:at:len:w and pstar:side:at:len:w   an award rosette or a gold star swinging on a string        tap:kind:side:top%:width   a decoration that answers a tap
+  // conf:n:seed:side   glitter falling        rise:n:seed:side   sparks rising        comet:top%   a comet crossing the layer
   var SECTIONS = {
-    eventStrip:     ['bunt:flags:7', 'fw:r:26:gold:190:-1:id-bD', 'rose:l:3.5:78:46', 'stars:r:60:5:1', 'conf:5:1:l', 'rib:b'],
-    programs:       ['bunt:stars', 'fw:l:78:blue:170:-4:id-bC', 'pin:r:40:58', 'flags:r:3', 'stars:l:10:6:2', 'tap:star:r:62:56', 'conf:6:2:r', 'comet:30'],
-    competition:    ['rib:t', 'fw:l:16:red:180:-2:id-bA', 'pstar:r:4:96:40', 'flags:l:2', 'rise:7:3:r', 'tap:rocket:l:52:46', 'stars:r:60:5:3'],
-    coaches:        ['bunt:lights', 'pin:l:30:52', 'fw:r:52:gold:170:-6:id-bB', 'rib:b', 'conf:6:4:l', 'tap:spk:r:20:50', 'comet:72'],
-    gallery:        ['bunt:flags2', 'rose:l:2:70:42', 'rose:r:2:104:46', 'fw:r:88:red:200:-1:id-bE', 'comet:14', 'stars:l:60:5:5', 'rise:5:5:l'],
-    'belt-journey': ['rib:t', 'fw:r:10:white:150:-5:id-bC', 'flags:r:2', 'spk:l:58:50:-12', 'stars:r:44:6:6', 'tap:star:l:20:56', 'conf:5:6:r'],
-    locations:      ['bunt:stars', 'pin:r:12:52', 'fw:l:52:blue:170:-3:id-bD', 'flags:l:3', 'rise:6:7:r', 'tap:rocket:r:46:46', 'comet:50'],
-    faq:            ['bunt:lights', 'fw:l:10:gold:170:-7:id-bA', 'pstar:l:6:110:38', 'rib:b', 'conf:5:8:l', 'stars:r:30:6:8', 'spk:r:70:48:10'],
-    schedule:       ['bunt:flags', 'spk:r:30:52:12', 'fw:l:82:red:180:-2:id-bB', 'pin:l:55:54', 'comet:20', 'tap:spk:l:30:50', 'stars:r:70:5:9'],
-    testimonials:   ['rib:t', 'rose:l:2:92:44', 'fw:r:12:blue:170:-4:id-bE', 'fw:l:88:gold:150:-8:id-bC', 'flags:r:3', 'stars:l:40:5:10', 'tap:star:r:50:56', 'conf:5:10:r'],
-    pricing:        ['bunt:stars', 'fw:l:42:gold:180:-6:id-bD', 'pin:r:78:52', 'rise:7:11:l', 'comet:66', 'stars:r:16:5:11', 'rib:b'],
-    contact:        ['bunt:lights', 'flags:l:3', 'flags:r:3', 'pstar:r:3:90:38', 'spk:l:24:50:-10', 'fw:r:62:red:170:-1:id-bA', 'tap:rocket:l:50:46', 'conf:6:12:l']
+    eventStrip:     ['bunt:flags:7', 'fw:r:20:gold:200:-1:id-bD:m', 'rose:l:0.9:70:40', 'stars:r:56:4:1', 'fw:l:66:blue:170:-6:id-bC', 'spk:l:34:44:-12', 'conf:3:1:l', 'sky:6:1', 'rib:b'],
+    programs:       ['bunt:stars', 'stars:l:5:4:2', 'fw:l:20:blue:210:-4:id-bC:m', 'spk:l:40:44:-14', 'fw:l:62:gold:200:-9:id-bB', 'flags:l:3', 'fw:r:9:red:190:-2:id-bA', 'pin:r:29:46', 'tap:star:r:50:56',
+                     'fw:r:72:white:200:-6:id-bE', 'flags:r:3', 'conf:3:2:r', 'rise:3:21:l', 'comet:36', 'comet:80', 'sky:6:7'],
+    competition:    ['rib:t', 'fw:l:13:red:200:-2:id-bA:m', 'pin:l:33:46', 'tap:rocket:l:52:46', 'flags:l:2', 'stars:l:76:4:3', 'pstar:r:0.9:96:34', 'fw:r:38:gold:200:-7:id-bD', 'spk:r:60:44:12', 'stars:r:84:4:13',
+                     'rise:3:3:r', 'comet:46', 'sky:6:8'],
+    coaches:        ['bunt:lights', 'pin:l:27:46', 'fw:l:52:blue:200:-6:id-bB', 'stars:l:78:4:4', 'tap:spk:r:20:46', 'fw:r:40:gold:200:-3:id-bC:m', 'flags:r:2', 'stars:r:66:4:14', 'rose:l:0.8:60:36',
+                     'rib:b', 'conf:3:4:l', 'comet:72', 'sky:6:9'],
+    gallery:        ['bunt:flags2', 'rose:l:0.8:70:38', 'rose:r:0.8:104:40', 'fw:r:78:red:190:-1:id-bE:m', 'fw:l:58:gold:170:-8:id-bA', 'comet:14', 'stars:l:28:4:5', 'rise:3:5:l', 'flags:l:2', 'sky:6:10'],
+    'belt-journey': ['rib:t', 'fw:r:10:white:180:-5:id-bC:m', 'flags:r:2', 'spk:l:54:44:-12', 'stars:r:42:4:6', 'tap:star:l:20:56', 'conf:3:6:r', 'fw:l:78:blue:170:-2:id-bD', 'pin:r:64:44', 'sky:6:11'],
+    locations:      ['bunt:stars', 'pin:r:12:46', 'fw:l:44:blue:200:-3:id-bD:m', 'flags:l:3', 'rise:3:7:r', 'tap:rocket:r:46:46', 'comet:50', 'fw:r:72:gold:180:-9:id-bB', 'spk:l:68:44:10', 'stars:l:14:4:7', 'sky:6:12'],
+    faq:            ['bunt:lights', 'fw:l:12:gold:190:-7:id-bA:m', 'pstar:l:0.9:110:34', 'rib:b', 'conf:3:8:l', 'stars:r:30:4:8', 'spk:r:62:44:10', 'fw:r:48:red:180:-2:id-bE', 'pin:l:56:44', 'sky:6:13'],
+    schedule:       ['bunt:flags', 'spk:r:30:44:12', 'fw:l:70:red:190:-2:id-bB:m', 'pin:l:44:46', 'comet:20', 'tap:spk:l:26:44', 'stars:r:70:4:9', 'fw:r:50:blue:180:-8:id-bC', 'flags:r:3', 'sky:6:14'],
+    testimonials:   ['rib:t', 'rose:l:0.8:92:38', 'fw:r:20:blue:180:-4:id-bE:m', 'fw:l:78:gold:160:-8:id-bC', 'flags:r:3', 'stars:l:40:4:10', 'tap:star:r:50:56', 'conf:3:10:r', 'sky:6:15'],
+    pricing:        ['bunt:stars', 'fw:l:18:gold:200:-6:id-bD:m', 'pin:l:38:46', 'spk:l:58:44:-10', 'stars:l:84:4:11', 'flags:l:2', 'pin:r:28:46', 'fw:r:50:red:210:-1:id-bA', 'rose:r:0.8:80:38', 'stars:r:14:4:21',
+                     'fw:r:84:blue:180:-9:id-bB', 'rise:3:11:l', 'comet:66', 'comet:24', 'rib:b', 'sky:6:16'],
+    contact:        ['bunt:lights', 'flags:l:3', 'flags:r:3', 'pstar:r:0.9:90:34', 'spk:l:24:44:-10', 'fw:r:60:red:190:-1:id-bA:m', 'tap:rocket:l:50:46', 'conf:3:12:l', 'fw:l:76:blue:180:-7:id-bC', 'stars:r:28:4:12', 'sky:6:17']
   };
   var HUES = { red: [C.redHi, '#fff'], blue: [C.blueHi, '#fff'], gold: [C.gold, '#fff'], white: ['#ffffff', C.gold] };
   var TAPS = { rocket: ['id-rocket', '0 0 40 124', 'Boom!'], spk: ['id-sparkler', '0 0 60 130', 'Sparkle!'], star: ['id-starstick', '0 0 64 132', 'Hooray!'] };
+  var SIDE = { l: 'left', r: 'right' };
 
   function section(specs, k) {
     var out = '', i;
     specs.forEach(function (spec, n) {
-      var a = spec.split(':'), kind = a[0], side = a[1] === 'l' ? 'left' : 'right', hue;
+      var a = spec.split(':'), kind = a[0], side = SIDE[a[1]], hue, bits, t;
       if (kind === 'bunt') {
         out += '<div class="id-bunt id-bunt--' + a[1] + '"' + (a[2] ? ' style="top:' + a[2] + 'px"' : '') + '></div>';
       } else if (kind === 'rib') {
         out += '<div class="id-rib id-rib--' + a[1] + '"></div>';
       } else if (kind === 'fw') {
         hue = HUES[a[3]];
-        out += '<i class="id-fw id-fw--s" style="' + side + ':2.5%;top:' + a[2] + '%;--z:' + a[4] + 'px;--c:' + hue[0] + ';--c2:' + hue[1] + ';--dl:' + a[5] + 's;--cy:' + (11 + (n % 3) * 1.5) + 's"><svg viewBox="-64 -64 128 128" aria-hidden="true" focusable="false"><use href="#' + a[6] + '"/></svg><i class="id-tr"></i></i>';
+        out += '<i class="id-fw id-fw--s id-fw--' + a[1] + (a[7] === 'm' ? '' : ' sk-hide-m') + '" style="' + side + ':4%;top:' + a[2] + '%;--z:' + a[4] + 'px;--c:' + hue[0] + ';--c2:' + hue[1] + ';--dl:' + a[5] + 's;--cy:' + [11, 12.5, 14][n % 3] +
+          's"><svg viewBox="0 0 128 128" aria-hidden="true" focusable="false"><use href="#' + a[6] + '"/></svg></i>';
       } else if (kind === 'pin') {
-        out += '<div class="id-pin sk-hide-m" style="' + side + ':1.1%;top:' + a[2] + '%;width:' + a[3] + 'px"><i class="id-pin__s"></i>' + k.use('id-pinw', 'id-pin__h', '0 0 100 100') + '</div>';
+        out += '<div class="id-pin sk-hide-m" style="' + side + ':1%;top:' + a[2] + '%;width:' + a[3] + 'px"><i class="id-pin__s"></i>' + k.use('id-pinw', 'id-pin__h', '0 0 100 100') + '</div>';
       } else if (kind === 'flags') {
-        var bits = '';
+        bits = '';
         for (i = 0; i < +a[2]; i++) bits += k.use('id-flag', 'id-fl id-fl--' + i, '0 0 84 110');
         out += '<div class="id-fpile id-fpile--' + a[1] + ' sk-hide-m">' + bits + '</div>';
       } else if (kind === 'spk') {
-        out += '<div class="id-spk sk-hide-m" style="' + side + ':1.6%;top:' + a[2] + '%;width:' + a[3] + 'px;rotate:' + a[4] + 'deg">' + k.use('id-sparkler', '', '0 0 60 130') + '<i class="id-spk__g"></i></div>';
+        out += '<div class="id-spk sk-hide-m" style="' + side + ':1.4%;top:' + a[2] + '%;width:' + a[3] + 'px;rotate:' + a[4] + 'deg">' + k.use('id-sparkler', '', '0 0 60 130') + '<i class="id-spk__g"></i></div>';
       } else if (kind === 'stars') {
-        out += k.twinkles(+a[3], { id: ['id-glint', 'sk-star'], size: [8, 16], dur: [3, 6], colors: ['#ffffff', C.gold, '#bcd0ff', C.redHi], area: a[1] === 'l' ? [0.6, 4.6] : [95.4, 99.4], areaY: [+a[2], +a[2] + 20], seed: 40 + +a[4], mobile: 0.5 });
+        out += k.twinkles(+a[3], { id: ['id-glint', 'sk-star'], size: [8, 16], dur: [3, 6], colors: ['#ffffff', C.gold, '#bcd0ff', C.redHi], area: a[1] === 'l' ? [0.6, 4.6] : [95.4, 99.4], areaY: [+a[2], +a[2] + 14], seed: 40 + +a[4], mobile: 0.5 });
+      } else if (kind === 'sky') {
+        out += k.twinkles(+a[1], { id: ['id-glint', 'sk-star'], size: [5, 10], dur: [3, 6.5], colors: ['rgba(255,255,255,.6)', 'rgba(255,204,77,.6)', 'rgba(188,208,255,.6)', 'rgba(255,90,102,.55)'], areaY: [2, 98], seed: 300 + +a[2], mobile: 0.5 });
       } else if (kind === 'rose') {
         out += k.pendant(k.use('id-rosette', '', '0 0 80 120'), { side: a[1], at: +a[2], len: +a[3], w: +a[4] });
       } else if (kind === 'pstar') {
         out += k.pendant(k.use('id-bstar', '', '0 0 64 64'), { side: a[1], at: +a[2], len: +a[3], w: +a[4], cls: 'id-pstar' });
       } else if (kind === 'tap') {
-        var t = TAPS[a[1]], inner = k.use(t[0], '', t[1]) + (a[1] === 'spk' ? '<i class="id-spk__g"></i>' : '');
-        out += k.tap(inner, t[2], 'id-tap id-t-' + a[1] + ' sk-hide-m', (a[2] === 'l' ? 'left' : 'right') + ':0.4%;top:' + a[3] + '%;width:' + a[4] + 'px');
+        t = TAPS[a[1]];
+        out += k.tap(k.use(t[0], '', t[1]) + (a[1] === 'spk' ? '<i class="id-spk__g"></i>' : ''), t[2], 'id-tap id-t-' + a[1] + ' sk-hide-m', (a[2] === 'l' ? 'left' : 'right') + ':0.4%;top:' + a[3] + '%;width:' + a[4] + 'px');
       } else if (kind === 'conf') {
         out += k.particles(+a[1], { id: ['id-glint', 'sk-star', 'sk-sparkle', 'sk-dot'], colors: SPARKS, size: [8, 16], dur: [16, 28], drift: 60, sway: 24, area: a[3] === 'l' ? [0, 9] : [91, 100], seed: 100 + +a[2], mobile: 0.5, opacity: [0.45, 0.85] });
       } else if (kind === 'rise') {
@@ -337,7 +360,7 @@
   function footer(k) {
     var signs = SAYINGS.map(function (s, i) { return '<div class="id-sign id-sign--' + i + '"><span>' + TITLES[i] + '</span><em>' + s + '</em></div>'; }).join('');
     return '<div class="id-fsky">' +
-      k.twinkles(16, { id: ['id-glint', 'sk-star'], size: [7, 14], dur: [2.8, 5.4], colors: ['#ffffff', C.gold, '#bcd0ff'], areaY: [2, 52], seed: 61, mobile: 0.5 }) +
+      k.twinkles(12, { id: ['id-glint', 'sk-star'], size: [7, 14], dur: [2.8, 5.4], colors: ['#ffffff', C.gold, '#bcd0ff'], areaY: [2, 52], seed: 61, mobile: 0.5 }) +
       fw('id-bA', 14, 24, 'clamp(120px,15vw,210px)', C.redHi, '#fff', -2, 12, 'sk-hide-m') + fw('id-bD', 50, 16, 'clamp(150px,19vw,270px)', C.gold, '#fff', -7, 12, '') + fw('id-bC', 86, 26, 'clamp(120px,15vw,210px)', C.blueHi, '#fff', -10, 12, 'sk-hide-m') +
       '</div>' +
       '<div class="id-bunt id-bunt--foot"></div>' +
@@ -346,7 +369,14 @@
       '<div class="id-signs sk-signs">' + signs + '</div>' +
       '<div class="id-props sk-props id-props--r">' + k.use('id-rocket3', 'id-i id-i--rocket id-i--r3', '0 0 40 124') + fountain(k) + k.use('id-flag', 'id-i id-i--flag', '0 0 84 110') + k.use('id-crate', 'id-i id-i--crate', '0 0 64 56') + k.use('id-rocket', 'id-i id-i--rocket id-i--r1', '0 0 40 124') + '</div>' +
       '<div class="id-ground"><i class="id-lights"></i></div>' +
-      k.particles(8, { dir: 'rise', id: ['sk-dot', 'id-glint'], colors: [C.gold, '#ffffff', C.goldHi], size: [4, 9], dur: [6, 11], drift: 30, sway: 10, seed: 71, mobile: 0.5, opacity: [0.55, 0.95], spin: 0 });
+      k.particles(5, { dir: 'rise', id: ['sk-dot', 'id-glint'], colors: [C.gold, '#ffffff', C.goldHi], size: [4, 9], dur: [6, 11], drift: 30, sway: 10, seed: 71, mobile: 0.5, opacity: [0.55, 0.95], spin: 0 });
+  }
+
+  // What is far from the screen need not move: a layer that leaves the window is marked .id-off (the stylesheet pauses it), and runs again when it comes back.
+  function init() {
+    if (!window.IntersectionObserver) return;
+    var io = new IntersectionObserver(function (entries) { entries.forEach(function (e) { e.target.classList.toggle('id-off', !e.isIntersecting); }); }, { rootMargin: '250px 0px' });
+    [].forEach.call(document.querySelectorAll('.sk-hero, .sk-sec, .sk-footer'), function (el) { io.observe(el); });
   }
 
   function onTap(el, k) {
@@ -362,6 +392,7 @@
     hero: hero,
     sections: {},
     footer: footer,
+    init: init,
     onTap: onTap
   };
   Object.keys(SECTIONS).forEach(function (id) { T.sections[id] = function (k) { return section(SECTIONS[id], k); }; });

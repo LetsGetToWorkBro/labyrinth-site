@@ -1,0 +1,227 @@
+/* ══ Cinco de Mayo: the homepage for May 1 through May 15 ═══════════════════════════════════════════════════════════════════════
+   index.html's <head> sets <html data-season="cinco"> from the date on the academy's clock (Central), from May 1 through May 15, and only
+   then loads season-kit.css, season-kit.js, this file and season-cinco.js. On every other day none of them is fetched, so the page is
+   exactly what it always was. Preview any time with /?season=cinco (and /?season=off for no theme).
+   Everything here is under that attribute (or under a .cm- class that only season-cinco.js creates), and the decoration is aria-hidden,
+   sits behind the content and never takes a tap away from it. To retire it: delete this file, season-cinco.js, the "cinco" window and
+   pack lines in index.html's <head>, and its entry in season-theme-checks.mjs. */
+
+/* ── The colors: a warm indigo night with a marigold accent, and the festival colors for everything the pack draws ───────────── */
+:root[data-season="cinco"] {
+  --bg: #0d0a14;
+  --surface: #17111f;
+  --surface-elevated: #21172b;
+  --border: rgba(255, 182, 39, 0.16);
+  --border-strong: rgba(255, 182, 39, 0.34);
+  --text-muted: #b9aecb;
+  --gold: #ffb627;
+  --gold-hover: #ffc857;
+  --cm-green: #1f9d55;
+  --cm-red: #d62839;
+  --cm-pink: #ff3f8e;
+  --cm-turq: #17c3b2;
+  --cm-yellow: #ffd23f;
+  --cm-orange: #ff7b00;
+  --cm-cream: #fff1d6;
+  --cm-indigo: #2a1450;
+  --sk-bubble-bg: #fff1d6;
+  --sk-bubble-fg: #2a1450;
+  --sk-string: rgba(255, 241, 214, 0.5);
+}
+[data-season="cinco"] body {
+  background:
+    radial-gradient(ellipse 1100px 700px at 0% 0%, rgba(255, 63, 142, 0.14), transparent 70%),
+    radial-gradient(ellipse 900px 620px at 100% 520px, rgba(23, 195, 178, 0.1), transparent 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='900' height='900' viewBox='0 0 900 900'%3E%3Crect x='408' y='502' width='9' height='4' rx='1' fill='%23ff3f8e' fill-opacity='.13' transform='rotate(119 408 502)'/%3E%3Ccircle cx='408' cy='761' r='3' fill='%2317c3b2' fill-opacity='.12'/%3E%3Cpath d='M178 716l5 9h-10z' fill='%23ffd23f' fill-opacity='.12' transform='rotate(243 178 716)'/%3E%3Crect x='564' y='707' width='9' height='4' rx='1' fill='%23ff7b00' fill-opacity='.13' transform='rotate(24 564 707)'/%3E%3Ccircle cx='403' cy='136' r='3' fill='%231f9d55' fill-opacity='.12'/%3E%3Cpath d='M484 792l5 9h-10z' fill='%23d62839' fill-opacity='.12' transform='rotate(21 484 792)'/%3E%3Crect x='534' y='359' width='9' height='4' rx='1' fill='%23ffb627' fill-opacity='.13' transform='rotate(115 534 359)'/%3E%3Ccircle cx='585' cy='551' r='3' fill='%23ff3f8e' fill-opacity='.12'/%3E%3Cpath d='M150 25l5 9h-10z' fill='%2317c3b2' fill-opacity='.12' transform='rotate(270 150 25)'/%3E%3Crect x='67' y='43' width='9' height='4' rx='1' fill='%23ffd23f' fill-opacity='.13' transform='rotate(61 67 43)'/%3E%3Ccircle cx='537' cy='694' r='3' fill='%23ff7b00' fill-opacity='.12'/%3E%3Cpath d='M298 530l5 9h-10z' fill='%231f9d55' fill-opacity='.12' transform='rotate(100 298 530)'/%3E%3Crect x='467' y='573' width='9' height='4' rx='1' fill='%23d62839' fill-opacity='.13' transform='rotate(127 467 573)'/%3E%3Ccircle cx='16' cy='86' r='3' fill='%23ffb627' fill-opacity='.12'/%3E%3Cpath d='M586 368l5 9h-10z' fill='%23ff3f8e' fill-opacity='.12' transform='rotate(282 586 368)'/%3E%3Crect x='884' y='748' width='9' height='4' rx='1' fill='%2317c3b2' fill-opacity='.13' transform='rotate(65 884 748)'/%3E%3Ccircle cx='288' cy='213' r='3' fill='%23ffd23f' fill-opacity='.12'/%3E%3Cpath d='M265 74l5 9h-10z' fill='%23ff7b00' fill-opacity='.12' transform='rotate(55 265 74)'/%3E%3Crect x='363' y='754' width='9' height='4' rx='1' fill='%231f9d55' fill-opacity='.13' transform='rotate(98 363 754)'/%3E%3Ccircle cx='71' cy='27' r='3' fill='%23d62839' fill-opacity='.12'/%3E%3Cpath d='M612 199l5 9h-10z' fill='%23ffb627' fill-opacity='.12' transform='rotate(26 612 199)'/%3E%3Crect x='424' y='871' width='9' height='4' rx='1' fill='%23ff3f8e' fill-opacity='.13' transform='rotate(101 424 871)'/%3E%3Ccircle cx='380' cy='508' r='3' fill='%2317c3b2' fill-opacity='.12'/%3E%3Cpath d='M186 603l5 9h-10z' fill='%23ffd23f' fill-opacity='.12' transform='rotate(172 186 603)'/%3E%3Crect x='88' y='303' width='9' height='4' rx='1' fill='%23ff7b00' fill-opacity='.13' transform='rotate(104 88 303)'/%3E%3Ccircle cx='676' cy='115' r='3' fill='%231f9d55' fill-opacity='.12'/%3E%3C/svg%3E") 0 0 / 900px 900px,
+    var(--bg);
+}
+[data-season="cinco"] .nav--scrolled { background: rgba(13, 10, 20, 0.92); }
+
+/* ── The hero: the photograph goes to a warm evening, the headline catches the lamplight, the wall comes up along the bottom ──── */
+[data-season="cinco"] .hero__still img { filter: saturate(1.3) contrast(1.05) brightness(0.8) sepia(0.12) hue-rotate(-8deg); }
+[data-season="cinco"] .hero__bg::after {
+  background:
+    radial-gradient(ellipse 62% 46% at 50% 100%, rgba(255, 123, 0, 0.42), transparent 72%),
+    radial-gradient(ellipse 46% 40% at 0% 12%, rgba(255, 63, 142, 0.3), transparent 72%),
+    radial-gradient(ellipse 42% 38% at 100% 16%, rgba(23, 195, 178, 0.24), transparent 72%),
+    linear-gradient(to bottom, rgba(13, 10, 20, 0.8) 0%, rgba(32, 12, 40, 0.58) 38%, rgba(30, 12, 34, 0.8) 72%, #0d0a14 100%);
+}
+[data-season="cinco"] .hero { padding-bottom: clamp(130px, 18vw, 420px); }
+[data-season="cinco"] .hero__h1-visual span { color: var(--gold); text-shadow: 0 0 28px rgba(255, 182, 39, 0.5), 0 0 4px rgba(255, 226, 150, 0.4); }
+[data-season="cinco"] .hero__badge { border-color: rgba(255, 182, 39, 0.55); }
+
+.cm-hero { --cm-gh: clamp(130px, 18vw, 420px); }
+.cm-wash {
+  inset: 0;
+  background:
+    radial-gradient(circle at 87% 22%, rgba(255, 63, 142, 0.24), transparent 24%),
+    radial-gradient(circle at 8% 62%, rgba(255, 182, 39, 0.12), transparent 26%),
+    radial-gradient(ellipse at 50% 100%, rgba(255, 182, 39, 0.3), transparent 46%);
+}
+
+/* Two strings of papel picado hang across the top, one behind the other, and every flag flutters on its own beat. */
+.cm-pps { left: -20px; width: calc(100% + 40px); max-width: none; height: 100px; transform-origin: 50% 0; animation: cm-sway 8s ease-in-out infinite alternate; }
+.cm-pps--hero { top: var(--nav-height, 72px); height: 120px; }
+.cm-pps--back { opacity: 0.72; animation-duration: 10s; animation-direction: alternate-reverse; }
+.cm-fl { transform-origin: 0 0; animation: cm-flutter 4.4s ease-in-out infinite; }
+@keyframes cm-flutter { 0%, 100% { rotate: -4deg; } 50% { rotate: 5deg; } }
+@keyframes cm-sway { from { translate: -5px 0; rotate: -0.22deg; } to { translate: 5px 0; rotate: 0.22deg; } }
+
+/* The wall along the foot of the hero: pots, flowers and cacti stand on a tiled wall, with a string of chili lights over them. */
+.cm-ground { left: 0; right: 0; bottom: -1px; height: var(--cm-gh); }
+.cm-ground svg { position: absolute; left: 0; top: 0; display: block; width: 100%; height: 100%; }
+.cm-hl { animation: cm-glow 2.8s ease-in-out infinite; }
+.cm-hl--b { animation-duration: 3.4s; animation-delay: -0.9s; }
+.cm-hl--c { animation-duration: 2.4s; animation-delay: -1.8s; }
+@keyframes cm-glow { 0%, 100% { opacity: 0.45; } 50% { opacity: 1; } }
+
+/* The pinata hangs from below the nav on its rope and swings; tap it. The hero's text sits in a box that is 1100px wide and centred, and that box takes every tap
+   that lands on it, so the pinata lives where the box is not: in the margin beside it (as wide as that margin allows) on a big screen, and in the band between the nav
+   and the first line of text on a smaller one. Its bubble opens under it, flush with the page edge. */
+.cm-pin { top: var(--nav-height, 72px); right: max(0.6%, calc((100vw - 1100px) / 2 - 190px)); width: clamp(56px, calc((100vw - 1100px) / 2 - 14px), 150px); transform-origin: 50% 0; }
+.cm-pin .cm-sw { display: block; transform-origin: 50% 0; animation: cm-swing 4.8s ease-in-out infinite; }
+.cm-pin .cm-rope { display: block; width: 2px; height: clamp(34px, 4.4vw, 62px); margin: 0 auto; background: var(--sk-string); }
+.cm-pin svg { display: block; width: 100%; height: auto; }
+.cm-pin .sk-bubble { left: auto; right: 0; bottom: auto; top: calc(100% + 2px); transform: translate(0, -6px) scale(0.6); transform-origin: 100% 0; }
+.cm-pin.is-tap .sk-bubble { transform: translate(0, 0) scale(1); }
+@keyframes cm-swing { 0%, 100% { rotate: -9deg; } 50% { rotate: 9deg; } }
+
+.cm-hero .cm-t-cac { bottom: calc(var(--cm-gh) * 30 / 260 - 1px); width: clamp(46px, 5.4vw, 74px); }
+.cm-hero .cm-t-pot { bottom: calc(var(--cm-gh) * 30 / 260 - 1px); width: clamp(50px, 6vw, 84px); }
+.cm-tap svg, .cm-pin svg { filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45)); }
+
+/* The pendants in the hero hang from under the nav, not from behind it. */
+.cm-hero .sk-pend { top: var(--nav-height, 72px); }
+
+/* The bubble of a tap in a margin opens inward, so the edge of the page never cuts it off. */
+.cm-tap-l .sk-bubble { left: 0; transform: translate(0, 6px) scale(0.6); transform-origin: 0 100%; }
+.cm-tap-l.is-tap .sk-bubble { transform: translate(0, 0) scale(1); }
+.cm-tap-r .sk-bubble { left: auto; right: 0; transform: translate(0, 6px) scale(0.6); transform-origin: 100% 100%; }
+.cm-tap-r.is-tap .sk-bubble { transform: translate(0, 0) scale(1); }
+.cm-hero .sk-bubble, .cm-sec .sk-bubble, .cm-footer .sk-bubble { box-shadow: 0 0 0 3px var(--cm-pink), 0 8px 18px rgba(0, 0, 0, 0.4); }
+
+/* ── This month: the cards under the hero get a strip of pennants along the top ──────────────────────────────────────────────── */
+[data-season="cinco"] .event-strip { background: linear-gradient(to bottom, #0d0a14, rgba(33, 23, 43, 0.72)); }
+[data-season="cinco"] .event-strip::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 14px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='156' height='14' viewBox='0 0 156 14'%3E%3Cpath d='M0 0H156V3H0Z' fill='%23ffb627'/%3E%3Cpath d='M0 3H26L13 14Z' fill='%23ff3f8e'/%3E%3Cpath d='M26 3H52L39 14Z' fill='%2317c3b2'/%3E%3Cpath d='M52 3H78L65 14Z' fill='%23ffd23f'/%3E%3Cpath d='M78 3H104L91 14Z' fill='%23ff7b00'/%3E%3Cpath d='M104 3H130L117 14Z' fill='%231f9d55'/%3E%3Cpath d='M130 3H156L143 14Z' fill='%23d62839'/%3E%3C/svg%3E") repeat-x; }
+[data-season="cinco"] .event-strip__title { font-size: clamp(36px, 6vw, 60px); text-shadow: 0 0 24px rgba(255, 182, 39, 0.4); }
+[data-season="cinco"] .event-strip__title::after { content: " \1F389"; }
+[data-season="cinco"] .event-strip__link { box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45); }
+
+/* ── The rest of the page: every section has its own layer, behind its content ─────────────────────────────────────────────────
+   A string of papel picado along the top, a marigold garland down an edge, a heap of flowers or a row of potted cacti in a bottom
+   corner, chili ristras and pinatas swinging on strings, confetti coming down, butterflies crossing, a strip of tiles along an edge,
+   and here and there a pinata, a cactus or a pot of flowers that answers a tap. */
+.cm-sec .cm-pps { top: 0; height: 84px; animation-duration: 9s; }
+.cm-sec .cm-pps--e, .cm-sec .cm-pps--f { animation-duration: 11s; }
+.cm-gar { top: -6px; height: 400px; width: auto; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.35)); }
+.cm-gar--l { left: 2px; }
+.cm-gar--r { right: 2px; transform: scaleX(-1); }
+.cm-mound { bottom: -10px; width: clamp(150px, 19vw, 270px); height: auto; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.35)); }
+.cm-mound--l { left: clamp(0px, 0.8vw, 16px); }
+.cm-mound--r { right: clamp(0px, 0.8vw, 16px); transform: scaleX(-1); }
+.cm-pots { bottom: -2px; display: flex; align-items: flex-end; gap: clamp(0px, 0.4vw, 6px); }
+.cm-pots--l { left: clamp(4px, 2vw, 32px); }
+.cm-pots--r { right: clamp(4px, 2vw, 32px); }
+.cm-i { display: block; height: auto; flex-shrink: 0; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.35)); }
+.cm-i--sag { width: clamp(38px, 4.4vw, 58px); }
+.cm-i--nopal { width: clamp(50px, 5.8vw, 76px); }
+.cm-i--barrel { width: clamp(46px, 5.4vw, 70px); }
+.cm-i--agave { width: clamp(48px, 5.4vw, 70px); }
+.cm-i--mari, .cm-i--dahl { width: clamp(54px, 6.2vw, 82px); }
+.cm-i--olla { width: clamp(54px, 6.2vw, 82px); }
+.cm-sec .sk-pend > svg { filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4)); }
+.cm-pd--rist { opacity: 0.95; }
+.cm-tiles { opacity: 0.88; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' fill='%23fff1d6'/%3E %3Cg fill='%2317c3b2'%3E%3Cellipse cx='24' cy='24' rx='3.6' ry='12'/%3E%3Cellipse cx='24' cy='24' rx='3.6' ry='12' transform='rotate(90 24 24)'/%3E%3C/g%3E %3Cg fill='%23ff3f8e'%3E%3Cellipse cx='24' cy='24' rx='3' ry='9.5' transform='rotate(45 24 24)'/%3E%3Cellipse cx='24' cy='24' rx='3' ry='9.5' transform='rotate(-45 24 24)'/%3E%3C/g%3E %3Ccircle cx='24' cy='24' r='4.6' fill='%23ff7b00'/%3E%3Ccircle cx='24' cy='24' r='1.8' fill='%23ffd23f'/%3E %3Cg fill='%232a1450'%3E%3Ccircle r='5'/%3E%3Ccircle cx='48' r='5'/%3E%3Ccircle cy='48' r='5'/%3E%3Ccircle cx='48' cy='48' r='5'/%3E%3C/g%3E %3Cg fill='%23ffd23f'%3E%3Ccircle r='2'/%3E%3Ccircle cx='48' r='2'/%3E%3Ccircle cy='48' r='2'/%3E%3Ccircle cx='48' cy='48' r='2'/%3E%3C/g%3E %3Crect x='1' y='1' width='46' height='46' fill='none' stroke='%232a1450' stroke-opacity='.45' stroke-width='2'/%3E%3C/svg%3E"); background-size: 24px 24px; }
+.cm-tiles--b { left: 0; right: 0; bottom: 0; height: 24px; background-repeat: repeat-x; }
+.cm-tiles--t { left: 0; right: 0; top: 0; height: 24px; background-repeat: repeat-x; }
+.cm-tiles--l { left: 0; top: 0; bottom: 0; width: 22px; background-size: 22px 22px; background-repeat: repeat-y; }
+.cm-tiles--r { right: 0; top: 0; bottom: 0; width: 22px; background-size: 22px 22px; background-repeat: repeat-y; }
+.cm-sec { --cm-tw: clamp(38px, calc((100vw - 1200px) / 2 + 2px), 64px); }
+.cm-sec .cm-tap { width: var(--cm-tw); opacity: 0.62; animation: cm-bob 7s ease-in-out infinite; }
+.cm-sec .cm-tap.is-tap { opacity: 1; }
+.cm-sec .cm-t-chili { width: calc(var(--cm-tw) * 0.6); }
+@keyframes cm-bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -8px; } }
+
+/* ── The market stall above the footer: bunting along the top, a striped awning, four painted signs hung under it, and a tiled counter with pots on it ──── */
+.cm-footer {
+  --cm-aw: clamp(50px, 6.2vw, 90px); --cm-ct: 60px;
+  padding: calc(var(--cm-aw) + 26px) 16px 0;
+  background: radial-gradient(ellipse 46% 58% at 50% 58%, rgba(255, 182, 39, 0.16), transparent 72%), linear-gradient(to bottom, transparent, rgba(255, 63, 142, 0.07) 55%, rgba(255, 123, 0, 0.14));
+}
+[data-season="cinco"] .footer { background: #08060d; }
+.cm-footer > .cm-bunting, .cm-footer > .cm-awning, .cm-footer > .cm-post, .cm-footer > .cm-counter, .cm-footer > .cm-mrow, .cm-footer > .sk-pend { position: absolute; }
+.cm-bunting { left: 0; right: 0; top: 0; height: 40px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='40' viewBox='0 0 240 40'%3E%3Cpath d='M0 4Q120 24 240 4' fill='none' stroke='%23fff1d6' stroke-opacity='.8' stroke-width='2'/%3E%3Cpath d='M4 5.3H26L15 28.3Z' fill='%23ff3f8e'/%3E%3Cpath d='M4 5.3H26L24 9.3H6Z' fill='%23000' fill-opacity='.18'/%3E%3Cpath d='M34 9.1H56L45 32.1Z' fill='%23ffd23f'/%3E%3Cpath d='M34 9.1H56L54 13.1H36Z' fill='%23000' fill-opacity='.18'/%3E%3Cpath d='M64 11.6H86L75 34.6Z' fill='%2317c3b2'/%3E%3Cpath d='M64 11.6H86L84 15.6H66Z' fill='%23000' fill-opacity='.18'/%3E%3Cpath d='M94 12.8H116L105 35.8Z' fill='%23ff7b00'/%3E%3Cpath d='M94 12.8H116L114 16.8H96Z' fill='%23000' fill-opacity='.18'/%3E%3Cpath d='M124 12.8H146L135 35.8Z' fill='%231f9d55'/%3E%3Cpath d='M124 12.8H146L144 16.8H126Z' fill='%23000' fill-opacity='.18'/%3E%3Cpath d='M154 11.6H176L165 34.6Z' fill='%23d62839'/%3E%3Cpath d='M154 11.6H176L174 15.6H156Z' fill='%23000' fill-opacity='.18'/%3E%3Cpath d='M184 9.1H206L195 32.1Z' fill='%23ff3f8e'/%3E%3Cpath d='M184 9.1H206L204 13.1H186Z' fill='%23000' fill-opacity='.18'/%3E%3Cpath d='M214 5.3H236L225 28.3Z' fill='%23ffd23f'/%3E%3Cpath d='M214 5.3H236L234 9.3H216Z' fill='%23000' fill-opacity='.18'/%3E%3C/svg%3E") repeat-x; z-index: 3; }
+.cm-awning { left: -10px; width: calc(100% + 20px); top: 24px; height: var(--cm-aw); z-index: 2; filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.4)); }
+.cm-post { top: calc(var(--cm-aw) + 20px); bottom: 0; width: 12px; background: linear-gradient(90deg, #8a4b21, #4f270f); z-index: 1; }
+.cm-post--l { left: 3%; }
+.cm-post--r { right: 3%; }
+.cm-pd-f { z-index: 3; }
+.cm-stall { position: relative; z-index: 1; display: flex; align-items: flex-end; justify-content: center; gap: clamp(8px, 2vw, 22px); padding-bottom: calc(var(--cm-ct) - 8px); }
+.cm-props { display: flex; align-items: flex-end; gap: clamp(2px, 0.8vw, 10px); }
+.cm-footer .cm-i--sag { width: clamp(42px, 5.4vw, 70px); }
+.cm-footer .cm-i--mari, .cm-footer .cm-i--dahl, .cm-footer .cm-i--olla { width: clamp(56px, 7vw, 92px); }
+.cm-footer .cm-i--barrel { width: clamp(50px, 6.4vw, 84px); }
+.cm-footer .cm-i--nopal { width: clamp(54px, 6.8vw, 88px); }
+.cm-signs { align-self: flex-start; align-items: flex-start; }
+.cm-sign {
+  position: relative; margin-top: var(--drop, 30px); padding: 14px 8px 11px; text-align: center; border-radius: 10px; color: #1f0d3d; background: var(--c);
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.42), inset 0 0 0 5px rgba(42, 20, 80, 0.22), 0 10px 22px rgba(0, 0, 0, 0.45);
+  transform-origin: 50% calc(var(--drop, 30px) * -1); animation: cm-hang 5.6s ease-in-out infinite alternate;
+}
+.cm-sign::before, .cm-sign::after { content: ""; position: absolute; bottom: calc(100% - 4px); width: 2px; height: calc(var(--drop, 30px) + 8px); background: #e9d3a3; }
+.cm-sign::before { left: 16%; }
+.cm-sign::after { right: 16%; }
+.cm-sign span { display: block; font: 700 clamp(14px, 2vw, 20px)/1 var(--font-display), sans-serif; letter-spacing: 0.08em; }
+.cm-sign em { display: block; margin-top: 7px; font-style: normal; font-weight: 600; font-size: clamp(10.5px, 1.4vw, 13px); line-height: 1.25; }
+.cm-sign--1 { --c: #ff5fa2; --drop: 26px; }
+.cm-sign--2 { --c: #2fd6c4; --drop: 44px; animation-delay: -1.4s; }
+.cm-sign--3 { --c: #ffd23f; --drop: 30px; animation-delay: -2.8s; }
+.cm-sign--4 { --c: #ff8f26; --drop: 40px; animation-delay: -4.2s; }
+@keyframes cm-hang { from { rotate: -1.8deg; } to { rotate: 1.8deg; } }
+.cm-counter { left: 0; right: 0; bottom: 0; height: var(--cm-ct); z-index: 2; }
+.cm-board { position: absolute; left: 0; right: 0; top: 0; height: 12px; background: linear-gradient(#b5702f, #7a3f19); box-shadow: 0 -2px 0 rgba(255, 255, 255, 0.16) inset, 0 6px 14px rgba(0, 0, 0, 0.4); }
+.cm-mrow { left: 0; right: 0; bottom: calc(var(--cm-ct) - 14px); height: 40px; width: 100%; z-index: 3; }
+.cm-front { position: absolute; left: 0; right: 0; top: 12px; bottom: 0; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' fill='%23fff1d6'/%3E %3Cg fill='%2317c3b2'%3E%3Cellipse cx='24' cy='24' rx='3.6' ry='12'/%3E%3Cellipse cx='24' cy='24' rx='3.6' ry='12' transform='rotate(90 24 24)'/%3E%3C/g%3E %3Cg fill='%23ff3f8e'%3E%3Cellipse cx='24' cy='24' rx='3' ry='9.5' transform='rotate(45 24 24)'/%3E%3Cellipse cx='24' cy='24' rx='3' ry='9.5' transform='rotate(-45 24 24)'/%3E%3C/g%3E %3Ccircle cx='24' cy='24' r='4.6' fill='%23ff7b00'/%3E%3Ccircle cx='24' cy='24' r='1.8' fill='%23ffd23f'/%3E %3Cg fill='%232a1450'%3E%3Ccircle r='5'/%3E%3Ccircle cx='48' r='5'/%3E%3Ccircle cy='48' r='5'/%3E%3Ccircle cx='48' cy='48' r='5'/%3E%3C/g%3E %3Cg fill='%23ffd23f'%3E%3Ccircle r='2'/%3E%3Ccircle cx='48' r='2'/%3E%3Ccircle cy='48' r='2'/%3E%3Ccircle cx='48' cy='48' r='2'/%3E%3C/g%3E %3Crect x='1' y='1' width='46' height='46' fill='none' stroke='%232a1450' stroke-opacity='.45' stroke-width='2'/%3E%3C/svg%3E") 0 0 / 24px 24px repeat; }
+
+/* ── Phones: fewer things, nothing wider than the screen ──────────────────────────────────────────────────────────────────── */
+@media (max-width: 1199px) {
+  .cm-pin { right: 1%; width: 52px; }
+  .cm-pin .cm-rope { height: 6px; }
+}
+@media (max-width: 1279px) {
+  .cm-gar, .cm-pdl { display: none; }
+  .cm-sec .cm-pps { height: 70px; }
+}
+@media (max-width: 1199px) {
+  .cm-pd-h { display: none; }
+}
+@media (max-width: 700px) {
+  .cm-pps--hero { height: 96px; }
+  .cm-sec .cm-pps { height: 52px; }
+  .cm-sec .cm-pd { width: 28px !important; }
+  .cm-sec .cm-pd > i { height: 22px; }
+  .cm-sec .cm-pd--rist { display: none; }
+  .cm-pin { right: 0.8%; width: 46px; }
+  .cm-hero .cm-t-cac { width: 40px; }
+  .cm-hero .cm-t-pot { width: 44px; }
+  .cm-mound { width: 124px; }
+  .cm-pots .cm-i:nth-child(n+3) { display: none; }
+  .cm-i--sag { width: 36px; }
+  .cm-i--nopal, .cm-i--barrel, .cm-i--agave, .cm-i--mari, .cm-i--dahl, .cm-i--olla { width: 50px; }
+  .cm-tiles--l, .cm-tiles--r { width: 14px; background-size: 14px 14px; }
+  .cm-tiles--b, .cm-tiles--t { height: 16px; background-size: 16px 16px; }
+  .cm-footer { --cm-aw: 46px; --cm-ct: 48px; }
+  .cm-post { width: 8px; }
+}
+@media (max-width: 520px) {
+  .cm-sign { padding: 10px 2px 8px; border-radius: 8px; }
+  .cm-sign em { font-size: 10px; }
+  .cm-sign span { font-size: 12px; letter-spacing: 0.03em; }
+  .cm-sign--1 { --drop: 14px; }
+  .cm-sign--2 { --drop: 24px; }
+  .cm-sign--3 { --drop: 16px; }
+  .cm-sign--4 { --drop: 22px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cm-bf { display: none; }
+}

@@ -18,9 +18,9 @@
     };
   }
 
-  var P = { pink: '#ff9ec4', pinkL: '#ffc9de', pinkD: '#f0709f', peach: '#ffb48a', peachL: '#ffd3b8', yel: '#ffd86b', yelL: '#ffeaa6', yelD: '#f5b83a',
-    mint: '#8fe3c0', mintL: '#c6f5e0', lilac: '#b9a2ff', lilacL: '#dccfff', sky: '#8cc8ff', skyL: '#c4e3ff', cream: '#fff6e6', white: '#fffaf3',
-    leaf: '#52b96f', leafD: '#3fa65f', leafL: '#8fdc8e', ind: '#2c2560', wood: '#b07a45', woodD: '#8f6236' };
+  // The palette: pink, peach, yellow, mint, lilac and sky, each with a light shade (L), and cream, leaf green and wicker brown.
+  var P = { pink: '#ff9ec4', pinkL: '#ffc9de', peach: '#ffb48a', yel: '#ffd86b', yelL: '#ffeaa6', mint: '#8fe3c0', mintL: '#c6f5e0', lilac: '#b9a2ff', lilacL: '#dccfff',
+    sky: '#8cc8ff', skyL: '#c4e3ff', cream: '#fff6e6', leaf: '#52b96f', leafD: '#3fa65f', leafL: '#8fdc8e', wood: '#b07a45', woodD: '#8f6236' };
   var EGGCOL = [P.pink, P.mint, P.lilac, P.sky, P.yel, P.peach];
   var PETALCOL = [P.pinkL, '#ffffff', P.pink, P.lilacL, P.pinkL];
   var BFLYCOL = [P.pink, P.sky, P.yel, P.mint, P.lilac, P.peach];
@@ -106,9 +106,10 @@
     '<path d="M6 34C6 28 34 28 34 34C34 56 26 90 20 102C14 90 6 56 6 34Z" fill="#ff9b4a"/><path d="M9 36C9 52 14 76 19 92C14 74 11 54 11 36Z" fill="#ffc08a" opacity=".65"/>' +
     '<path d="M24 38C28 38 30 37 31 36V50C29 50 27 47 24 38Z" fill="#e0702a" opacity=".25"/>' +
     '<path d="M8 44H18M23 54H32M10 64H19M22 74H29M13 84H19" fill="none" stroke="#e0702a" stroke-width="2" stroke-linecap="round" opacity=".8"/>');
-  var CLOUD = sym('es-cloud', VB.cloud,
-    '<g fill="currentColor"><rect x="6" y="38" width="128" height="26" rx="13"/><circle cx="42" cy="38" r="20"/><circle cx="72" cy="30" r="26"/><circle cx="102" cy="38" r="18"/><circle cx="24" cy="46" r="13"/><circle cx="120" cy="46" r="12"/></g>' +
-    '<rect x="6" y="52" width="128" height="12" rx="6" fill="#6b5aa8" opacity=".13"/>');
+  var CLOUD_SHAPES = '<rect x="6" y="38" width="128" height="26" rx="13"/><circle cx="42" cy="38" r="20"/><circle cx="72" cy="30" r="26"/><circle cx="102" cy="38" r="18"/><circle cx="24" cy="46" r="13"/><circle cx="120" cy="46" r="12"/><circle cx="92" cy="22" r="11"/>';
+  var CLOUD = '<clipPath id="es-cc">' + CLOUD_SHAPES + '</clipPath>' + sym('es-cloud', VB.cloud,
+    '<g fill="currentColor">' + CLOUD_SHAPES + '</g><g clip-path="url(#es-cc)"><rect y="30" width="140" height="42" fill="url(#es-g-cloud)"/></g>' +
+    '<path d="M54 14C62 6 80 6 88 12M30 28C34 22 42 20 48 22M108 30C112 26 118 26 122 30" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round" opacity=".7"/>');
   function wing() {
     return '<path d="M36 25C44 22 52 12 47 4C42 -1 28 3 24 13C21 20 27 24 36 25Z" fill="currentColor"/><path d="M26 25C19 25 9 22 7 14C5 8 13 4 19 8C25 12 28 19 26 25Z" fill="currentColor"/>' +
       '<path d="M34 24C40 21 46 14 44 8C38 8 32 14 32 22Z" fill="#fff" opacity=".24"/><circle cx="42" cy="10" r="3.2" fill="#fff" opacity=".85"/><circle cx="34" cy="8" r="2" fill="#fff" opacity=".8"/><circle cx="14" cy="12" r="3" fill="#fff" opacity=".75"/>' +
@@ -264,6 +265,7 @@
     '<linearGradient id="es-g-far" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ab9ff2"/><stop offset="1" stop-color="#6c69c8"/></linearGradient>' +
     '<linearGradient id="es-g-mid" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#72d3aa"/><stop offset="1" stop-color="#2f8f86"/></linearGradient>' +
     '<linearGradient id="es-g-front" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8be59d"/><stop offset=".42" stop-color="#46b574"/><stop offset=".82" stop-color="#1f6552"/><stop offset="1" stop-color="#143a3a"/></linearGradient>' +
+    '<linearGradient id="es-g-cloud" gradientUnits="userSpaceOnUse" x1="0" y1="30" x2="0" y2="72"><stop offset="0" stop-color="#ffb48a" stop-opacity="0"/><stop offset="1" stop-color="#ff9ec4" stop-opacity=".5"/></linearGradient>' +
     '<linearGradient id="es-g-fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0f1424" stop-opacity="0"/><stop offset="1" stop-color="#0f1424"/></linearGradient>' +
     bunting('egg') + bunting('flag') + bunting('daisy') + grassPattern() +
     ['z', 'd', 'b', 'l', 'w'].map(function (key) { return eggSym(key) + hangSym(key); }).join('') +
@@ -272,16 +274,25 @@
   // ── Small builders the scenes share ──
   function svgUse(k, id, vb, style, cls) { return k.use(id, cls || '', vb).replace('<svg ', '<svg style="' + style + '" '); }
   function eggUse(k, key, col, c2, c3, cls) { return svgUse(k, 'es-egg-' + key, VB.egg, 'color:' + col + ';--c2:' + (c2 || P.cream) + ';--c3:' + (c3 || P.yel), cls); }
-  // A tappable egg that cracks: two halves, the top lifts and a pop of confetti goes up (the pop is in onTap).
+  // A tappable egg that cracks: two halves, a chick looking out between them, the top lifts and a pop of confetti goes up (the pop is in onTap).
   function crackEgg(col, c2, c3) {
     var half = function (cls, clip) { return '<g class="' + cls + '" clip-path="url(#' + clip + ')"><use href="#es-egg-z" width="60" height="80" style="color:' + col + ';--c2:' + c2 + ';--c3:' + c3 + '"/></g>'; };
-    return '<svg viewBox="0 -16 60 98" aria-hidden="true" focusable="false">' + half('es-eb', 'es-cb') + half('es-et', 'es-ct') + '</svg>';
+    var chick = '<g class="es-in"><circle cx="30" cy="31" r="12.5" fill="#ffd86b"/><path d="M20 26C22 20 26 18 30 18C26 21 24 25 24 30Z" fill="#fff" opacity=".4"/>' +
+      '<circle cx="25.4" cy="31" r="1.9" fill="#2c2560"/><circle cx="34.6" cy="31" r="1.9" fill="#2c2560"/><path d="M27.6 34.4Q30 32.6 32.4 34.4Q31.2 38 30 38Q28.8 38 27.6 34.4Z" fill="#ff9a3d"/>' +
+      '<ellipse cx="22.6" cy="35" rx="2.6" ry="1.7" fill="#ff9ec4" opacity=".6"/><ellipse cx="37.4" cy="35" rx="2.6" ry="1.7" fill="#ff9ec4" opacity=".6"/>' +
+      '<path d="M27 19C26 14 29 12 30.5 15C31 12 34 12 33.5 17" fill="none" stroke="#f5b83a" stroke-width="2" stroke-linecap="round"/></g>';
+    return '<svg viewBox="0 -16 60 98" aria-hidden="true" focusable="false">' + chick + half('es-eb', 'es-cb') + half('es-et', 'es-ct') + '</svg>';
   }
   // Reduced motion draws nothing moving, so each flyer is given its own resting place across the layer (the CSS reads --lx only then).
   function spread(html, seed) {
     var r = R(seed);
     return html.replace(/(<i class="sk-fly [^"]*" style=")/g, function (m, a) { return a + '--lx:' + Math.round(6 + r() * 78) + '%;'; });
   }
+  function topPx(html, lo, hi, seed) {
+    var r = R(seed);
+    return html.replace(/style="top:[\d.]+%/g, function () { return 'style="top:' + Math.round(lo + r() * (hi - lo)) + 'px'; });
+  }
+  var CLOUDCOL = [P.pinkL, P.lilacL, P.mintL, P.skyL, P.pinkL];
   function hill(fn, step, bottom) {
     var d = 'M-20 ' + fn(-20).toFixed(1), x;
     for (x = -20 + step; x <= 1460; x += step) d += 'L' + x + ' ' + fn(x).toFixed(1);
@@ -293,31 +304,31 @@
   // daffodils, painted eggs, tufts of grass and a basket, fading to the page's own indigo at the bottom.
   function meadow(k) {
     var r = k.rng(77), x, i, s, out = '<svg viewBox="0 0 1440 280" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">';
-    var far = function (x) { return 66 + 16 * Math.sin(x / 170 + 0.6) + 8 * Math.sin(x / 61 + 2); };
-    var mid = function (x) { return 116 + 9 * Math.sin(x / 230 + 1.7) + 4 * Math.sin(x / 83); };
-    var front = function (x) { return 158 + 12 * Math.sin(x / 190 + 4.1) + 5 * Math.sin(x / 70 + 0.5); };
-    out += '<circle cx="1010" cy="76" r="76" fill="#ffe9a3" opacity=".15"/><circle cx="1010" cy="76" r="48" fill="#fff0b8"/>';
+    var far = function (x) { return 96 + 14 * Math.sin(x / 170 + 0.6) + 7 * Math.sin(x / 61 + 2); };
+    var mid = function (x) { return 136 + 9 * Math.sin(x / 230 + 1.7) + 4 * Math.sin(x / 83); };
+    var front = function (x) { return 172 + 12 * Math.sin(x / 190 + 4.1) + 5 * Math.sin(x / 70 + 0.5); };
+    out += '<circle cx="1010" cy="100" r="76" fill="#ffe9a3" opacity=".15"/><circle cx="1010" cy="100" r="48" fill="#fff0b8"/>';
     out += '<path d="' + hill(far, 12, 280) + '" fill="url(#es-g-far)"/>';
     for (x = 20; x < 1430; x += 56 + r() * 84) {
-      s = 52 + r() * 34;
+      s = 46 + r() * 22;
       out += '<use href="#es-tree" x="' + (x - s * 0.5).toFixed(0) + '" y="' + (far(x) + 8 - s * 1.222).toFixed(0) + '" width="' + s.toFixed(0) + '" height="' + (s * 1.222).toFixed(0) + '" style="color:' + TREECOL[Math.floor(r() * 5)] + '"/>';
     }
     out += '<path d="' + hill(mid, 12, 280) + '" fill="url(#es-g-mid)"/>';
-    for (x = -30; x < 1450; x += 120) out += '<use href="#es-fence" x="' + x + '" y="104" width="120" height="80"/>';
+    for (x = -30; x < 1450; x += 120) out += '<use href="#es-fence" x="' + x + '" y="124" width="120" height="80"/>';
     out += '<path d="' + hill(front, 12, 280) + '" fill="url(#es-g-front)"/>';
     var items = [], TC = [P.pink, P.lilac, P.peach, P.yel, P.pinkL, P.pink], DC = ['#ffe27a', '#fff3b0', '#ffd23f', '#ffe27a'];
     for (x = -10; x < 1450; x += 20 + r() * 32) {
-      var kind = r() < 0.58 ? 'tulip' : 'daff', h = 56 + r() * 58, base = front(x) + 22 + r() * 56, w = h * DIM[kind][0] / DIM[kind][1];
+      var kind = r() < 0.58 ? 'tulip' : 'daff', h = 56 + r() * 58, base = front(x) + 18 + r() * 52, w = h * DIM[kind][0] / DIM[kind][1];
       items.push({ y: base, s: '<use href="#es-' + kind + '" x="' + (x - w / 2).toFixed(0) + '" y="' + (base - h).toFixed(0) + '" width="' + w.toFixed(0) + '" height="' + h.toFixed(0) + '" style="color:' + (kind === 'tulip' ? TC[Math.floor(r() * 6)] : DC[Math.floor(r() * 4)]) + '"/>' });
     }
     var KEYS = ['z', 'd', 'b', 'l', 'w'];
     for (i = 0; i < 15; i++) {
-      x = 30 + r() * 1380; var ew = 22 + r() * 18, eb = front(x) + 48 + r() * 50, col = EGGCOL[i % 6];
+      x = 30 + r() * 1380; var ew = 22 + r() * 18, eb = front(x) + 40 + r() * 44, col = EGGCOL[i % 6];
       items.push({ y: eb, s: eg(KEYS[i % 5], x, eb, +ew.toFixed(0), col, P.cream, EGGCOL[(i + 3) % 6], Math.round((r() - 0.5) * 50)) });
     }
-    for (i = 0; i < 24; i++) { x = r() * 1440; var tw = 40 + r() * 34, tb = front(x) + 34 + r() * 66; items.push({ y: tb, s: '<use href="#es-tuft" x="' + (x - tw / 2).toFixed(0) + '" y="' + (tb - tw / 2).toFixed(0) + '" width="' + tw.toFixed(0) + '" height="' + (tw / 2).toFixed(0) + '"/>' }); }
-    for (i = 0; i < 10; i++) { x = r() * 1440; var bs = 12 + r() * 9, bb = front(x) + 40 + r() * 52; items.push({ y: bb, s: '<use href="#es-blossom" x="' + (x - bs / 2).toFixed(0) + '" y="' + (bb - bs).toFixed(0) + '" width="' + bs.toFixed(0) + '" height="' + bs.toFixed(0) + '" style="color:' + (i % 2 ? '#fff6e6' : P.pinkL) + '"/>' }); }
-    items.push({ y: 266, s: '<use href="#es-basket" x="1150" y="168" width="112" height="102"/>' });
+    for (i = 0; i < 24; i++) { x = r() * 1440; var tw = 40 + r() * 34, tb = front(x) + 30 + r() * 58; items.push({ y: tb, s: '<use href="#es-tuft" x="' + (x - tw / 2).toFixed(0) + '" y="' + (tb - tw / 2).toFixed(0) + '" width="' + tw.toFixed(0) + '" height="' + (tw / 2).toFixed(0) + '"/>' }); }
+    for (i = 0; i < 10; i++) { x = r() * 1440; var bs = 12 + r() * 9, bb = front(x) + 36 + r() * 46; items.push({ y: bb, s: '<use href="#es-blossom" x="' + (x - bs / 2).toFixed(0) + '" y="' + (bb - bs).toFixed(0) + '" width="' + bs.toFixed(0) + '" height="' + bs.toFixed(0) + '" style="color:' + (i % 2 ? '#fff6e6' : P.pinkL) + '"/>' }); }
+    items.push({ y: 268, s: '<use href="#es-basket" x="1150" y="170" width="112" height="102"/>' });
     items.sort(function (a, b) { return a.y - b.y; });
     items.forEach(function (it) { out += it.s; });
     return out + '<rect y="232" width="1440" height="48" fill="url(#es-g-fade)"/></svg>';
@@ -332,54 +343,61 @@
   function hero(k) {
     var cloud = function (style) { return '<svg class="es-cloud" style="' + style + '" viewBox="' + VB.cloud + '" aria-hidden="true" focusable="false"><use href="#es-cloud"/></svg>'; };
     return '<div class="es-glow"></div><div class="es-glow es-glow--2"></div>' +
-      k.twinkles(11, { id: 'sk-sparkle', size: [8, 15], dur: [3, 6], colors: [P.yelL, P.pinkL, P.skyL, '#ffffff', P.lilacL], areaY: [3, 40], seed: 21, mobile: 0.6 }) +
-      cloud('top:7%;--l:5vw;--d:190s;--o:-30s;width:clamp(150px,22vw,330px)') + cloud('top:19%;--l:42vw;--d:150s;--o:-90s;width:clamp(110px,15vw,230px);opacity:.24') + cloud('top:33%;--l:70vw;--d:230s;--o:-150s;width:clamp(130px,19vw,290px);opacity:.2') +
+      k.twinkles(9, { id: 'sk-sparkle', size: [8, 15], dur: [3, 6], colors: [P.yelL, P.pinkL, P.skyL, '#ffffff', P.lilacL], areaY: [3, 40], seed: 21, mobile: 0.6 }) +
+      cloud('top:7%;--l:5vw;--d:190s;--o:-30s;width:clamp(150px,22vw,330px)') + cloud('top:19%;--l:42vw;--d:150s;--o:-90s;width:clamp(110px,15vw,230px);opacity:.28') + cloud('top:33%;--l:70vw;--d:230s;--o:-150s;width:clamp(130px,19vw,290px);opacity:.26') +
       '<div class="es-branch">' + k.use('es-branch', '', VB.branch) + '</div>' +
-      spread(k.flyers(6, { id: 'es-bfly', vb: VB.bfly, size: [26, 46], dur: [28, 46], top: [8, 66], wave: 40, flap: true, colors: BFLYCOL, seed: 31, mobile: 0.5 }), 3) +
-      k.particles(24, { id: ['es-petal', 'es-petal', 'es-blossom'], colors: PETALCOL, size: [14, 30], dur: [14, 26], drift: 170, sway: 36, seed: 41, mobile: 0.5, opacity: [0.7, 1] }) +
+      spread(k.flyers(7, { id: 'es-bfly', vb: VB.bfly, size: [32, 56], dur: [28, 46], top: [8, 66], wave: 40, flap: true, colors: BFLYCOL, seed: 31, mobile: 0.5 }), 3) +
+      k.particles(20, { id: ['es-petal', 'es-petal', 'es-blossom'], colors: PETALCOL, size: [14, 30], dur: [14, 26], drift: 170, sway: 36, seed: 41, mobile: 0.5, opacity: [0.7, 1] }) +
       '<div class="es-meadow">' + meadow(k) + '</div>' + hopper(k) +
       k.tap(crackEgg(P.pink, P.cream, P.yel), 'Surprise!', 'es-tap es-tap--egg', '') +
       k.tap(k.use('es-chick', '', VB.chick), 'Peep!', 'es-tap es-tap--chick', '');
   }
 
-  // A layer behind each section, different on every one so the page does not repeat itself. Each piece is  kind:...  (see section()).
+  // A layer behind each section, different on every one so the page does not repeat itself. Each piece is a short spec, read by section():
+  //   bunt:egg|flag|daisy[:m]   a garland along the top (:m is for a phone only)        grass                    a strip of grass along the bottom
+  //   cl:l|r:<name>[:s]         a corner of flowers, a nest, a basket, carrots... (:s smaller)    rain:l|r / branch:l|r   a rainbow, a blossom branch (top corner)
+  //   pend:side:at:len:w:egg:colour   an egg swinging on a string    fly:top:n[:rtl]   butterflies    cloud:n[:rtl]   pastel puffs drifting along the top edge
+  //   petals:n:seed             falling petals                       spark:l|r:top      twinkles in a margin      peek:b:left   a bunny in the grass at the bottom edge
+  //   tap:chick|egg|bunny|peek:l|r:top:width    a tap decoration in a side margin, just under the top edge (its bubble has room there)
   var SECTIONS = {
-    eventStrip:     ['bunt:egg', 'cl:l:tulips', 'pend:r:3:78:36:z:pink', 'fly:22:2', 'petals:5:1', 'cloud:10:1'],
-    programs:       ['branch:r', 'cl:r:nest', 'cl:l:carrots', 'tap:chick:l:46:54', 'fly:62:2:rtl', 'petals:4:2', 'cloud:28:1:rtl'],
-    competition:    ['bunt:flag', 'cl:l:daffs', 'peek:b:80', 'pend:l:2:96:34:d:mint', 'cloud:16:1:rtl', 'petals:5:3', 'fly:56:2'],
-    coaches:        ['rain:l', 'cl:r:eggs', 'pend:r:3:66:30:w:yel', 'tap:egg:l:56:54', 'fly:34:2:rtl', 'petals:4:4', 'grass'],
-    gallery:        ['bunt:egg', 'cl:l:basket', 'cl:r:mixed', 'cloud:12:1', 'fly:40:2:rtl', 'petals:3:5', 'spark:r:18'],
-    'belt-journey': ['branch:l', 'cl:r:carrots', 'cl:l:fence', 'pend:r:2:104:34:l:lilac', 'tap:bunny:r:46:56', 'fly:30:2', 'petals:5:6'],
-    locations:      ['bunt:daisy', 'cl:r:tulips', 'cl:l:chicks', 'tap:peek:l:30:56', 'cloud:20:1', 'fly:58:2:rtl', 'petals:4:7'],
-    faq:            ['rain:r', 'cl:l:nest', 'cl:r:daffs', 'pend:l:1.5:100:32:b:sky', 'peek:b:22', 'petals:5:8', 'grass'],
-    schedule:       ['bunt:flag', 'cl:l:eggs', 'cl:r:basket', 'cloud:14:1:rtl', 'fly:50:2', 'spark:l:24', 'tap:egg:r:34:54', 'petals:4:9'],
-    testimonials:   ['bunt:daisy', 'cl:l:mixed', 'cl:r:tulips', 'peek:b:56', 'pend:r:2.5:84:32:z:peach', 'cloud:18:1', 'fly:42:2:rtl', 'petals:3:10'],
-    pricing:        ['bunt:egg', 'cl:r:daffs', 'cl:l:fence', 'pend:l:2:110:34:w:pink', 'cloud:10:1:rtl', 'fly:48:2', 'petals:5:11', 'grass'],
-    contact:        ['bunt:daisy', 'cl:l:basket', 'cl:r:chicks', 'cl:r:eggs', 'tap:chick:r:30:54', 'pend:l:3:78:30:d:lilac', 'fly:36:2', 'petals:4:12', 'cloud:22:1:rtl']
+    eventStrip:     ['bunt:egg', 'cl:l:eggs:s', 'pend:r:3:78:36:z:pink', 'fly:22:2', 'petals:5:1', 'cloud:1:ltr'],
+    programs:       ['branch:r', 'bunt:egg:m', 'cl:r:nest', 'cl:l:carrots', 'tap:chick:l:54:50', 'fly:62:1:rtl', 'petals:4:2', 'grass'],
+    competition:    ['bunt:flag', 'cl:l:daffs', 'peek:b:80', 'pend:l:1:96:32:d:mint', 'cloud:1:rtl', 'petals:5:3', 'fly:56:2'],
+    coaches:        ['rain:r', 'bunt:flag:m', 'cl:r:eggs', 'cl:l:daffs', 'tap:egg:l:54:46', 'fly:34:1:rtl', 'petals:4:4', 'grass'],
+    gallery:        ['bunt:egg', 'cl:l:basket', 'cl:r:mixed', 'pend:r:2.5:84:30:z:lilac', 'cloud:1:ltr', 'fly:40:1:rtl', 'petals:3:5', 'spark:l:22'],
+    'belt-journey': ['branch:r', 'bunt:daisy:m', 'cl:r:carrots', 'cl:l:fence', 'tap:bunny:l:54:52', 'fly:30:1', 'petals:5:6'],
+    locations:      ['bunt:daisy', 'cl:r:tulips', 'cl:l:chicks', 'tap:peek:l:54:58', 'pend:r:2.5:92:32:b:peach', 'cloud:1:ltr', 'fly:58:2:rtl', 'petals:4:7'],
+    faq:            ['rain:r', 'bunt:egg:m', 'cl:l:nest', 'cl:r:daffs', 'pend:l:1:100:30:b:sky', 'peek:b:22', 'petals:5:8', 'grass'],
+    schedule:       ['bunt:flag', 'cl:l:eggs:s', 'cl:r:chicks:s', 'cloud:1:rtl', 'fly:50:1', 'spark:l:24', 'tap:egg:r:54:46', 'petals:4:9'],
+    testimonials:   ['bunt:daisy', 'cl:l:mixed', 'cl:r:tulips', 'peek:b:72', 'pend:r:2.5:84:32:z:peach', 'cloud:1:ltr', 'fly:42:1:rtl', 'petals:3:10'],
+    pricing:        ['bunt:egg', 'cl:r:daffs', 'cl:l:fence', 'pend:l:1:110:32:w:pink', 'cloud:1:rtl', 'fly:48:1', 'petals:5:11', 'grass'],
+    contact:        ['bunt:daisy', 'cl:l:basket', 'cl:r:chicks', 'tap:chick:r:54:50', 'pend:l:1:78:30:d:lilac', 'fly:36:2', 'petals:4:12', 'cloud:1:rtl']
   };
-  var HOUSE = { bunt: { egg: 46, flag: 44, daisy: 38 } };
+  var BUNTH = { egg: 46, flag: 44, daisy: 38 };
+  // What each tap decoration draws (the egg is drawn by crackEgg, so it names no symbol) and what its bubble says.
   var TAPS = {
-    chick: ['es-chick', VB.chick, 'Peep!'], egg: ['egg', VB.egg, 'Surprise!'], bunny: ['es-bunny', VB.bunny, 'Hop to it!'], peek: ['es-peek', VB.peek, 'Peekaboo!']
+    chick: ['es-chick', VB.chick, 'Peep!'], egg: [null, VB.egg, 'Surprise!'], bunny: ['es-bunny', VB.bunny, 'Hop to it!'], peek: ['es-peek', VB.peek, 'Peekaboo!']
   };
   var PCOLS = { pink: [P.pink, P.cream, P.yel], mint: [P.mint, P.cream, P.pink], yel: [P.yel, P.cream, P.pink], lilac: [P.lilac, P.cream, P.yel], sky: [P.sky, P.cream, P.yel], peach: [P.peach, P.cream, P.mint] };
 
   function section(specs, k, idx) {
     var out = '', n = 0;
+    specs = specs.filter(function (x) { return x.indexOf('cloud:') === 0; }).concat(specs.filter(function (x) { return x.indexOf('cloud:') !== 0; }));
     specs.forEach(function (spec) {
       var a = spec.split(':'), kind = a[0], seed = 300 + idx * 17 + (n++);
       if (kind === 'bunt') {
-        out += '<svg class="es-bunt es-bunt--' + a[1] + '" width="100%" height="' + HOUSE.bunt[a[1]] + '" aria-hidden="true" focusable="false"><rect width="100%" height="100%" fill="url(#es-pat-' + a[1] + ')"/></svg>';
+        out += '<svg class="es-bunt es-bunt--' + a[1] + (a[2] === 'm' ? ' es-only-m' : '') + '" width="100%" height="' + BUNTH[a[1]] + '" aria-hidden="true" focusable="false"><rect width="100%" height="100%" fill="url(#es-pat-' + a[1] + ')"/></svg>';
       } else if (kind === 'grass') {
         out += '<svg class="es-grass" width="100%" height="44" aria-hidden="true" focusable="false"><rect width="100%" height="100%" fill="url(#es-pat-grass)"/></svg>';
       } else if (kind === 'cl') {
-        out += k.use('es-cl-' + a[2], 'es-cl es-cl--' + a[1] + ' es-cl--' + a[2], VB.cl);
+        out += k.use('es-cl-' + a[2], 'es-cl es-cl--' + a[1] + ' es-cl--' + a[2] + (a[3] === 's' ? ' es-cl--s' : ''), VB.cl);
       } else if (kind === 'pend') {
         var pc = PCOLS[a[6]] || PCOLS.pink;
         out += k.pendant(svgUse(k, 'es-h-' + a[5], VB.hang, 'color:' + pc[0] + ';--c2:' + pc[1] + ';--c3:' + pc[2]), { side: a[1], at: +a[2], len: +a[3], w: +a[4], delay: (idx % 5) + 1 });
       } else if (kind === 'fly') {
         out += spread(k.flyers(+a[2], { id: 'es-bfly', vb: VB.bfly, top: [+a[1] - 5, +a[1] + 9], size: [20, 36], dur: [26, 44], wave: 28, flap: true, colors: BFLYCOL, seed: seed, mobile: 0.5, dir: a[3] === 'rtl' ? 'rtl' : 'ltr' }), seed);
       } else if (kind === 'cloud') {
-        out += spread(k.flyers(+a[2], { id: 'es-cloud', vb: VB.cloud, top: [+a[1], +a[1] + 4], size: [90, 150], dur: [70, 110], wave: 8, colors: ['#efe3ff'], seed: seed, mobile: 1, cls: 'es-cloudfly', dir: a[3] === 'rtl' ? 'rtl' : 'ltr' }), seed);
+        out += spread(topPx(k.flyers(+a[1], { id: 'es-cloud', vb: VB.cloud, size: [72, 112], dur: [70, 110], wave: 6, colors: CLOUDCOL, seed: seed, mobile: 1, cls: 'es-cloudfly', dir: a[2] === 'rtl' ? 'rtl' : 'ltr' }), 2, 14, seed), seed);
       } else if (kind === 'petals') {
         out += k.particles(+a[1], { id: ['es-petal', 'es-petal', 'es-blossom'], colors: PETALCOL, size: [10, 22], dur: [16, 30], drift: 90, sway: 28, seed: 100 + +a[2], mobile: 0.5, opacity: [0.5, 0.9] });
       } else if (kind === 'rain') {
@@ -391,8 +409,8 @@
       } else if (kind === 'spark') {
         out += '<div class="es-sparks es-sparks--' + a[1] + ' sk-hide-m" style="top:' + a[2] + '%">' + k.twinkles(4, { id: 'sk-sparkle', size: [9, 16], dur: [3, 6], colors: [P.yelL, P.pinkL, P.skyL, P.mintL], area: [0, 100], areaY: [0, 100], seed: seed }) + '</div>';
       } else if (kind === 'tap') {
-        var t = TAPS[a[1]], inner = t[0] === 'egg' ? crackEgg(EGGCOL[idx % 6], P.cream, P.yel) : k.use(t[0], '', t[1]);
-        out += k.tap(inner, t[2], 'es-tap es-tap--' + a[1] + ' sk-hide-m', (a[2] === 'l' ? 'left' : 'right') + ':0.4%;top:' + a[3] + '%;width:' + a[4] + 'px');
+        var t = TAPS[a[1]], inner = t[0] === null ? crackEgg(EGGCOL[idx % 6], P.cream, P.yel) : k.use(t[0], '', t[1]), sd = a[2] === 'l' ? 'left' : 'right';
+        out += k.tap(inner, t[2], 'es-tap es-tap--' + a[1] + ' es-tap--' + a[2] + ' sk-hide-m', sd + ':' + (a[1] === 'peek' ? '-20px' : '0.4%') + ';top:' + a[3] + 'px;width:' + a[4] + 'px');
       }
     });
     return out;
@@ -403,21 +421,22 @@
   var TITLES = ['HOP', 'SPRING', 'BLOOM', 'EGGS'];
   function hills(k) {
     var r = k.rng(909), x, s, out = '<svg viewBox="0 0 1440 340" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">';
-    var far = function (x) { return 124 + 20 * Math.sin(x / 210 + 1.2) + 9 * Math.sin(x / 70); };
-    var mid = function (x) { return 196 + 8 * Math.sin(x / 260 + 0.4) + 4 * Math.sin(x / 90); };
+    var far = function (x) { return 156 + 18 * Math.sin(x / 210 + 1.2) + 8 * Math.sin(x / 70); };
+    var mid = function (x) { return 214 + 8 * Math.sin(x / 260 + 0.4) + 4 * Math.sin(x / 90); };
     out += '<path d="' + hill(far, 12, 340) + '" fill="url(#es-g-far)" opacity=".92"/>';
-    for (x = 10; x < 1440; x += 50 + r() * 70) { s = 56 + r() * 40; out += '<use href="#es-tree" x="' + (x - s / 2).toFixed(0) + '" y="' + (far(x) + 10 - s * 1.222).toFixed(0) + '" width="' + s.toFixed(0) + '" height="' + (s * 1.222).toFixed(0) + '" style="color:' + TREECOL[Math.floor(r() * 5)] + '"/>'; }
+    for (x = 10; x < 1440; x += 50 + r() * 70) { s = 50 + r() * 28; out += '<use href="#es-tree" x="' + (x - s / 2).toFixed(0) + '" y="' + (far(x) + 10 - s * 1.222).toFixed(0) + '" width="' + s.toFixed(0) + '" height="' + (s * 1.222).toFixed(0) + '" style="color:' + TREECOL[Math.floor(r() * 5)] + '"/>'; }
     out += '<path d="' + hill(mid, 12, 340) + '" fill="url(#es-g-mid)"/>';
-    for (x = -30; x < 1450; x += 120) out += '<use href="#es-fence" x="' + x + '" y="188" width="120" height="80"/>';
-    for (x = 20; x < 1440; x += 70 + r() * 110) { var h = 54 + r() * 30, bs = 250 + r() * 14; out += '<use href="#es-' + (r() < 0.5 ? 'tulip' : 'daff') + '" x="' + (x - h * 0.2).toFixed(0) + '" y="' + (bs - h).toFixed(0) + '" width="' + (h * 0.45).toFixed(0) + '" height="' + h.toFixed(0) + '" style="color:' + EGGCOL[Math.floor(r() * 6)] + '"/>'; }
+    for (x = -30; x < 1450; x += 120) out += '<use href="#es-fence" x="' + x + '" y="204" width="120" height="80"/>';
+    for (x = 20; x < 1440; x += 70 + r() * 110) { var h = 54 + r() * 30, bs = 262 + r() * 14; out += '<use href="#es-' + (r() < 0.5 ? 'tulip' : 'daff') + '" x="' + (x - h * 0.2).toFixed(0) + '" y="' + (bs - h).toFixed(0) + '" width="' + (h * 0.45).toFixed(0) + '" height="' + h.toFixed(0) + '" style="color:' + EGGCOL[Math.floor(r() * 6)] + '"/>'; }
     return out + '<rect y="290" width="1440" height="50" fill="url(#es-g-fade)" opacity=".5"/></svg>';
   }
   function footer(k) {
-    var signs = SAYINGS.map(function (s, i) { return '<div class="es-sign es-sign--' + (i + 1) + '"><span>' + TITLES[i] + '</span><em>' + s + '</em></div>'; }).join('');
+    var signs = SAYINGS.map(function (s, i) { return '<div class="es-sign es-sign--' + (i + 1) + '"><div class="es-egg"><i class="es-band es-band--t"></i><i class="es-band es-band--b"></i><span>' + TITLES[i] + '</span><em>' + s + '</em></div></div>'; }).join('');
     return '<div class="es-hills">' + hills(k) + '</div>' +
+      k.twinkles(8, { id: 'sk-sparkle', size: [8, 14], dur: [3, 6], colors: [P.yelL, P.pinkL, P.skyL, '#ffffff', P.lilacL], area: [4, 96], areaY: [3, 34], seed: 930, mobile: 0.5 }) +
       '<div class="es-props sk-props es-props--l">' + k.use('es-cl-daffs', 'es-i es-i--daffs', VB.cl) + k.use('es-nest', 'es-i es-i--nest', VB.nest) + '</div>' +
       '<div class="es-eggs sk-signs">' + signs + '</div>' +
-      '<div class="es-props sk-props es-props--r">' + k.use('es-basket', 'es-i es-i--basket', VB.basket) + k.use('es-bunny', 'es-i es-i--bunny', VB.bunny) + k.use('es-cl-tulips', 'es-i es-i--tulips', VB.cl) + '</div>' +
+      '<div class="es-props sk-props es-props--r">' + k.use('es-bunny', 'es-i es-i--bunny', VB.bunny) + k.use('es-basket', 'es-i es-i--basket', VB.basket) + '</div>' +
       '<div class="es-ground"><svg width="100%" height="44" aria-hidden="true" focusable="false"><rect width="100%" height="100%" fill="url(#es-pat-grass)"/></svg></div>' +
       '<div class="es-lays sk-hide-m">' + eggUse(k, 'd', P.pink, P.cream, P.yel, 'es-lay es-lay--1') + eggUse(k, 'z', P.mint, P.cream, P.yel, 'es-lay es-lay--2') + eggUse(k, 'w', P.lilac, P.cream, P.pink, 'es-lay es-lay--3') + eggUse(k, 'b', P.yel, P.cream, P.pink, 'es-lay es-lay--4') + '</div>' +
       spread(k.flyers(3, { id: 'es-bfly', vb: VB.bfly, size: [24, 40], top: [20, 60], dur: [26, 40], wave: 30, flap: true, colors: BFLYCOL, seed: 920, mobile: 0.67 }), 9) +

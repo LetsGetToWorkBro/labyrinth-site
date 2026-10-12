@@ -120,8 +120,9 @@ export async function checkPack({ browser, base, check, name, iso }) {
   for (let i = 0; i < tapCount; i++) {
     const r = await page.evaluate(async i => {
       const t = document.querySelectorAll('[data-tap]')[i]; t.click()
-      await new Promise(r => setTimeout(r, 260))
       const b = t.querySelector('.sk-bubble')
+      // wait (up to 1.2 s; the bubble stays 1.4 s) until it is fully shown, so a slow machine does not fail a pack that is right
+      for (const t0 = performance.now(); performance.now() - t0 < 1200 && !(t.classList.contains('is-tap') && b && getComputedStyle(b).opacity === '1');) await new Promise(r => setTimeout(r, 40))
       return { on: t.classList.contains('is-tap'), text: b ? b.textContent : '', shown: b ? getComputedStyle(b).opacity : '0' }
     }, i)
     said.push(r)
@@ -178,5 +179,11 @@ export async function checkPack({ browser, base, check, name, iso }) {
   const off = await open(browser, base, iso ?? PACKS[name], '?season=off')
   const offOn = await off.page.evaluate(() => ({ season: document.documentElement.dataset.season || '', layers: document.querySelectorAll('.sk-defs, .sk-hero, .sk-sec, .sk-footer, .sk-p, .sk-tap').length }))
   check(`${L} ?season=off turns it off on its own day: nothing built, nothing fetched`, offOn.season === '' && offOn.layers === 0 && off.seen.asked.length === 0, JSON.stringify({ offOn, asked: off.seen.asked }))
+  // And if its files were ever run on a day it is not on, they build nothing (the kit looks at the season before it builds).
+  await off.page.addScriptTag({ url: '/season-kit.js' })
+  await off.page.addScriptTag({ url: `/season-${name}.js` })
+  await off.page.waitForTimeout(300)
+  const stray = await off.page.evaluate(() => document.querySelectorAll('.sk-defs, .sk-hero, .sk-sec, .sk-footer, .sk-p, .sk-tap').length)
+  check(`${L} and its files run on a day it is off build nothing`, stray === 0, String(stray))
   await off.ctx.close()
 }

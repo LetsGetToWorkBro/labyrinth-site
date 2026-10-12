@@ -1,0 +1,258 @@
+/* ══ Easter: the homepage for all of March (and on to Easter Sunday in the years it falls in April) ═══════════════════════════════════
+   index.html's <head> sets <html data-season="easter"> from the date on the academy's clock (Central), from March 1 through the end of
+   March, and on to Easter Sunday when that is in April, and only then loads season-kit.css, season-kit.js, this file and season-easter.js.
+   On every other day none of them is fetched, so the page is exactly what it always was. Preview any time with /?season=easter (and
+   /?season=off for no theme). Everything here is under that attribute (or under an .es- class that only season-easter.js creates), and the
+   decoration is aria-hidden, sits behind the content and never takes a tap away from it. To retire it: delete this file, season-easter.js,
+   the "easter" window and pack lines in index.html's <head>, and its entry in season-theme-checks.mjs. */
+
+/* ── The colours: a dark indigo spring dusk with pastel accents: sunny yellow for the page's accent; mint, lilac, pink, peach and sky for the decoration ── */
+:root[data-season="easter"] {
+  --bg: #0f1424;
+  --surface: #171e36;
+  --surface-elevated: #1f2745;
+  --border: rgba(185, 162, 255, 0.17);
+  --border-strong: rgba(185, 162, 255, 0.34);
+  --text-muted: #b3b9d8;
+  --gold: #ffd86b;
+  --gold-hover: #ffe699;
+  --es-pink: #ff9ec4;
+  --es-peach: #ffb48a;
+  --es-mint: #8fe3c0;
+  --es-lilac: #b9a2ff;
+  --es-sky: #8cc8ff;
+  --es-cream: #fff6e6;
+  --sk-bubble-bg: #fff6e6;
+  --sk-bubble-fg: #2c2560;
+  --sk-string: rgba(214, 198, 255, 0.62);
+}
+[data-season="easter"] body {
+  background:
+    radial-gradient(800px 520px at 0% 14%, rgba(185, 162, 255, 0.14), transparent 70%) 0 0 / 100% 2800px repeat-y,
+    radial-gradient(760px 500px at 100% 52%, rgba(255, 158, 196, 0.1), transparent 70%) 0 0 / 100% 2800px repeat-y,
+    radial-gradient(700px 460px at 24% 88%, rgba(143, 227, 192, 0.08), transparent 70%) 0 0 / 100% 2800px repeat-y,
+    var(--bg);
+}
+[data-season="easter"] .testimonials { background: #121a2f; }
+[data-season="easter"] .nav--scrolled { background: rgba(15, 20, 36, 0.92); }
+
+/* ── The hero: the photograph goes to lavender dusk with a peach glow low on the right, and the meadow comes up along the bottom ──────────── */
+[data-season="easter"] .hero { --es-m: clamp(150px, 19.4vw, 760px); padding-bottom: var(--es-m); }
+[data-season="easter"] .hero__still img { filter: saturate(0.9) brightness(0.82) contrast(1.04); }
+[data-season="easter"] .hero__bg::after {
+  background:
+    radial-gradient(ellipse 62% 40% at 70% 100%, rgba(255, 176, 140, 0.3), transparent 72%),
+    linear-gradient(to bottom, rgba(30, 22, 72, 0.8) 0%, rgba(66, 48, 118, 0.56) 34%, rgba(146, 90, 140, 0.46) 58%, rgba(206, 124, 124, 0.3) 74%, rgba(15, 20, 36, 0.88) 92%, #0f1424 100%);
+}
+[data-season="easter"] .hero__h1-visual span { color: var(--gold); text-shadow: 0 0 28px rgba(255, 216, 107, 0.45), 0 0 4px rgba(255, 236, 170, 0.4); }
+[data-season="easter"] .hero__badge { border-color: rgba(255, 216, 107, 0.55); }
+
+/* A soft glow where the sun sets behind the hills (peach, then lilac on the left). */
+.es-glow {
+  left: 70%; bottom: calc(var(--es-m) * 0.62); width: clamp(420px, 78vw, 1100px); aspect-ratio: 1.5; transform: translate(-50%, 50%); border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(255, 205, 150, 0.55) 0%, rgba(255, 150, 190, 0.26) 38%, transparent 70%);
+}
+.es-glow--2 {
+  left: 18%; bottom: calc(var(--es-m) * 0.5); width: clamp(300px, 52vw, 740px); transform: translate(-50%, 40%);
+  background: radial-gradient(ellipse at center, rgba(185, 162, 255, 0.42) 0%, rgba(185, 162, 255, 0.14) 40%, transparent 70%);
+}
+
+/* Fluffy clouds drift across the sky, slowly (each rests at its own place when motion is off). */
+.es-cloud { left: 0; height: auto; color: #f3e6ff; opacity: 0.38; translate: var(--l, 0) 0; animation: es-drift var(--d, 160s) linear var(--o, 0s) infinite; }
+@keyframes es-drift { from { translate: -36vw 0; } to { translate: 104vw 0; } }
+
+/* The blossom branch hangs in from the top right corner and sways a little. */
+.es-branch { right: -6px; top: 58px; width: clamp(150px, 22vw, 330px); transform-origin: 92% 0; animation: es-sway 8s ease-in-out infinite alternate; }
+.es-branch svg { display: block; width: 100%; height: auto; }
+@keyframes es-sway { from { transform: rotate(-1.6deg); } to { transform: rotate(1.8deg); } }
+
+/* Butterflies in the sky bob a little as they cross (on top of the kit's crossing and wing beats). */
+.es-hero .sk-fly svg { animation: es-bob 1.7s ease-in-out infinite alternate; }
+.es-sec .es-cloudfly { opacity: 0.92; }
+@keyframes es-bob { from { translate: 0 -7px; } to { translate: 0 7px; } }
+
+/* The meadow: lavender hills with blossom trees and a low sun, a picket fence, then grass, tulips, daffodils, painted eggs and a basket. */
+.es-meadow { left: 0; right: 0; bottom: -1px; height: var(--es-m); }
+.es-meadow svg { display: block; width: 100%; height: 100%; }
+
+/* The bunny hops across the foot of the hero on a loop, and answers a tap. Three nested things, each doing one job: the runner crosses, the hopper hops, the sprite squashes. */
+.es-run { left: 0; bottom: calc(var(--es-m) * 0.14); width: clamp(56px, 6.8vw, 96px); translate: 46vw 0; animation: es-run 36s linear infinite; }
+.es-run::after { content: ""; position: absolute; left: 12%; right: 8%; bottom: -3px; height: 7px; border-radius: 50%; background: rgba(8, 24, 28, 0.34); }
+.es-hop { position: relative; z-index: 1; animation: es-hop 0.95s infinite; }
+.es-hop .sk-tap { position: relative; display: block; width: 100%; }
+.es-bunny { display: block; transform-origin: 50% 100%; animation: es-squish 0.95s ease-in-out infinite; }
+.es-bunny svg { display: block; width: 100%; height: auto; }
+@keyframes es-run { from { translate: -14vw 0; } to { translate: 108vw 0; } }
+@keyframes es-hop {
+  0%, 20% { translate: 0 0; rotate: 0deg; animation-timing-function: cubic-bezier(0.2, 0.7, 0.35, 1); }
+  48% { translate: 0 -28px; rotate: -7deg; animation-timing-function: cubic-bezier(0.65, 0, 0.8, 0.4); }
+  76% { translate: 0 0; rotate: 6deg; }
+  100% { translate: 0 0; rotate: 0deg; }
+}
+@keyframes es-squish {
+  0%, 18% { scale: 1.07 0.93; animation-timing-function: ease-out; }
+  34% { scale: 0.95 1.07; }
+  48% { scale: 0.97 1.04; animation-timing-function: ease-in; }
+  76% { scale: 0.95 1.07; }
+  84% { scale: 1.1 0.9; animation-timing-function: ease-out; }
+  100% { scale: 1.07 0.93; }
+}
+
+/* Every bubble here shows the instant it is tapped (only its pop in size takes a moment, so a slow frame never leaves it half there) and fades out gently. */
+.es-hero .sk-bubble, .es-sec .sk-bubble, .es-footer .sk-bubble { transition: opacity 0.3s, transform 0.2s; box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35); }
+.es-hero .is-tap .sk-bubble, .es-sec .is-tap .sk-bubble, .es-footer .is-tap .sk-bubble { transition: transform 0.15s; }
+
+/* The egg in the grass: tap it and the top pops off in confetti. The chick sits in its shell. */
+.es-hero .es-tap--egg { left: 3.6%; bottom: calc(var(--es-m) * 0.06); width: clamp(40px, 5vw, 70px); }
+.es-hero .es-tap--chick { right: 5.4%; bottom: calc(var(--es-m) * 0.05); width: clamp(48px, 6vw, 84px); }
+.es-tap--egg .es-et { transform-origin: 30px 42px; }
+.es-tap--egg.is-tap .es-et { animation: es-lid 1.3s ease-out both; }
+.es-tap--egg .es-in { opacity: 0; }
+.es-tap--egg.is-tap .es-in { animation: es-peep 1.3s ease-out both; }
+@keyframes es-peep {
+  0%, 12% { opacity: 0; transform: translateY(12px); }
+  34% { opacity: 1; transform: translateY(-3px); }
+  70% { opacity: 1; transform: translateY(-5px); }
+  100% { opacity: 0; transform: translateY(10px); }
+}
+@keyframes es-lid {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  14% { transform: translate(0, -3px) rotate(-3deg); }
+  32% { transform: translate(-4px, -22px) rotate(-15deg); }
+  70% { transform: translate(-4px, -17px) rotate(-11deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
+}
+.es-tap--egg svg, .es-tap--chick svg { filter: drop-shadow(0 5px 6px rgba(0, 0, 0, 0.35)); }
+
+/* ── This month: the cards under the hero get a pastel-striped edge and a bunny ───────────────────────────────────────────────────────── */
+[data-season="easter"] .event-strip { background: linear-gradient(to bottom, #0f1424, rgba(23, 30, 54, 0.7)); }
+[data-season="easter"] .event-strip::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 7px;
+  background: repeating-linear-gradient(90deg, #ff9ec4 0 26px, #ffb48a 26px 52px, #ffd86b 52px 78px, #8fe3c0 78px 104px, #8cc8ff 104px 130px, #b9a2ff 130px 156px);
+}
+[data-season="easter"] .event-strip__title { font-size: clamp(36px, 6vw, 60px); text-shadow: 0 0 24px rgba(255, 216, 107, 0.3); }
+[data-season="easter"] .event-strip__title::after { content: " \1F430"; }
+[data-season="easter"] .event-strip__link { box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45); }
+
+/* ── The rest of the page: every section has its own layer, behind its content ─────────────────────────────────────────────────────────
+   Egg or flag or daisy bunting along the top, a corner of tulips, daffodils, a nest, a basket, carrots or chicks, a rainbow or a blossom
+   branch, eggs swinging on strings, clouds and butterflies crossing, petals falling, a bunny peeking out of the grass, and here and
+   there a chick, an egg or a bunny that answers a tap. */
+.es-bunt { left: 0; top: 6px; }
+.es-only-m { display: none; }
+.es-grass { left: 0; bottom: 0; }
+.es-cl { bottom: -2px; width: clamp(120px, 15vw, 210px); height: auto; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.3)); }
+.es-cl--s { width: clamp(100px, 11.5vw, 150px); }
+.es-cl--l { left: clamp(2px, 1.4vw, 26px); }
+.es-cl--r { right: clamp(2px, 1.4vw, 26px); }
+.es-rain { top: 14px; width: clamp(150px, 17vw, 240px); height: auto; opacity: 0.82; }
+.es-rain--l { left: clamp(4px, 1.5vw, 26px); }
+.es-rain--r { right: clamp(4px, 1.5vw, 26px); }
+.es-branch-s { top: 0; width: clamp(110px, 14vw, 200px); opacity: 0.9; }
+.es-branch-s svg { display: block; width: 100%; height: auto; filter: drop-shadow(0 6px 10px rgba(20, 10, 40, 0.35)); }
+.es-branch-s--r { right: -4px; }
+.es-branch-s--l { left: -4px; transform: scaleX(-1); }
+.es-peekb { bottom: -3px; width: clamp(60px, 6.4vw, 92px); height: auto; filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.3)); }
+.es-sparks { width: 90px; height: 90px; }
+.es-sparks--l { left: 1.2%; }
+.es-sparks--r { right: 1.2%; }
+.es-sec .es-tap { opacity: 0.9; animation: es-hopbob 6.5s ease-in-out infinite; }
+.es-sec .es-tap > svg { filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.35)); }
+.es-sec .es-tap.is-tap { opacity: 1; animation: sk-wiggle 0.4s ease-in-out 2; }
+.es-sec .es-tap--l .sk-bubble { left: 0; transform-origin: left bottom; transform: translate(0, 6px) scale(0.6); }
+.es-sec .es-tap--l.is-tap .sk-bubble { transform: translate(0, 0) scale(1); }
+.es-sec .es-tap--r .sk-bubble { left: auto; right: 0; transform-origin: right bottom; transform: translate(0, 6px) scale(0.6); }
+.es-sec .es-tap--r.is-tap .sk-bubble { transform: translate(0, 0) scale(1); }
+.es-sec .es-tap--peek.es-tap--l .sk-bubble { left: 26px; }
+@keyframes es-hopbob { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(0, -7px); } }
+/* Taps live in the side margins at the top of a section, where there is room for their bubble (the kit leaves them out where the margins are too narrow). */
+
+/* ── The meadow above the footer: lavender hills and blossom trees, a long picket fence, four egg-shaped signs on stakes in the grass ────── */
+.es-footer {
+  display: flex; align-items: flex-end; justify-content: center; gap: clamp(8px, 2vw, 22px); padding: 76px 16px 46px; min-height: min(23.6vw, 900px);
+  background:
+    radial-gradient(ellipse 55% 42% at 50% 56%, rgba(255, 176, 140, 0.3), transparent 72%),
+    radial-gradient(ellipse 36% 38% at 12% 60%, rgba(185, 162, 255, 0.18), transparent 72%),
+    linear-gradient(to bottom, transparent, rgba(143, 227, 192, 0.05) 60%, rgba(255, 158, 196, 0.09));
+}
+[data-season="easter"] .footer { background: #0b0f1d; }
+.es-hills { position: absolute; left: 0; right: 0; top: 0; bottom: 0; z-index: 0; }
+.es-hills svg { display: block; width: 100%; height: 100%; }
+.es-props, .es-eggs { position: relative; z-index: 1; }
+.es-props { flex: 1 1 0; min-width: 0; display: flex; align-items: flex-end; gap: clamp(4px, 1vw, 14px); margin-bottom: -20px; }
+.es-props--l { justify-content: flex-end; }
+.es-props--r { justify-content: flex-start; }
+.es-i { display: block; height: auto; flex-shrink: 0; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.35)); }
+.es-i--daffs { width: clamp(100px, 11.5vw, 150px); margin-bottom: -4px; }
+.es-i--nest { width: clamp(64px, 8vw, 104px); }
+.es-i--basket { width: clamp(64px, 8vw, 104px); }
+.es-i--bunny { width: clamp(60px, 7.4vw, 96px); }
+@media (max-width: 1100px) { .es-props .es-i:nth-child(n+2) { display: none; } }
+.es-eggs { display: flex; align-items: flex-end; justify-content: center; gap: clamp(8px, 2vw, 22px); }
+.es-sign { position: relative; margin-bottom: var(--m, 40px); }
+.es-sign::after {
+  content: ""; position: absolute; left: 50%; top: 96%; width: 10px; height: calc(var(--m, 40px) + 40px); transform: translateX(-50%); z-index: -1;
+  border-radius: 3px 3px 6px 6px; background: linear-gradient(90deg, #ddb27a, #c79a63 55%, #a87a49);
+}
+.es-sign--1 { --m: 34px; transform: rotate(-3deg); }
+.es-sign--2 { --m: 52px; transform: rotate(1.8deg); }
+.es-sign--3 { --m: 40px; transform: rotate(-1.6deg); }
+.es-sign--4 { --m: 56px; transform: rotate(3deg); }
+.es-egg {
+  position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; overflow: hidden; aspect-ratio: 4 / 5;
+  padding: 24% 9% 18%; border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%; box-shadow: inset 0 -10px 18px rgba(44, 37, 96, 0.16), 0 8px 22px rgba(0, 0, 0, 0.4);
+}
+.es-egg::before { content: ""; position: absolute; left: 17%; top: 9%; width: 20%; height: 15%; border-radius: 50%; background: rgba(255, 255, 255, 0.5); transform: rotate(-28deg); }
+.es-egg span { position: relative; display: block; font: 700 clamp(13px, 1.9vw, 20px)/1 var(--font-display), sans-serif; letter-spacing: 0.08em; color: #2c2560; }
+.es-egg em { position: relative; display: block; margin-top: 6px; font-style: normal; font-size: clamp(10px, 1.3vw, 13px); line-height: 1.22; color: #2c2560; }
+.es-band { position: absolute; left: 0; right: 0; }
+.es-band--t { top: 22%; height: 11%; }
+.es-band--b { bottom: 12%; height: 9%; }
+.es-sign--1 .es-egg { background: linear-gradient(165deg, #c2e3ff, #8cc8ff); }
+.es-sign--2 .es-egg { background: linear-gradient(165deg, #ffd3e5, #ff9ec4); }
+.es-sign--3 .es-egg { background: linear-gradient(165deg, #e5dcff, #b9a2ff); }
+.es-sign--4 .es-egg { background: linear-gradient(165deg, #fff3bd, #ffd86b); }
+.es-sign--1 .es-band--t { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='12'%3E%3Cpath d='M0 9L5 3L10 9L15 3L20 9' fill='none' stroke='%23fff6e6' stroke-width='3.2' stroke-linejoin='round'/%3E%3C/svg%3E") repeat-x center / 20px 100%; }
+.es-sign--1 .es-band--b { background: radial-gradient(circle, #fff6e6 0 2.6px, transparent 3.2px) 0 center / 13px 100% repeat-x; }
+.es-sign--2 .es-band--t { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='12'%3E%3Cpath d='M0 7Q5 0 10 7T20 7' fill='none' stroke='%23fff6e6' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E") repeat-x center / 20px 100%; }
+.es-sign--2 .es-band--b { background: linear-gradient(#fff6e6, #fff6e6) center / 100% 3px no-repeat, radial-gradient(circle, #ffd86b 0 2.6px, transparent 3.2px) 0 center / 13px 100% repeat-x; }
+.es-sign--3 .es-band--t { background: radial-gradient(circle, #fff6e6 0 3px, transparent 3.6px) 0 center / 15px 100% repeat-x; }
+.es-sign--3 .es-band--b { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='12'%3E%3Cpath d='M0 9L5 3L10 9L15 3L20 9' fill='none' stroke='%23fff6e6' stroke-width='3.2' stroke-linejoin='round'/%3E%3C/svg%3E") repeat-x center / 20px 100%; }
+.es-sign--4 .es-band--t { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='12'%3E%3Cpath d='M0 7Q5 0 10 7T20 7' fill='none' stroke='%23ff9ec4' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E") repeat-x center / 20px 100%; }
+.es-sign--4 .es-band--b { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='12'%3E%3Cpath d='M0 9L5 3L10 9L15 3L20 9' fill='none' stroke='%238fe3c0' stroke-width='3.2' stroke-linejoin='round'/%3E%3C/svg%3E") repeat-x center / 20px 100%; }
+.es-ground { position: absolute; left: 0; right: 0; bottom: 0; height: 44px; z-index: 3; background: linear-gradient(transparent 30px, #14423d 38px, #0b0f1d); }
+.es-ground svg { display: block; width: 100%; height: 100%; }
+.es-lays { position: absolute; left: 0; right: 0; bottom: 4px; height: 40px; z-index: 4; }
+.es-lay { position: absolute; bottom: 0; width: clamp(20px, 2.4vw, 30px); height: auto; filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.35)); }
+.es-lay--1 { left: 5%; transform: rotate(-16deg); }
+.es-lay--2 { left: 21%; transform: rotate(12deg); }
+.es-lay--3 { right: 20%; transform: rotate(-10deg); }
+.es-lay--4 { right: 6%; transform: rotate(18deg); }
+
+/* ── Phones: fewer things, nothing wider than the screen ──────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .es-i--daffs { width: clamp(72px, 12vw, 108px); }
+  .es-i--bunny { width: clamp(52px, 8vw, 74px); }
+}
+@media (max-width: 700px) {
+  .es-only-m { display: block; }
+  .es-branch { display: none; }
+  .es-cloud:nth-of-type(n+3) { display: none; }
+  .es-hero .es-tap--egg { left: 6%; }
+  .es-bunt { height: 36px; }
+  .es-cl { width: 92px; }
+  .es-grass { height: 34px; }
+  .es-footer { padding-top: 52px; padding-bottom: 40px; }
+  .es-props { margin-bottom: -12px; }
+  .es-props .es-i:nth-child(n+2) { display: none; }
+  .es-run::after { height: 5px; }
+}
+@media (max-width: 520px) {
+  .es-egg { padding: 24% 5% 16%; }
+  .es-egg span { font-size: 11px; letter-spacing: 0.04em; }
+  .es-egg em { font-size: 9.5px; margin-top: 4px; }
+  .es-sign::after { width: 7px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .es-hero .sk-fly, .es-sec .sk-fly, .es-footer .sk-fly { left: var(--lx, 40%); }
+}

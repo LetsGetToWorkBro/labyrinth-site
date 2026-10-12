@@ -1,0 +1,237 @@
+/* ══ Memorial Day: the homepage for May 16 through May 31 ═══════════════════════════════════════════════════════════════════════
+   index.html's <head> sets <html data-season="memorial"> from the date on the academy's clock (Central), from May 16 through
+   May 31, and only then loads season-kit.css, season-kit.js, this file and season-memorial.js. On every other day none of them
+   is fetched, so the page is exactly what it always was. Preview any time with /?season=memorial (and /?season=off for no theme).
+   Everything here is under that attribute (or under an .md- class that only season-memorial.js creates), and the decoration is
+   aria-hidden, sits behind the content and never takes a tap away from it. The mood is calm: a dusk of deep navy and soft
+   starlight, slow movement, a poppy red for the accent. To retire it: delete this file, season-memorial.js, the "memorial"
+   window and pack lines in index.html's <head>, and its entry in season-theme-checks.mjs. */
+
+/* ── The colours: deep navy, soft starlight, and the red of a poppy ──────────────────────────────────────────────────────────── */
+:root[data-season="memorial"] {
+  --bg: #070d1c;
+  --surface: #0d1530;
+  --surface-elevated: #131d3d;
+  --border: rgba(180, 198, 240, 0.14);
+  --border-strong: rgba(180, 198, 240, 0.3);
+  --text-muted: #a9b4d2;
+  --gold: #ff6b6b;
+  --gold-hover: #ff8a8a;
+  --md-red: #c8283a;
+  --md-white: #f3f1ea;
+  --md-blue: #2a4390;
+  --md-star: #dfe7fb;
+  --sk-bubble-bg: #f3f1ea;
+  --sk-bubble-fg: #14214a;
+  --sk-string: rgba(205, 216, 242, 0.4);
+}
+[data-season="memorial"] body {
+  background:
+    radial-gradient(ellipse 70% 38% at 6% 0%, rgba(52, 82, 170, 0.22), transparent 70%),
+    radial-gradient(ellipse 60% 34% at 100% 34%, rgba(200, 40, 58, 0.09), transparent 70%),
+    radial-gradient(ellipse 60% 30% at 0% 72%, rgba(52, 82, 170, 0.12), transparent 70%),
+    var(--bg);
+}
+[data-season="memorial"] .nav--scrolled { background: rgba(7, 13, 28, 0.92); }
+
+/* ── The hero: the photograph goes to dusk, the last light sits low behind the field, the headline is a poppy red ───────────── */
+[data-season="memorial"] .hero__still img { filter: saturate(0.7) brightness(0.8); }
+[data-season="memorial"] .hero__bg::after {
+  background: linear-gradient(to bottom, rgba(4, 9, 26, 0.84) 0%, rgba(8, 17, 48, 0.64) 36%, rgba(20, 24, 64, 0.6) 66%, rgba(46, 30, 72, 0.42) 84%, #070d1c 100%);
+}
+[data-season="memorial"] .hero { padding-bottom: clamp(130px, 19vw, 240px); }
+[data-season="memorial"] .hero__h1-visual span { color: var(--gold); text-shadow: 0 0 26px rgba(255, 107, 107, 0.34), 0 0 4px rgba(255, 190, 190, 0.3); }
+[data-season="memorial"] .hero__badge { border-color: rgba(255, 107, 107, 0.5); background: rgba(255, 107, 107, 0.1); }
+
+.md-dusk {
+  left: 50%; bottom: clamp(20px, 4vw, 60px); width: clamp(340px, 74vw, 1060px); aspect-ratio: 1.7; transform: translate(-50%, 46%); border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(255, 150, 125, 0.26) 0%, rgba(190, 80, 120, 0.13) 38%, transparent 68%);
+}
+
+/* The large flag on its tall pole at the right edge. The cloth is cut into strips (season-memorial.js); each rises and falls a little after the one
+   before it, so a slow ripple runs from the pole to the free end, and a soft shade deepens and eases with it. Still, it keeps the wave it was caught in. */
+.md-bigflag { right: 0; top: calc(var(--nav-height, 72px) + 54px); width: clamp(150px, 18vw, 320px); height: auto; opacity: 0.94; overflow: visible; }
+.md-wp { transform: translateY(var(--y0, 0px)); animation: md-wave var(--d, 3.6s) ease-in-out var(--o, 0s) infinite alternate; }
+.md-wk { transform-origin: var(--xc, 0px) 0px; transform: skewY(var(--k0, 0deg)); animation: md-skew var(--d, 3.6s) ease-in-out var(--os, 0s) infinite alternate; }
+.md-wsh { fill: #050b22; opacity: var(--s0, 0.1); animation: md-shade var(--d, 3.6s) ease-in-out var(--o, 0s) infinite alternate; }
+@keyframes md-wave { from { transform: translateY(var(--ya, -4px)); } to { transform: translateY(var(--yb, 4px)); } }
+@keyframes md-skew { from { transform: skewY(var(--ka, -4deg)); } to { transform: skewY(var(--kb, 4deg)); } }
+@keyframes md-shade { from { opacity: var(--sa, 0.02); } to { opacity: var(--sb, 0.24); } }
+
+/* The eagle: large, slow, and unhurried. It rides one long glide across the layer and leans a little into the air as it goes. */
+.md-eagle { opacity: 0.6; animation-name: md-soar; animation-timing-function: linear; }
+.md-eagle--h { --s: clamp(150px, 15vw, 270px) !important; animation-delay: calc(var(--d, 90s) * -0.64); }
+.md-eagle.sk-fly--rtl { animation-name: md-soar-rtl; }
+.md-eagle svg { animation: md-bank 18s ease-in-out infinite alternate; }
+@keyframes md-soar {
+  from { translate: calc(var(--s, 150px) * -1.2) 0; }
+  50% { translate: calc(var(--lw, 1000) * 0.5px) var(--wv, -14px); }
+  to { translate: calc(var(--lw, 1000) * 1px + 40px) 0; }
+}
+@keyframes md-soar-rtl {
+  from { translate: calc(var(--lw, 1000) * 1px + 40px) 0; }
+  50% { translate: calc(var(--lw, 1000) * 0.5px) var(--wv, -14px); }
+  to { translate: calc(var(--s, 150px) * -1.2) 0; }
+}
+@keyframes md-bank { from { rotate: -2.5deg; } to { rotate: 2.5deg; } }
+
+/* The field along the foot of the hero: rows of poppies, a row of small flags among them, grass in front. Clumps sway a little, each in its own time. */
+.md-field { left: 0; right: 0; bottom: -1px; height: clamp(120px, 19vw, 240px); }
+.md-fl { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+/* Dusk settles over the field: the nearest rows sink into the page's own navy. */
+.md-field::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(7, 13, 28, 0) 30%, rgba(7, 13, 28, 0.6) 100%); }
+.md-sk { transform-origin: 50% 100%; animation: md-lean var(--d, 9s) ease-in-out var(--o, 0s) infinite alternate; }
+@keyframes md-lean { from { transform: skewX(calc(var(--a, 1deg) * -1)); } to { transform: skewX(var(--a, 1deg)); } }
+
+@keyframes md-sway { from { transform: rotate(calc(var(--a, 1.4deg) * -1)); } to { transform: rotate(var(--a, 1.4deg)); } }
+
+/* The things that answer a tap: a poppy, the flag and a star. They breathe a little, and a tap is answered with a slow nod and a soft bubble. */
+.md-t { opacity: 0.92; }
+.md-t-poppy, .md-t-flag { transform-origin: 50% 100%; }
+.md-t-poppy { --a: 3deg; animation: md-sway 8s ease-in-out infinite alternate; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5)); }
+.md-t-flag { --a: 1.4deg; animation: md-sway 10s ease-in-out -3s infinite alternate; }
+.md-t-star { color: #cdd8f2; animation: md-glimmer 5.5s ease-in-out infinite; filter: drop-shadow(0 0 8px rgba(205, 216, 242, 0.5)); }
+@keyframes md-glimmer { 0%, 100% { opacity: 0.5; scale: 0.92; } 50% { opacity: 0.9; scale: 1.06; } }
+[data-season="memorial"] .sk-tap.is-tap { animation: md-nod 1.3s ease-in-out 1; opacity: 1; }
+@keyframes md-nod { 0%, 100% { rotate: 0deg; } 30% { rotate: -3deg; } 70% { rotate: 3deg; } }
+[data-season="memorial"] .sk-bubble { font-weight: 600; letter-spacing: 0.06em; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4); }
+/* The bubble answers at once and then fades away slowly. */
+[data-season="memorial"] .sk-bubble { transition: opacity 0.45s ease, transform 0.45s ease; }
+[data-season="memorial"] .sk-tap.is-tap .sk-bubble { transition: opacity 0.07s linear, transform 0.12s ease-out; }
+/* A tap near a side keeps its bubble on the screen: the bubble lines up with the side nearest the edge instead of centring. */
+.md-bl .sk-bubble { left: 0; transform: translate(0, 6px) scale(0.6); transform-origin: 0 100%; }
+.md-bl.is-tap .sk-bubble { transform: translate(0, 0) scale(1); }
+.md-br .sk-bubble { left: auto; right: 0; transform: translate(0, 6px) scale(0.6); transform-origin: 100% 100%; }
+.md-br.is-tap .sk-bubble { transform: translate(0, 0) scale(1); }
+
+/* ── This month: the cards under the hero get a red, white and blue edge, and a star after the title ─────────────────────────── */
+[data-season="memorial"] .event-strip { background: linear-gradient(to bottom, #070d1c, rgba(13, 21, 48, 0.7)); }
+[data-season="memorial"] .event-strip::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 6px; opacity: 0.88;
+  background: repeating-linear-gradient(90deg, #c8283a 0 26px, #f3f1ea 26px 52px, #2a4390 52px 78px);
+}
+[data-season="memorial"] .event-strip__title { font-size: clamp(36px, 6vw, 60px); text-shadow: 0 0 24px rgba(255, 107, 107, 0.24); }
+[data-season="memorial"] .event-strip__title::after { content: " \2B50"; }
+[data-season="memorial"] .event-strip__link { box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45); }
+
+/* ── The rest of the page: every section has its own quiet layer, behind its content ───────────────────────────────────────────
+   Along the top: bunting, a string of stars, a satin ribbon or a swag. In a corner: a ribbon bow or a star on a string, small flags and
+   poppies at the bottom, a swaying stem, a wreath, a faint glow. A few stars, petals drifting, and now and then an eagle crossing. */
+.md-glow { width: min(46%, 640px); aspect-ratio: 1.2; }
+.md-glow--tl { left: 0; top: 0; transform: translate(-30%, -30%); }
+.md-glow--tr { right: 0; top: 0; transform: translate(30%, -30%); }
+.md-glow--bl { left: 0; bottom: 0; transform: translate(-30%, 30%); }
+.md-glow--br { right: 0; bottom: 0; transform: translate(30%, 30%); }
+.md-glow--red { background: radial-gradient(ellipse, rgba(255, 107, 107, 0.13), transparent 66%); }
+.md-glow--blue { background: radial-gradient(ellipse, rgba(80, 120, 230, 0.17), transparent 66%); }
+.md-glow--white { background: radial-gradient(ellipse, rgba(223, 231, 251, 0.08), transparent 66%); }
+
+.md-top { left: 0; right: 0; top: 0; height: 48px; background-repeat: repeat-x; background-position: 0 0; opacity: 0.82; }
+.md-top--bunting { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2296%22%20height%3D%2244%22%20viewBox%3D%220%200%2096%2044%22%3E%3Cpath%20d%3D%22M0%203Q48%2020%2096%203%22%20fill%3D%22none%22%20stroke%3D%22%23cdd8f2%22%20stroke-opacity%3D%22.5%22%20stroke-width%3D%221.4%22%2F%3E%3Cpath%20d%3D%22M6%205.5L26%209.2L16%2031Z%22%20fill%3D%22%23c8283a%22%2F%3E%3Cpath%20d%3D%22M38%2011L58%2011L48%2034Z%22%20fill%3D%22%23f3f1ea%22%2F%3E%3Cpath%20d%3D%22M70%209.2L90%205.5L80%2031Z%22%20fill%3D%22%232f4fa3%22%2F%3E%3Cpath%20d%3D%22M6%205.5L26%209.2L16%2031Z%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.08%22%2F%3E%3C%2Fsvg%3E"); }
+.md-top--stars { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22112%22%20height%3D%2252%22%20viewBox%3D%220%200%20112%2052%22%3E%3Cpath%20d%3D%22M0%203Q56%2018%20112%203%22%20fill%3D%22none%22%20stroke%3D%22%23cdd8f2%22%20stroke-opacity%3D%22.42%22%20stroke-width%3D%221.2%22%2F%3E%3Cpath%20d%3D%22M28%208.6V16M56%2010.5V19.5M84%208.6V16%22%20stroke%3D%22%23cdd8f2%22%20stroke-opacity%3D%22.32%22%20stroke-width%3D%221%22%2F%3E%3Cpath%20d%3D%22M28%2015L29.52%2018.91L33.71%2019.15L30.45%2021.8L31.53%2025.85L28%2023.58L24.47%2025.85L25.55%2021.8L22.29%2019.15L26.48%2018.91Z%22%20fill%3D%22%23e9edf8%22%20stroke%3D%22%23e9edf8%22%20stroke-width%3D%22.8%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M56%2019.5L58.02%2024.72L63.61%2025.03L59.27%2028.56L60.7%2033.97L56%2030.94L51.3%2033.97L52.73%2028.56L48.39%2025.03L53.98%2024.72Z%22%20fill%3D%22%23ffe9b8%22%20stroke%3D%22%23ffe9b8%22%20stroke-width%3D%22.8%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M84%2015L85.52%2018.91L89.71%2019.15L86.45%2021.8L87.53%2025.85L84%2023.58L80.47%2025.85L81.55%2021.8L78.29%2019.15L82.48%2018.91Z%22%20fill%3D%22%23e9edf8%22%20stroke%3D%22%23e9edf8%22%20stroke-width%3D%22.8%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E"); height: 54px; opacity: 0.8; }
+.md-top--swag { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22160%22%20height%3D%2244%22%20viewBox%3D%220%200%20160%2044%22%3E%3Cg%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M0%205Q40%2042%2080%205T160%205%22%20stroke%3D%22%23c8283a%22%20stroke-width%3D%229%22%2F%3E%3Cpath%20d%3D%22M0%205Q40%2042%2080%205T160%205%22%20stroke%3D%22%23f3f1ea%22%20stroke-width%3D%225.4%22%2F%3E%3Cpath%20d%3D%22M0%205Q40%2042%2080%205T160%205%22%20stroke%3D%22%232f4fa3%22%20stroke-width%3D%222.2%22%2F%3E%3C%2Fg%3E%3Cpath%20d%3D%22M0%20-2L1.77%202.56L6.66%202.84L2.86%205.93L4.11%2010.66L0%208.01L-4.11%2010.66L-2.86%205.93L-6.66%202.84L-1.77%202.56Z%22%20fill%3D%22%23f3f1ea%22%20stroke%3D%22%23f3f1ea%22%20stroke-width%3D%22.8%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M80%20-2L81.77%202.56L86.66%202.84L82.86%205.93L84.11%2010.66L80%208.01L75.89%2010.66L77.14%205.93L73.34%202.84L78.23%202.56Z%22%20fill%3D%22%23f3f1ea%22%20stroke%3D%22%23f3f1ea%22%20stroke-width%3D%22.8%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M160%20-2L161.77%202.56L166.66%202.84L162.86%205.93L164.11%2010.66L160%208.01L155.89%2010.66L157.14%205.93L153.34%202.84L158.23%202.56Z%22%20fill%3D%22%23f3f1ea%22%20stroke%3D%22%23f3f1ea%22%20stroke-width%3D%22.8%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E"); height: 46px; opacity: 0.78; }
+.md-top--ribbon { height: 9px; opacity: 0.8; background: linear-gradient(#c8283a 0 3px, #f3f1ea 3px 6px, #2f4fa3 6px 9px); box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4); }
+
+.md-pend { opacity: 0.92; animation-duration: 8s; }
+.md-pend > svg { filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4)); }
+.md-pst { color: var(--md-star); }
+
+.md-pile { bottom: -2px; display: flex; align-items: flex-end; gap: clamp(0px, 0.5vw, 8px); opacity: 0.88; }
+/* On a wide screen the corner pieces stay beside the content (its box is 1200px wide) rather than drifting out to the edge of the window. */
+.md-pile--l { left: max(clamp(4px, 2vw, 32px), calc(50% - 664px)); }
+.md-pile--r { right: max(clamp(4px, 2vw, 32px), calc(50% - 664px)); }
+.md-i { display: block; height: auto; flex-shrink: 0; }
+.md-i--poppy, .md-i--bloom, .md-i--bud { width: clamp(26px, 2.8vw, 40px); }
+.md-i--flag { width: clamp(26px, 2.8vw, 40px); }
+
+.md-stem { bottom: -2px; opacity: 0.82; transform-origin: 50% 100%; --a: 2.4deg; animation: md-sway 10s ease-in-out infinite alternate; }
+.md-stem--l { left: max(var(--at, 0.6%), calc(50% - 680px)); }
+.md-stem--r { right: max(var(--at, 0.6%), calc(50% - 680px)); }
+.md-stem svg { display: block; width: 100%; height: auto; }
+.md-fp { bottom: -2px; opacity: 0.85; }
+.md-fp--l { left: max(clamp(2px, 1.4vw, 24px), calc(50% - 664px)); }
+.md-fp--r { right: max(clamp(2px, 1.4vw, 24px), calc(50% - 664px)); }
+.md-fp svg { display: block; width: 100%; height: auto; }
+.md-tg { width: min(16%, 220px); height: 110px; }
+.md-tg--l { left: 0.4%; width: 52px; }
+.md-tg--r { right: 1%; }
+.md-wr { opacity: 0.55; }
+.md-wr svg { display: block; width: 100%; height: auto; }
+.md-sec .md-t { opacity: 0.74; }
+.md-sec .md-t.is-tap { opacity: 1; }
+.md-eagle--s { opacity: 0.5; }
+
+/* ── The field at dusk above the footer: four banners on poles among the poppies and small flags, a flag on a tall pole and a wreath on its easel ─ */
+.md-footer { display: flex; align-items: flex-end; justify-content: center; gap: clamp(8px, 2vw, 22px); padding: 40px 16px 0; }
+[data-season="memorial"] .footer { background: #050a16; }
+.md-fsky { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(7, 13, 28, 0) 0%, rgba(34, 36, 92, 0.3) 38%, rgba(122, 50, 84, 0.3) 68%, rgba(255, 140, 110, 0.2) 92%); }
+.md-hills { position: absolute; left: 0; right: 0; bottom: 0; height: clamp(70px, 10vw, 130px); }
+.md-hills svg { display: block; width: 100%; height: 100%; }
+.md-meadow { position: absolute; left: 0; right: 0; bottom: 0; height: clamp(86px, 11vw, 150px); }
+.md-meadow--b { z-index: 2; }
+.md-meadow--f { z-index: 4; }
+.md-props { position: relative; z-index: 3; display: flex; align-items: flex-end; gap: clamp(2px, 0.8vw, 10px); margin-bottom: 12px; }
+.md-pflag { display: block; width: clamp(70px, 9vw, 116px); height: auto; margin-bottom: -6px; }
+.md-fi { display: block; height: auto; }
+.md-fi--a { width: clamp(26px, 3.4vw, 44px); }
+.md-fi--b { width: clamp(24px, 3vw, 38px); }
+.md-fi--c { width: clamp(26px, 3.4vw, 44px); }
+.md-wst { display: block; width: clamp(84px, 11vw, 140px); height: auto; }
+
+.md-signs { position: relative; z-index: 3; padding: 14px 18px 0; }
+/* One rail between two gold-capped posts, the four banners hanging from it (no pole runs through a banner). The rail and posts are the backgrounds of one pseudo-element. */
+.md-signs::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 4.5px, #f6dd96 0 3.4px, transparent 4.2px) left 0 top 0 / 9px 10px no-repeat,
+    radial-gradient(circle at 50% 4.5px, #f6dd96 0 3.4px, transparent 4.2px) right 0 top 0 / 9px 10px no-repeat,
+    linear-gradient(90deg, #8f9ac0, #e9edf8 45%, #7a86ac) left 2px top 8px / 5px calc(100% - 8px) no-repeat,
+    linear-gradient(90deg, #8f9ac0, #e9edf8 45%, #7a86ac) right 2px top 8px / 5px calc(100% - 8px) no-repeat,
+    linear-gradient(#eef1fa, #8f9ac0) left 0 top 10px / 100% 4px no-repeat;
+}
+.md-sign { position: relative; margin-bottom: clamp(56px, 6.8vw, 86px); }
+.md-banner {
+  position: relative; padding: 16px 6px 30px; text-align: center; transform-origin: 50% 0; animation: md-hang 9s ease-in-out infinite alternate;
+  background: linear-gradient(#1c2d62, #0f1a42); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 14px), 0 100%); box-shadow: inset 0 0 0 1px rgba(205, 216, 242, 0.26);
+}
+.md-banner::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 5px; background: linear-gradient(90deg, #c8283a 0 33.4%, #f3f1ea 33.4% 66.7%, #2f4fa3 66.7%); }
+.md-banner::after { content: ""; position: absolute; left: 50%; bottom: 17px; width: 11px; height: 11px; margin-left: -5.5px; background: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2214%22%20height%3D%2214%22%20viewBox%3D%220%200%2014%2014%22%3E%3Cpath%20d%3D%22M7%201.4L8.52%205.31L12.71%205.55L9.45%208.2L10.53%2012.25L7%209.98L3.47%2012.25L4.55%208.2L1.29%205.55L5.48%205.31Z%22%20fill%3D%22%23cdd8f2%22%20stroke%3D%22%23cdd8f2%22%20stroke-width%3D%22.8%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat; opacity: 0.8; }
+.md-banner span { display: block; font: 700 clamp(14px, 1.9vw, 19px)/1 var(--font-display), sans-serif; letter-spacing: 0.1em; color: var(--gold); }
+.md-banner em { display: block; margin-top: 7px; font-style: normal; font-size: clamp(10.5px, 1.35vw, 13px); line-height: 1.25; color: #d5ddf3; }
+.md-sign:nth-child(2) .md-banner { animation-delay: -2.6s; }
+.md-sign:nth-child(3) .md-banner { animation-delay: -5s; }
+.md-sign:nth-child(4) .md-banner { animation-delay: -7.4s; }
+@keyframes md-hang { from { rotate: -1.1deg; } to { rotate: 1.1deg; } }
+
+/* ── Phones: fewer things, nothing wider than the screen ──────────────────────────────────────────────────────────────────── */
+@media (max-width: 820px) {
+  .md-bigflag { display: none; }
+}
+@media (max-width: 700px) {
+  .md-top { height: 40px; opacity: 0.72; }
+  .md-top--ribbon { height: 8px; }
+  .md-pile .md-i:nth-child(n+3) { display: none; }
+  .md-i--poppy, .md-i--bloom, .md-i--bud, .md-i--flag { width: 24px; }
+  .md-fp { width: 52px !important; }
+  .md-eagle, .md-eagle--h { --s: 104px !important; }
+  [data-season="memorial"] .hero { padding-bottom: clamp(150px, 40vw, 190px); }
+  .md-field { height: clamp(150px, 40vw, 190px); }
+  .md-footer { padding-top: 46px; }
+  .md-props { margin-bottom: 6px; }
+  .md-pflag { width: clamp(46px, 11vw, 64px); }
+  .md-wst { width: clamp(54px, 13vw, 76px); }
+  .md-props .md-fi { display: none; }
+}
+@media (max-width: 520px) {
+  .md-signs { padding: 14px 9px 0; }
+  .md-banner { padding: 11px 2px 24px; }
+  .md-banner span { font-size: 12px; letter-spacing: 0.04em; }
+  .md-banner em { font-size: 10px; }
+}
+/* A layer that is nowhere near the screen holds still (season-memorial.js, init). */
+.md-off, .md-off * { animation-play-state: paused !important; }
+/* Less motion: nothing moves (the kit stops it), and what only crosses the layer is set where it reads well. */
+@media (prefers-reduced-motion: reduce) {
+  .md-eagle { translate: calc(var(--lw, 1000) * 0.6px) 0; }
+  .md-eagle--s { translate: calc(var(--lw, 1000) * 0.72px) 0; }
+}

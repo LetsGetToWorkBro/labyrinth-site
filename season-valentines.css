@@ -37,12 +37,12 @@
 [data-season="valentines"] .hero__stat:hover .hero__stat-value { text-shadow: 0 0 20px rgba(255, 111, 154, 0.5), 0 0 40px rgba(255, 111, 154, 0.2); }
 
 /* ── The hero: the photograph goes rosy, the headline glows pink, the bed of roses comes up along the bottom ──────────────── */
-[data-season="valentines"] .hero__still img { filter: sepia(0.5) hue-rotate(-34deg) saturate(1.45) brightness(0.8); }
+[data-season="valentines"] .hero__still img { filter: sepia(0.42) hue-rotate(-34deg) saturate(1.35) brightness(0.88); }
 [data-season="valentines"] .hero__bg::after {
-  background: linear-gradient(to bottom, rgba(34, 6, 22, 0.8) 0%, rgba(92, 16, 52, 0.5) 38%, rgba(34, 6, 22, 0.82) 72%, #14070d 100%);
+  background: linear-gradient(to bottom, rgba(34, 6, 22, 0.78) 0%, rgba(96, 18, 56, 0.4) 38%, rgba(34, 6, 22, 0.8) 72%, #14070d 100%);
 }
 [data-season="valentines"] .hero { padding-bottom: clamp(140px, 19vw, 250px); }
-[data-season="valentines"] .hero__h1-visual span { color: var(--gold); text-shadow: 0 0 28px rgba(255, 111, 154, 0.55), 0 0 4px rgba(255, 190, 210, 0.45); }
+[data-season="valentines"] .hero__h1-visual span { color: var(--gold); text-shadow: 0 2px 14px rgba(24, 4, 14, 0.6), 0 0 30px rgba(255, 111, 154, 0.4); }
 [data-season="valentines"] .hero__badge { border-color: rgba(255, 111, 154, 0.55); background: rgba(255, 111, 154, 0.12); }
 
 /* A wash of rose light in two corners, and the huge heart of light behind it all, which beats now and then. */
@@ -52,13 +52,14 @@
     radial-gradient(ellipse 60% 50% at 90% 16%, rgba(255, 111, 154, 0.24), transparent 70%),
     radial-gradient(ellipse 56% 46% at 4% 84%, rgba(224, 35, 78, 0.22), transparent 70%);
 }
-.vd-glow { right: -9vw; top: 46%; width: clamp(440px, 76vw, 1060px); aspect-ratio: 188 / 180; translate: 0 -50%; }
-.vd-glow svg { display: block; width: 100%; height: 100%; transform-origin: 50% 55%; animation: vd-beat 3.8s ease-in-out infinite; }
+.vd-glow { right: -12vw; top: 52%; width: clamp(440px, 76vw, 1060px); aspect-ratio: 188 / 180; translate: 0 -50%; }
+.vd-glow svg { display: block; width: 100%; height: 100%; transform-origin: 50% 55%; }
+@media (min-width: 701px) { .vd-glow svg { animation: vd-beat 3.8s ease-in-out infinite; } }
 @keyframes vd-beat {
-  0%, 56%, 100% { transform: scale(1); opacity: 0.88; }
-  10% { transform: scale(1.045); opacity: 1; }
-  22% { transform: scale(1); opacity: 0.92; }
-  34% { transform: scale(1.03); opacity: 1; }
+  0%, 56%, 100% { transform: scale(1); }
+  10% { transform: scale(1.045); }
+  22% { transform: scale(1); }
+  34% { transform: scale(1.03); }
 }
 .vd-cloud { opacity: 1; }
 .vd-tw-heart { opacity: 0.75; }
@@ -68,16 +69,18 @@
 .vd-bed svg { display: block; width: 100%; height: 100%; }
 .vd-hero .vd-arrowfly { top: auto !important; bottom: clamp(88px, 11.5vw, 156px); filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.35)); }
 
-/* Heart bunting strung across under the nav. */
+/* Heart bunting strung across under the nav, stirring a little in a breeze. */
 .vd-bunting {
-  left: 0; right: 0; top: calc(var(--nav-height, 72px) - 4px); height: 54px; opacity: 0.95;
+  left: -12px; right: -12px; top: calc(var(--nav-height, 72px) - 4px); height: 54px; opacity: 0.95; transform-origin: 50% 0; animation: vd-breeze 7s ease-in-out infinite alternate;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='54' viewBox='0 0 160 54'%3E%3Cpath d='M0 4Q80 30 160 4' fill='none' stroke='%23e8a598' stroke-width='2'/%3E%3Cg transform='translate(22 9.2) rotate(13.3) scale(0.25) translate(-50 -19)'%3E%3Cpath d='M50 90C22 70 2 52 2 29C2 13 14 3 28 3C38 3 46 9 50 19C54 9 62 3 72 3C86 3 98 13 98 29C98 52 78 70 50 90Z' fill='%23ff8fb1'/%3E%3Cpath d='M98 29C98 52 78 70 50 90C69 66 87 50 91 22C95 24 97 26 98 29Z' fill='%234a0a24' fill-opacity='.17'/%3E%3Cpath d='M12 28C12 19 18 12 27 11' fill='none' stroke='%23fff' stroke-opacity='.55' stroke-width='6' stroke-linecap='round'/%3E%3C/g%3E%3Cg transform='translate(56 14.8) rotate(5.6) scale(0.25) translate(-50 -19)'%3E%3Cpath d='M50 90C22 70 2 52 2 29C2 13 14 3 28 3C38 3 46 9 50 19C54 9 62 3 72 3C86 3 98 13 98 29C98 52 78 70 50 90Z' fill='%23e0234e'/%3E%3Cpath d='M98 29C98 52 78 70 50 90C69 66 87 50 91 22C95 24 97 26 98 29Z' fill='%234a0a24' fill-opacity='.17'/%3E%3Cpath d='M12 28C12 19 18 12 27 11' fill='none' stroke='%23fff' stroke-opacity='.55' stroke-width='6' stroke-linecap='round'/%3E%3C/g%3E%3Cg transform='translate(104 14.8) rotate(-5.6) scale(0.25) translate(-50 -19)'%3E%3Cpath d='M50 90C22 70 2 52 2 29C2 13 14 3 28 3C38 3 46 9 50 19C54 9 62 3 72 3C86 3 98 13 98 29C98 52 78 70 50 90Z' fill='%23ffc2d1'/%3E%3Cpath d='M98 29C98 52 78 70 50 90C69 66 87 50 91 22C95 24 97 26 98 29Z' fill='%234a0a24' fill-opacity='.17'/%3E%3Cpath d='M12 28C12 19 18 12 27 11' fill='none' stroke='%23fff' stroke-opacity='.55' stroke-width='6' stroke-linecap='round'/%3E%3C/g%3E%3Cg transform='translate(138 9.2) rotate(-13.3) scale(0.25) translate(-50 -19)'%3E%3Cpath d='M50 90C22 70 2 52 2 29C2 13 14 3 28 3C38 3 46 9 50 19C54 9 62 3 72 3C86 3 98 13 98 29C98 52 78 70 50 90Z' fill='%23f0457a'/%3E%3Cpath d='M98 29C98 52 78 70 50 90C69 66 87 50 91 22C95 24 97 26 98 29Z' fill='%234a0a24' fill-opacity='.17'/%3E%3Cpath d='M12 28C12 19 18 12 27 11' fill='none' stroke='%23fff' stroke-opacity='.55' stroke-width='6' stroke-linecap='round'/%3E%3C/g%3E%3Ccircle cx='0' cy='4' r='3' fill='%23e8a598'/%3E%3Ccircle cx='160' cy='4' r='3' fill='%23e8a598'/%3E%3C/svg%3E") repeat-x 0 0 / 160px 54px;
 }
+@keyframes vd-breeze { from { transform: rotate(-0.35deg); } to { transform: rotate(0.35deg); } }
 
 /* Things that answer a tap: bobbing a little, their bubble tucked in against the screen's edge so it is never cut off. */
 .vd-tap { filter: drop-shadow(0 5px 9px rgba(0, 0, 0, 0.4)); animation: vd-bob 6.5s ease-in-out infinite; }
 .vd-tap--balloons { transform-origin: 50% 100%; animation: vd-sway 5.5s ease-in-out infinite; }
 .vd-tap--arrow { opacity: 0.9; }
+.vd-tap .sk-bubble { transition: transform 0.15s; }
 .vd-tap--r .sk-bubble { left: auto; right: 0; transform-origin: 100% 100%; }
 .vd-tap--l .sk-bubble { left: 0; transform-origin: 0 100%; }
 [data-season="valentines"] .vd-tap--r.is-tap .sk-bubble,
@@ -106,6 +109,8 @@
 .vd-garland--ribbon { --gw: 180px; --gh: 52px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='52' viewBox='0 0 180 52'%3E%3Cpath d='M0 5Q45 34 90 5' fill='none' stroke='%23ff8fb1' stroke-width='7' stroke-linecap='round'/%3E%3Cpath d='M0 3Q45 32 90 3' fill='none' stroke='%23fff' stroke-opacity='.35' stroke-width='1.6'/%3E%3Cpath d='M45 21V28' stroke='%23e8a598' stroke-width='1.2'/%3E%3Cg transform='translate(45 27) rotate(0) scale(0.2) translate(-50 -19)'%3E%3Cpath d='M50 90C22 70 2 52 2 29C2 13 14 3 28 3C38 3 46 9 50 19C54 9 62 3 72 3C86 3 98 13 98 29C98 52 78 70 50 90Z' fill='%23f0457a'/%3E%3Cpath d='M98 29C98 52 78 70 50 90C69 66 87 50 91 22C95 24 97 26 98 29Z' fill='%234a0a24' fill-opacity='.17'/%3E%3Cpath d='M12 28C12 19 18 12 27 11' fill='none' stroke='%23fff' stroke-opacity='.55' stroke-width='6' stroke-linecap='round'/%3E%3C/g%3E%3Cpath d='M90 5Q135 34 180 5' fill='none' stroke='%23ff6f9a' stroke-width='7' stroke-linecap='round'/%3E%3Cpath d='M90 3Q135 32 180 3' fill='none' stroke='%23fff' stroke-opacity='.35' stroke-width='1.6'/%3E%3Cpath d='M135 21V28' stroke='%23e8a598' stroke-width='1.2'/%3E%3Cg transform='translate(135 27) rotate(0) scale(0.2) translate(-50 -19)'%3E%3Cpath d='M50 90C22 70 2 52 2 29C2 13 14 3 28 3C38 3 46 9 50 19C54 9 62 3 72 3C86 3 98 13 98 29C98 52 78 70 50 90Z' fill='%23e0234e'/%3E%3Cpath d='M98 29C98 52 78 70 50 90C69 66 87 50 91 22C95 24 97 26 98 29Z' fill='%234a0a24' fill-opacity='.17'/%3E%3Cpath d='M12 28C12 19 18 12 27 11' fill='none' stroke='%23fff' stroke-opacity='.55' stroke-width='6' stroke-linecap='round'/%3E%3C/g%3E%3Cg transform='translate(0 6)'%3E%3Cpath d='M0 0C-4 -7 -14 -9 -15 -3C-16 3 -6 5 0 0Z' fill='%23e0234e'/%3E%3Cpath d='M0 0C4 -7 14 -9 15 -3C16 3 6 5 0 0Z' fill='%23e0234e'/%3E%3Cpath d='M-2 2L-7 12L-3 10L-1 13L1 3Z' fill='%23e0234e'/%3E%3Cpath d='M2 2L7 12L3 10L1 13L-1 3Z' fill='%23e0234e'/%3E%3Ccircle r='3.2' fill='%23e0234e'/%3E%3Ccircle cx='-1' cy='-1' r='1.1' fill='%23fff' fill-opacity='.5'/%3E%3C/g%3E%3Cg transform='translate(90 6)'%3E%3Cpath d='M0 0C-4 -7 -14 -9 -15 -3C-16 3 -6 5 0 0Z' fill='%23e0234e'/%3E%3Cpath d='M0 0C4 -7 14 -9 15 -3C16 3 6 5 0 0Z' fill='%23e0234e'/%3E%3Cpath d='M-2 2L-7 12L-3 10L-1 13L1 3Z' fill='%23e0234e'/%3E%3Cpath d='M2 2L7 12L3 10L1 13L-1 3Z' fill='%23e0234e'/%3E%3Ccircle r='3.2' fill='%23e0234e'/%3E%3Ccircle cx='-1' cy='-1' r='1.1' fill='%23fff' fill-opacity='.5'/%3E%3C/g%3E%3Cg transform='translate(180 6)'%3E%3Cpath d='M0 0C-4 -7 -14 -9 -15 -3C-16 3 -6 5 0 0Z' fill='%23e0234e'/%3E%3Cpath d='M0 0C4 -7 14 -9 15 -3C16 3 6 5 0 0Z' fill='%23e0234e'/%3E%3Cpath d='M-2 2L-7 12L-3 10L-1 13L1 3Z' fill='%23e0234e'/%3E%3Cpath d='M2 2L7 12L3 10L1 13L-1 3Z' fill='%23e0234e'/%3E%3Ccircle r='3.2' fill='%23e0234e'/%3E%3Ccircle cx='-1' cy='-1' r='1.1' fill='%23fff' fill-opacity='.5'/%3E%3C/g%3E%3C/svg%3E"); }
 .vd-garland--lights { --gw: 160px; --gh: 46px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='46' viewBox='0 0 160 46'%3E%3Cdefs%3E%3CradialGradient id='g'%3E%3Cstop offset='0' stop-color='%23fff1ec' stop-opacity='.55'/%3E%3Cstop offset='1' stop-color='%23ff6f9a' stop-opacity='0'/%3E%3C/radialGradient%3E%3C/defs%3E%3Cpath d='M0 4Q80 28 160 4' fill='none' stroke='%234a0a24' stroke-opacity='.7' stroke-width='1.6'/%3E%3Ccircle cx='16' cy='17.3' r='13' fill='url(%23g)'/%3E%3Cpath d='M16 8.3V10.3' stroke='%234a0a24' stroke-width='2'/%3E%3Cg transform='translate(16 10.3) rotate(13.5) scale(0.15) translate(-50 -19)'%3E%3Cpath d='M50 90C22 70 2 52 2 29C2 13 14 3 28 3C38 3 46 9 50 19C54 9 62 3 72 3C86 3 98 13 98 29C98 52 78 70 50 90Z' fill='%23fff1ec'/%3E%3Cpath d='M98 29C98 52 78 70 50 90C69 66 87 50 91 22C95 24 97 26 98 29Z' fill='%234a0a24' fill-opacity='.17'/%3E%3C/g%3E%3Ccircle cx='48' cy='23.1' r='13' fill='url(%23g)'/%3E%3Cpath d='M48 14.1V16.1' stroke='%234a0a24' stroke-width='2'/%3E%3Cg transform='translate(48 16.1) rotate(6.8) scale(0.15) translate(-50 -19)'%3E%3Cpath d='M50 90C22 70 2 52 2 29C2 13 14 3 28 3C38 3 46 9 50 19C54 9 62 3 72 3C86 3 98 13 98 29C98 52 78 70 50 90Z' fill='%23ff8fb1'/%3E%3Cpath d='M98 29C98 52 78 70 50 90C69 66 87 50 91 22C95 24 97 26 98 29Z' fill='%234a0a24' fill-opacity='.17'/%3E%3C/g%3E%3Ccircle cx='80' cy='25' r='13' fill='url(%23g)'/%3E%3Cpath d='M80 16V18' stroke='%234a0a24' stroke-width='2'/%3E%3Cg transform='translate(80 18) rotate(0) scale(0.15) translate(-50 -19)'%3E%3Cpath d='M50 90C22 70 2 52 2 29C2 13 14 3 28 3C38 3 46 9 50 19C54 9 62 3 72 3C86 3 98 13 98 29C98 52 78 70 50 90Z' fill='%23ff6f9a'/%3E%3Cpath d='M98 29C98 52 78 70 50 90C69 66 87 50 91 22C95 24 97 26 98 29Z' fill='%234a0a24' fill-opacity='.17'/%3E%3C/g%3E%3Ccircle cx='112' cy='23.1' r='13' fill='url(%23g)'/%3E%3Cpath d='M112 14.1V16.1' stroke='%234a0a24' stroke-width='2'/%3E%3Cg transform='translate(112 16.1) rotate(-6.8) scale(0.15) translate(-50 -19)'%3E%3Cpath d='M50 90C22 70 2 52 2 29C2 13 14 3 28 3C38 3 46 9 50 19C54 9 62 3 72 3C86 3 98 13 98 29C98 52 78 70 50 90Z' fill='%23ffc2d1'/%3E%3Cpath d='M98 29C98 52 78 70 50 90C69 66 87 50 91 22C95 24 97 26 98 29Z' fill='%234a0a24' fill-opacity='.17'/%3E%3C/g%3E%3Ccircle cx='144' cy='17.3' r='13' fill='url(%23g)'/%3E%3Cpath d='M144 8.3V10.3' stroke='%234a0a24' stroke-width='2'/%3E%3Cg transform='translate(144 10.3) rotate(-13.5) scale(0.15) translate(-50 -19)'%3E%3Cpath d='M50 90C22 70 2 52 2 29C2 13 14 3 28 3C38 3 46 9 50 19C54 9 62 3 72 3C86 3 98 13 98 29C98 52 78 70 50 90Z' fill='%23f0457a'/%3E%3Cpath d='M98 29C98 52 78 70 50 90C69 66 87 50 91 22C95 24 97 26 98 29Z' fill='%234a0a24' fill-opacity='.17'/%3E%3C/g%3E%3C/svg%3E"); }
 .vd-garland--lace { --gw: 120px; --gh: 22px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='22' viewBox='0 0 120 22'%3E%3Cpath d='M0 0H120V7a10 10 0 0 1 -20 0a10 10 0 0 1 -20 0a10 10 0 0 1 -20 0a10 10 0 0 1 -20 0a10 10 0 0 1 -20 0a10 10 0 0 1 -20 0Z' fill='%23fff1ec' fill-opacity='.9'/%3E%3Cpath d='M0 7H120' stroke='%23ff8fb1' stroke-width='1.2' stroke-dasharray='3 3' stroke-opacity='.8'/%3E%3Cg transform='translate(10 11) rotate(0) scale(0.13) translate(-50 -19)'%3E%3Cpath d='M50 90C22 70 2 52 2 29C2 13 14 3 28 3C38 3 46 9 50 19C54 9 62 3 72 3C86 3 98 13 98 29C98 52 78 70 50 90Z' fill='%23ff6f9a'/%3E%3Cpath d='M98 29C98 52 78 70 50 90C69 66 87 50 91 22C95 24 97 26 98 29Z' fill='%234a0a24' fill-opacity='.17'/%3E%3C/g%3E%3Ccircle cx='10' cy='4' r='1.4' fill='%23ff8fb1'/%3E%3Cg transform='translate(30 11) rotate(0) scale(0.13) translate(-50 -19)'%3E%3Cpath d='M50 90C22 70 2 52 2 29C2 13 14 3 28 3C38 3 46 9 50 19C54 9 62 3 72 3C86 3 98 13 98 29C98 52 78 70 50 90Z' fill='%23e0234e'/%3E%3Cpath d='M98 29C98 52 78 70 50 90C69 66 87 50 91 22C95 24 97 26 98 29Z' fill='%234a0a24' fill-opacity='.17'/%3E%3C/g%3E%3Ccircle cx='30' cy='4' r='1.4' fill='%23ff8fb1'/%3E%3Cg transform='translate(50 11) rotate(0) scale(0.13) translate(-50 -19)'%3E%3Cpath d='M50 90C22 70 2 52 2 29C2 13 14 3 28 3C38 3 46 9 50 19C54 9 62 3 72 3C86 3 98 13 98 29C98 52 78 70 50 90Z' fill='%23ff6f9a'/%3E%3Cpath d='M98 29C98 52 78 70 50 90C69 66 87 50 91 22C95 24 97 26 98 29Z' fill='%234a0a24' fill-opacity='.17'/%3E%3C/g%3E%3Ccircle cx='50' cy='4' r='1.4' fill='%23ff8fb1'/%3E%3Cg transform='translate(70 11) rotate(0) scale(0.13) translate(-50 -19)'%3E%3Cpath d='M50 90C22 70 2 52 2 29C2 13 14 3 28 3C38 3 46 9 50 19C54 9 62 3 72 3C86 3 98 13 98 29C98 52 78 70 50 90Z' fill='%23e0234e'/%3E%3Cpath d='M98 29C98 52 78 70 50 90C69 66 87 50 91 22C95 24 97 26 98 29Z' fill='%234a0a24' fill-opacity='.17'/%3E%3C/g%3E%3Ccircle cx='70' cy='4' r='1.4' fill='%23ff8fb1'/%3E%3Cg transform='translate(90 11) rotate(0) scale(0.13) translate(-50 -19)'%3E%3Cpath d='M50 90C22 70 2 52 2 29C2 13 14 3 28 3C38 3 46 9 50 19C54 9 62 3 72 3C86 3 98 13 98 29C98 52 78 70 50 90Z' fill='%23ff6f9a'/%3E%3Cpath d='M98 29C98 52 78 70 50 90C69 66 87 50 91 22C95 24 97 26 98 29Z' fill='%234a0a24' fill-opacity='.17'/%3E%3C/g%3E%3Ccircle cx='90' cy='4' r='1.4' fill='%23ff8fb1'/%3E%3Cg transform='translate(110 11) rotate(0) scale(0.13) translate(-50 -19)'%3E%3Cpath d='M50 90C22 70 2 52 2 29C2 13 14 3 28 3C38 3 46 9 50 19C54 9 62 3 72 3C86 3 98 13 98 29C98 52 78 70 50 90Z' fill='%23e0234e'/%3E%3Cpath d='M98 29C98 52 78 70 50 90C69 66 87 50 91 22C95 24 97 26 98 29Z' fill='%234a0a24' fill-opacity='.17'/%3E%3C/g%3E%3Ccircle cx='110' cy='4' r='1.4' fill='%23ff8fb1'/%3E%3C/svg%3E"); opacity: 0.55; }
+.vd-garland--curtain { --gw: 240px; --gh: 66px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='66' viewBox='0 0 240 66'%3E%3Cpath d='M0 1.2H240' stroke='%23e8a598' stroke-width='2.4' stroke-linecap='round'/%3E%3Cpath d='M20 1.5V14' stroke='%23e8a598' stroke-width='1.2' stroke-opacity='.9'/%3E%3Cg transform='translate(20 16) rotate(0) scale(0.2) translate(-50 -19)'%3E%3Cpath d='M50 90C22 70 2 52 2 29C2 13 14 3 28 3C38 3 46 9 50 19C54 9 62 3 72 3C86 3 98 13 98 29C98 52 78 70 50 90Z' fill='%23ff8fb1'/%3E%3Cpath d='M98 29C98 52 78 70 50 90C69 66 87 50 91 22C95 24 97 26 98 29Z' fill='%234a0a24' fill-opacity='.17'/%3E%3Cpath d='M12 28C12 19 18 12 27 11' fill='none' stroke='%23fff' stroke-opacity='.55' stroke-width='6' stroke-linecap='round'/%3E%3C/g%3E%3Cpath d='M60 1.5V34' stroke='%23e8a598' stroke-width='1.2' stroke-opacity='.9'/%3E%3Cg transform='translate(60 36) rotate(0) scale(0.22) translate(-50 -19)'%3E%3Cpath d='M50 90C22 70 2 52 2 29C2 13 14 3 28 3C38 3 46 9 50 19C54 9 62 3 72 3C86 3 98 13 98 29C98 52 78 70 50 90Z' fill='%23e0234e'/%3E%3Cpath d='M98 29C98 52 78 70 50 90C69 66 87 50 91 22C95 24 97 26 98 29Z' fill='%234a0a24' fill-opacity='.17'/%3E%3Cpath d='M12 28C12 19 18 12 27 11' fill='none' stroke='%23fff' stroke-opacity='.55' stroke-width='6' stroke-linecap='round'/%3E%3C/g%3E%3Cpath d='M100 1.5V22' stroke='%23e8a598' stroke-width='1.2' stroke-opacity='.9'/%3E%3Cg transform='translate(100 24) rotate(0) scale(0.2) translate(-50 -19)'%3E%3Cpath d='M50 90C22 70 2 52 2 29C2 13 14 3 28 3C38 3 46 9 50 19C54 9 62 3 72 3C86 3 98 13 98 29C98 52 78 70 50 90Z' fill='%23ffc2d1'/%3E%3Cpath d='M98 29C98 52 78 70 50 90C69 66 87 50 91 22C95 24 97 26 98 29Z' fill='%234a0a24' fill-opacity='.17'/%3E%3Cpath d='M12 28C12 19 18 12 27 11' fill='none' stroke='%23fff' stroke-opacity='.55' stroke-width='6' stroke-linecap='round'/%3E%3C/g%3E%3Cpath d='M140 1.5V42' stroke='%23e8a598' stroke-width='1.2' stroke-opacity='.9'/%3E%3Cg transform='translate(140 44) rotate(0) scale(0.22) translate(-50 -19)'%3E%3Cpath d='M50 90C22 70 2 52 2 29C2 13 14 3 28 3C38 3 46 9 50 19C54 9 62 3 72 3C86 3 98 13 98 29C98 52 78 70 50 90Z' fill='%23ff6f9a'/%3E%3Cpath d='M98 29C98 52 78 70 50 90C69 66 87 50 91 22C95 24 97 26 98 29Z' fill='%234a0a24' fill-opacity='.17'/%3E%3Cpath d='M12 28C12 19 18 12 27 11' fill='none' stroke='%23fff' stroke-opacity='.55' stroke-width='6' stroke-linecap='round'/%3E%3C/g%3E%3Cpath d='M180 1.5V28' stroke='%23e8a598' stroke-width='1.2' stroke-opacity='.9'/%3E%3Cg transform='translate(180 30) rotate(0) scale(0.2) translate(-50 -19)'%3E%3Cpath d='M50 90C22 70 2 52 2 29C2 13 14 3 28 3C38 3 46 9 50 19C54 9 62 3 72 3C86 3 98 13 98 29C98 52 78 70 50 90Z' fill='%23f0457a'/%3E%3Cpath d='M98 29C98 52 78 70 50 90C69 66 87 50 91 22C95 24 97 26 98 29Z' fill='%234a0a24' fill-opacity='.17'/%3E%3Cpath d='M12 28C12 19 18 12 27 11' fill='none' stroke='%23fff' stroke-opacity='.55' stroke-width='6' stroke-linecap='round'/%3E%3C/g%3E%3Cpath d='M220 1.5V38' stroke='%23e8a598' stroke-width='1.2' stroke-opacity='.9'/%3E%3Cg transform='translate(220 40) rotate(0) scale(0.2) translate(-50 -19)'%3E%3Cpath d='M50 90C22 70 2 52 2 29C2 13 14 3 28 3C38 3 46 9 50 19C54 9 62 3 72 3C86 3 98 13 98 29C98 52 78 70 50 90Z' fill='%23ffc2d1'/%3E%3Cpath d='M98 29C98 52 78 70 50 90C69 66 87 50 91 22C95 24 97 26 98 29Z' fill='%234a0a24' fill-opacity='.17'/%3E%3Cpath d='M12 28C12 19 18 12 27 11' fill='none' stroke='%23fff' stroke-opacity='.55' stroke-width='6' stroke-linecap='round'/%3E%3C/g%3E%3C/svg%3E"); }
+.vd-garland--streamer { --gw: 160px; --gh: 46px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='46' viewBox='0 0 160 46'%3E%3Cpath d='M0 5Q80 34 160 5' fill='none' stroke='%23e0234e' stroke-width='7' stroke-linecap='round'/%3E%3Cpath d='M0 5Q80 34 160 5' fill='none' stroke='%23ffc2d1' stroke-width='7' stroke-dasharray='5 8' stroke-dashoffset='2'/%3E%3Cpath d='M0 2.4Q80 31.4 160 2.4' fill='none' stroke='%23fff' stroke-opacity='.3' stroke-width='1.4'/%3E%3Cg transform='translate(0 6)'%3E%3Cpath d='M0 0C-4 -7 -14 -9 -15 -3C-16 3 -6 5 0 0Z' fill='%23ff8fb1'/%3E%3Cpath d='M0 0C4 -7 14 -9 15 -3C16 3 6 5 0 0Z' fill='%23ff8fb1'/%3E%3Cpath d='M-2 2L-7 12L-3 10L-1 13L1 3Z' fill='%23ff8fb1'/%3E%3Cpath d='M2 2L7 12L3 10L1 13L-1 3Z' fill='%23ff8fb1'/%3E%3Ccircle r='3.2' fill='%23ff8fb1'/%3E%3Ccircle cx='-1' cy='-1' r='1.1' fill='%23fff' fill-opacity='.6'/%3E%3C/g%3E%3Cg transform='translate(160 6)'%3E%3Cpath d='M0 0C-4 -7 -14 -9 -15 -3C-16 3 -6 5 0 0Z' fill='%23ff8fb1'/%3E%3Cpath d='M0 0C4 -7 14 -9 15 -3C16 3 6 5 0 0Z' fill='%23ff8fb1'/%3E%3Cpath d='M-2 2L-7 12L-3 10L-1 13L1 3Z' fill='%23ff8fb1'/%3E%3Cpath d='M2 2L7 12L3 10L1 13L-1 3Z' fill='%23ff8fb1'/%3E%3Ccircle r='3.2' fill='%23ff8fb1'/%3E%3Ccircle cx='-1' cy='-1' r='1.1' fill='%23fff' fill-opacity='.6'/%3E%3C/g%3E%3C/svg%3E"); }
 #eventStrip .vd-garland { top: 14px; }
 
 .vd-corner { width: clamp(120px, 15vw, 210px); height: auto; bottom: -2px; opacity: 0.92; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.35)); }
@@ -135,17 +140,20 @@
 .vd-bal--r { right: clamp(4px, 1.6vw, 28px); animation-delay: -2.4s; }
 .vd-arrowfly--s { filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.3)); opacity: 0.85; }
 .vd-sec .vd-tap { opacity: 0.6; }
+/* A tap decoration sits in the margin, but its bubble reaches over the cards: while one is showing (a second and a half) its layer rises above the content, so the bubble can be read.
+   (A layer lets every tap through, so nothing is covered but the picture.) */
+.vd-sec:has(.sk-tap.is-tap) { z-index: 3; }
 .vd-sec .vd-tap.is-tap { opacity: 1; }
 
-/* ── The rose garden above the footer: a hedge of roses, a trellis arch at each end, four candy hearts on stakes ────────────── */
+/* ── The rose garden above the footer: a hedge of roses under one big trellis arch, four candy hearts on stakes, balloons and sweets either side ── */
 [data-season="valentines"] .footer { background: #0e050a; }
 .vd-footer {
-  display: flex; align-items: flex-end; justify-content: center; gap: clamp(8px, 2vw, 22px); padding: 90px 16px 34px; min-height: 360px;
+  display: flex; align-items: flex-end; justify-content: center; gap: clamp(8px, 2vw, 22px); padding: 90px 16px 34px; min-height: clamp(360px, 25vw, 520px);
   background: linear-gradient(to bottom, transparent, rgba(255, 111, 154, 0.06) 60%, rgba(224, 35, 78, 0.14));
 }
-.vd-garden { left: 0; right: 0; bottom: 0; height: 100%; }
+.vd-garden { position: absolute; left: 0; right: 0; bottom: 0; height: 100%; }
 .vd-garden svg { display: block; width: 100%; height: 100%; }
-.vd-fglow { left: 50%; top: 48%; width: clamp(380px, 64vw, 900px); aspect-ratio: 188 / 180; translate: -50% -50%; opacity: 0.8; }
+.vd-fglow { position: absolute; left: 50%; top: -30%; height: 160%; aspect-ratio: 188 / 180; translate: -50% 0; }
 .vd-fglow svg { display: block; width: 100%; height: 100%; }
 .vd-props { position: relative; display: flex; align-items: flex-end; gap: clamp(2px, 0.8vw, 10px); margin-bottom: 14px; }
 .vd-p { display: block; height: auto; filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.4)); }
@@ -167,12 +175,22 @@
 .vd-sign--2 { margin-bottom: 62px; transform: rotate(2deg); }
 .vd-sign--3 { margin-bottom: 40px; transform: rotate(-2deg); }
 .vd-sign--4 { margin-bottom: 56px; transform: rotate(3deg); }
-.vd-ground { left: 0; right: 0; bottom: 0; height: 34px; background: linear-gradient(#26101d, #14070d); }
+.vd-ground { position: absolute; left: 0; right: 0; bottom: 0; height: 14px; background: linear-gradient(rgba(20, 7, 13, 0), #14070d); }
 .vd-bfly { filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.3)); }
+
+/* ── Tablets: the margins beside the content are narrow, so the things that hang or stand in them move over and shrink ─────────── */
+@media (max-width: 1279px) {
+  .vd-arrowfly--s { display: none; }
+  .vd-sec .sk-pend { left: auto !important; right: 2%; }
+  .vd-corner { width: clamp(100px, 13vw, 150px); }
+  .vd-vinec { width: clamp(110px, 15vw, 170px); }
+  .vd-bal { display: none; }
+}
 
 /* ── Phones: fewer things, nothing wider than the screen, and the signs two by two so their words can be read ──────────────── */
 @media (max-width: 700px) {
   .vd-glow { right: -34vw; width: 130vw; }
+  .vd-hero .sk-p { --op: 0.5 !important; }
   .vd-bunting { top: calc(var(--nav-height, 64px) - 6px); height: 44px; background-size: 130px 44px; }
   .vd-garland { --k: 0.78; }
   .vd-pile .vd-i:nth-child(n+3) { display: none; }
@@ -191,9 +209,8 @@
 
 /* ── Less motion: the hearts that only rise are not drawn, and what crosses the sky is set down where it can be seen ───────── */
 @media (prefers-reduced-motion: reduce) {
-  .vd-cloud--1 { left: 5%; }
-  .vd-cloud--2 { left: 58%; }
-  .vd-cloud--3 { left: 30%; }
+  .vd-cloud--1 { left: 56%; }
+  .vd-cloud--2 { left: 74%; }
   .vd-hero .vd-arrowfly { left: 36%; }
   .vd-arrowfly--s { left: 42%; }
   .vd-bfly--1 { left: 68%; }

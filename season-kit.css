@@ -19,6 +19,9 @@
 .sk-sec > * { position: absolute; }
 .sk-sec ~ .container { position: relative; z-index: 1; }
 
+/* The one section with a colour of its own in style.css (the reviews, a shade lighter than the page) follows the theme's page colour instead of staying black. */
+:root[data-season] .testimonials { background: var(--bg); background: color-mix(in srgb, var(--bg) 97%, #fff); }
+
 /* The scene above the footer. A pack styles it (signs, ground, props); this is only its frame. */
 .sk-footer { position: relative; overflow: hidden; margin-top: var(--space-12, 48px); pointer-events: none; }
 .sk-footer > * { pointer-events: none; }

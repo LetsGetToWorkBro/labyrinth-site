@@ -1,0 +1,201 @@
+/* ══ St. Patrick's Day: the homepage for March 17 ═══════════════════════════════════════════════════════════════════════════════
+   index.html's <head> sets <html data-season="stpatricks"> from the date on the academy's clock (Central), on March 17 of every year (it wins over
+   the Easter month that one day), and only then loads season-kit.css, season-kit.js, this file and season-stpatricks.js. On every other day none of
+   them is fetched, so the page is exactly what it always was. Preview any time with /?season=stpatricks (and /?season=off for no theme).
+   Everything here is under that attribute (or under an .sp- class that only season-stpatricks.js creates), and the decoration is aria-hidden, sits
+   behind the content and never takes a tap away from it. To retire it: delete this file, season-stpatricks.js, the "stpatricks" window and pack
+   lines in index.html's <head>, and its entry in season-theme-checks.mjs. */
+
+/* ── The colours: an emerald-black night with shamrock and kelly greens, pot-of-gold yellow, flag orange and the six colours of a rainbow ── */
+:root[data-season="stpatricks"] {
+  --bg: #06130c;
+  --surface: #0b1f14;
+  --surface-elevated: #11291b;
+  --border: rgba(47, 191, 113, 0.2);
+  --border-strong: rgba(47, 191, 113, 0.4);
+  --text-muted: #a3bfae;
+  --gold: #ffc83d;
+  --gold-hover: #ffd96b;
+  --sp-shamrock: #2fbf71;
+  --sp-kelly: #1f9d55;
+  --sp-mint: #b8f5d0;
+  --sp-white: #f4fff8;
+  --sp-orange: #ff8a3d;
+  --sp-red: #ff4d5e;
+  --sp-yellow: #ffd23d;
+  --sp-green: #3ddc84;
+  --sp-blue: #3aa0ff;
+  --sp-violet: #9a74ff;
+  --sk-bubble-bg: #ffffff;
+  --sk-bubble-fg: #0b3d22;
+  --sk-string: rgba(214, 255, 232, 0.5);
+}
+/* The page: a soft emerald wash that comes back every screen or so, and a touch of gold on the other side. */
+[data-season="stpatricks"] body {
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(ellipse 760px 460px at 0% 380px, rgba(47, 191, 113, 0.2), transparent 70%),
+    radial-gradient(ellipse 680px 420px at 100% 1500px, rgba(255, 200, 61, 0.09), transparent 70%),
+    radial-gradient(ellipse 640px 400px at 0% 2050px, rgba(47, 191, 113, 0.12), transparent 70%);
+  background-size: 100% 2400px;
+  background-repeat: repeat-y;
+}
+[data-season="stpatricks"] .nav--scrolled { background: rgba(6, 19, 12, 0.92); }
+/* The one section the site paints a neutral black of its own: it takes the page's green. */
+[data-season="stpatricks"] .testimonials { background: #071a10; }
+/* The speech bubble: a gold ring and a shadow; it appears at once (the scale still pops) so a tap is answered even on a slow phone, and fades away after. */
+[data-season="stpatricks"] .sk-bubble { box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(255, 200, 61, 0.55); transition: opacity 0.25s, transform 0.15s; }
+[data-season="stpatricks"] .sk-tap.is-tap .sk-bubble { transition: opacity 0s, transform 0.15s; }
+
+/* ── The hero: the photograph goes to an emerald dusk, the headline catches the gold, the hills come up along the bottom ───────────────── */
+[data-season="stpatricks"] .hero__still img { filter: grayscale(0.15) sepia(0.6) hue-rotate(55deg) saturate(1.8) brightness(0.86) contrast(1.08); }
+[data-season="stpatricks"] .hero__bg::after {
+  background: linear-gradient(to bottom, rgba(2, 22, 11, 0.8) 0%, rgba(4, 52, 28, 0.42) 40%, rgba(3, 34, 18, 0.75) 72%, #06130c 100%);
+}
+[data-season="stpatricks"] .hero { padding-bottom: clamp(150px, 21vw, 270px); }
+[data-season="stpatricks"] .hero__h1-visual span { color: var(--gold); text-shadow: 0 0 30px rgba(255, 200, 61, 0.5), 0 0 4px rgba(255, 236, 160, 0.45); }
+[data-season="stpatricks"] .hero__badge { border-color: rgba(47, 191, 113, 0.6); background: rgba(47, 191, 113, 0.12); }
+
+/* The rainbow's size keeps it clear of the row of numbers above the hills (measured from 1024 to 1920); the pot stands where it ends. */
+.sp-hero { --sp-bw: clamp(220px, calc(40vw - 152px), 560px); --sp-pw: clamp(104px, 13vw, 184px); }
+.sp-sun {
+  right: -10%; top: -26%; width: 56%; aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 200, 61, 0.26) 0%, rgba(255, 176, 40, 0.1) 40%, transparent 68%);
+}
+.sp-horizon { left: 0; right: 0; bottom: 0; height: 58%; background: linear-gradient(to top, rgba(47, 191, 113, 0.3), rgba(47, 191, 113, 0.09) 52%, transparent); }
+.sp-aura {
+  left: -12%; top: -24%; width: 76%; aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(circle, rgba(47, 191, 113, 0.3) 0%, rgba(31, 157, 85, 0.12) 40%, transparent 68%);
+}
+.sp-glow {
+  right: -10%; bottom: -14%; width: clamp(380px, 64vw, 940px); aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 200, 61, 0.5) 0%, rgba(255, 170, 40, 0.2) 34%, transparent 66%);
+}
+/* The rainbow: a quarter ring around the bottom right corner, strongest where it stands on the hills and fading as it climbs. */
+.sp-bow { right: 0; bottom: 0; width: var(--sp-bw); height: auto; aspect-ratio: 1; opacity: 0.92; }
+.sp-hills { left: 0; right: 0; bottom: -1px; height: clamp(150px, 21vw, 270px); }
+.sp-hills svg { display: block; width: 100%; height: 100%; }
+.sp-potglow {
+  right: calc(var(--sp-bw) * 0.76 - var(--sp-pw) * 1.1); bottom: calc(var(--sp-pw) * -0.6); width: calc(var(--sp-pw) * 2.2); aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 200, 61, 0.5) 0%, rgba(255, 200, 61, 0.16) 40%, transparent 68%);
+}
+.sp-hero .sp-tap--pot { right: calc(var(--sp-bw) * 0.76 - var(--sp-pw) / 2); bottom: clamp(6px, 1.4vw, 22px); width: var(--sp-pw); filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.5)); }
+.sp-hero .sp-tap--hat { left: clamp(8px, 3.4%, 60px); bottom: clamp(8px, 1.6vw, 26px); width: clamp(70px, 9vw, 124px); transform: rotate(-6deg); filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.5)); }
+.sp-hero .sp-tap--clo { left: clamp(96px, 17%, 260px); bottom: clamp(6px, 1vw, 16px); width: clamp(34px, 4vw, 56px); color: #4fd88b; filter: drop-shadow(0 0 10px rgba(111, 231, 160, 0.7)); animation: sp-bob 6s ease-in-out infinite; }
+.sp-hero .sp-tap--clo.is-tap { animation: sk-wiggle 0.4s ease-in-out 2; }
+@keyframes sp-bob { 0%, 100% { transform: translate(0, 0) rotate(-6deg); } 50% { transform: translate(5px, -9px) rotate(6deg); } }
+
+/* ── This month: the cards under the hero stand under a rainbow stripe and a green and gold plait ──────────────────────────────────────── */
+[data-season="stpatricks"] .event-strip { background: linear-gradient(to bottom, #06130c, rgba(11, 31, 20, 0.78)); }
+[data-season="stpatricks"] .event-strip::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 6px; z-index: 1;
+  background: linear-gradient(90deg, var(--sp-red), var(--sp-orange), var(--sp-yellow), var(--sp-green), var(--sp-blue), var(--sp-violet));
+}
+[data-season="stpatricks"] .event-strip__title { font-size: clamp(36px, 6vw, 60px); text-shadow: 0 0 24px rgba(255, 200, 61, 0.4); }
+[data-season="stpatricks"] .event-strip__title::after { content: " \1F340"; }
+[data-season="stpatricks"] .event-strip__link { box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45); }
+
+/* ── The rest of the page: every section has its own layer, behind its content ──────────────────────────────────────────────────────────
+   A Celtic knot along the top (a plait, or a chain of rings, in green, gold or both), sometimes with shamrock bunting hanging from it, clovers and
+   rainbows in the corners, a pot of gold, a stack of coins or a horseshoe on the ground, coins and shamrocks coming down, a hat or a clover swinging
+   on a string, and here and there a pot, a hat, a clover or a coin that answers a tap. */
+/* The knots and the bunting are small tiles of SVG that repeat along the edge: two strands plaited, a chain of rings, pennants with a shamrock on each. */
+.sp-knot--a { background-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2236%22 viewBox=%220 0 80 36%22%3E%3Cdefs%3E%3Cpath id=%22a%22 fill=%22none%22 d=%22M-20 18C-13.3 23.2 -6.7 28 0 28C6.7 28 13.3 23.2 20 18C26.7 12.8 33.3 8 40 8C46.7 8 53.3 12.8 60 18C66.7 23.2 73.3 28 80 28C86.7 28 93.3 23.2 100 18%22/%3E%3Cpath id=%22b%22 fill=%22none%22 d=%22M-20 18C-13.3 12.8 -6.7 8 0 8C6.7 8 13.3 12.8 20 18C26.7 23.2 33.3 28 40 28C46.7 28 53.3 23.2 60 18C66.7 12.8 73.3 8 80 8C86.7 8 93.3 12.8 100 18%22/%3E%3CclipPath id=%22c%22%3E%3Crect x=%228%22 y=%220%22 width=%2224%22 height=%2236%22/%3E%3C/clipPath%3E%3C/defs%3E%3Crect y=%22.6%22 width=%2280%22 height=%221.6%22 fill=%22rgba(255,200,61,.55)%22/%3E%3Crect y=%2233.8%22 width=%2280%22 height=%221.6%22 fill=%22rgba(255,200,61,.55)%22/%3E%3Cuse href=%22%23a%22 stroke=%22%2303140a%22 stroke-width=%2210.4%22/%3E%3Cuse href=%22%23a%22 stroke=%22%231f9d55%22 stroke-width=%227%22/%3E%3Cuse href=%22%23a%22 stroke=%22%238be3b0%22 stroke-width=%221.5%22 stroke-opacity=%22.6%22 transform=%22translate(0 -1.7)%22/%3E%3Cuse href=%22%23b%22 stroke=%22%2303140a%22 stroke-width=%2210.4%22/%3E%3Cuse href=%22%23b%22 stroke=%22%23ffc83d%22 stroke-width=%227%22/%3E%3Cuse href=%22%23b%22 stroke=%22%23fff3b0%22 stroke-width=%221.5%22 stroke-opacity=%22.6%22 transform=%22translate(0 -1.7)%22/%3E%3Cg clip-path=%22url(%23c)%22%3E%3Cuse href=%22%23a%22 stroke=%22%2303140a%22 stroke-width=%2210.4%22/%3E%3Cuse href=%22%23a%22 stroke=%22%231f9d55%22 stroke-width=%227%22/%3E%3Cuse href=%22%23a%22 stroke=%22%238be3b0%22 stroke-width=%221.5%22 stroke-opacity=%22.6%22 transform=%22translate(0 -1.7)%22/%3E%3C/g%3E%3C/svg%3E"); }
+.sp-knot--b { background-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2236%22 viewBox=%220 0 80 36%22%3E%3Cdefs%3E%3Cpath id=%22a%22 fill=%22none%22 d=%22M-20 18C-13.3 23.2 -6.7 28 0 28C6.7 28 13.3 23.2 20 18C26.7 12.8 33.3 8 40 8C46.7 8 53.3 12.8 60 18C66.7 23.2 73.3 28 80 28C86.7 28 93.3 23.2 100 18%22/%3E%3Cpath id=%22b%22 fill=%22none%22 d=%22M-20 18C-13.3 12.8 -6.7 8 0 8C6.7 8 13.3 12.8 20 18C26.7 23.2 33.3 28 40 28C46.7 28 53.3 23.2 60 18C66.7 12.8 73.3 8 80 8C86.7 8 93.3 12.8 100 18%22/%3E%3CclipPath id=%22c%22%3E%3Crect x=%228%22 y=%220%22 width=%2224%22 height=%2236%22/%3E%3C/clipPath%3E%3C/defs%3E%3Cuse href=%22%23a%22 stroke=%22%2303140a%22 stroke-width=%2210.4%22/%3E%3Cuse href=%22%23a%22 stroke=%22%23ffc83d%22 stroke-width=%227%22/%3E%3Cuse href=%22%23a%22 stroke=%22%23fff3b0%22 stroke-width=%221.5%22 stroke-opacity=%22.6%22 transform=%22translate(0 -1.7)%22/%3E%3Cuse href=%22%23b%22 stroke=%22%2303140a%22 stroke-width=%2210.4%22/%3E%3Cuse href=%22%23b%22 stroke=%22%23e9a812%22 stroke-width=%227%22/%3E%3Cuse href=%22%23b%22 stroke=%22%23ffe27a%22 stroke-width=%221.5%22 stroke-opacity=%22.6%22 transform=%22translate(0 -1.7)%22/%3E%3Cg clip-path=%22url(%23c)%22%3E%3Cuse href=%22%23a%22 stroke=%22%2303140a%22 stroke-width=%2210.4%22/%3E%3Cuse href=%22%23a%22 stroke=%22%23ffc83d%22 stroke-width=%227%22/%3E%3Cuse href=%22%23a%22 stroke=%22%23fff3b0%22 stroke-width=%221.5%22 stroke-opacity=%22.6%22 transform=%22translate(0 -1.7)%22/%3E%3C/g%3E%3C/svg%3E"); }
+.sp-knot--c { background-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2234%22 height=%2236%22 viewBox=%220 0 34 36%22%3E%3Cdefs%3E%3CclipPath id=%22c0%22%3E%3Crect x=%22-6%22 y=%222.2%22 width=%2212%22 height=%2212%22/%3E%3C/clipPath%3E%3CclipPath id=%22c1%22%3E%3Crect x=%2211%22 y=%222.2%22 width=%2212%22 height=%2212%22/%3E%3C/clipPath%3E%3CclipPath id=%22c2%22%3E%3Crect x=%2228%22 y=%222.2%22 width=%2212%22 height=%2212%22/%3E%3C/clipPath%3E%3C/defs%3E%3Cg fill=%22none%22%3E%3Crect y=%22.6%22 width=%2234%22 height=%221.6%22 fill=%22rgba(47,191,113,.5)%22 stroke=%22none%22/%3E%3Crect y=%2233.8%22 width=%2234%22 height=%221.6%22 fill=%22rgba(47,191,113,.5)%22 stroke=%22none%22/%3E%3Ccircle cx=%22-8.5%22 cy=%2218%22 r=%2213%22 stroke=%22%2303140a%22 stroke-width=%227.4%22/%3E%3Ccircle cx=%22-8.5%22 cy=%2218%22 r=%2213%22 stroke=%22%232fbf71%22 stroke-width=%224.2%22/%3E%3Ccircle cx=%228.5%22 cy=%2218%22 r=%2213%22 stroke=%22%2303140a%22 stroke-width=%227.4%22/%3E%3Ccircle cx=%228.5%22 cy=%2218%22 r=%2213%22 stroke=%22%231f9d55%22 stroke-width=%224.2%22/%3E%3Ccircle cx=%2225.5%22 cy=%2218%22 r=%2213%22 stroke=%22%2303140a%22 stroke-width=%227.4%22/%3E%3Ccircle cx=%2225.5%22 cy=%2218%22 r=%2213%22 stroke=%22%232fbf71%22 stroke-width=%224.2%22/%3E%3Ccircle cx=%2242.5%22 cy=%2218%22 r=%2213%22 stroke=%22%2303140a%22 stroke-width=%227.4%22/%3E%3Ccircle cx=%2242.5%22 cy=%2218%22 r=%2213%22 stroke=%22%231f9d55%22 stroke-width=%224.2%22/%3E%3Cg clip-path=%22url(%23c0)%22%3E%3Ccircle cx=%22-8.5%22 cy=%2218%22 r=%2213%22 stroke=%22%2303140a%22 stroke-width=%227.4%22/%3E%3Ccircle cx=%22-8.5%22 cy=%2218%22 r=%2213%22 stroke=%22%232fbf71%22 stroke-width=%224.2%22/%3E%3C/g%3E%3Cg clip-path=%22url(%23c1)%22%3E%3Ccircle cx=%228.5%22 cy=%2218%22 r=%2213%22 stroke=%22%2303140a%22 stroke-width=%227.4%22/%3E%3Ccircle cx=%228.5%22 cy=%2218%22 r=%2213%22 stroke=%22%231f9d55%22 stroke-width=%224.2%22/%3E%3C/g%3E%3Cg clip-path=%22url(%23c2)%22%3E%3Ccircle cx=%2225.5%22 cy=%2218%22 r=%2213%22 stroke=%22%2303140a%22 stroke-width=%227.4%22/%3E%3Ccircle cx=%2225.5%22 cy=%2218%22 r=%2213%22 stroke=%22%232fbf71%22 stroke-width=%224.2%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+.sp-knot--d { background-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2236%22 viewBox=%220 0 80 36%22%3E%3Cdefs%3E%3Cpath id=%22a%22 fill=%22none%22 d=%22M-20 18C-13.3 23.2 -6.7 28 0 28C6.7 28 13.3 23.2 20 18C26.7 12.8 33.3 8 40 8C46.7 8 53.3 12.8 60 18C66.7 23.2 73.3 28 80 28C86.7 28 93.3 23.2 100 18%22/%3E%3Cpath id=%22b%22 fill=%22none%22 d=%22M-20 18C-13.3 12.8 -6.7 8 0 8C6.7 8 13.3 12.8 20 18C26.7 23.2 33.3 28 40 28C46.7 28 53.3 23.2 60 18C66.7 12.8 73.3 8 80 8C86.7 8 93.3 12.8 100 18%22/%3E%3CclipPath id=%22c%22%3E%3Crect x=%228%22 y=%220%22 width=%2224%22 height=%2236%22/%3E%3C/clipPath%3E%3C/defs%3E%3Crect y=%22.6%22 width=%2280%22 height=%221.6%22 fill=%22rgba(47,191,113,.5)%22/%3E%3Crect y=%2233.8%22 width=%2280%22 height=%221.6%22 fill=%22rgba(47,191,113,.5)%22/%3E%3Cuse href=%22%23a%22 stroke=%22%2303140a%22 stroke-width=%2210.4%22/%3E%3Cuse href=%22%23a%22 stroke=%22%232fbf71%22 stroke-width=%227%22/%3E%3Cuse href=%22%23a%22 stroke=%22%23b8f5d0%22 stroke-width=%221.5%22 stroke-opacity=%22.6%22 transform=%22translate(0 -1.7)%22/%3E%3Cuse href=%22%23b%22 stroke=%22%2303140a%22 stroke-width=%2210.4%22/%3E%3Cuse href=%22%23b%22 stroke=%22%231f9d55%22 stroke-width=%227%22/%3E%3Cuse href=%22%23b%22 stroke=%22%238be3b0%22 stroke-width=%221.5%22 stroke-opacity=%22.6%22 transform=%22translate(0 -1.7)%22/%3E%3Cg clip-path=%22url(%23c)%22%3E%3Cuse href=%22%23a%22 stroke=%22%2303140a%22 stroke-width=%2210.4%22/%3E%3Cuse href=%22%23a%22 stroke=%22%232fbf71%22 stroke-width=%227%22/%3E%3Cuse href=%22%23a%22 stroke=%22%23b8f5d0%22 stroke-width=%221.5%22 stroke-opacity=%22.6%22 transform=%22translate(0 -1.7)%22/%3E%3C/g%3E%3C/svg%3E"); }
+.sp-knot--e { background-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2234%22 height=%2236%22 viewBox=%220 0 34 36%22%3E%3Cdefs%3E%3CclipPath id=%22c0%22%3E%3Crect x=%22-6%22 y=%222.2%22 width=%2212%22 height=%2212%22/%3E%3C/clipPath%3E%3CclipPath id=%22c1%22%3E%3Crect x=%2211%22 y=%222.2%22 width=%2212%22 height=%2212%22/%3E%3C/clipPath%3E%3CclipPath id=%22c2%22%3E%3Crect x=%2228%22 y=%222.2%22 width=%2212%22 height=%2212%22/%3E%3C/clipPath%3E%3C/defs%3E%3Cg fill=%22none%22%3E%3Ccircle cx=%22-8.5%22 cy=%2218%22 r=%2213%22 stroke=%22%2303140a%22 stroke-width=%227.4%22/%3E%3Ccircle cx=%22-8.5%22 cy=%2218%22 r=%2213%22 stroke=%22%23ffc83d%22 stroke-width=%224.2%22/%3E%3Ccircle cx=%228.5%22 cy=%2218%22 r=%2213%22 stroke=%22%2303140a%22 stroke-width=%227.4%22/%3E%3Ccircle cx=%228.5%22 cy=%2218%22 r=%2213%22 stroke=%22%23e9a812%22 stroke-width=%224.2%22/%3E%3Ccircle cx=%2225.5%22 cy=%2218%22 r=%2213%22 stroke=%22%2303140a%22 stroke-width=%227.4%22/%3E%3Ccircle cx=%2225.5%22 cy=%2218%22 r=%2213%22 stroke=%22%23ffc83d%22 stroke-width=%224.2%22/%3E%3Ccircle cx=%2242.5%22 cy=%2218%22 r=%2213%22 stroke=%22%2303140a%22 stroke-width=%227.4%22/%3E%3Ccircle cx=%2242.5%22 cy=%2218%22 r=%2213%22 stroke=%22%23e9a812%22 stroke-width=%224.2%22/%3E%3Cg clip-path=%22url(%23c0)%22%3E%3Ccircle cx=%22-8.5%22 cy=%2218%22 r=%2213%22 stroke=%22%2303140a%22 stroke-width=%227.4%22/%3E%3Ccircle cx=%22-8.5%22 cy=%2218%22 r=%2213%22 stroke=%22%23ffc83d%22 stroke-width=%224.2%22/%3E%3C/g%3E%3Cg clip-path=%22url(%23c1)%22%3E%3Ccircle cx=%228.5%22 cy=%2218%22 r=%2213%22 stroke=%22%2303140a%22 stroke-width=%227.4%22/%3E%3Ccircle cx=%228.5%22 cy=%2218%22 r=%2213%22 stroke=%22%23e9a812%22 stroke-width=%224.2%22/%3E%3C/g%3E%3Cg clip-path=%22url(%23c2)%22%3E%3Ccircle cx=%2225.5%22 cy=%2218%22 r=%2213%22 stroke=%22%2303140a%22 stroke-width=%227.4%22/%3E%3Ccircle cx=%2225.5%22 cy=%2218%22 r=%2213%22 stroke=%22%23ffc83d%22 stroke-width=%224.2%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"); }
+.sp-bunt--a { background-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2296%22 height=%2246%22 viewBox=%220 0 96 46%22%3E%3Cpath d=%22M-2 3.6Q48 24.4 98 3.6%22 fill=%22none%22 stroke=%22%23cfe9d9%22 stroke-width=%221.6%22/%3E%3Cg transform=%22translate(10 7.7) rotate(18.3)%22%3E%3Cpath d=%22M-8.6 -1H8.6L0 24Z%22 fill=%22%231f9d55%22/%3E%3Cpath d=%22M-8.6 -1H0V24Z%22 fill=%22%23fff%22 opacity=%22.17%22/%3E%3Cg fill=%22%23e9fff2%22%3E%3Ccircle cx=%220%22 cy=%225.6%22 r=%222.3%22/%3E%3Ccircle cx=%22-2.5%22 cy=%229.4%22 r=%222.3%22/%3E%3Ccircle cx=%222.5%22 cy=%229.4%22 r=%222.3%22/%3E%3Cpath d=%22M0 9.6L1 14%22 stroke=%22%23e9fff2%22 stroke-width=%221.1%22 fill=%22none%22/%3E%3C/g%3E%3C/g%3E%3Ccircle cx=%2210%22 cy=%227.1%22 r=%221.9%22 fill=%22%23ffc83d%22/%3E%3Cg transform=%22translate(29 12.4) rotate(9.4)%22%3E%3Cpath d=%22M-8.6 -1H8.6L0 24Z%22 fill=%22%232fbf71%22/%3E%3Cpath d=%22M-8.6 -1H0V24Z%22 fill=%22%23fff%22 opacity=%22.17%22/%3E%3Cg fill=%22%2306351d%22%3E%3Ccircle cx=%220%22 cy=%225.6%22 r=%222.3%22/%3E%3Ccircle cx=%22-2.5%22 cy=%229.4%22 r=%222.3%22/%3E%3Ccircle cx=%222.5%22 cy=%229.4%22 r=%222.3%22/%3E%3Cpath d=%22M0 9.6L1 14%22 stroke=%22%2306351d%22 stroke-width=%221.1%22 fill=%22none%22/%3E%3C/g%3E%3C/g%3E%3Ccircle cx=%2229%22 cy=%2211.8%22 r=%221.9%22 fill=%22%23ffc83d%22/%3E%3Cg transform=%22translate(48 14) rotate(0)%22%3E%3Cpath d=%22M-8.6 -1H8.6L0 24Z%22 fill=%22%23ffc83d%22/%3E%3Cpath d=%22M-8.6 -1H0V24Z%22 fill=%22%23fff%22 opacity=%22.17%22/%3E%3Cg fill=%22%230b5a30%22%3E%3Ccircle cx=%220%22 cy=%225.6%22 r=%222.3%22/%3E%3Ccircle cx=%22-2.5%22 cy=%229.4%22 r=%222.3%22/%3E%3Ccircle cx=%222.5%22 cy=%229.4%22 r=%222.3%22/%3E%3Cpath d=%22M0 9.6L1 14%22 stroke=%22%230b5a30%22 stroke-width=%221.1%22 fill=%22none%22/%3E%3C/g%3E%3C/g%3E%3Ccircle cx=%2248%22 cy=%2213.4%22 r=%221.9%22 fill=%22%23ffc83d%22/%3E%3Cg transform=%22translate(67 12.4) rotate(-9.4)%22%3E%3Cpath d=%22M-8.6 -1H8.6L0 24Z%22 fill=%22%2315803f%22/%3E%3Cpath d=%22M-8.6 -1H0V24Z%22 fill=%22%23fff%22 opacity=%22.17%22/%3E%3Cg fill=%22%23e9fff2%22%3E%3Ccircle cx=%220%22 cy=%225.6%22 r=%222.3%22/%3E%3Ccircle cx=%22-2.5%22 cy=%229.4%22 r=%222.3%22/%3E%3Ccircle cx=%222.5%22 cy=%229.4%22 r=%222.3%22/%3E%3Cpath d=%22M0 9.6L1 14%22 stroke=%22%23e9fff2%22 stroke-width=%221.1%22 fill=%22none%22/%3E%3C/g%3E%3C/g%3E%3Ccircle cx=%2267%22 cy=%2211.8%22 r=%221.9%22 fill=%22%23ffc83d%22/%3E%3Cg transform=%22translate(86 7.7) rotate(-18.3)%22%3E%3Cpath d=%22M-8.6 -1H8.6L0 24Z%22 fill=%22%23e9fff2%22/%3E%3Cpath d=%22M-8.6 -1H0V24Z%22 fill=%22%23fff%22 opacity=%22.17%22/%3E%3Cg fill=%22%231f9d55%22%3E%3Ccircle cx=%220%22 cy=%225.6%22 r=%222.3%22/%3E%3Ccircle cx=%22-2.5%22 cy=%229.4%22 r=%222.3%22/%3E%3Ccircle cx=%222.5%22 cy=%229.4%22 r=%222.3%22/%3E%3Cpath d=%22M0 9.6L1 14%22 stroke=%22%231f9d55%22 stroke-width=%221.1%22 fill=%22none%22/%3E%3C/g%3E%3C/g%3E%3Ccircle cx=%2286%22 cy=%227.1%22 r=%221.9%22 fill=%22%23ffc83d%22/%3E%3C/svg%3E"); }
+.sp-bunt--b { background-image: url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2296%22 height=%2246%22 viewBox=%220 0 96 46%22%3E%3Cpath d=%22M-2 3.6Q48 24.4 98 3.6%22 fill=%22none%22 stroke=%22%23ffe27a%22 stroke-width=%221.6%22/%3E%3Cg transform=%22translate(10 7.7) rotate(18.3)%22%3E%3Cpath d=%22M-8.6 -1H8.6L0 24Z%22 fill=%22%232fbf71%22/%3E%3Cpath d=%22M-8.6 -1H0V24Z%22 fill=%22%23fff%22 opacity=%22.17%22/%3E%3Cg fill=%22%2306351d%22%3E%3Ccircle cx=%220%22 cy=%225.6%22 r=%222.3%22/%3E%3Ccircle cx=%22-2.5%22 cy=%229.4%22 r=%222.3%22/%3E%3Ccircle cx=%222.5%22 cy=%229.4%22 r=%222.3%22/%3E%3Cpath d=%22M0 9.6L1 14%22 stroke=%22%2306351d%22 stroke-width=%221.1%22 fill=%22none%22/%3E%3C/g%3E%3C/g%3E%3Ccircle cx=%2210%22 cy=%227.1%22 r=%221.9%22 fill=%22%23ffc83d%22/%3E%3Cg transform=%22translate(29 12.4) rotate(9.4)%22%3E%3Cpath d=%22M-8.6 -1H8.6L0 24Z%22 fill=%22%231f9d55%22/%3E%3Cpath d=%22M-8.6 -1H0V24Z%22 fill=%22%23fff%22 opacity=%22.17%22/%3E%3Cg fill=%22%23e9fff2%22%3E%3Ccircle cx=%220%22 cy=%225.6%22 r=%222.3%22/%3E%3Ccircle cx=%22-2.5%22 cy=%229.4%22 r=%222.3%22/%3E%3Ccircle cx=%222.5%22 cy=%229.4%22 r=%222.3%22/%3E%3Cpath d=%22M0 9.6L1 14%22 stroke=%22%23e9fff2%22 stroke-width=%221.1%22 fill=%22none%22/%3E%3C/g%3E%3C/g%3E%3Ccircle cx=%2229%22 cy=%2211.8%22 r=%221.9%22 fill=%22%23ffc83d%22/%3E%3Cg transform=%22translate(48 14) rotate(0)%22%3E%3Cpath d=%22M-8.6 -1H8.6L0 24Z%22 fill=%22%23ffc83d%22/%3E%3Cpath d=%22M-8.6 -1H0V24Z%22 fill=%22%23fff%22 opacity=%22.17%22/%3E%3Cg fill=%22%230b5a30%22%3E%3Ccircle cx=%220%22 cy=%225.6%22 r=%222.3%22/%3E%3Ccircle cx=%22-2.5%22 cy=%229.4%22 r=%222.3%22/%3E%3Ccircle cx=%222.5%22 cy=%229.4%22 r=%222.3%22/%3E%3Cpath d=%22M0 9.6L1 14%22 stroke=%22%230b5a30%22 stroke-width=%221.1%22 fill=%22none%22/%3E%3C/g%3E%3C/g%3E%3Ccircle cx=%2248%22 cy=%2213.4%22 r=%221.9%22 fill=%22%23ffc83d%22/%3E%3Cg transform=%22translate(67 12.4) rotate(-9.4)%22%3E%3Cpath d=%22M-8.6 -1H8.6L0 24Z%22 fill=%22%231f9d55%22/%3E%3Cpath d=%22M-8.6 -1H0V24Z%22 fill=%22%23fff%22 opacity=%22.17%22/%3E%3Cg fill=%22%23e9fff2%22%3E%3Ccircle cx=%220%22 cy=%225.6%22 r=%222.3%22/%3E%3Ccircle cx=%22-2.5%22 cy=%229.4%22 r=%222.3%22/%3E%3Ccircle cx=%222.5%22 cy=%229.4%22 r=%222.3%22/%3E%3Cpath d=%22M0 9.6L1 14%22 stroke=%22%23e9fff2%22 stroke-width=%221.1%22 fill=%22none%22/%3E%3C/g%3E%3C/g%3E%3Ccircle cx=%2267%22 cy=%2211.8%22 r=%221.9%22 fill=%22%23ffc83d%22/%3E%3Cg transform=%22translate(86 7.7) rotate(-18.3)%22%3E%3Cpath d=%22M-8.6 -1H8.6L0 24Z%22 fill=%22%23ff8a3d%22/%3E%3Cpath d=%22M-8.6 -1H0V24Z%22 fill=%22%23fff%22 opacity=%22.17%22/%3E%3Cg fill=%22%23fff6e8%22%3E%3Ccircle cx=%220%22 cy=%225.6%22 r=%222.3%22/%3E%3Ccircle cx=%22-2.5%22 cy=%229.4%22 r=%222.3%22/%3E%3Ccircle cx=%222.5%22 cy=%229.4%22 r=%222.3%22/%3E%3Cpath d=%22M0 9.6L1 14%22 stroke=%22%23fff6e8%22 stroke-width=%221.1%22 fill=%22none%22/%3E%3C/g%3E%3C/g%3E%3Ccircle cx=%2286%22 cy=%227.1%22 r=%221.9%22 fill=%22%23ffc83d%22/%3E%3C/svg%3E"); }
+.sp-knot { left: 0; right: 0; top: 0; height: 36px; background-repeat: repeat-x; background-position: 0 0; opacity: 0.95; }
+.sp-bunt { left: 0; right: 0; top: 0; height: 46px; background-repeat: repeat-x; background-position: 8px 0; opacity: 0.95; }
+.sp-bunt--low { top: 33px; }
+.sp-corner { width: 96px; height: 90px; opacity: 0.8; }
+.sp-corner--tl { left: -14px; top: 44px; }
+.sp-corner--tr { right: -14px; top: 44px; transform: scaleX(-1); }
+.sp-corner--bl { left: -14px; bottom: 4px; }
+.sp-corner--br { right: -14px; bottom: 4px; transform: scaleX(-1); }
+.sp-cl { position: absolute; display: block; filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.35)); }
+.sp-cl svg { display: block; width: 100%; height: auto; }
+.sp-bowc { opacity: 0.58; }
+.sp-bowc svg { display: block; width: 100%; height: auto; }
+.sp-bowc--tl { left: -4px; top: 32px; }
+.sp-bowc--tr { right: -4px; top: 32px; transform: scaleX(-1); }
+.sp-bowc--bl { left: -4px; bottom: -2px; transform: scaleY(-1); }
+.sp-bowc--br { right: -4px; bottom: -2px; transform: scale(-1, -1); }
+.sp-base { bottom: -2px; display: flex; align-items: flex-end; gap: clamp(0px, 0.4vw, 6px); }
+.sp-base--l { left: clamp(4px, 2vw, 32px); }
+.sp-base--r { right: clamp(4px, 2vw, 32px); }
+.sp-i { display: block; height: auto; flex-shrink: 0; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.35)); }
+.sp-i--pot { width: clamp(54px, 7vw, 92px); }
+.sp-i--stack { width: clamp(44px, 5.6vw, 72px); }
+.sp-i--coins { width: clamp(30px, 3.6vw, 48px); }
+.sp-i--shoe { width: clamp(26px, 3.2vw, 42px); }
+.sp-coinp svg { animation: sp-flip calc(var(--sd, 5s) * 0.35) ease-in-out var(--o, 0s) infinite alternate; }
+@keyframes sp-flip { from { scale: 1 1; } to { scale: 0.12 1; } }
+.sp-sec .sk-pend { color: #4fd88b; }
+.sp-sec .sk-pend > svg { filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4)); }
+.sp-tap--clover { color: #4fd88b; }
+.sp-sec .sp-tap { opacity: 0.62; animation: sp-bob 7s ease-in-out infinite; }
+.sp-sec .sp-tap.is-tap { opacity: 1; animation: sk-wiggle 0.4s ease-in-out 2; }
+
+/* ── The hillside above the footer: a rainbow from a clover patch to a pot of gold, four green signs between ──────────────────────────── */
+.sp-footer {
+  display: flex; align-items: flex-end; justify-content: center; padding: 170px 16px 58px;
+  background: linear-gradient(to bottom, transparent, rgba(47, 191, 113, 0.08) 55%, rgba(47, 191, 113, 0.16));
+}
+[data-season="stpatricks"] .footer { background: #04100a; }
+.sp-farch { position: absolute; left: 50%; bottom: 44px; width: min(96%, 1180px); height: auto; transform: translateX(-50%); opacity: 0.9; }
+.sp-fhills { position: absolute; left: 0; right: 0; bottom: 0; height: 130px; }
+.sp-fhills svg { display: block; width: 100%; height: 100%; }
+.sp-props { position: absolute; bottom: 34px; display: flex; align-items: flex-end; gap: clamp(2px, 0.8vw, 10px); }
+.sp-props--l { left: 3%; }
+.sp-props--r { right: 4%; }
+.sp-footer .sp-i--pot { width: clamp(90px, 12vw, 150px); }
+.sp-footer .sp-i--c4 { width: clamp(52px, 7vw, 92px); color: #4fd88b; }
+.sp-footer .sp-i--c3 { width: clamp(40px, 5.4vw, 70px); color: #2fbf71; }
+.sp-footer .sp-i--hat { width: clamp(60px, 8vw, 104px); }
+.sp-signs { position: relative; z-index: 1; margin-bottom: 40px; }
+.sp-sign {
+  position: relative; margin-bottom: 40px; padding: 20px 8px 12px; text-align: center; border-radius: 10px;
+  background: linear-gradient(#1f9d55, #136b38); box-shadow: inset 0 0 0 3px var(--gold), inset 0 0 0 5px rgba(0, 0, 0, 0.25), 0 8px 22px rgba(0, 0, 0, 0.45);
+}
+.sp-sign::after { content: ""; position: absolute; left: 50%; top: 100%; width: 12px; height: 46px; transform: translateX(-50%); background: linear-gradient(90deg, #5b3b1c, #3a2411); }
+.sp-sign::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background: radial-gradient(circle at 10px 10px, #ffe27a 0 2px, #b9780a 2.6px 3.6px, transparent 4px), radial-gradient(circle at calc(100% - 10px) 10px, #ffe27a 0 2px, #b9780a 2.6px 3.6px, transparent 4px);
+}
+.sp-sign__c { position: absolute; left: 50%; top: -15px; width: 28px; height: auto; transform: translateX(-50%); color: #5fe39a; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5)); }
+.sp-sign--2 .sp-sign__c, .sp-sign--4 .sp-sign__c { color: #8ff0b8; }
+.sp-sign span { display: block; font: 700 clamp(14px, 2vw, 20px)/1 var(--font-display), sans-serif; color: var(--gold); letter-spacing: 0.1em; }
+.sp-sign em { display: block; margin-top: 7px; font-style: normal; font-size: clamp(10.5px, 1.4vw, 13px); line-height: 1.25; color: #eafff2; }
+@media (min-width: 521px) { .sp-signs > .sp-sign { width: clamp(100px, 15vw, 164px); } }
+.sp-sign--1 { transform: rotate(-2deg); }
+.sp-sign--2 { margin-bottom: 52px; }
+.sp-sign--3 { transform: rotate(1.5deg); }
+.sp-sign--4 { margin-bottom: 46px; transform: rotate(-1deg); }
+
+/* ── Phones: fewer things, nothing wider than the screen ──────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 700px) {
+  .sp-hero { --sp-bw: clamp(120px, 38vw, 170px); }
+  .sp-hero .sk-p { scale: 0.72; }
+  .sp-corner { transform-origin: 0 0; scale: 0.8; }
+  .sp-corner--tr, .sp-corner--br { transform-origin: 100% 0; }
+  .sp-bowc, .sp-knot--hb { display: none; }
+  .sp-bunt--low { top: 0; }
+  .sp-base .sp-i:nth-child(n+3) { display: none; }
+  .sp-footer { padding-top: 64px; padding-bottom: 52px; }
+  .sp-props .sp-i:nth-child(n+2) { display: none; }
+}
+@media (max-width: 520px) {
+  .sp-sign { padding: 14px 2px 8px; }
+  .sp-sign__c { width: 20px; top: -11px; }
+  .sp-sign::before { background-size: 100% 100%; background-image: radial-gradient(circle at 6px 6px, #ffe27a 0 1.4px, #b9780a 1.8px 2.6px, transparent 3px), radial-gradient(circle at calc(100% - 6px) 6px, #ffe27a 0 1.4px, #b9780a 1.8px 2.6px, transparent 3px); }
+  .sp-sign em { font-size: 10px; }
+  .sp-sign span { font-size: 12px; letter-spacing: 0.04em; }
+}
+/* With less motion asked for, nothing falls: a few shamrocks stay where they are in the hero's sky instead (they are not drawn otherwise). */
+.sp-still { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .sp-hero .sp-still { display: block; }
+}

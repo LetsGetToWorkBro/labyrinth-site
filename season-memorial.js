@@ -35,20 +35,24 @@
   // A ribbon with three stripes lengthwise (red edges, white, blue heart): the same centre line drawn three times, narrower each time.
   function ribbon(d, w, cap) {
     var s = ' fill="none" stroke-linejoin="round" stroke-linecap="' + (cap || 'butt') + '"';
-    return '<path d="' + d + '"' + s + ' stroke="' + C.red + '" stroke-width="' + w + '"/><path d="' + d + '"' + s + ' stroke="' + C.white + '" stroke-width="' + r1(w * 0.62) + '"/><path d="' + d + '"' + s + ' stroke="' + C.blueLt + '" stroke-width="' + r1(w * 0.26) + '"/>';
+    return '<path d="' + d + '"' + s + ' stroke="' + C.red + '" stroke-width="' + w + '"/><path d="' + d + '"' + s + ' stroke="' + C.white + '" stroke-width="' + r1(w * 0.54) + '"/><path d="' + d + '"' + s + ' stroke="' + C.blueLt + '" stroke-width="' + r1(w * 0.3) + '"/>';
   }
 
   /* ── the flag: 13 stripes, the blue field and its 50 stars, drawn once; waved by cutting it into strips that rise and fall in turn ── */
   var FW = 380, FH = 200, SH = FH / 13;
-  var STRIPS = [14, 10, 8];
+  var STRIPS = [18, 10, 8];
   function flagArt() {
-    var red = '', stars = '', i, row, col, n, x, y, cw = FW * 0.4, ch = SH * 7;
-    for (i = 0; i < 13; i += 2) red += 'M0 ' + r2(i * SH) + 'H' + FW + 'V' + r2((i + 1) * SH) + 'H0Z';
+    var white = '', red = '', stars = '', i, row, col, n, x, y, cw = FW * 0.4, ch = SH * 7;
+    function band(y0, y1) { return 'M0 ' + r2(y0) + 'H' + FW + 'V' + r2(y1) + 'H0Z'; }
+    for (i = 0; i < 13; i++) {
+      if (i % 2) white += band(i * SH, (i + 1) * SH);
+      else red += band(Math.max(0, i * SH - 0.25), Math.min(FH, (i + 1) * SH + 0.25));      // red overlaps the white a hair, so no seam shows and no pale fringe forms at the edge
+    }
     for (row = 0; row < 9; row++) {
       n = row % 2 ? 5 : 6;
       for (col = 0; col < n; col++) { x = (row % 2 ? 2 + 2 * col : 1 + 2 * col) * cw / 12; y = (row + 1) * ch / 10; stars += poly(starPts(x, y, 5.2, 2.2)); }
     }
-    return '<g id="md-flagart"><rect width="' + FW + '" height="' + FH + '" fill="' + C.white + '"/><path d="' + red + '" fill="' + C.red + '"/>' +
+    return '<g id="md-flagart"><path d="' + white + '" fill="' + C.white + '"/><path d="' + red + '" fill="' + C.red + '"/>' +
       '<rect width="' + cw + '" height="' + r2(ch) + '" fill="' + C.blue + '"/><path d="' + stars + '" fill="' + C.white + '"/></g>';
   }
   function stripClips() {
@@ -59,21 +63,25 @@
     });
     return out;
   }
-  // The flag on its pole as an inline <svg>: N strips, each rising and falling a little later than the one before it (a slow ripple from the pole to the free end),
-  // with a soft shade that deepens and eases as each strip tilts. poleLen is how far the pole runs below the flag; o.fade lets it dissolve into the dusk.
+  // The flag on its pole as an inline <svg>: N strips of cloth. Each strip rises and falls a little after the one before it, so a slow ripple runs from the pole to
+  // the free end; each also tilts to follow the slope of the wave (a quarter beat ahead of its rise), which keeps the edges smooth, and a soft shade deepens and
+  // eases with the slope. Rise and tilt are two nested groups because each animates `transform` (Chromium does not repaint animated individual `translate` on SVG parts).
+  // o.amp is how far the free end rises, o.T the seconds for one swell, o.shade how strong the shade is, o.fade lets the pole dissolve.
   function flagSvg(cls, N, poleLen, o) {
     o = o || {};
-    var w = FW / N, amp = o.amp == null ? 8 : o.amp, T = o.T || 3.6, P = 2 * T, s = '', i, t, a, lag, y0, sh;
+    var pw = o.pole || 5, w = FW / N, amp = o.amp == null ? 8 : o.amp, T = o.T || 3.6, P = 2 * T, kw = 2 * Math.PI * 1.25 / FW, sk = o.shade == null ? 1 : o.shade, u0 = 0.4, s = '', i, t, xc, a, lag, ph, y0, ks, k0, lo, hi, s0, deg = 180 / Math.PI;
     for (i = 0; i < N; i++) {
-      t = i / (N - 1); a = amp * (0.12 + 0.88 * t); lag = 1.25 * t * P;
-      y0 = a * Math.sin(2 * Math.PI * 1.25 * t + 0.6); sh = 0.17 + 0.13 * Math.cos(2 * Math.PI * 1.25 * t + 0.6);
-      s += '<g class="md-ws" style="--ya:' + r2(-a) + 'px;--yb:' + r2(a) + 'px;--y0:' + r2(y0) + 'px;--o:' + r2(lag - 2 * P) + 's">' +
+      xc = (i + 0.5) * w; t = xc / FW; a = amp * (0.12 + 0.88 * t); lag = 1.25 * t * P;
+      ph = u0 - kw * xc; y0 = -a * Math.cos(ph); ks = Math.atan(a * kw) * deg; k0 = Math.atan(-a * kw * Math.sin(ph)) * deg;
+      lo = 0.02; hi = 0.02 + 0.22 * sk; s0 = (lo + hi) / 2 + (hi - lo) / 2 * Math.sin(ph);
+      s += '<g class="md-wp" style="--ya:' + r2(-a) + 'px;--yb:' + r2(a) + 'px;--y0:' + r2(y0) + 'px;--o:' + r2(lag - 2 * P) + 's">' +
+        '<g class="md-wk" style="--xc:' + r2(xc) + 'px;--ka:' + r2(-ks) + 'deg;--kb:' + r2(ks) + 'deg;--k0:' + r2(k0) + 'deg;--os:' + r2(lag + T / 2 - 2 * P) + 's">' +
         '<use href="#md-flagart" clip-path="url(#md-fc' + N + '-' + i + ')"/>' +
-        '<rect class="md-wsh" x="' + r2(i * w) + '" y="0" width="' + r2(w + 0.8) + '" height="' + FH + '" style="--o:' + r2(lag - 2 * P - T / 2) + 's;--s0:' + r2(sh) + '"/></g>';
+        '<rect class="md-wsh" x="' + r2(i * w) + '" y="0" width="' + r2(w) + '" height="' + FH + '" style="--o:' + r2(lag - T / 2 - 2 * P) + 's;--sa:' + lo + ';--sb:' + r2(hi) + ';--s0:' + r2(s0) + '"/></g></g>';
     }
-    return '<svg class="' + cls + '" viewBox="-12 -34 404 ' + (34 + FH + 14 + poleLen) + '" aria-hidden="true" focusable="false" style="--d:' + T + 's">' +
-      '<rect x="-5" y="-14" width="5" height="' + (14 + FH + 14 + poleLen) + '" rx="2.5" fill="url(#' + (o.fade ? 'md-polefade' : 'md-pole') + ')"/>' +
-      '<circle cx="-2.5" cy="-17" r="7" fill="' + C.brass + '"/><circle cx="-4.8" cy="-19.6" r="2.3" fill="#fff3c4"/>' + s + '</svg>';
+    return '<svg class="' + cls + '" viewBox="-16 -36 408 ' + (36 + FH + 14 + poleLen) + '" aria-hidden="true" focusable="false" style="--d:' + T + 's">' +
+      '<rect x="' + -pw + '" y="-14" width="' + pw + '" height="' + (14 + FH + 14 + poleLen) + '" rx="' + pw / 2 + '" fill="url(#' + (o.fade ? 'md-polefade' : 'md-pole') + ')"/>' +
+      '<circle cx="' + -pw / 2 + '" cy="-17" r="' + r1(7 + (pw - 5) * 0.7) + '" fill="' + C.brass + '"/><circle cx="' + r1(-pw / 2 - 2.3) + '" cy="-19.6" r="2.3" fill="#fff3c4"/>' + s + '</svg>';
   }
 
   /* ── the poppy: four crinkled petals round a dark heart. Built once as a bloom (centred on 0,0) and reused on stems, in wreaths and on strings ── */
@@ -87,6 +95,12 @@
     s += '<circle r="12.5" fill="' + C.poppyDk + '" opacity=".5"/><circle r="6.6" fill="#1d0f24"/>';
     for (i = 0; i < 10; i++) { a = i * Math.PI / 5; s += '<circle cx="' + r1(9.6 * Math.cos(a)) + '" cy="' + r1(9.6 * Math.sin(a)) + '" r="1.25" fill="#3d2849"/>'; }
     return s + '<circle r="2.3" fill="#4b3358"/></g>';
+  }
+  // A lighter bloom for the small, distant poppies of a field (about a third of the shapes): four petals round a dark heart, the stamens as one dotted ring.
+  function bloomLite() {
+    var cols = ['#d92d3a', '#c32534', '#e0343f', '#cc2a38'], s = '<g id="md-bloomlite">';
+    [-45, 45, 135, 225].forEach(function (deg, j) { s += '<use href="#md-pet" fill="' + cols[j] + '" stroke="' + C.poppyDk + '" stroke-opacity=".4" stroke-width="1.2" transform="rotate(' + deg + ')"/>'; });
+    return s + '<circle r="12" fill="' + C.poppyDk + '" opacity=".5"/><circle r="6.8" fill="#1d0f24"/><circle r="9.6" fill="none" stroke="#3d2849" stroke-width="2.2" stroke-dasharray="1.3 4.7"/></g>';
   }
   // The same flower seen from the side: a cup with its dark mouth and a few stamens.
   function bloomSide() {
@@ -121,9 +135,9 @@
   /* ── the ribbon bow: loops and tails of a red, white and blue ribbon, tied with a small knot ── */
   function bowGroup() {
     return '<g id="md-bowg">' +
-      '<g clip-path="url(#md-bowtl)">' + ribbon('M47 52C42 74 36 94 30 118', 13) + '</g><g clip-path="url(#md-bowtr)">' + ribbon('M53 52C58 74 64 94 70 118', 13) + '</g>' +
-      ribbon('M50 46C42 26 16 14 11 32C7 50 32 56 50 46', 13, 'round') + ribbon('M50 46C58 26 84 14 89 32C93 50 68 56 50 46', 13, 'round') +
-      '<rect x="41" y="37" width="18" height="18" rx="5.5" fill="' + C.red + '"/><rect x="44" y="40" width="12" height="12" rx="3.5" fill="' + C.white + '"/><rect x="47" y="43" width="6" height="6" rx="1.8" fill="' + C.blueLt + '"/></g>';
+      '<g clip-path="url(#md-bowtl)">' + ribbon('M47 52C42 74 36 94 30 118', 16) + '</g><g clip-path="url(#md-bowtr)">' + ribbon('M53 52C58 74 64 94 70 118', 16) + '</g>' +
+      ribbon('M50 46C42 24 15 12 10 31C6 51 32 57 50 46', 16, 'round') + ribbon('M50 46C58 24 85 12 90 31C94 51 68 57 50 46', 16, 'round') +
+      '<rect x="40" y="36" width="20" height="20" rx="6" fill="' + C.red + '"/><rect x="43" y="39" width="14" height="14" rx="4" fill="' + C.white + '"/><rect x="46.5" y="42.5" width="7" height="7" rx="2" fill="' + C.blueLt + '"/></g>';
   }
 
   /* ── the eagle: wings spread, the fingered tips of its feathers, a white head and tail. Drawn on a 320 by 140 sheet, centred on x = 160 ── */
@@ -148,7 +162,7 @@
       '<path d="M160 44C166 46 169 54 169 64C169 76 166 88 163 96C165 86 164 70 160 44Z" fill="#8294c2"/>' +
       '<path d="M152 49C150 40 155 31 164 31C172 31 176 38 173 45C170 51 160 53 152 49Z" fill="' + C.white + '"/>' +
       '<path d="M171 37C180 36 187 40 186 47C183 44 178 44 174 45Z" fill="#e8c25a"/><path d="M174 45C178 44 183 44 186 47" fill="none" stroke="#b8902a" stroke-width="1"/>' +
-      '<circle cx="166.5" cy="38" r="1.7" fill="#16203f"/><path d="M162.5 34.6L170 36.4" stroke="#16203f" stroke-width="1.2" stroke-linecap="round"/>' +
+      '<circle cx="166.5" cy="38" r="1.7" fill="#16203f"/><path d="M163.6 35.2L169 36.2" stroke="#16203f" stroke-opacity=".7" stroke-width=".9" stroke-linecap="round"/>' +
       '</symbol>';
     return s;
   }
@@ -186,13 +200,17 @@
     s += flagArt() + stripClips() +
       '<linearGradient id="md-pole" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8f9ac0"/><stop offset=".45" stop-color="#e9edf8"/><stop offset="1" stop-color="#7a86ac"/></linearGradient>' +
       '<linearGradient id="md-polefade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e3e8f6"/><stop offset=".5" stop-color="#b9c3df" stop-opacity=".85"/><stop offset="1" stop-color="#9aa6cb" stop-opacity="0"/></linearGradient>' +
-      '<clipPath id="md-bowtl"><path clip-rule="evenodd" d="M0 0H100V130H0Z M19 128L30 104L41 128Z"/></clipPath><clipPath id="md-bowtr"><path clip-rule="evenodd" d="M0 0H100V130H0Z M59 128L70 104L81 128Z"/></clipPath>';
+      '<clipPath id="md-bowtl"><path clip-rule="evenodd" d="M0 0H100V130H0Z M22 128L30 104L38 128Z"/></clipPath><clipPath id="md-bowtr"><path clip-rule="evenodd" d="M0 0H100V130H0Z M62 128L70 104L78 128Z"/></clipPath>';
     // a five pointed star with a lit side, and one petal
     var sp = starPts(12, 13, 11.2, 4.9);
     s += '<symbol id="md-star" viewBox="0 0 24 25"><path d="' + poly(sp) + '" fill="currentColor" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path d="' + facets(12, 13, sp) + '" fill="#fff" fill-opacity=".34"/></symbol>' +
       '<symbol id="md-petal" viewBox="0 0 24 32"><path d="M12 1C21 7 23 19 17 27C14 31 10 31 7 27C1 19 3 7 12 1Z" fill="currentColor"/><path d="M12 5C13 13 13 21 12 28" fill="none" stroke="#000" stroke-opacity=".16" stroke-width="1.2" stroke-linecap="round"/></symbol>';
     // the flower, its petal, and the plants that carry it
     s += '<path id="md-pet" d="M0 3C-10 2 -18 -7 -16 -17C-14 -26 -6 -30 0 -27C6 -30 14 -26 16 -17C18 -7 10 2 0 3Z"/>' + bloom() + bloomSide();
+    s += bloomLite() + '<symbol id="md-poppyl" viewBox="0 0 64 128"><path d="M32 54C30 76 35 100 32 128" fill="none" stroke="' + C.stem + '" stroke-width="3.6" stroke-linecap="round"/>' +
+        leaf('M32 104C23 102 13 94 8 82C19 84 28 92 32 104Z') + '<use href="#md-bloomlite" transform="translate(32 30)"/></symbol>' +
+      '<symbol id="md-poppybl" viewBox="0 0 64 128"><path d="M32 40C34 70 30 100 32 128" fill="none" stroke="' + C.stem + '" stroke-width="3.6" stroke-linecap="round"/>' +
+        leaf('M32 110C41 108 51 100 56 88C45 90 36 98 32 110Z', C.leafLt) + '<path d="M5 34C1 18 14 4 32 4C50 4 63 18 59 34C55 44 9 44 5 34Z" fill="#c32534"/><ellipse cx="32" cy="12" rx="15" ry="5.4" fill="#1d0f24"/><path d="M5 34C1 20 9 10 17 14C23 18 23 36 19 44C11 44 7 40 5 34Z" fill="#d92d3a"/></symbol>';
     s += '<symbol id="md-head" viewBox="0 0 64 64"><use href="#md-bloom" transform="translate(32 32)"/></symbol>' +
       '<symbol id="md-poppy" viewBox="0 0 64 128"><path d="M32 54C30 76 35 100 32 128" fill="none" stroke="' + C.stem + '" stroke-width="3.4" stroke-linecap="round"/>' +
         leaf('M32 104C23 102 13 94 8 82C19 84 28 92 32 104Z') + leaf('M32.5 88C41 86 50 78 54 66C44 68 35 76 32.5 88Z', C.leafLt) + '<use href="#md-bloom" transform="translate(32 30)"/></symbol>' +
@@ -215,46 +233,53 @@
     return s;
   })();
 
-  /* ── the field: rows of poppies and a row of small flags, each row a little darker and smaller the further it is, clumps that sway ── */
+  /* ── the field: rows of poppies and a row of small flags, each row a little darker and smaller the further it is ──────────────────────────────────
+     Built as a stack of <svg> layers the size of the field (static ground bands between the rows, then the plants of each row split over two layers, then the flags, then the
+     grass). A layer leans a little from side to side (a skew about its base, which moves every head by its height whatever its place along the row), each in its own time:
+     a transform animation on a layer is composited, so the sway costs no repainting. */
   function field(k, o) {
-    var r = k.rng(o.seed), W = 1440, kinds = ['md-poppy', 'md-poppy', 'md-poppy', 'md-poppyb', 'md-bud'], x;
-    var out = '<svg viewBox="0 0 ' + W + ' ' + o.h + '" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">';
+    var r = k.rng(o.seed), W = 1440, plain = ['md-poppy', 'md-poppy', 'md-poppy', 'md-poppyb', 'md-bud'], lite = ['md-poppyl', 'md-poppyl', 'md-poppyl', 'md-poppybl', 'md-bud'], x, out = '';
+    function layer(inner, cls, style) { return '<svg class="md-fl' + (cls ? ' ' + cls : '') + '" viewBox="0 0 ' + W + ' ' + o.h + '" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false"' + (style ? ' style="' + style + '"' : '') + '>' + inner + '</svg>'; }
+    function lean() { return '--a:' + r1(0.8 + r() * 1.1) + 'deg;--d:' + r1(8 + r() * 5) + 's;--o:-' + r1(r() * 11) + 's'; }
     o.rows.forEach(function (row) {
-      var cnt = 0, open = false, nextFlag = row.flagEvery ? row.flagEvery * (0.4 + r() * 0.5) : 1e9, w, base, tilt, n;
-      out += (row.ground || '') + '<g' + (row.op < 1 ? ' opacity="' + row.op + '"' : '') + '>';
+      var kinds = row.lite ? lite : plain, sets = ['', ''], flags = ['', ''], cnt = 0, set = 0, fset = 0, nextFlag = row.flagEvery ? row.flagEvery * (0.4 + r() * 0.5) : 1e9, w, base, tilt;
       x = -20 + r() * 20;
       while (x < W + 20) {
-        if (!open) { out += '<g class="md-sw" style="--a:' + r1(0.9 + r() * 1.5) + 'deg;--d:' + r1(6.5 + r() * 4) + 's;--o:-' + r1(r() * 9) + 's">'; open = true; }
         w = row.w[0] + r() * (row.w[1] - row.w[0]); base = row.base + (r() - 0.5) * row.jit; tilt = (r() - 0.5) * 12;
-        out += '<use href="#' + kinds[Math.floor(r() * kinds.length)] + '" x="' + r1(x) + '" y="' + r1(base - w * 2) + '" width="' + r1(w) + '" height="' + r1(w * 2) + '" transform="rotate(' + r1(tilt) + ' ' + r1(x + w / 2) + ' ' + r1(base) + ')"/>';
+        if (row.tall && r() < row.tall) w *= 1.5;                                  // now and then one stands taller than the rest
+        sets[set] += '<use href="#' + kinds[Math.floor(r() * kinds.length)] + '" x="' + r1(x) + '" y="' + r1(base - w * 2) + '" width="' + r1(w) + '" height="' + r1(w * 2) + '" transform="rotate(' + r1(tilt) + ' ' + r1(x + w / 2) + ' ' + r1(base) + ')"/>';
         x += row.gap[0] + r() * (row.gap[1] - row.gap[0]);
-        n = ++cnt;
-        if (n % row.clump === 0) {
-          out += '</g>'; open = false;
+        if (++cnt % row.clump === 0) {
+          set = 1 - set;
           if (x >= nextFlag && row.flagW) {
             w = row.flagW[0] + r() * (row.flagW[1] - row.flagW[0]); base = row.base + (r() - 0.5) * row.jit * 0.6;
-            out += '<g class="md-sw md-sw--f" style="--a:' + r1(0.6 + r() * 0.9) + 'deg;--d:' + r1(7 + r() * 3) + 's;--o:-' + r1(r() * 9) + 's"><use href="#md-flagsm" x="' + r1(x) + '" y="' + r1(base - w * 1.92) + '" width="' + r1(w) + '" height="' + r1(w * 1.92) + '"/></g>';
-            x += w * 0.6; nextFlag = x + row.flagEvery * (0.75 + r() * 0.5);
+            flags[fset] += '<use href="#md-flagsm" x="' + r1(x) + '" y="' + r1(base - w * 1.92) + '" width="' + r1(w) + '" height="' + r1(w * 1.92) + '"/>';
+            fset = 1 - fset; x += w * 0.6; nextFlag = x + row.flagEvery * (0.75 + r() * 0.5);
           }
         }
       }
-      if (open) out += '</g>';
-      out += '</g>';
+      out += layer(row.ground || '');
+      sets.forEach(function (st) { if (st) out += layer('<g' + (row.op < 1 ? ' opacity="' + row.op + '"' : '') + '>' + st + '</g>', 'md-sk', lean()); });
+      flags.forEach(function (fl) { if (fl) out += layer(fl, 'md-sk', lean()); });
     });
-    if (o.grass) for (x = -10; x < W; x += 56 + r() * 44) out += '<use href="#md-grass" x="' + r1(x) + '" y="' + r1(o.h - 40 - r() * 12) + '" width="' + r1(78 + r() * 34) + '" height="' + r1(50 + r() * 14) + '"/>';
-    return out + '</svg>';
+    if (o.grass) {
+      var g = '';
+      for (x = -10; x < W; x += 56 + r() * 44) g += '<use href="#md-grass" x="' + r1(x) + '" y="' + r1(o.h - 40 - r() * 12) + '" width="' + r1(78 + r() * 34) + '" height="' + r1(50 + r() * 14) + '"/>';
+      out += layer(g);
+    }
+    return out;
   }
   var HERO_FIELD = { seed: 7, h: 240, grass: true, rows: [
-    { ground: '<path d="M0 120Q240 98 480 114T960 108T1440 116V240H0Z" fill="#0b1a3c"/><path d="M0 120Q240 98 480 114T960 108T1440 116" fill="none" stroke="#ff9a8a" stroke-opacity=".2" stroke-width="2"/>', base: 152, jit: 10, w: [20, 28], gap: [22, 38], clump: 7, op: 0.5 },
-    { ground: '<path d="M0 158Q200 144 420 154T860 150T1440 156V240H0Z" fill="#0a1632"/>', base: 190, jit: 12, w: [30, 42], gap: [40, 64], clump: 6, op: 1, flagEvery: 150, flagW: [40, 48] },
-    { ground: '<path d="M0 200Q260 186 520 196T1040 192T1440 198V240H0Z" fill="#070d1c"/>', base: 246, jit: 8, w: [48, 64], gap: [84, 134], clump: 3, op: 1 }
+    { ground: '<path d="M0 120Q240 98 480 114T960 108T1440 116V240H0Z" fill="#0b1a3c"/><path d="M0 120Q240 98 480 114T960 108T1440 116" fill="none" stroke="#ff9a8a" stroke-opacity=".2" stroke-width="2"/>', base: 152, jit: 16, w: [20, 28], gap: [22, 38], clump: 7, op: 0.45, tall: 0.12, lite: true },
+    { ground: '<path d="M0 158Q200 144 420 154T860 150T1440 156V240H0Z" fill="#0a1632"/>', base: 190, jit: 20, w: [28, 42], gap: [40, 64], clump: 6, op: 0.92, tall: 0.14, lite: true, flagEvery: 175, flagW: [48, 58] },
+    { ground: '<path d="M0 200Q260 186 520 196T1040 192T1440 198V240H0Z" fill="#070d1c"/>', base: 246, jit: 14, w: [44, 66], gap: [84, 134], clump: 3, op: 1, tall: 0.1 }
   ] };
   var FOOT_BACK = { seed: 23, h: 150, rows: [
-    { ground: '<path d="M0 50Q240 36 480 48T960 42T1440 50V150H0Z" fill="#0b1a3c"/>', base: 78, jit: 8, w: [16, 24], gap: [18, 30], clump: 8, op: 0.5 },
-    { ground: '<path d="M0 82Q200 70 420 80T860 76T1440 82V150H0Z" fill="#0a1632"/>', base: 112, jit: 10, w: [26, 36], gap: [34, 54], clump: 6, op: 1, flagEvery: 130, flagW: [32, 40] }
+    { ground: '<path d="M0 50Q240 36 480 48T960 42T1440 50V150H0Z" fill="#0b1a3c"/>', base: 78, jit: 10, w: [20, 28], gap: [34, 52], clump: 7, op: 0.5, lite: true },
+    { ground: '<path d="M0 82Q200 70 420 80T860 76T1440 82V150H0Z" fill="#0a1632"/>', base: 112, jit: 14, w: [26, 38], gap: [46, 70], clump: 5, op: 1, tall: 0.12, lite: true, flagEvery: 150, flagW: [34, 42] }
   ] };
   var FOOT_FRONT = { seed: 41, h: 150, grass: true, rows: [
-    { ground: '<path d="M0 126Q260 114 520 124T1040 120T1440 126V150H0Z" fill="#050a16"/>', base: 160, jit: 8, w: [40, 56], gap: [96, 150], clump: 3, op: 1 }
+    { ground: '<path d="M0 126Q260 114 520 124T1040 120T1440 126V150H0Z" fill="#050a16"/>', base: 160, jit: 10, w: [34, 50], gap: [100, 160], clump: 3, op: 1 }
   ] };
 
   // A far line of low hills and trees for the foot scene.
@@ -266,40 +291,43 @@
   }
 
   /* ── the hero: the dusk glow, stars, a flag on a tall pole, an eagle, petals, the field, and a poppy, the flag and a star that answer a tap ── */
+  // Each tap has its words and two drawings: the one in the hero's field (a poppy on its stem, a flag on a tall pole) and a compact one for the margins of a section.
   var TAPS = {
-    poppy: { say: 'We remember', html: function (k) { return k.use('md-poppy', '', '0 0 64 128'); } },
-    flag: { say: 'Honor', html: function () { return flagSvg('', 8, 500, { T: 3.4, amp: 6 }); } },
-    star: { say: 'Thank you', html: function (k) { return k.use('md-star', '', '0 0 24 25'); } }
+    poppy: { say: 'We remember', hero: function (k) { return k.use('md-poppy', '', '0 0 64 128'); }, sec: function (k) { return k.use('md-head', '', '0 0 64 64'); } },
+    flag: { say: 'Honor', hero: function () { return flagSvg('', 8, 500, { T: 3.4, amp: 6, shade: 0.55, pole: 8 }); }, sec: function () { return flagSvg('', 8, 110, { T: 3.4, amp: 6, shade: 0.55, pole: 9 }); } },
+    star: { say: 'Thank you', hero: function (k) { return k.use('md-star', '', '0 0 24 25'); }, sec: function (k) { return k.use('md-star', '', '0 0 24 25'); } }
   };
   function hero(k) {
     return '<div class="md-dusk"></div>' +
       k.twinkles(8, { id: ['md-star', 'sk-sparkle'], size: [6, 13], dur: [5, 9], colors: ['#f3f1ea', '#cdd8f2', '#ffe9b8'], area: [3, 97], areaY: [13, 26], seed: 21, mobile: 0.5, cls: 'md-tw' }) +
       k.twinkles(5, { id: ['md-star', 'sk-sparkle'], size: [6, 12], dur: [5, 9], colors: ['#f3f1ea', '#cdd8f2'], area: [82, 98], areaY: [26, 62], seed: 22, mobile: 0.4, cls: 'md-tw' }) +
       k.twinkles(4, { id: ['md-star', 'sk-sparkle'], size: [6, 11], dur: [5, 9], colors: ['#f3f1ea', '#ffe9b8'], area: [1, 7], areaY: [32, 70], seed: 23, mobile: 0.5, cls: 'md-tw' }) +
-      k.flyers(1, { id: 'md-eagle', vb: '0 0 320 140', size: [150, 176], dur: [92, 96], top: [13, 15], wave: 14, seed: 4, cls: 'md-eagle' }) +
-      flagSvg('md-bigflag', 14, 520, { fade: true, T: 3.8, amp: 9 }) +
+      k.flyers(1, { id: 'md-eagle', vb: '0 0 320 140', size: [150, 176], dur: [92, 96], top: [13, 15], wave: 14, seed: 4, cls: 'md-eagle md-eagle--h' }) +
+      flagSvg('md-bigflag', 18, 520, { fade: true, T: 3.8, amp: 9 }) +
       k.particles(16, { id: 'md-petal', vb: '0 0 24 32', colors: PETALS, size: [10, 20], dur: [20, 34], drift: 90, sway: 28, spin: 0.35, seed: 31, mobile: 0.5, opacity: [0.5, 0.85] }) +
       '<div class="md-field">' + field(k, HERO_FIELD) + '</div>' +
-      k.tap(TAPS.flag.html(k), TAPS.flag.say, 'md-t md-t-flag md-bl', 'left:2.2%;bottom:5px;width:clamp(44px,5vw,68px)') +
-      k.tap(TAPS.poppy.html(k), TAPS.poppy.say, 'md-t md-t-poppy md-br', 'right:3.4%;bottom:3px;width:clamp(32px,4vw,54px)') +
-      k.tap(TAPS.star.html(k), TAPS.star.say, 'md-t md-t-star md-bl', 'left:1.4%;top:23%;width:clamp(26px,3vw,40px)');
+      k.tap(TAPS.flag.hero(k), TAPS.flag.say, 'md-t md-t-flag md-bl', 'left:2.2%;bottom:5px;width:clamp(44px,5vw,68px)') +
+      k.tap(TAPS.poppy.hero(k), TAPS.poppy.say, 'md-t md-t-poppy md-br', 'right:3.4%;bottom:3px;width:clamp(32px,4vw,54px)') +
+      k.tap(TAPS.star.hero(k), TAPS.star.say, 'md-t md-t-star md-bl', 'left:1.4%;top:23%;width:clamp(26px,3vw,40px)');
   }
 
   /* ── a layer behind each section, different on every one so the page does not repeat itself ──────────────────────────────────
      glow:<corner>:<tone>   top:<style>   bow:<side>:<at%>:<string px>:<width px>   pend:<kind>:<side>:<at%>:<string px>:<width px>   pile:<side>:<things>
      stem:<side>:<at%>:<width px>   flagpole:<side>:<width px>   stars:<side>:<top px>:<n>:<seed>   petals:<n>:<seed>   eagle:<top px>:<dir>:<seed>
-     wreath:<side>:<top px>:<width px>   tap:<kind>:<side>:<top px>:<offset %>:<width px> */
+     wreath:<side>:<top px>:<width px>:<offset %>   tap:<kind>:<side>:<top px>:<offset %>:<width px>
+     A tap has to sit beyond the page's content box (x < 40 or x > 1240 at 1280px wide), or that box takes its clicks: so a tap on the edge is at most 36px wide (the kit
+     hides these below 1280px), and a section with a narrow column, like the FAQ, can hold a bigger one in its wide margin. */
   var SECTIONS = {
-    eventStrip:     ['glow:tr:red', 'bow:r:4:36:40', 'pile:l:flag,poppy,bud', 'stars:r:40:4:1', 'petals:4:1', 'tap:star:r:84:10:34'],
+    eventStrip:     ['glow:tr:red', 'bow:r:4:36:40', 'pile:l:flag,poppy,bud', 'stars:r:40:4:1', 'petals:4:1', 'tap:star:r:96:0.3:34'],
     programs:       ['top:bunting', 'glow:tl:blue', 'stem:l:0.6:46', 'pend:star:r:3:96:30', 'petals:5:2', 'eagle:46:ltr:1', 'pile:r:poppy,flag'],
     competition:    ['top:stars', 'glow:br:red', 'pile:r:poppy,flag,bloom', 'pend:head:l:2:80:34', 'stars:r:60:4:2', 'petals:4:3'],
-    coaches:        ['top:ribbon', 'stem:r:0.6:46', 'pile:l:bud,flag', 'tap:poppy:r:122:5:46', 'stars:l:70:3:3', 'petals:4:4', 'glow:tl:white'],
-    gallery:        ['top:swag', 'wreath:l:-36:140', 'pile:r:flag,poppy', 'pend:star:r:5:70:26', 'petals:3:5', 'glow:bl:blue'],
-    'belt-journey': ['top:bunting', 'stem:r:0.8:42', 'pend:star:l:2:92:28', 'tap:star:l:200:1:34', 'pile:l:poppy,bloom,flag', 'petals:5:6', 'eagle:60:rtl:2'],
+    coaches:        ['top:ribbon', 'stem:r:0.6:46', 'pile:l:bud,flag', 'tap:poppy:r:104:0.3:36', 'stars:l:70:2:3', 'petals:4:4', 'glow:tl:white'],
+    gallery:        ['top:swag', 'wreath:l:-36:140:-3', 'pile:r:flag,poppy', 'pend:star:r:5:70:26', 'petals:3:5', 'glow:bl:blue'],
+    'belt-journey': ['top:bunting', 'stem:r:0.8:42', 'pend:star:l:2:92:28', 'tap:star:r:150:0.3:34', 'pile:l:poppy,bloom,flag', 'petals:5:6', 'eagle:60:rtl:2'],
     locations:      ['top:stars', 'flagpole:l:72', 'pile:r:poppy,bud', 'stars:r:50:4:4', 'pend:head:r:3:100:32', 'petals:4:7'],
-    faq:            ['top:ribbon', 'wreath:r:200:130', 'stem:l:3:50', 'bow:l:6:60:44', 'stars:r:90:3:5', 'petals:4:8', 'tap:flag:l:360:8:50'],
-    schedule:       ['top:swag', 'pile:l:flag,poppy,flag', 'pend:star:r:2:84:30', 'stars:l:60:3:6', 'petals:4:9', 'glow:tr:blue'],
-    testimonials:   ['top:bunting', 'bow:l:3:50:42', 'pile:r:bud,poppy,flag', 'stars:r:56:4:7', 'petals:3:10', 'glow:bl:red'],
+    faq:            ['top:ribbon', 'wreath:r:200:130:7', 'stem:l:3:50', 'bow:l:6:60:44', 'stars:r:90:3:5', 'petals:4:8', 'tap:flag:l:360:8:62'],
+    schedule:       ['top:swag', 'pile:l:flag,poppy,flag', 'pend:star:r:2:84:30', 'stars:r:50:4:6', 'petals:4:9', 'glow:tr:blue'],
+    testimonials:   ['top:bunting', 'bow:r:3:50:46', 'pile:r:bud,poppy,flag', 'stars:r:56:4:7', 'petals:3:10', 'glow:bl:red'],
     pricing:        ['top:ribbon', 'stem:r:0.6:44', 'flagpole:l:66', 'pend:head:l:12:74:30', 'petals:5:11', 'eagle:50:ltr:3', 'stars:r:80:3:8'],
     contact:        ['top:stars', 'pile:l:poppy,flag,poppy', 'pile:r:flag,poppy,bud', 'bow:r:5:70:42', 'stars:l:80:3:9', 'petals:4:12', 'glow:tl:red']
   };
@@ -324,9 +352,9 @@
         a[2].split(',').forEach(function (it) { var d = ITEMS[it]; if (d) bits += k.use(d[0], 'md-i md-i--' + it, d[1]); });
         out += '<div class="md-pile md-pile--' + side + '">' + bits + '</div>';
       } else if (kind === 'stem') {
-        out += '<div class="md-stem md-stem--' + side + ' sk-hide-m" style="' + (side === 'l' ? 'left' : 'right') + ':' + a[2] + '%;width:' + a[3] + 'px">' + k.use('md-stemtall', '', '0 0 70 240') + '</div>';
+        out += '<div class="md-stem md-stem--' + side + ' sk-hide-m" style="--at:' + a[2] + '%;width:' + a[3] + 'px">' + k.use('md-stemtall', '', '0 0 70 240') + '</div>';
       } else if (kind === 'flagpole') {
-        out += '<div class="md-fp md-fp--' + side + '" style="width:' + a[2] + 'px">' + flagSvg('', 10, 330, { T: 4.4, amp: 6 }) + '</div>';
+        out += '<div class="md-fp md-fp--' + side + '" style="width:' + a[2] + 'px">' + flagSvg('', 10, 330, { T: 4.4, amp: 6, shade: 0.6, pole: 9 }) + '</div>';
       } else if (kind === 'stars') {
         out += '<div class="md-tg md-tg--' + side + ' sk-hide-m" style="top:' + a[2] + 'px">' + k.twinkles(+a[3], { id: ['md-star', 'sk-sparkle'], size: [7, 13], dur: [5, 9], colors: ['#f3f1ea', '#cdd8f2', '#ffe9b8'], seed: +a[4], cls: 'md-tw' }) + '</div>';
       } else if (kind === 'petals') {
@@ -334,10 +362,10 @@
       } else if (kind === 'eagle') {
         out += k.flyers(1, { id: 'md-eagle', vb: '0 0 320 140', size: [100, 124], dur: [72, 90], top: [3, 4], wave: 10, dir: a[2], seed: 700 + +a[3], cls: 'md-eagle md-eagle--s' }).replace(/top:[\d.]+%/, 'top:' + a[1] + 'px');
       } else if (kind === 'wreath') {
-        out += '<div class="md-wr md-wr--' + side + ' sk-hide-m" style="top:' + a[2] + 'px;width:' + a[3] + 'px">' + k.use('md-wreath', '', '0 0 140 156') + '</div>';
+        out += '<div class="md-wr sk-hide-m" style="' + (side === 'l' ? 'left' : 'right') + ':' + a[4] + '%;top:' + a[2] + 'px;width:' + a[3] + 'px">' + k.use('md-wreath', '', '0 0 140 156') + '</div>';
       } else if (kind === 'tap') {
         t = TAPS[a[1]];
-        out += k.tap(t.html(k), t.say, 'md-t md-t-' + a[1] + ' md-b' + a[2] + ' sk-hide-m', (a[2] === 'l' ? 'left' : 'right') + ':' + a[4] + '%;top:' + a[3] + 'px;width:' + a[5] + 'px');
+        out += k.tap(t.sec(k), t.say, 'md-t md-t-' + a[1] + ' md-b' + a[2] + ' sk-hide-m', (a[2] === 'l' ? 'left' : 'right') + ':' + a[4] + '%;top:' + a[3] + 'px;width:' + a[5] + 'px');
       }
     });
     return out;
@@ -349,14 +377,14 @@
   function footer(k) {
     var signs = SAYINGS.map(function (s, i) { return '<div class="md-sign"><div class="md-banner"><span>' + TITLES[i] + '</span><em>' + s + '</em></div></div>'; }).join('');
     return '<div class="md-fsky"></div>' +
-      k.twinkles(9, { id: ['md-star', 'sk-sparkle'], size: [6, 12], dur: [5, 9], colors: ['#f3f1ea', '#cdd8f2', '#ffe9b8'], area: [2, 98], areaY: [4, 46], seed: 61, mobile: 0.5, cls: 'md-tw' }) +
+      k.twinkles(8, { id: ['md-star', 'sk-sparkle'], size: [6, 12], dur: [5, 9], colors: ['#f3f1ea', '#cdd8f2', '#ffe9b8'], area: [2, 98], areaY: [4, 46], seed: 61, mobile: 0.5, cls: 'md-tw' }) +
       '<div class="md-hills">' + hills(k) + '</div>' +
       '<div class="md-meadow md-meadow--b">' + field(k, FOOT_BACK) + '</div>' +
-      '<div class="md-props md-props--l sk-props">' + flagSvg('md-pflag', 10, 430, { T: 4.2, amp: 7 }) + k.use('md-poppy', 'md-fi md-fi--a', '0 0 64 128') + k.use('md-bud', 'md-fi md-fi--b', '0 0 64 128') + '</div>' +
+      '<div class="md-props md-props--l sk-props">' + flagSvg('md-pflag', 10, 430, { T: 4.2, amp: 7, shade: 0.6, pole: 7 }) + k.use('md-poppy', 'md-fi md-fi--a', '0 0 64 128') + k.use('md-bud', 'md-fi md-fi--b', '0 0 64 128') + '</div>' +
       '<div class="md-signs sk-signs">' + signs + '</div>' +
       '<div class="md-props md-props--r sk-props">' + k.use('md-poppyb', 'md-fi md-fi--c', '0 0 64 128') + k.use('md-wreathstand', 'md-wst', '0 0 140 214') + '</div>' +
       '<div class="md-meadow md-meadow--f">' + field(k, FOOT_FRONT) + '</div>' +
-      k.particles(6, { id: 'md-petal', vb: '0 0 24 32', colors: PETALS, size: [9, 15], dur: [14, 22], drift: 60, sway: 20, spin: 0.3, seed: 300, mobile: 0.5, opacity: [0.45, 0.8] });
+      k.particles(5, { id: 'md-petal', vb: '0 0 24 32', colors: PETALS, size: [9, 15], dur: [14, 22], drift: 60, sway: 20, spin: 0.3, seed: 300, mobile: 0.5, opacity: [0.45, 0.8] });
   }
 
   var T = {
@@ -366,6 +394,12 @@
     hero: hero,
     sections: {},
     footer: footer,
+    // Only the layers on (or just about to be on) the screen keep their animations going; the rest are paused, which spares phones and laptops about four hundred animations.
+    init: function () {
+      if (!window.IntersectionObserver) return;
+      var io = new IntersectionObserver(function (entries) { entries.forEach(function (en) { en.target.classList.toggle('md-off', !en.isIntersecting); }); }, { rootMargin: '160px 0px' });
+      [].forEach.call(document.querySelectorAll('.sk-hero, .sk-sec, .sk-footer'), function (el) { io.observe(el); });
+    },
     // A tap is answered softly: a few petals or stars drift up from it, no more.
     onTap: function (el, k) {
       try {
