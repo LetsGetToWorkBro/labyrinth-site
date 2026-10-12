@@ -33,8 +33,11 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 # The files whose URLs get a version. Anything not listed here is left alone:
 # third-party URLs, the font CDN, and per-page assets that are already unique.
-ASSETS = ["base.css", "style.css", "season.css", "season-columbus.css", "season-columbus.js", "programs.css", "booking.css", "blog/blog.css",
+ASSETS = ["base.css", "style.css", "season.css", "programs.css", "booking.css", "blog/blog.css",
           "app.js", "booking.js", "schedule.js", "rsvp.js", "fund.js", "goal.js", "hyrox.js"]
+# Every seasonal theme's two files (season-kit.*, season-columbus.*, season-christmas.* ...) are stamped too, without being listed one by one:
+# index.html's <head> names them in quotes inside a script, which the next pattern finds.
+SEASON_GLOBS = ("season-*.css", "season-*.js")
 
 # href="/style.css"  href="./style.css"  href="../booking.css"  href="blog.css"
 # with or without a version already on it.
@@ -46,10 +49,20 @@ _REF = re.compile(
 )
 
 
+# "./season-christmas.css"  './season-kit.js?v=0a1b2c3d'  : a quoted path to a seasonal file, as index.html's loader holds them (not an href= or src= attribute).
+_LOADER = re.compile(
+    r'(?P<q>["\'])(?P<path>\./(?P<name>season-[A-Za-z0-9_\-]+\.(?:css|js)))'
+    r'(?:\?v=[0-9a-f]+)?(?P=q)'
+)
+
+
 def versions():
     """basename -> short content hash, for the files we stamp."""
     out = {}
-    for rel in ASSETS:
+    names = list(ASSETS)
+    for pat in SEASON_GLOBS:
+        names.extend(sorted(p.name for p in ROOT.glob(pat)))
+    for rel in names:
         p = ROOT / rel
         if not p.exists():
             continue
@@ -69,7 +82,13 @@ def stamp(html, vers=None):
             return m.group(0)
         return "%s%s?v=%s%s" % (m.group("attr"), m.group("path"), v, m.group("close"))
 
-    return _REF.sub(sub, html)
+    def sub_loader(m):
+        v = vers.get(m.group("name"))
+        if not v:
+            return m.group(0)
+        return "%s%s?v=%s%s" % (m.group("q"), m.group("path"), v, m.group("q"))
+
+    return _LOADER.sub(sub_loader, _REF.sub(sub, html))
 
 
 def main():

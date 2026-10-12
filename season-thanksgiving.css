@@ -1,0 +1,150 @@
+/* ══ Thanksgiving: the homepage for all of November ═══════════════════════════════════════════════════════════════════════════
+   index.html's <head> sets <html data-season="thanksgiving"> from the date on the academy's clock (Central), from November 1 through
+   November 30, and only then loads season-kit.css, season-kit.js, this file and season-thanksgiving.js. On every other day none of them
+   is fetched, so the page is exactly what it always was. Preview any time with /?season=thanksgiving (and /?season=off for no theme).
+   Everything here is under that attribute (or under a .tg- class that only season-thanksgiving.js creates), and the decoration is
+   aria-hidden, sits behind the content and never takes a tap away from it. To retire it: delete this file, season-thanksgiving.js, the
+   "thanksgiving" window and pack lines in index.html's <head>, and its entry in season-theme-checks.mjs. */
+
+/* ── The colours: a dark harvest kitchen: walnut brown, pumpkin, amber and cream ──────────────────────────────────────────────── */
+:root[data-season="thanksgiving"] {
+  --bg: #150c07;
+  --surface: #1f130c;
+  --surface-elevated: #2a1a10;
+  --border: rgba(240, 162, 60, 0.16);
+  --border-strong: rgba(240, 162, 60, 0.34);
+  --text-muted: #c9b3a0;
+  --gold: #f0a23c;
+  --gold-hover: #f6b95e;
+  --tg-orange: #e2761b;
+  --tg-red: #b8402a;
+  --tg-yellow: #f2c14e;
+  --tg-cream: #f7e9d0;
+  --sk-bubble-bg: #f7e9d0;
+  --sk-bubble-fg: #3a1d0c;
+  --sk-string: rgba(247, 233, 208, 0.45);
+}
+[data-season="thanksgiving"] body {
+  background:
+    radial-gradient(ellipse 70% 40% at 8% 0%, rgba(226, 118, 27, 0.2), transparent 70%),
+    radial-gradient(ellipse 60% 36% at 100% 30%, rgba(184, 64, 42, 0.12), transparent 70%),
+    var(--bg);
+}
+[data-season="thanksgiving"] .nav--scrolled { background: rgba(21, 12, 7, 0.92); }
+
+/* ── The hero: the photograph goes to golden hour, the headline catches the light, the field comes up along the bottom ──────── */
+[data-season="thanksgiving"] .hero__still img { filter: sepia(0.4) saturate(1.1) brightness(0.82); }
+[data-season="thanksgiving"] .hero__bg::after {
+  background: linear-gradient(to bottom, rgba(26, 10, 3, 0.78) 0%, rgba(44, 20, 6, 0.54) 40%, rgba(24, 10, 3, 0.84) 72%, #150c07 100%);
+}
+[data-season="thanksgiving"] .hero { padding-bottom: clamp(130px, 19vw, 240px); }
+[data-season="thanksgiving"] .hero__h1-visual span { color: var(--gold); text-shadow: 0 0 28px rgba(240, 162, 60, 0.5), 0 0 4px rgba(255, 214, 140, 0.4); }
+[data-season="thanksgiving"] .hero__badge { border-color: rgba(240, 162, 60, 0.55); }
+
+.tg-glow {
+  position: absolute; left: 50%; bottom: clamp(20px, 4vw, 60px); width: clamp(300px, 52vw, 760px); aspect-ratio: 1; transform: translate(-50%, 42%);
+  border-radius: 50%; background: radial-gradient(circle, rgba(255, 190, 90, 0.55) 0%, rgba(240, 130, 40, 0.24) 36%, transparent 68%);
+}
+.tg-moon {
+  right: clamp(24px, 8vw, 140px); top: calc(var(--nav-height, 72px) + 56px); width: clamp(90px, 13vw, 200px); aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(circle at 36% 34%, #ffe6b8 0%, #f6c273 52%, #e29b3d 100%); opacity: 0.55; box-shadow: 0 0 80px 18px rgba(246, 194, 115, 0.28);
+}
+.tg-moon::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: radial-gradient(circle at 62% 60%, rgba(150, 90, 30, 0.22) 0 14%, transparent 15%), radial-gradient(circle at 30% 66%, rgba(150, 90, 30, 0.18) 0 9%, transparent 10%); }
+
+/* Two skeins of geese cross the sky (their wings beat), and leaves come down over the whole hero. */
+.tg-geese { left: -220px; top: 24%; width: 140px; height: 70px; color: rgba(247, 233, 208, 0.8); animation: tg-skein 58s linear infinite; }
+.tg-geese--2 { top: 13%; scale: 0.66; animation-duration: 76s; animation-delay: -30s; }
+.tg-goose { position: absolute; width: 34px; height: auto; animation: tg-flap 0.62s ease-in-out infinite alternate; }
+.tg-goose:nth-child(2n) { animation-delay: -0.2s; }
+.tg-goose:nth-child(3n) { animation-delay: -0.4s; }
+@keyframes tg-skein { from { translate: 0 0; } to { translate: calc(100vw + 420px) -70px; } }
+@keyframes tg-flap { from { scale: 1 1; } to { scale: 1 0.5; } }
+
+/* The field: stalks in two rows behind pumpkins, gourds and hay, and the page's own brown at the bottom. */
+.tg-field { left: 0; right: 0; bottom: -1px; height: clamp(120px, 19vw, 240px); }
+.tg-field svg { display: block; width: 100%; height: 100%; }
+.tg-turkey { filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.5)); }
+.tg-pump-tap { filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.5)); }
+.tg-acorn-tap { opacity: 0.7; animation: tg-bob 6.5s ease-in-out infinite; filter: drop-shadow(0 0 12px rgba(240, 162, 60, 0.5)); }
+@media (max-width: 1180px) { .tg-acorn-tap { display: none; } }
+@keyframes tg-bob { 0%, 100% { transform: translate(0, 0) rotate(-8deg); } 50% { transform: translate(8px, -14px) rotate(6deg); } }
+
+/* ── This month: the cards under the hero get a harvest-striped edge and a turkey ────────────────────────────────────────────── */
+[data-season="thanksgiving"] .event-strip { background: linear-gradient(to bottom, #150c07, rgba(31, 19, 12, 0.7)); }
+[data-season="thanksgiving"] .event-strip::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 7px;
+  background: repeating-linear-gradient(90deg, #e2761b 0 26px, #f2c14e 26px 52px, #b8402a 52px 78px, #6f8a2a 78px 104px);
+}
+[data-season="thanksgiving"] .event-strip__title { font-size: clamp(36px, 6vw, 60px); text-shadow: 0 0 24px rgba(240, 162, 60, 0.4); }
+[data-season="thanksgiving"] .event-strip__title::after { content: " \1F983"; }
+[data-season="thanksgiving"] .event-strip__link { box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45); }
+
+/* ── The rest of the page: every section has its own layer, behind its content ─────────────────────────────────────────────────
+   A garland of leaves along the top, a pile of pumpkins, gourds, corn, wheat, hay or pie in a corner, acorns swinging on strings,
+   leaves coming down, geese crossing, and here and there a turkey, a pumpkin or an acorn that answers a tap. */
+.tg-garland {
+  left: 0; right: 0; top: 0; height: 52px; opacity: 0.95;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='52' viewBox='0 0 160 52'%3E%3Cpath d='M0 3Q80 25 160 3' fill='none' stroke='%237a4a22' stroke-width='2.4'/%3E%3Cg%3E%3Cpath d='M16 10L26 14L22 26L12 22Z' fill='%23e2761b'/%3E%3Cpath d='M44 15L56 17L52 30L40 28Z' fill='%23b8402a'/%3E%3Cpath d='M76 17L88 17L86 32L76 32Z' fill='%23f2c14e'/%3E%3Cpath d='M108 15L120 13L122 27L110 29Z' fill='%23c9531e'/%3E%3Cpath d='M138 10L148 8L152 21L140 22Z' fill='%23d9a62e'/%3E%3C/g%3E%3Ccircle cx='30' cy='13' r='2.4' fill='%23f7e9d0'/%3E%3Ccircle cx='98' cy='17' r='2.4' fill='%23f7e9d0'/%3E%3C/svg%3E") repeat-x;
+}
+.tg-pile { bottom: -2px; display: flex; align-items: flex-end; gap: clamp(0px, 0.4vw, 6px); }
+.tg-pile--l { left: clamp(4px, 2vw, 32px); }
+.tg-pile--r { right: clamp(4px, 2vw, 32px); }
+.tg-i { display: block; height: auto; flex-shrink: 0; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.35)); }
+.tg-i--pumpkin { width: clamp(40px, 5.4vw, 70px); }
+.tg-i--gourd { width: clamp(28px, 3.6vw, 46px); }
+.tg-i--maple { width: clamp(30px, 4vw, 52px); color: #e2761b; }
+.tg-i--oak { width: clamp(22px, 3vw, 38px); color: #b8402a; }
+.tg-i--corn { width: clamp(26px, 3.2vw, 44px); }
+.tg-i--wheat { width: clamp(30px, 3.8vw, 52px); }
+.tg-i--hay { width: clamp(46px, 6.4vw, 84px); }
+.tg-i--pie { width: clamp(44px, 5.6vw, 74px); }
+.tg-sec .sk-pend > svg { filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4)); }
+.tg-sec .tg-tap { opacity: 0.55; animation: tg-bob 7s ease-in-out infinite; }
+.tg-sec .tg-tap.is-tap { opacity: 1; }
+
+/* ── The harvest table above the footer: four signs on posts between a pumpkin patch, and a turkey, a bale and a pie ────────── */
+.tg-footer {
+  display: flex; align-items: flex-end; justify-content: center; gap: clamp(8px, 2vw, 22px); padding: 44px 16px 26px;
+  background: linear-gradient(to bottom, transparent, rgba(226, 118, 27, 0.07) 70%, rgba(226, 118, 27, 0.14));
+}
+[data-season="thanksgiving"] .footer { background: #0e0804; }
+.tg-props { display: flex; align-items: flex-end; gap: clamp(2px, 0.8vw, 10px); margin-bottom: 8px; }
+.tg-footer .tg-i--pumpkin { width: clamp(46px, 7vw, 92px); }
+.tg-footer .tg-i--gourd { width: clamp(30px, 4.4vw, 56px); }
+.tg-footer .tg-i--corn { width: clamp(28px, 4vw, 52px); }
+.tg-footer .tg-i--hay { width: clamp(56px, 8vw, 104px); }
+.tg-footer .tg-i--turkey { width: clamp(80px, 12vw, 150px); margin-bottom: 4px; }
+.tg-footer .tg-i--pie { width: clamp(46px, 6.4vw, 82px); }
+.tg-planks { display: flex; align-items: flex-end; justify-content: center; gap: clamp(8px, 2vw, 22px); }
+.tg-plank {
+  position: relative; margin-bottom: 40px; padding: 14px 8px 12px; text-align: center; border-radius: 8px;
+  background: linear-gradient(#7a5226, #53361a); box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.07), 0 -6px 26px rgba(0, 0, 0, 0.4);
+}
+.tg-plank::after { content: ""; position: absolute; left: 50%; top: 100%; width: 12px; height: 46px; transform: translateX(-50%); background: linear-gradient(#53361a, #2e1d0d); }
+.tg-plank span { display: block; font: 700 clamp(14px, 2vw, 20px)/1 var(--font-display), sans-serif; color: var(--gold); letter-spacing: 0.1em; }
+.tg-plank em { display: block; margin-top: 7px; font-style: normal; font-size: clamp(10.5px, 1.4vw, 13px); line-height: 1.25; color: #f5e4c6; }
+.tg-plank:nth-child(1) { transform: rotate(-2deg); }
+.tg-plank:nth-child(2) { margin-bottom: 52px; }
+.tg-plank:nth-child(3) { transform: rotate(1.5deg); }
+.tg-plank:nth-child(4) { margin-bottom: 46px; transform: rotate(-1deg); }
+.tg-ground { position: absolute; left: 0; right: 0; bottom: 0; height: 32px; background: linear-gradient(#2e1c0c, #150c07); }
+
+/* ── Phones: fewer things, nothing wider than the screen ──────────────────────────────────────────────────────────────────── */
+@media (max-width: 700px) {
+  .tg-moon { display: none; }
+  .tg-geese--2 { display: none; }
+  .tg-pile .tg-i:nth-child(n+3) { display: none; }
+  .tg-garland { height: 44px; opacity: 0.8; }
+  .tg-footer { padding-top: 36px; padding-bottom: 22px; }
+  .tg-props--l .tg-i:nth-child(n+2), .tg-props--r .tg-i:nth-child(n+2) { display: none; }
+  .tg-props { margin-bottom: 4px; }
+  .tg-footer .tg-i--pumpkin, .tg-footer .tg-i--turkey { width: clamp(44px, 14vw, 64px); }
+}
+@media (max-width: 520px) {
+  .tg-plank { padding: 10px 2px 8px; }
+  .tg-plank em { font-size: 10px; }
+  .tg-plank span { font-size: 12px; letter-spacing: 0.04em; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tg-geese { left: 12%; }
+}

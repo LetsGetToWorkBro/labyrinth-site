@@ -42,6 +42,9 @@ const browser = await chromium.launch({
   executablePath: process.env.CHROME ?? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
   args: ['--no-proxy-server'],
 })
+// SITE_TEST_NOW=2026-12-10T15:00:00Z node booking.test.mjs runs the whole suite as if it were that day (a test that pins its own clock still does), to prove that no check depends on which season
+// the homepage happens to be wearing on the day somebody runs it.
+if (process.env.SITE_TEST_NOW) { const nc = browser.newContext.bind(browser); browser.newContext = async o => { const c = await nc(o); await c.clock.setFixedTime(new Date(process.env.SITE_TEST_NOW)); return c } }
 
 let failed = 0
 const check = (label, got, want) => {
@@ -370,6 +373,9 @@ console.log('\nPicking the date on a calendar:')
 console.log('\nHolidays are not offered:')
 {
   const { page, ctx } = await open('/index.html')
+  // This block is about Thanksgiving 2026: the calendar shows November 2026 only from a day before it, and "the other Thursdays still are" needs three of them still ahead.
+  // So it runs on a day of its own whatever day the suite is run on (Monday, October 12, 2026: Thanksgiving is six weeks out, inside the twelve-week horizon).
+  await ctx.clock.setFixedTime(new Date('2026-10-12T15:00:00Z'))
 
   // The arithmetic, against the published dates. Computed rather than listed
   // because everything but the five fixed dates moves each year — a hardcoded

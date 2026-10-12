@@ -1,0 +1,245 @@
+/* ══ Christmas: the homepage for all of December ═══════════════════════════════════════════════════════════════════════════════
+   index.html's <head> sets <html data-season="christmas"> from the date on the academy's clock (Central), from December 1 through
+   December 31, and only then loads season-kit.css, season-kit.js, this file and season-christmas.js. On every other day none of them
+   is fetched, so the page is exactly what it always was. Preview any time with /?season=christmas (and /?season=off for no theme).
+   Everything here is under that attribute (or under an .xm- class that only season-christmas.js creates), and the decoration is
+   aria-hidden, sits behind the content and never takes a tap away from it. To retire it: delete this file, season-christmas.js, the
+   "christmas" window and pack lines in index.html's <head>, and its entry in season-theme-checks.mjs. */
+
+/* ── The colours: a dark evergreen night with star gold, Christmas red, snow white and berry red ────────────────────────────────── */
+:root[data-season="christmas"] {
+  --bg: #07140d;
+  --surface: #0d1f15;
+  --surface-elevated: #14291c;
+  --border: rgba(242, 193, 78, 0.16);
+  --border-strong: rgba(242, 193, 78, 0.34);
+  --text-muted: #b4c9bb;
+  --gold: #f2c14e;
+  --gold-hover: #f8d577;
+  --xm-red: #c8283a;
+  --xm-berry: #e0364a;
+  --xm-snow: #f4f8fb;
+  --xm-fir: #1f7a43;
+  --sk-bubble-bg: var(--xm-snow);
+  --sk-bubble-fg: #0f4a2a;
+  --sk-string: rgba(244, 232, 190, 0.55);
+}
+/* Soft pools of colour that repeat down the page every 1,800px: berry red at the left, fir green at the right, a warm gold between. Each one fades out completely inside its
+   tile (a pool's visible reach is 70% of its radius), so the tiles never show a seam. */
+[data-season="christmas"] body {
+  background:
+    radial-gradient(ellipse 700px 520px at 0% 22%, rgba(200, 40, 58, 0.13), transparent 70%) 0 0 / 100% 1800px repeat-y,
+    radial-gradient(ellipse 760px 600px at 100% 58%, rgba(31, 122, 67, 0.24), transparent 70%) 0 0 / 100% 1800px repeat-y,
+    radial-gradient(ellipse 620px 420px at 16% 46%, rgba(242, 193, 78, 0.05), transparent 70%) 0 0 / 100% 1800px repeat-y,
+    radial-gradient(ellipse 700px 500px at 0% 80%, rgba(31, 122, 67, 0.16), transparent 70%) 0 0 / 100% 1800px repeat-y,
+    var(--bg);
+}
+[data-season="christmas"] .nav--scrolled { background: rgba(7, 20, 13, 0.92); }
+/* The one section the site paints in neutral black on its own (the reviews) takes the page's evergreen. */
+[data-season="christmas"] .testimonials { background: #09190f; }
+
+/* ── The hero: the photograph goes to a cold blue night, the headline catches the light, snowy hills come up along the bottom ───── */
+[data-season="christmas"] .hero { --xm-h: clamp(150px, 19.5vw, 500px); --xm-top: var(--nav-height, 72px); padding-bottom: var(--xm-h); }
+/* While the pink donation bar hangs under the nav (it does until it closes) the sky starts under it: the lights, the sleigh and the moon hang from there, and the words make room. */
+[data-season="christmas"] .hero:has(> .donate-bar:not([hidden])) { --xm-top: calc(var(--nav-height, 72px) + 50px); padding-top: calc(var(--nav-height, 72px) + var(--space-16, 64px) + 50px); }
+[data-season="christmas"] .hero__still img { filter: saturate(0.6) brightness(0.8) contrast(1.05); }
+[data-season="christmas"] .hero__bg::after {
+  background: linear-gradient(to bottom, rgba(3, 16, 38, 0.84) 0%, rgba(6, 32, 52, 0.6) 38%, rgba(5, 30, 24, 0.84) 74%, #07140d 100%);
+}
+[data-season="christmas"] .hero__h1-visual span { color: var(--gold); text-shadow: 0 0 28px rgba(242, 193, 78, 0.5), 0 0 4px rgba(255, 226, 150, 0.4); }
+[data-season="christmas"] .hero__badge { border-color: rgba(242, 193, 78, 0.55); }
+
+.xm-sky { left: 0; right: 0; top: 0; height: 46%; background: linear-gradient(to bottom, rgba(14, 40, 96, 0.5), rgba(14, 40, 96, 0)); }
+.xm-halo {
+  right: calc(clamp(24px, 7vw, 110px) - 170px); top: calc(var(--xm-top, 72px) - 150px); width: clamp(300px, 40vw, 600px); aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 214, 130, 0.44) 0%, rgba(255, 190, 90, 0.16) 38%, transparent 68%);
+}
+.xm-moon {
+  right: clamp(24px, 7vw, 110px); top: calc(var(--xm-top, 72px) + 30px); width: clamp(90px, 12vw, 176px); aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(circle at 36% 34%, #fffbe6 0%, #ffe8a6 52%, #f4c765 100%); opacity: 0.88; box-shadow: 0 0 70px 16px rgba(255, 224, 140, 0.3);
+}
+.xm-moon::after {
+  content: ""; position: absolute; inset: 0; border-radius: 50%;
+  background: radial-gradient(circle at 64% 62%, rgba(190, 130, 40, 0.2) 0 13%, transparent 14%), radial-gradient(circle at 30% 68%, rgba(190, 130, 40, 0.16) 0 8%, transparent 9%), radial-gradient(circle at 56% 26%, rgba(190, 130, 40, 0.14) 0 6%, transparent 7%);
+}
+.xm-bigstar { right: calc(clamp(24px, 7vw, 110px) + clamp(90px, 12vw, 176px) + 2.6vw); top: calc(var(--xm-top, 72px) + 4px); width: clamp(46px, 6vw, 92px); animation: xm-pulse 5s ease-in-out infinite; }
+.xm-bigstar svg { display: block; width: 100%; height: auto; position: relative; }
+.xm-bigstar::before {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 330%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 226, 150, 0.5) 0%, rgba(255, 210, 120, 0.18) 34%, transparent 66%);
+}
+@keyframes xm-pulse { 0%, 100% { opacity: 0.75; transform: scale(0.92); } 50% { opacity: 1; transform: scale(1.06); } }
+
+/* Santa's sleigh crosses the sky slowly, in the clear band between the nav and the headline, in front of the string of lights (the kit moves it across; it bobs a little as it
+   goes). It answers a tap too: the button sits inside the flyer, and its bubble opens to the side with room, so it is never hidden under the nav or over the words. */
+.xm-sleigh { top: calc(var(--xm-top, 72px) + 1px); animation-name: xm-cross; }
+/* the kit's crossing starts 120px outside the layer, which is too little for a sleigh 176px wide: it would pop in at the edge, so it gets its own run-up */
+@keyframes xm-cross { from { translate: -200px 0; } 50% { translate: calc(var(--lw, 1000) * 0.5px) var(--wv, -4px); } to { translate: calc(var(--lw, 1000) * 1px + 200px) 0; } }
+.xm-sleigh-tap { position: relative; display: block; width: 100%; }
+.xm-sleigh svg { animation: xm-bob 3.4s ease-in-out infinite alternate; }
+.xm-sleigh-tap .sk-bubble { left: auto; right: 88%; bottom: 30%; transform-origin: 100% 50%; transform: scale(0.6); }
+.xm-sleigh-tap.xm-bub-r .sk-bubble { right: auto; left: 88%; transform-origin: 0 50%; }
+.xm-sleigh-tap.is-tap .sk-bubble { transform: scale(1); }
+@keyframes xm-bob { from { transform: translateY(-3px) rotate(-1.2deg); } to { transform: translateY(3px) rotate(1.2deg); } }
+/* Now and then a shooting star: a streak that is not there for most of the time (so a still picture, with less motion, never shows one). */
+.xm-shoot { width: 110px; height: 2px; border-radius: 2px; opacity: 0; rotate: 27deg; background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 244, 214, 0.95)); animation: xm-shoot 15s linear infinite; }
+.xm-shoot::after { content: ""; position: absolute; right: -1px; top: -2px; width: 6px; height: 6px; border-radius: 50%; background: #fff; box-shadow: 0 0 10px 3px rgba(255, 236, 190, 0.8); }
+.xm-shoot--1 { left: 18%; top: 17%; }
+.xm-shoot--2 { left: 58%; top: 29%; animation-delay: -8s; animation-duration: 19s; }
+@keyframes xm-shoot { 0%, 89% { opacity: 0; translate: 0 0; } 90% { opacity: 1; } 96% { opacity: 0.9; translate: 230px 117px; } 98%, 100% { opacity: 0; translate: 280px 143px; } }
+
+/* The string of lights: a wire that sags between hooks; every bulb blinks on its own beat (opacity only, with plateaus so it is cheap to draw). */
+.xm-lights { left: 0; right: 0; top: var(--xm-top, 72px); width: 100%; height: clamp(50px, 5.6vw, 88px); display: block; }
+.xm-b { animation: xm-blink-a 3s ease-in-out infinite; }
+.xm-b--b { animation-name: xm-blink-b; }
+.xm-b--c { animation-name: xm-glow; }
+.xm-la { animation: xm-blink-a 2.6s ease-in-out infinite; }
+.xm-lb { animation: xm-blink-b 2.6s ease-in-out infinite; }
+@keyframes xm-blink-a { 0%, 44% { opacity: 1; } 50%, 94% { opacity: 0.28; } 100% { opacity: 1; } }
+@keyframes xm-blink-b { 0%, 44% { opacity: 0.28; } 50%, 94% { opacity: 1; } 100% { opacity: 0.28; } }
+@keyframes xm-glow { 0%, 100% { opacity: 0.8; } 50% { opacity: 1; } }
+
+/* Santa waves, and the snowman shivers now and then (a shake of the whole picture, not of anything inside it). */
+.xm-wave { transform-box: fill-box; transform-origin: 8% 92%; animation: xm-wave 2.4s ease-in-out infinite; }
+@keyframes xm-wave { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(13deg); } }
+.xm-snowman-tap > svg { animation: xm-shiver 6s linear infinite; }
+@keyframes xm-shiver { 0%, 86%, 100% { transform: translateX(0); } 88%, 92%, 96% { transform: translateX(-1.6px); } 90%, 94%, 98% { transform: translateX(1.6px); } }
+
+/* The foot of the hero: ridges, a far tree line, lit trees, gifts and glints on the snow. */
+.xm-scene { left: 0; right: 0; bottom: -1px; height: var(--xm-h); }
+.xm-scene svg { display: block; width: 100%; height: 100%; }
+.xm-sp { transform-box: fill-box; transform-origin: 50% 50%; animation: sk-twinkle 3s ease-in-out infinite; }
+.xm-snowman-tap, .xm-santa-tap { bottom: calc(var(--xm-h) * 0.085); width: clamp(60px, 8.4vw, 128px); }
+.xm-santa-tap { width: clamp(62px, 8.6vw, 132px); }
+/* Bubbles of the decorations at the very edge open inward, so they are never cut off by the screen. */
+.sk-tap.xm-l .sk-bubble { left: 0; transform-origin: 0 100%; transform: translate(0, 6px) scale(0.6); }
+.sk-tap.xm-r .sk-bubble { left: auto; right: 0; transform-origin: 100% 100%; transform: translate(0, 6px) scale(0.6); }
+/* A tapped bubble is there at once (it only pops in by size) and fades away when it goes, so it still answers on a slow phone. */
+.sk-tap.xm-l.is-tap .sk-bubble, .sk-tap.xm-r.is-tap .sk-bubble { transform: translate(0, 0) scale(1); }
+[data-season="christmas"] .sk-tap.is-tap .sk-bubble { transition: transform 0.15s; }
+
+/* ── This month: the cards under the hero get a candy-cane edge and a tree ─────────────────────────────────────────────────────── */
+[data-season="christmas"] .event-strip { background: linear-gradient(to bottom, #07140d, rgba(13, 31, 21, 0.7)); }
+[data-season="christmas"] .event-strip::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 8px;
+  background: repeating-linear-gradient(-45deg, var(--xm-red) 0 9px, var(--xm-snow) 9px 18px);
+}
+[data-season="christmas"] .event-strip__title { font-size: clamp(36px, 6vw, 60px); text-shadow: 0 0 24px rgba(242, 193, 78, 0.4); }
+[data-season="christmas"] .event-strip__title::after { content: " \1F384"; }
+[data-season="christmas"] .event-strip__link { box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45); }
+
+/* ── The rest of the page: every section has its own layer, behind its content ─────────────────────────────────────────────────
+   A string of lights, a garland, icicles, paper stars or flags along the top; holly, snowdrifts, small trees, gifts and candy canes in the
+   corners; baubles, stars and canes swinging on strings; a little snow coming down; and here and there a bell that answers a tap. */
+.xm-top { left: 0; width: 100%; display: block; opacity: 0.92; }
+.xm-bl--a { animation: xm-blink-a 2.8s ease-in-out infinite; }
+.xm-bl--b { animation: xm-blink-b 2.8s ease-in-out infinite; }
+.xm-pile { bottom: -2px; display: flex; align-items: flex-end; gap: clamp(2px, 0.5vw, 8px); opacity: 0.88; }
+.xm-pile--l { left: clamp(4px, 2vw, 32px); }
+.xm-pile--r { right: clamp(4px, 2vw, 32px); }
+.xm-i { display: block; height: auto; flex-shrink: 0; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.35)); }
+.xm-i--fir, .xm-i--firlit, .xm-i--fir3, .xm-i--firlit3 { width: clamp(30px, 3.8vw, 52px); }
+.xm-i--gift-a, .xm-i--gift-b, .xm-i--gift-f { width: clamp(26px, 3.4vw, 46px); }
+.xm-i--gift-c, .xm-i--gift-e { width: clamp(28px, 3.6vw, 48px); }
+.xm-i--gift-d { width: clamp(20px, 2.6vw, 34px); }
+.xm-i--cane { width: clamp(20px, 2.4vw, 32px); }
+.xm-i--holly { width: clamp(34px, 4.4vw, 60px); }
+.xm-i--snowman { width: clamp(30px, 4vw, 54px); }
+.xm-i--stack { width: clamp(48px, 6.2vw, 84px); }
+.xm-wreath { top: 28px; width: clamp(60px, 7vw, 96px); height: auto; opacity: 0.86; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4)); }
+.xm-wreath--tl { left: -42px; }
+.xm-holly { top: 2px; width: clamp(46px, 5.6vw, 78px); height: auto; opacity: 0.9; filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.35)); }
+.xm-holly--tl { left: clamp(2px, 0.8vw, 14px); transform: scaleX(-1); }
+.xm-drift { bottom: -2px; width: clamp(150px, 20vw, 290px); height: auto; opacity: 0.72; }
+.xm-drift--l { left: 0; }
+.xm-drift--r { right: 0; transform: scaleX(-1); }
+.xm-sec .sk-pend > svg { filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4)); }
+.xm-c-red { color: var(--xm-berry); }
+.xm-c-gold, .xm-o-star { color: var(--gold); }
+.xm-c-blue { color: #3d86d1; }
+.xm-c-green { color: #2a9a58; }
+.xm-sec .xm-tap { opacity: 0.7; width: 48px; }
+.xm-sec .xm-tap::before { content: ""; position: absolute; left: 50%; top: 52%; width: 200%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(242, 193, 78, 0.32) 0%, transparent 62%); pointer-events: none; }
+.xm-sec .xm-tap > svg { position: relative; transform-origin: 50% 8%; animation: sk-swing 6s ease-in-out infinite; }
+.xm-sec .xm-tap.is-tap { opacity: 1; }
+
+/* ── The foot of the page: a line of lights between two trees, four gift tags hanging from it, snow underneath ──────────────────── */
+.xm-footer {
+  display: flex; align-items: flex-start; justify-content: center; margin-top: 24px; padding: 42px 16px 64px; min-height: 262px;
+  background: linear-gradient(to bottom, transparent, rgba(14, 70, 72, 0.2) 55%, rgba(14, 70, 72, 0.34));
+}
+[data-season="christmas"] .footer { background: #040d08; }
+.xm-footer > * { position: absolute; }
+.xm-footer > .xm-tags { position: relative; z-index: 2; }
+.xm-f-bg { left: 0; bottom: 0; width: 100%; height: clamp(150px, 21vw, 300px); }
+.xm-f-lights { left: 0; right: 0; top: 38px; height: 40px; }
+.xm-f-wire { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+.xm-fb { position: absolute; top: 3px; width: 17px; height: 21px; margin-left: -8px; animation: xm-blink-a 3s ease-in-out infinite; }
+.xm-fb:nth-child(2n) { animation-name: xm-blink-b; }
+.xm-fb svg { display: block; width: 100%; height: 100%; }
+.xm-props { bottom: 34px; display: flex; align-items: flex-end; gap: clamp(2px, 0.6vw, 8px); }
+.xm-props--l { left: clamp(6px, 2vw, 44px); }
+.xm-props--r { right: clamp(6px, 2vw, 44px); }
+.xm-props .xm-i { filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.4)); }
+.xm-props .xm-i--tree { width: clamp(62px, 9vw, 126px); }
+.xm-props .xm-i--stack { width: clamp(46px, 7vw, 104px); }
+.xm-props .xm-i--deer { width: clamp(70px, 10vw, 138px); }
+.xm-props .xm-i--tree3 { width: clamp(46px, 6vw, 84px); }
+.xm-props .xm-i--gift { width: clamp(22px, 3vw, 40px); }
+.xm-f-ground { left: 0; right: 0; bottom: 0; width: 100%; height: 64px; }
+.xm-tags { align-items: flex-start; }
+.xm-tag {
+  --drop: 28px; --tag: linear-gradient(#d02f40, #b02032); --tt: #ffffff; --te: #ffffff;
+  position: relative; isolation: isolate; margin-top: var(--drop); padding: 20px 7px 12px; text-align: center;
+  transform-origin: 50% calc(var(--drop) * -1); animation: xm-tagswing 5.6s ease-in-out infinite alternate;
+}
+.xm-tag::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; background: var(--tag);
+  clip-path: polygon(0 9px, 9px 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 0 100%);
+}
+.xm-tag::after { content: ""; position: absolute; left: 50%; bottom: calc(100% - 13px); width: 1.8px; height: calc(var(--drop) + 13px); margin-left: -0.9px; background: #f0d9a0; }
+.xm-tag span { display: block; font: 700 clamp(14px, 1.9vw, 19px)/1 var(--font-display), sans-serif; letter-spacing: 0.1em; color: var(--tt); }
+.xm-tag span::before { content: ""; position: absolute; inset: 6px; border: 1.5px dashed rgba(255, 255, 255, 0.5); border-radius: 5px; pointer-events: none; }
+.xm-tag span::after { content: ""; position: absolute; top: 9px; left: 50%; width: 8px; height: 8px; margin-left: -4px; border-radius: 50%; background: #0a2016; box-shadow: 0 0 0 2px rgba(255, 250, 235, 0.9); }
+.xm-tag em { display: block; margin-top: 8px; font-style: normal; font-size: clamp(10.5px, 1.35vw, 13px); line-height: 1.25; color: var(--te); }
+.xm-tag--1 { --drop: 26px; }
+.xm-tag--2 { --drop: 40px; --tag: linear-gradient(#17663a, #0f4a2a); --tt: #f2c14e; --te: #ffffff; animation-delay: -1.6s; }
+.xm-tag--3 { --drop: 30px; --tag: linear-gradient(#fbf3e0, #ecdcb8); --tt: #b32233; --te: #0f4a2a; animation-delay: -3.1s; }
+.xm-tag--4 { --drop: 44px; --tag: linear-gradient(#f7d070, #e0a93a); --tt: #0f4a2a; --te: #0f4a2a; animation-delay: -4.4s; }
+.xm-tag--3 span::before { border-color: rgba(179, 34, 51, 0.45); }
+.xm-tag--4 span::before { border-color: rgba(15, 74, 42, 0.4); }
+@keyframes xm-tagswing { from { transform: rotate(-2.4deg); } to { transform: rotate(2.4deg); } }
+
+/* ── Narrow windows: below 1280px the page's side margins shrink from 64px to 24px, so what hangs on the left (ornaments and the wreath, which would meet the headings) steps aside ── */
+@media (max-width: 1279px) {
+  .xm-pl, .xm-wreath--tl { display: none; }
+}
+
+/* ── Phones: fewer things, nothing wider than the screen ──────────────────────────────────────────────────────────────────────── */
+@media (max-width: 1000px) {
+  .xm-props .xm-i--stack, .xm-props .xm-i--gift, .xm-props .xm-i--tree3 { display: none; }
+}
+@media (max-width: 700px) {
+  .xm-moon, .xm-halo { display: none; }
+  .xm-bigstar { right: 7%; top: calc(var(--xm-top, 64px) + 2px); width: 38px; }
+  .xm-sky { height: 30%; }
+  .xm-pile .xm-i:nth-child(n+3) { display: none; }
+  .xm-top { opacity: 0.8; }
+  .xm-holly, .xm-drift { opacity: 0.6; }
+  .xm-footer { padding-top: 40px; padding-bottom: 56px; min-height: 236px; }
+  .xm-f-lights { top: 36px; }
+  .xm-shoot--2 { display: none; }
+}
+@media (max-width: 520px) {
+  .xm-tag { padding: 18px 2px 9px; }
+  .xm-tag em { font-size: 10px; }
+  .xm-tag span { font-size: 12px; letter-spacing: 0.04em; }
+  .xm-tag span::before { inset: 4px; }
+  .xm-tag span::after { top: 7px; }
+  .xm-tag--1 { --drop: 22px; } .xm-tag--2 { --drop: 34px; } .xm-tag--3 { --drop: 26px; } .xm-tag--4 { --drop: 38px; }
+  .xm-fb:nth-child(2n+1) { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .xm-sleigh { left: 47%; }
+  .xm-wave { animation: none !important; }
+}

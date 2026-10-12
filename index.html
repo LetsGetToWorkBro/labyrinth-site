@@ -258,23 +258,61 @@ button {
 }
 </style>
 <!-- Seasonal theme: sets <html data-season="…"> from the date on the academy's clock (Central).
-     season.css dresses the page under that attribute and does nothing without it.
-     Add a holiday here and a block in season.css. Preview: ?season=halloween (or ?season=off).
-     A window with a year is for that year only. Columbus Day is October 12, 2026 and nothing else: it wins over Halloween that
-     one day, and on October 13 the page is Halloween again by itself. It brings its own stylesheet and script
-     (season-columbus.css, season-columbus.js), which are fetched only when it is on. Preview: ?season=columbus. -->
+     season.css dresses the page under that attribute (Halloween) and does nothing without it. Preview any season at any time: ?season=name (or ?season=off).
+     A window is [month, day] from the first day it is on to the day it ends (that day is not in it); one with a year is for that year only.
+     A later window wins over an earlier one, so Columbus Day (October 12, 2026 and nothing else) wins over Halloween that one day, and St. Patrick's Day
+     (March 17, every year) wins over Easter's month that one day.
+       halloween Oct 1-31 · columbus Oct 12, 2026 · thanksgiving Nov 1-30 · christmas Dec 1-31 · newyear Jan 1-31 · valentines Feb 1-28/29
+       easter Mar 1-31 (and on to Easter Sunday in the years it falls in April) · stpatricks Mar 17 · cinco May 1-15 · memorial May 16-31 · independence Jul 1-31
+     Every season but Halloween brings its own stylesheet and script, fetched only while it is on (the shared season-kit.css and season-kit.js come first
+     for all but Columbus Day, which predates the kit): season-<name>.css and season-<name>.js. Nothing is fetched on a day with no season.
+     To add a holiday: a window here, its two files, and a block in site-test.mjs. -->
 <script>(function(){
-  var SEASONS=[{name:'halloween',from:[10,1],to:[11,1]},{name:'columbus',year:2026,from:[10,12],to:[10,13]}];
+  var SEASONS=[
+    {name:'halloween',from:[10,1],to:[11,1]},
+    {name:'columbus',year:2026,from:[10,12],to:[10,13]},
+    {name:'thanksgiving',from:[11,1],to:[12,1]},
+    {name:'christmas',from:[12,1],to:[12,32]},
+    {name:'newyear',from:[1,1],to:[2,1]},
+    {name:'valentines',from:[2,1],to:[3,1]},
+    {name:'easter',from:[3,1],to:[4,1],easter:1},
+    {name:'stpatricks',from:[3,17],to:[3,18]},
+    {name:'cinco',from:[5,1],to:[5,16]},
+    {name:'memorial',from:[5,16],to:[6,1]},
+    {name:'independence',from:[7,1],to:[8,1]}
+  ];
+  var KIT=["./season-kit.css?v=97367374","./season-kit.js?v=2ff51617"];
+  var PACKS={
+    columbus:["./season-columbus.css?v=3a6ee446","./season-columbus.js?v=a55c09d7"],
+    thanksgiving:["./season-thanksgiving.css?v=6f5adbfd","./season-thanksgiving.js?v=96438e6c"],
+    christmas:["./season-christmas.css?v=f6e9dd59","./season-christmas.js?v=1c026979"],
+    newyear:["./season-newyear.css?v=882d1592","./season-newyear.js?v=4c4d02e4"],
+    valentines:["./season-valentines.css?v=634b7b79","./season-valentines.js?v=41e417a6"],
+    easter:["./season-easter.css?v=03f70ff5","./season-easter.js?v=995f65b8"],
+    stpatricks:["./season-stpatricks.css?v=11bdc353","./season-stpatricks.js?v=049c66b4"],
+    cinco:["./season-cinco.css?v=43f058cd","./season-cinco.js?v=844dfc32"],
+    memorial:["./season-memorial.css?v=60a85598","./season-memorial.js?v=135c8dc0"],
+    independence:["./season-independence.css?v=ed559eab","./season-independence.js?v=cf93c426"]
+  };
+  // Easter Sunday as month*100+day (the anonymous Gregorian computus).
+  function easter(y){var a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),n=h+l-7*m+114;return Math.floor(n/31)*100+n%31+1}
   var q=/[?&]season=([a-z]+)/.exec(location.search),name=null;
   if(q){name=q[1]==='off'?null:q[1]}
   else{
     var p={};new Intl.DateTimeFormat('en-US',{timeZone:'America/Chicago',year:'numeric',month:'numeric',day:'numeric'}).formatToParts(new Date()).forEach(function(x){p[x.type]=+x.value});
     var v=p.month*100+p.day;
-    SEASONS.forEach(function(s){if(s.year&&s.year!==p.year)return;if(v>=s.from[0]*100+s.from[1]&&v<s.to[0]*100+s.to[1])name=s.name});
+    SEASONS.forEach(function(s){
+      if(s.year&&s.year!==p.year)return;
+      var to=s.to[0]*100+s.to[1];
+      if(s.easter){var E=easter(p.year);if(E>=to)to=E+1}
+      if(v>=s.from[0]*100+s.from[1]&&v<to)name=s.name;
+    });
   }
   if(name){document.documentElement.setAttribute('data-season',name);
     if(name==='halloween'){var l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Creepster&display=swap';document.head.appendChild(l)}
-    if(name==='columbus'){var c=document.createElement('link');c.rel='stylesheet';c.href="./season-columbus.css?v=3a6ee446";document.head.appendChild(c);var j=document.createElement('script');j.src="./season-columbus.js?v=a55c09d7";document.head.appendChild(j)}}
+    if(PACKS.hasOwnProperty(name)){(name==='columbus'?[]:KIT).concat(PACKS[name]).forEach(function(u){
+      if(/\.css(\?|$)/.test(u)){var c=document.createElement('link');c.rel='stylesheet';c.href=u;document.head.appendChild(c)}
+      else{var j=document.createElement('script');j.async=false;j.src=u;document.head.appendChild(j)}})}}
 })()</script>
 <link rel="stylesheet" href="./style.css?v=5bbc7699">
 <link rel="stylesheet" href="./season.css?v=c67a099d">

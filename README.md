@@ -17,6 +17,7 @@ assets/               images (each has a .webp alongside its .jpg)
 _headers              security headers for Cloudflare Pages
 _redirects            301s for the old site's URLs
 sitemap.xml           submitted to Google Search Console
+season*.css, season*.js   the seasonal homepage themes (see "Seasonal themes")
 site-test.mjs         link, SEO and booking tests (see below)
 ```
 
@@ -42,6 +43,43 @@ Checks every internal link on all 14 pages resolves, that no `.html` blog links
 have crept back in, that canonicals point at URLs which actually serve a 200,
 that each post carries a booking CTA, and (most importantly) that the contact
 form posts to the CRM and shows success **only** when the CRM confirms it saved.
+
+## Seasonal themes
+
+The homepage dresses for the holiday, by itself, on the academy's clock (Central). `index.html`'s `<head>` holds a table of windows and sets
+`<html data-season="…">`; on a day with no season nothing is fetched and the page is exactly what it always was.
+
+| Season | Window | Preview |
+|---|---|---|
+| `halloween` | Oct 1 to 31 | `/?season=halloween` |
+| `columbus` | Oct 12, 2026 only (pinned to the year) | `/?season=columbus` |
+| `thanksgiving` | Nov 1 to 30 | `/?season=thanksgiving` |
+| `christmas` | Dec 1 to 31 | `/?season=christmas` |
+| `newyear` | Jan 1 to 31 | `/?season=newyear` |
+| `valentines` | Feb 1 to 28 (29) | `/?season=valentines` |
+| `easter` | Mar 1 to 31, and on to Easter Sunday in the years Easter falls in April | `/?season=easter` |
+| `stpatricks` | Mar 17, every year (it wins over Easter's month that one day, the way Columbus Day wins over Halloween) | `/?season=stpatricks` |
+| `cinco` | May 1 to 15 | `/?season=cinco` |
+| `memorial` | May 16 to 31 | `/?season=memorial` |
+| `independence` | Jul 1 to 31 | `/?season=independence` |
+
+`/?season=off` shows the page with no theme. A window opens at Central midnight on its first day and ends at the Central midnight after its last. A later
+window wins over an earlier one; a window with a `year` is for that year only. April (after Easter), June, August and September have no season.
+
+Each season but Halloween is two files, `season-<name>.css` and `season-<name>.js`, loaded (after `season-kit.css` and `season-kit.js`) only while it is on.
+`season-kit.js` explains what a pack is and what its helpers do (`k.particles`, `k.twinkles`, `k.flyers`, `k.pendant`, `k.tap`, `k.burst`); `season-thanksgiving.*`
+is the model to copy. To change a date, edit the window in the head. To add a holiday: a window and a pack entry in the head, its two files, its name in
+`season-theme-checks.mjs`. To retire one: delete its two files, its window and pack lines, and its entry there. `scripts/stamp_assets.py` puts a content hash
+on every `season-*` file's address (it finds them by name), so a changed theme is never served from an old cache.
+
+`node season-theme-test.mjs <name>` checks one season on its own (palette and contrast, twelve different section layers, the foot scene, every tap, nothing
+over any words, phones, reduced motion, previews); `site-test.mjs` runs the same checks for all of them and tests every window edge, Easter for any year, and
+the quiet months. `SITE_TEST_NOW=2026-12-10T15:00:00Z node site-test.mjs` (also `nav-fit.test.mjs` and `booking.test.mjs`) runs a whole suite as if it were that day;
+add `SKIP_SEASON_PACKS=1` to `site-test.mjs` to leave out the per-pack checks.
+
+When a season switches on, `node scripts/check-season.mjs <name>` (from a checkout of `main`, with `playwright-core` installed) checks the live site: the live `index.html`
+and the season's four files (kit and pack) must be byte for byte the repo's, and the page, built on the real clock, must be that season. `PIN_ISO=2027-05-05T15:00:00Z`
+rehearses it for another day.
 
 ## How booking works
 
