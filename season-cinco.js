@@ -1,14 +1,15 @@
-/* Cinco de Mayo: the homepage's scene for May 1 through May 15 (index.html's <head> turns it on from the date and loads this with season-kit.css,
-   season-kit.js and season-cinco.css, which draws it). A festival of color on a dark warm-indigo night: strings of papel picado (cut-paper banners)
-   swaying across the top of the hero, a star pinata swinging on its rope, confetti coming down, a wall of tiles along the foot of the hero with
-   clay pots, marigolds, dahlias and flowering cacti and a string of glowing chili lights; a layer behind every section (papel picado, marigold
-   garlands, flower mounds, potted cacti, chili ristras, small pinatas, butterflies, tile strips) and a market stall above the footer. Tap the
-   pinata, a cactus or a pot of flowers and it answers. Nothing here reads or writes anything about a visitor, and nothing is built unless the
-   page is in the season. */
+/* Cinco de Mayo: the homepage's scene for May 1 through May 15 (index.html's <head> turns it on from the date and loads this with season-kit.css, season-kit.js
+   and season-cinco.css, which draws it). A festival of color on a dark, warm indigo night: two strings of papel picado (cut-paper banners) swaying across the top of the
+   hero, a star pinata swinging on its rope, confetti and marigold petals coming down, a tiled wall along the foot of the hero with clay pots, marigolds, dahlias and flowering
+   cacti and a string of glowing chili lights; a layer behind every section (papel picado strung in ten different ways, marigold garlands, heaps of flowers, potted cacti, chili
+   ristras, small pinatas, butterflies, strips of tile) and a market stall above the footer (bunting, a striped awning, four hanging signs, a tiled counter). Tap the pinata, a cactus
+   or a pot of flowers and it answers with a pop of candy, petals or confetti. A layer that is far from the window rests (its animations pause) until it comes near again.
+   Every shape is drawn once here as an SVG <symbol> and reused; the stylesheet has the colors and the repeating patterns. Nothing here reads or writes anything about a visitor,
+   and nothing is built unless the page is in the season. */
 (function () {
   var C = {
     green: '#1f9d55', greenD: '#0f6b38', greenL: '#46c97f', red: '#d62839', pink: '#ff3f8e', turq: '#17c3b2', yellow: '#ffd23f', orange: '#ff7b00',
-    gold: '#ffb627', cream: '#fff1d6', indigo: '#2a1450', clay: '#d9653a', clayL: '#ea7c4d', clayD: '#a8441f'
+    gold: '#ffb627', cream: '#fff1d6', clay: '#d9653a', clayL: '#ea7c4d'
   };
   var FEST = [C.pink, C.turq, C.yellow, C.orange, C.green, C.red];                  // the festival colors, for confetti and paper
 
@@ -211,12 +212,12 @@
   function place(id, cx, base, h, color) { var w = h * asp(id); return '<use href="#' + id + '" x="' + r1(cx - w / 2) + '" y="' + r1(base - h) + '" width="' + r1(w) + '" height="' + r1(h) + '"' + (color ? ' style="color:' + color + '"' : '') + '/>'; }
   function pick(r, list) { return list[Math.floor(r() * list.length)]; }
 
-  // A cord from (x0, y0) to (x1, y1) that sags by `sag`, with n flags of papel picado hanging from it. A flag leans with the cord, and every o.fl-th one flutters on its own beat.
+  // A cord from (x0, y0) to (x1, y1) that sags by `sag`, with flags of papel picado hanging from it, one every `fw` (a little more). A flag leans with the cord, and every o.fl-th one flutters on its own beat.
   function swag(k, o) {
-    var r = k.rng(o.seed || 1), cx = (o.x0 + o.x1) / 2, cy = (o.y0 + o.y1) / 2 + o.sag * 2, off = o.off || 0, i, t, u, x, y, dx, dy, ang, w, col, type, st,
+    var r = k.rng(o.seed || 1), n = o.n || Math.max(2, Math.round(Math.abs(o.x1 - o.x0) / (o.fw * 1.04))), cx = (o.x0 + o.x1) / 2, cy = (o.y0 + o.y1) / 2 + o.sag * 2, off = o.off || 0, i, t, u, x, y, dx, dy, ang, w, col, type, st,
       out = '<path d="M' + o.x0 + ' ' + o.y0 + 'Q' + cx + ' ' + cy + ' ' + o.x1 + ' ' + o.y1 + '" fill="none" stroke="' + C.cream + '" stroke-opacity=".78" stroke-width="2" stroke-linecap="round"/>';
-    for (i = 0; i < o.n; i++) {
-      t = (i + 0.5) / o.n; u = 1 - t;
+    for (i = 0; i < n; i++) {
+      t = (i + 0.5) / n; u = 1 - t;
       x = u * u * o.x0 + 2 * u * t * cx + t * t * o.x1; y = u * u * o.y0 + 2 * u * t * cy + t * t * o.y1;
       dx = 2 * u * (cx - o.x0) + 2 * t * (o.x1 - cx); dy = 2 * u * (cy - o.y0) + 2 * t * (o.y1 - cy);
       ang = Math.atan2(dy, dx) * 180 / Math.PI * 0.8;
@@ -230,29 +231,37 @@
     }
     return out;
   }
-  function strings(k, cls, vw, vh, swags) {
-    return '<svg class="' + cls + '" viewBox="0 0 ' + vw + ' ' + vh + '" preserveAspectRatio="xMidYMin slice" aria-hidden="true" focusable="false">' + swags.map(function (s) { return swag(k, s); }).join('') + '</svg>';
+  // A string is a picture of `vw` units by `vh`, sized by its height alone (the stylesheet), so the flags are the same size on every screen and run out to the edges of a wide one.
+  // at: 'c' sits in the middle of the layer, 'l' hangs from its left edge, 'r' from its right edge.
+  function strings(k, cls, vw, vh, at, swags) {
+    return '<svg class="' + cls + ' cm-at-' + at + '" viewBox="0 0 ' + vw + ' ' + vh + '" preserveAspectRatio="x' + (at === 'c' ? 'Mid' : (at === 'l' ? 'Min' : 'Max')) + 'YMin meet" aria-hidden="true" focusable="false">' + swags.map(function (s) { return swag(k, s); }).join('') + '</svg>';
   }
   var PALS = [
     [C.pink, C.turq, C.yellow, C.orange, C.green, C.red], [C.yellow, C.red, C.turq, C.pink, C.orange, C.green], [C.turq, C.orange, C.pink, C.green, C.yellow, C.red],
     [C.orange, C.green, C.pink, C.yellow, C.turq, C.red], [C.red, C.yellow, C.green, C.turq, C.pink, C.orange], [C.green, C.pink, C.orange, C.turq, C.red, C.yellow]
   ];
-  // The strings along the top of a section: where the cord is hung from, how many flags, how big. Each is different.
+  // The strings along the top of a section. Each is a different shape of cord (arcs between the points it is tied to), a different size of flag, palette and order of patterns. They are drawn on a
+  // canvas 4000 units wide whose middle is 2000: the ones that run across the page are centred on it, the ones that start at a corner hang from that edge (the part of the canvas
+  // a phone or a laptop shows is the middle, or the corner, so every screen shows the string at its best).
+  var CANVAS = 4000;
+  function arcs(from, to, count) { var out = [], i, step = (to - from) / count; for (i = 0; i < count; i++) out.push([from + i * step, from + (i + 1) * step]); return out; }
   var STRIPS = {
-    a: { parts: [[-30, 1830, 20, 31]], fw: 58, pal: 0, types: 'abcdef' },                                         // one long swag
-    b: { parts: [[-30, 600, 26, 11], [600, 1200, 26, 11], [1200, 1830, 26, 11]], fw: 54, pal: 1, types: 'cfaebd' },  // three arcs
-    c: { parts: [[-30, 1830, 14, 46]], fw: 40, pal: 2, types: 'dbefac' },                                         // small flags, close together
-    d: { parts: [[-30, 760, 22, 14], [1060, 1830, 22, 14]], fw: 60, pal: 3, types: 'eacfdb' },                      // a swag from each corner, the middle free
-    e: { parts: [[-30, 1000, 18, 18]], fw: 56, pal: 4, types: 'bdfcae' },                                          // from the left corner only
-    f: { parts: [[800, 1830, 18, 18]], fw: 56, pal: 5, types: 'fbaecd' },                                          // from the right corner only
-    g: { parts: [[-30, 520, 20, 9], [740, 1300, 20, 10], [1500, 1830, 14, 5]], fw: 56, pal: 2, types: 'ceabfd' },   // three short pieces
-    h: { parts: [[-30, 1830, 14, 25]], fw: 64, pal: 3, types: 'dcbfea' },                                         // big flags
-    i: { parts: [[-30, 450, 24, 8], [450, 900, 24, 8], [900, 1350, 24, 8], [1350, 1830, 24, 8]], fw: 52, pal: 0, types: 'fecbad' }, // four arcs
-    j: { parts: [[500, 1830, 18, 23]], fw: 56, pal: 1, types: 'afdbec' }                                           // from the right, running a long way
+    a: [{ at: 'c', arcs: arcs(300, 3700, 3), sag: 22, fw: 58, pal: 0, types: 'abcdef' }],                                   // three long, gentle swags
+    b: [{ at: 'c', arcs: arcs(200, 3800, 6), sag: 26, fw: 54, pal: 1, types: 'cfaebd' }],                                  // six round arcs
+    c: [{ at: 'c', arcs: arcs(500, 3500, 3), sag: 14, fw: 44, pal: 2, types: 'dbefac' }],                                  // small flags close together
+    d: [{ at: 'l', arcs: [[0, 800]], sag: 22, fw: 60, pal: 3, types: 'eacfdb' }, { at: 'r', arcs: [[3200, 4000]], sag: 22, fw: 60, pal: 3, types: 'bdfeac' }],   // a swag from each corner, the middle free
+    e: [{ at: 'l', arcs: [[0, 1000]], sag: 18, fw: 56, pal: 4, types: 'bdfcae' }],                                         // from the left corner only
+    f: [{ at: 'r', arcs: [[3000, 4000]], sag: 18, fw: 56, pal: 5, types: 'fbaecd' }],                                      // from the right corner only
+    g: [{ at: 'c', arcs: [[100, 650], [1200, 1750], [1950, 2450], [2650, 3150], [3350, 3900]], sag: 10, fw: 56, pal: 2, types: 'ceabfd' }],   // short pieces with gaps between
+    h: [{ at: 'c', arcs: [[500, 2000], [2000, 3500]], sag: 24, fw: 64, pal: 3, types: 'dcbfea' }],                          // big flags, two swags meeting in the middle
+    i: [{ at: 'c', arcs: arcs(200, 3800, 8), sag: 14, fw: 52, pal: 0, types: 'fecbad' }],                                  // eight small arcs
+    j: [{ at: 'r', arcs: [[2500, 4000]], sag: 18, fw: 56, pal: 1, types: 'afdbec' }]                                       // from the right, running a long way
   };
   function strip(k, key) {
-    var c = STRIPS[key], sw = c.parts.map(function (p, i) { return { x0: p[0], y0: -3, x1: p[1], y1: -3, sag: p[2], n: p[3], fw: c.fw, cols: PALS[c.pal], types: c.types, off: i * 2, fl: 3, seed: key.charCodeAt(0) * 7 + i }; });
-    return strings(k, 'cm-pps cm-pps--' + key, 1800, 100, sw);
+    return STRIPS[key].map(function (c, ci) {
+      var sw = c.arcs.map(function (p, i) { return { x0: p[0], y0: -3, x1: p[1], y1: -3, sag: c.sag, fw: c.fw, cols: PALS[c.pal], types: c.types, off: i * 2 + ci, fl: 3, seed: key.charCodeAt(0) * 7 + i + ci * 31 }; });
+      return strings(k, 'cm-pps cm-pps--' + key, CANVAS, 100, c.at, sw);
+    }).join('');
   }
 
   // A garland of marigolds draped down the edge of a section (it lives in the margin, so a phone does without it).
@@ -336,8 +345,8 @@
     var out = '<div class="cm-wash"></div>';
     out += k.twinkles(10, { id: ['sk-sparkle', 'sk-dot', 'sk-sparkle'], colors: [C.yellow, C.pink, C.turq, C.gold, C.cream, C.orange], size: [7, 16], dur: [2.6, 5.2], area: [2, 98], areaY: [8, 60], seed: 41, mobile: 0.5 });
     out += butterflies(k, 2, 40, 53);
-    out += strings(k, 'cm-pps cm-pps--hero cm-pps--back', 2000, 120, [{ x0: -30, y0: 8, x1: 2030, y1: 8, sag: 18, n: 38, fw: 42, cols: PALS[1], types: 'bfcdae', off: 3, fl: 2, seed: 5 }]);
-    out += strings(k, 'cm-pps cm-pps--hero cm-pps--front', 2000, 120, [{ x0: -30, y0: 2, x1: 2030, y1: 2, sag: 8, n: 36, fw: 52, cols: PALS[0], types: 'abcdef', off: 0, fl: 2, seed: 9 }]);
+    out += strings(k, 'cm-pps cm-pps--hero cm-pps--back', 2600, 120, 'c', arcs(-100, 2700, 4).map(function (p, i) { return { x0: p[0], y0: 8, x1: p[1], y1: 8, sag: 16, fw: 42, cols: PALS[1], types: 'bfcdae', off: 3 + i * 2, fl: 4, seed: 5 + i }; }));
+    out += strings(k, 'cm-pps cm-pps--hero cm-pps--front', 2600, 120, 'c', arcs(0, 2600, 2).map(function (p, i) { return { x0: p[0], y0: 2, x1: p[1], y1: 2, sag: 10, fw: 52, cols: PALS[0], types: 'abcdef', off: i * 2, fl: 4, seed: 9 + i }; }));
     out += confetti(k, 23, 7, { size: [11, 26], opacity: [0.75, 1] }) + fallingPetals(k, 7, 13, [12, 22]);
     out += pend(k, 'rist', 'l', 1.4, 8, 44, 'cm-pd-h sk-hide-m');
     out += '<div class="cm-ground">' + ground(k) + lights(k) + '</div><div class="cm-wall"></div>';
@@ -417,6 +426,14 @@
     hero: hero,
     sections: {},
     footer: footer,
+    // Only what can be seen moves: a layer that is more than a screen-edge away from the window rests (the stylesheet pauses everything in it) until it comes near again.
+    init: function () {
+      if (!window.IntersectionObserver) return;
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { e.target.classList.toggle('cm-rest', !e.isIntersecting); });
+      }, { rootMargin: '160px 0px' });
+      [].forEach.call(document.querySelectorAll('.sk-hero, .sk-sec, .sk-footer'), function (el) { io.observe(el); });
+    },
     onTap: function (el, k) {
       var c = el.classList, target = el.querySelector('svg') || el, all = FEST.concat([C.gold]);
       if (c.contains('cm-t-pin')) {

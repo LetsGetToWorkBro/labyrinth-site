@@ -160,7 +160,7 @@
     '<rect x="26" y="66" width="38" height="30" rx="3" fill="' + C.red + '"/><rect x="26" y="66" width="12" height="30" rx="3" fill="' + C.red2 + '" fill-opacity=".4"/><rect x="26" y="78" width="38" height="8" fill="#fff"/><rect x="26" y="78" width="12" height="8" fill="' + C.ice + '"/>' +
     '<rect x="31" y="60" width="28" height="8" rx="2" fill="' + C.blue + '"/><rect x="20" y="94" width="50" height="9" rx="2" fill="' + C.wood + '"/><rect x="20" y="94" width="50" height="3" rx="1.5" fill="#e6b266"/></symbol>';
 
-  // A wooden stick for the pinwheels, and the gradient that shades the folds of a waving flag.
+  // The two gradients that shade the folds of the waving flag in the hero.
   var FLAGSH = '<linearGradient id="id-fsh" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".18"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#0a1233" stop-opacity=".26"/></linearGradient>' +
     '<linearGradient id="id-fsh2" x1="0" x2="1"><stop offset="0" stop-color="#0a1233" stop-opacity=".22"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".16"/></linearGradient>';
 
@@ -176,16 +176,16 @@
     return '<i class="id-fw' + (cls ? ' ' + cls : '') + '" style="left:' + x + '%;top:' + y + '%;--z:' + size + ';--c:' + c + ';--c2:' + c2 + ';--dl:' + delay + 's;--cy:' + cycle + 's">' +
       '<svg viewBox="0 0 128 128" aria-hidden="true" focusable="false"><use href="#' + sym + '"/></svg><i class="id-tr"></i></i>';
   }
-  var BIG = 'clamp(190px,29vw,420px)', MID = 'clamp(170px,22vw,320px)', SMALL = 'clamp(130px,15vw,230px)';
+  var BIG = 'clamp(190px,29vw,600px)', MID = 'clamp(170px,22vw,440px)', SMALL = 'clamp(130px,15vw,300px)';
   // sym, left %, top %, size, colour, second colour, delay (s), extra class: seven in turn, one every 1.6 s of a 13 s round. The gold ones keep to the empty sky
   // (the headline and the numbers are gold too), and the ones at the edges are cut by the screen, as if they were going off just out of sight.
   var HERO_FW = [
     ['id-bD', 90, 36, BIG, C.gold, '#fff', 0.2, 'id-fw--a'],
-    ['id-bA', 57, 17, 'clamp(130px,15vw,230px)', C.redHi, '#fff', 1.8, 'id-fw--x'],
+    ['id-bA', 66, 15, 'clamp(120px,13vw,260px)', C.redHi, '#fff', 1.8, 'id-fw--x sk-hide-m'],
     ['id-bC', 3, 50, MID, C.blueHi, '#fff', 3.4, 'sk-hide-m'],
-    ['id-bE', 61, 53, SMALL, '#ffffff', C.gold, 5.0, 'id-fw--x'],
-    ['id-bB', 97, 70, MID, '#ffffff', C.gold, 6.6, ''],
-    ['id-bA', 78, 21, SMALL, C.blueHi, '#fff', 8.2, 'id-fw--x'],
+    ['id-bE', 61, 53, SMALL, '#ffffff', C.gold, 5.0, 'id-fw--x sk-hide-m'],
+    ['id-bB', 97, 70, MID, '#ffffff', C.gold, 6.6, 'id-fw--b'],
+    ['id-bA', 86, 14, SMALL, C.blueHi, '#fff', 8.2, 'id-fw--x sk-hide-m'],
     ['id-bE', 3, 78, SMALL, C.redHi, '#fff', 9.8, 'id-fw--x sk-hide-m']
   ];
 
@@ -261,11 +261,11 @@
         '</g></g></g></g></svg>';
   }
 
-  // The hero: a dusk glow, twinkling stars, the fireworks in turn, bunting, the flag, glitter drifting down, the field, embers rising, and three taps.
+  // The hero: a dusk glow and a moon, twinkling stars, the fireworks in turn, bunting, the flag, glitter drifting down, the field, embers rising, and three taps.
   function hero(k) {
     var fws = '';
     HERO_FW.forEach(function (b) { fws += fw(b[0], b[1], b[2], b[3], b[4], b[5], b[6], 13, b[7]); });
-    return '<div class="id-glow"></div>' +
+    return '<div class="id-glow"></div><i class="id-moon sk-hide-m"></i>' +
       k.twinkles(6, { id: ['id-glint', 'sk-star'], size: [7, 15], dur: [2.6, 5.2], colors: ['#ffffff', C.gold, '#bcd0ff'], area: [40, 100], areaY: [13, 24], seed: 3, mobile: 0.5 }) +
       k.twinkles(5, { id: ['id-glint', 'sk-star'], size: [7, 16], dur: [2.6, 5.2], colors: ['#ffffff', C.gold, '#bcd0ff'], area: [80, 99], areaY: [26, 66], seed: 4, mobile: 0.5 }) +
       k.twinkles(3, { id: ['id-glint', 'sk-star'], size: [7, 14], dur: [2.6, 5.2], colors: ['#ffffff', C.gold, '#bcd0ff'], area: [0.5, 6], areaY: [20, 68], seed: 5, mobile: 0.5, cls: 'sk-hide-m' }) +
@@ -309,46 +309,49 @@
   var TAPS = { rocket: ['id-rocket', '0 0 40 124', 'Boom!'], spk: ['id-sparkler', '0 0 60 130', 'Sparkle!'], star: ['id-starstick', '0 0 64 132', 'Hooray!'] };
   var SIDE = { l: 'left', r: 'right' };
 
+  // The strips and the faint stars run the full width; everything that lives in the margins sits in a wrapper that stops growing at 1640px, so on a very wide screen it stays near the content.
+  var FULL = { bunt: 1, rib: 1, sky: 1, comet: 1 };
   function section(specs, k) {
-    var out = '', i;
+    var full = '', edge = '', i, pends = 0;
     specs.forEach(function (spec, n) {
-      var a = spec.split(':'), kind = a[0], side = SIDE[a[1]], hue, bits, t;
+      var a = spec.split(':'), kind = a[0], side = SIDE[a[1]], hue, bits, t, o = '';
       if (kind === 'bunt') {
-        out += '<div class="id-bunt id-bunt--' + a[1] + '"' + (a[2] ? ' style="top:' + a[2] + 'px"' : '') + '></div>';
+        o = '<div class="id-bunt id-bunt--' + a[1] + '"' + (a[2] ? ' style="top:' + a[2] + 'px"' : '') + '></div>';
       } else if (kind === 'rib') {
-        out += '<div class="id-rib id-rib--' + a[1] + '"></div>';
+        o = '<div class="id-rib id-rib--' + a[1] + '"></div>';
       } else if (kind === 'fw') {
         hue = HUES[a[3]];
-        out += '<i class="id-fw id-fw--s id-fw--' + a[1] + (a[7] === 'm' ? '' : ' sk-hide-m') + '" style="' + side + ':4%;top:' + a[2] + '%;--z:' + a[4] + 'px;--c:' + hue[0] + ';--c2:' + hue[1] + ';--dl:' + a[5] + 's;--cy:' + [11, 12.5, 14][n % 3] +
+        o = '<i class="id-fw id-fw--s id-fw--' + a[1] + (a[7] === 'm' ? '' : ' sk-hide-m') + '" style="' + side + ':4%;top:' + a[2] + '%;--z:' + a[4] + 'px;--c:' + hue[0] + ';--c2:' + hue[1] + ';--dl:' + a[5] + 's;--cy:' + [11, 12.5, 14][n % 3] +
           's"><svg viewBox="0 0 128 128" aria-hidden="true" focusable="false"><use href="#' + a[6] + '"/></svg></i>';
       } else if (kind === 'pin') {
-        out += '<div class="id-pin sk-hide-m" style="' + side + ':1%;top:' + a[2] + '%;width:' + a[3] + 'px"><i class="id-pin__s"></i>' + k.use('id-pinw', 'id-pin__h', '0 0 100 100') + '</div>';
+        o = '<div class="id-pin sk-hide-m" style="' + side + ':1%;top:' + a[2] + '%;width:' + a[3] + 'px"><i class="id-pin__s"></i>' + k.use('id-pinw', 'id-pin__h', '0 0 100 100') + '</div>';
       } else if (kind === 'flags') {
         bits = '';
         for (i = 0; i < +a[2]; i++) bits += k.use('id-flag', 'id-fl id-fl--' + i, '0 0 84 110');
-        out += '<div class="id-fpile id-fpile--' + a[1] + ' sk-hide-m">' + bits + '</div>';
+        o = '<div class="id-fpile id-fpile--' + a[1] + ' sk-hide-m">' + bits + '</div>';
       } else if (kind === 'spk') {
-        out += '<div class="id-spk sk-hide-m" style="' + side + ':1.4%;top:' + a[2] + '%;width:' + a[3] + 'px;rotate:' + a[4] + 'deg">' + k.use('id-sparkler', '', '0 0 60 130') + '<i class="id-spk__g"></i></div>';
+        o = '<div class="id-spk sk-hide-m" style="' + side + ':1.4%;top:' + a[2] + '%;width:' + a[3] + 'px;rotate:' + a[4] + 'deg">' + k.use('id-sparkler', '', '0 0 60 130') + '<i class="id-spk__g"></i></div>';
       } else if (kind === 'stars') {
-        out += k.twinkles(+a[3], { id: ['id-glint', 'sk-star'], size: [8, 16], dur: [3, 6], colors: ['#ffffff', C.gold, '#bcd0ff', C.redHi], area: a[1] === 'l' ? [0.6, 4.6] : [95.4, 99.4], areaY: [+a[2], +a[2] + 14], seed: 40 + +a[4], mobile: 0.5 });
+        o = k.twinkles(+a[3], { id: ['id-glint', 'sk-star'], size: [8, 16], dur: [3, 6], colors: ['#ffffff', C.gold, '#bcd0ff', C.redHi], area: a[1] === 'l' ? [0.6, 4.6] : [95.4, 99.4], areaY: [+a[2], +a[2] + 14], seed: 40 + +a[4], mobile: 0.5 });
       } else if (kind === 'sky') {
-        out += k.twinkles(+a[1], { id: ['id-glint', 'sk-star'], size: [5, 10], dur: [3, 6.5], colors: ['rgba(255,255,255,.6)', 'rgba(255,204,77,.6)', 'rgba(188,208,255,.6)', 'rgba(255,90,102,.55)'], areaY: [2, 98], seed: 300 + +a[2], mobile: 0.5 });
+        o = k.twinkles(+a[1], { id: ['id-glint', 'sk-star'], size: [5, 10], dur: [3, 6.5], colors: ['rgba(255,255,255,.6)', 'rgba(255,204,77,.6)', 'rgba(188,208,255,.6)', 'rgba(255,90,102,.55)'], areaY: [2, 98], seed: 300 + +a[2], mobile: 0.5 });
       } else if (kind === 'rose') {
-        out += k.pendant(k.use('id-rosette', '', '0 0 80 120'), { side: a[1], at: +a[2], len: +a[3], w: +a[4] });
+        o = k.pendant(k.use('id-rosette', '', '0 0 80 120'), { side: a[1], at: +a[2], len: +a[3], w: +a[4], cls: 'id-p' + (++pends) });
       } else if (kind === 'pstar') {
-        out += k.pendant(k.use('id-bstar', '', '0 0 64 64'), { side: a[1], at: +a[2], len: +a[3], w: +a[4], cls: 'id-pstar' });
+        o = k.pendant(k.use('id-bstar', '', '0 0 64 64'), { side: a[1], at: +a[2], len: +a[3], w: +a[4], cls: 'id-pstar id-p' + (++pends) });
       } else if (kind === 'tap') {
         t = TAPS[a[1]];
-        out += k.tap(k.use(t[0], '', t[1]) + (a[1] === 'spk' ? '<i class="id-spk__g"></i>' : ''), t[2], 'id-tap id-t-' + a[1] + ' sk-hide-m', (a[2] === 'l' ? 'left' : 'right') + ':0.4%;top:' + a[3] + '%;width:' + a[4] + 'px');
+        o = k.tap(k.use(t[0], '', t[1]) + (a[1] === 'spk' ? '<i class="id-spk__g"></i>' : ''), t[2], 'id-tap id-t-' + a[1] + ' sk-hide-m', (a[2] === 'l' ? 'left' : 'right') + ':0.4%;top:' + a[3] + '%;width:' + a[4] + 'px');
       } else if (kind === 'conf') {
-        out += k.particles(+a[1], { id: ['id-glint', 'sk-star', 'sk-sparkle', 'sk-dot'], colors: SPARKS, size: [8, 16], dur: [16, 28], drift: 60, sway: 24, area: a[3] === 'l' ? [0, 9] : [91, 100], seed: 100 + +a[2], mobile: 0.5, opacity: [0.45, 0.85] });
+        o = k.particles(+a[1], { id: ['id-glint', 'sk-star', 'sk-sparkle', 'sk-dot'], colors: SPARKS, size: [8, 16], dur: [16, 28], drift: 60, sway: 24, area: a[3] === 'l' ? [0, 9] : [91, 100], seed: 100 + +a[2], mobile: 0.5, opacity: [0.45, 0.85] });
       } else if (kind === 'rise') {
-        out += k.particles(+a[1], { dir: 'rise', id: ['sk-dot', 'id-glint'], colors: [C.gold, '#ffffff', C.redHi, C.blueHi], size: [4, 9], dur: [9, 16], drift: 30, sway: 10, area: a[3] === 'l' ? [0, 9] : [91, 100], seed: 200 + +a[2], mobile: 0.5, opacity: [0.5, 0.9], spin: 0 });
+        o = k.particles(+a[1], { dir: 'rise', id: ['sk-dot', 'id-glint'], colors: [C.gold, '#ffffff', C.redHi, C.blueHi], size: [4, 9], dur: [9, 16], drift: 30, sway: 10, area: a[3] === 'l' ? [0, 9] : [91, 100], seed: 200 + +a[2], mobile: 0.5, opacity: [0.5, 0.9], spin: 0 });
       } else if (kind === 'comet') {
-        out += k.flyers(1, { id: 'id-comet', vb: '0 0 100 30', top: [+a[1] - 3, +a[1] + 3], size: [64, 96], dur: [28, 40], wave: 14, seed: 700 + +a[1], mobile: 0 });
+        o = k.flyers(1, { id: 'id-comet', vb: '0 0 100 30', top: [+a[1] - 3, +a[1] + 3], size: [64, 96], dur: [28, 40], wave: 14, seed: 700 + +a[1], mobile: 0 });
       }
+      if (FULL[kind]) full += o; else edge += o;
     });
-    return out;
+    return full + '<div class="id-wrap">' + edge + '</div>';
   }
 
   // ── The launch field above the footer: a night sky with bursts, bunting between poles, crates, rockets and fountains, four signs, a glowing ground ───
@@ -361,7 +364,7 @@
     var signs = SAYINGS.map(function (s, i) { return '<div class="id-sign id-sign--' + i + '"><span>' + TITLES[i] + '</span><em>' + s + '</em></div>'; }).join('');
     return '<div class="id-fsky">' +
       k.twinkles(12, { id: ['id-glint', 'sk-star'], size: [7, 14], dur: [2.8, 5.4], colors: ['#ffffff', C.gold, '#bcd0ff'], areaY: [2, 52], seed: 61, mobile: 0.5 }) +
-      fw('id-bA', 14, 24, 'clamp(120px,15vw,210px)', C.redHi, '#fff', -2, 12, 'sk-hide-m') + fw('id-bD', 50, 16, 'clamp(150px,19vw,270px)', C.gold, '#fff', -7, 12, '') + fw('id-bC', 86, 26, 'clamp(120px,15vw,210px)', C.blueHi, '#fff', -10, 12, 'sk-hide-m') +
+      fw('id-bA', 14, 24, 'clamp(120px,15vw,210px)', C.redHi, '#fff', -2, 12, 'sk-hide-m') + fw('id-bD', 50, 12, 'clamp(140px,17vw,240px)', C.gold, '#fff', -7, 12, '') + fw('id-bC', 86, 26, 'clamp(120px,15vw,210px)', C.blueHi, '#fff', -10, 12, 'sk-hide-m') +
       '</div>' +
       '<div class="id-bunt id-bunt--foot"></div>' +
       '<div class="id-beam id-beam--l"></div><div class="id-beam id-beam--r"></div>' +
@@ -380,9 +383,9 @@
   }
 
   function onTap(el, k) {
-    if (el.classList.contains('id-t-rocket')) k.burst(el, { id: 'sk-star', n: 22, colors: SPARKS, dist: [70, 170], size: [10, 20], ms: 1100 });
-    else if (el.classList.contains('id-t-spk')) k.burst(el, { id: 'id-glint', n: 14, colors: [C.gold, '#ffffff', C.goldHi], dist: [40, 110], size: [10, 20], ms: 900 });
-    else k.burst(el, { id: 'sk-star', n: 12, colors: [C.gold, '#ffffff', C.redHi, C.blueHi], dist: [50, 130], size: [10, 18], ms: 1000 });
+    if (el.classList.contains('id-t-rocket')) k.burst(el, { id: 'sk-star', n: 26, colors: [C.white, C.gold, C.redHi, C.goldHi, C.blueHi, C.white], dist: [80, 200], size: [14, 28], ms: 1250 });
+    else if (el.classList.contains('id-t-spk')) k.burst(el, { id: 'id-glint', n: 16, colors: [C.gold, C.white, C.goldHi], dist: [50, 130], size: [14, 26], ms: 1000 });
+    else k.burst(el, { id: 'sk-star', n: 14, colors: [C.gold, C.white, C.redHi, C.blueHi, C.goldHi], dist: [60, 150], size: [14, 24], ms: 1100 });
   }
 
   var T = {

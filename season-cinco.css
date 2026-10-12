@@ -59,9 +59,14 @@
     radial-gradient(ellipse at 50% 100%, rgba(255, 182, 39, 0.3), transparent 46%);
 }
 
-/* Two strings of papel picado hang across the top, one behind the other, and every flag flutters on its own beat. */
-.cm-pps { left: -20px; width: calc(100% + 40px); max-width: none; height: 100px; transform-origin: 50% 0; animation: cm-sway 8s ease-in-out infinite alternate; }
-.cm-pps--hero { top: var(--nav-height, 72px); height: 120px; }
+/* Two strings of papel picado hang across the top, one behind the other, and every flag flutters on its own beat. A string is a picture sized by its height alone (--ph), so its flags
+   are the same size on every screen: 2600 units wide for the hero's, 4000 for a section's, which is more than any screen shows. */
+.cm-pps { --ph: 84px; top: 0; height: var(--ph); width: calc(var(--ph) * 40); max-width: none; transform-origin: 50% 0; animation: cm-sway 8s ease-in-out infinite alternate; }
+.cm-at-c { left: 50%; margin-left: calc(var(--ph) * -20); }
+.cm-at-l { left: calc(var(--ph) * -0.2); transform-origin: 0 0; }
+.cm-at-r { right: calc(var(--ph) * -0.2); transform-origin: 100% 0; }
+.cm-pps--hero { --ph: 120px; top: var(--nav-height, 72px); width: calc(var(--ph) * 21.6667); }
+.cm-pps--hero.cm-at-c { margin-left: calc(var(--ph) * -10.8333); }
 .cm-pps--back { opacity: 0.72; animation-duration: 10s; animation-direction: alternate-reverse; }
 .cm-fl { transform-origin: 0 0; animation: cm-flutter 4.4s ease-in-out infinite; }
 @keyframes cm-flutter { 0%, 100% { rotate: -4deg; } 50% { rotate: 5deg; } }
@@ -108,6 +113,9 @@
 .cm-tap-r .sk-bubble { left: auto; right: 0; transform: translate(0, 6px) scale(0.6); transform-origin: 100% 100%; }
 .cm-tap-r.is-tap .sk-bubble { transform: translate(0, 0) scale(1); }
 .cm-hero .sk-bubble, .cm-sec .sk-bubble, .cm-footer .sk-bubble { box-shadow: 0 0 0 3px var(--cm-pink), 0 8px 18px rgba(0, 0, 0, 0.4); }
+/* The tapped decoration wiggles, which swings its bubble a few pixels sideways: the kit starts an edge bubble flush with the screen edge, so this keeps it a little in from it. */
+.sk-tap.cm-tap.cm-tap-l .sk-bubble { left: 8px !important; }
+.sk-tap.cm-tap.cm-tap-r .sk-bubble { right: 8px !important; }
 
 /* ── This month: the cards under the hero get a strip of pennants along the top ──────────────────────────────────────────────── */
 [data-season="cinco"] .event-strip { background: linear-gradient(to bottom, #0d0a14, rgba(33, 23, 43, 0.72)); }
@@ -120,12 +128,12 @@
    A string of papel picado along the top, a marigold garland down an edge, a heap of flowers or a row of potted cacti in a bottom
    corner, chili ristras and pinatas swinging on strings, confetti coming down, butterflies crossing, a strip of tiles along an edge,
    and here and there a pinata, a cactus or a pot of flowers that answers a tap. */
-.cm-sec .cm-pps { top: 0; height: 84px; opacity: 0.88; animation-duration: 9s; }
+.cm-sec .cm-pps { opacity: 0.88; animation-duration: 9s; }
 .cm-sec .cm-pps--e, .cm-sec .cm-pps--f { animation-duration: 11s; }
-.cm-gar { top: -6px; height: 400px; width: auto; opacity: 0.85; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.35)); }
+.cm-gar { top: -6px; height: 400px; width: auto; opacity: 0.85; }
 .cm-gar--l { left: 2px; }
 .cm-gar--r { right: 2px; transform: scaleX(-1); }
-.cm-mound { bottom: -10px; width: clamp(150px, 19vw, 270px); height: auto; opacity: 0.88; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.35)); }
+.cm-mound { bottom: -10px; width: clamp(150px, 19vw, 270px); height: auto; opacity: 0.88; }
 .cm-mound--l { left: clamp(0px, 0.8vw, 16px); }
 .cm-mound--r { right: clamp(0px, 0.8vw, 16px); transform: scaleX(-1); }
 .cm-pots { bottom: -2px; display: flex; align-items: flex-end; gap: clamp(0px, 0.4vw, 6px); opacity: 0.9; }
@@ -184,7 +192,7 @@
 .cm-sign em { display: block; margin-top: 7px; font-style: normal; font-weight: 600; font-size: clamp(10.5px, 1.4vw, 13px); line-height: 1.25; }
 .cm-sign--1 { --c: #ff5fa2; --drop: 26px; }
 .cm-sign--2 { --c: #2fd6c4; --drop: 44px; animation-delay: -1.4s; }
-.cm-sign--3 { --c: #ffd23f; --drop: 30px; animation-delay: -2.8s; }
+.cm-sign--3 { --c: var(--cm-yellow); --drop: 30px; animation-delay: -2.8s; }
 .cm-sign--4 { --c: #ff8f26; --drop: 40px; animation-delay: -4.2s; }
 @keyframes cm-hang { from { rotate: -1.8deg; } to { rotate: 1.8deg; } }
 .cm-counter { left: 0; right: 0; bottom: 0; height: var(--cm-ct); z-index: 2; }
@@ -192,22 +200,20 @@
 .cm-mrow { left: 50%; margin-left: -1280px; bottom: calc(var(--cm-ct) - 14px); width: 2560px; max-width: none; height: 40px; z-index: 3; }
 .cm-front { position: absolute; left: 0; right: 0; top: 12px; bottom: 0; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' fill='%23fff1d6'/%3E %3Cg fill='%2317c3b2'%3E%3Cellipse cx='24' cy='24' rx='3.6' ry='12'/%3E%3Cellipse cx='24' cy='24' rx='3.6' ry='12' transform='rotate(90 24 24)'/%3E%3C/g%3E %3Cg fill='%23ff3f8e'%3E%3Cellipse cx='24' cy='24' rx='3' ry='9.5' transform='rotate(45 24 24)'/%3E%3Cellipse cx='24' cy='24' rx='3' ry='9.5' transform='rotate(-45 24 24)'/%3E%3C/g%3E %3Ccircle cx='24' cy='24' r='4.6' fill='%23ff7b00'/%3E%3Ccircle cx='24' cy='24' r='1.8' fill='%23ffd23f'/%3E %3Cg fill='%232a1450'%3E%3Ccircle r='5'/%3E%3Ccircle cx='48' r='5'/%3E%3Ccircle cy='48' r='5'/%3E%3Ccircle cx='48' cy='48' r='5'/%3E%3C/g%3E %3Cg fill='%23ffd23f'%3E%3Ccircle r='2'/%3E%3Ccircle cx='48' r='2'/%3E%3Ccircle cy='48' r='2'/%3E%3Ccircle cx='48' cy='48' r='2'/%3E%3C/g%3E %3Crect x='1' y='1' width='46' height='46' fill='none' stroke='%232a1450' stroke-opacity='.45' stroke-width='2'/%3E%3C/svg%3E") 0 0 / 24px 24px repeat; }
 
-/* ── Phones: fewer things, nothing wider than the screen ──────────────────────────────────────────────────────────────────── */
+/* ── Smaller screens: fewer things, nothing wider than the screen ──────────────────────────────────────────────────────────────────── */
+@media (max-width: 1279px) {
+  .cm-gar, .cm-pdl { display: none; }
+  .cm-sec .cm-pps { --ph: 70px; }
+}
 @media (max-width: 1199px) {
   .cm-pin { --pw: 52px; right: 24px; }
   .cm-pin .cm-rope { height: 6px; }
-}
-@media (max-width: 1279px) {
-  .cm-gar, .cm-pdl { display: none; }
-  .cm-sec .cm-pps { height: 70px; }
-}
-@media (max-width: 1199px) {
   .cm-pd-h { display: none; }
 }
 @media (max-width: 700px) {
-  .cm-pps--hero { height: 96px; }
-  .cm-sec .cm-pps { height: 52px; }
-  .cm-sec .cm-pd { width: 28px !important; }
+  .cm-pps--hero { --ph: 96px; }
+  .cm-sec .cm-pps { --ph: 52px; }
+  .cm-sec .cm-pd { width: 28px; }
   .cm-sec .cm-pd > i { height: 22px; }
   .cm-sec .cm-pd--rist { display: none; }
   .cm-pin { --pw: 46px; right: 16px; }
@@ -233,3 +239,6 @@
   .cm-sign--3 { --drop: 16px; }
   .cm-sign--4 { --drop: 22px; }
 }
+
+/* A layer that is far from the window rests (season-cinco.js adds the class): nothing in it moves until it is near again, so only what can be seen costs anything. */
+.cm-rest, .cm-rest * { animation-play-state: paused !important; }

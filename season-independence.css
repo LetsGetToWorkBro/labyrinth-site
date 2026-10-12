@@ -14,6 +14,7 @@
   --border: rgba(122, 162, 245, 0.2);
   --border-strong: rgba(122, 162, 245, 0.4);
   --text-muted: #b9c7ee;
+  --text-faint: #8190bd;   /* the page's dimmest captions and placeholders: #555 is too dark on navy */
   --gold: #ffcc4d;
   --gold-hover: #ffdb7a;
   --id-red: #e63946;
@@ -37,6 +38,7 @@
     var(--bg);
 }
 [data-season="independence"] .nav--scrolled { background: rgba(6, 15, 46, 0.92); }
+[data-season="independence"] .nav__mobile { background: rgba(6, 15, 46, 0.98); }
 /* The one section the page paints near-black on its own: a night blue instead, so the page does not have a black band in it. */
 [data-season="independence"] .testimonials { background: #050c28; }
 
@@ -45,7 +47,7 @@
 [data-season="independence"] .hero__bg::after {
   background: linear-gradient(to bottom, rgba(4, 10, 40, 0.84) 0%, rgba(12, 28, 100, 0.58) 34%, rgba(74, 30, 104, 0.5) 62%, rgba(150, 52, 100, 0.34) 80%, #060f2e 100%);
 }
-[data-season="independence"] .hero { padding-bottom: clamp(130px, 19vw, 250px); }
+[data-season="independence"] .hero { padding-bottom: clamp(130px, 19vw, 470px); }
 [data-season="independence"] .hero__h1-visual span { color: var(--gold); text-shadow: 0 0 30px rgba(255, 204, 77, 0.5), 0 0 4px rgba(255, 236, 170, 0.45); }
 [data-season="independence"] .hero__badge { border-color: rgba(255, 204, 77, 0.55); background: rgba(255, 204, 77, 0.1); }
 
@@ -55,6 +57,16 @@
   background:
     linear-gradient(to top, rgba(255, 138, 84, 0.46) 0%, rgba(240, 96, 112, 0.3) 18%, rgba(168, 66, 140, 0.16) 42%, transparent 72%),
     radial-gradient(ellipse 50% 70% at 50% 100%, rgba(255, 150, 96, 0.5) 0%, rgba(214, 72, 132, 0.22) 38%, transparent 72%);
+}
+
+/* The margin pieces of a section sit in a wrapper as wide as the screen up to 1640px, centred, so on a very wide screen they stay near the content. */
+.id-wrap { top: 0; bottom: 0; left: 50%; width: min(100%, 1640px); translate: -50% 0; }
+.id-wrap > * { position: absolute; }   /* the kit does this for a layer's own children (.sk-sec > *), and these are one level down */
+
+/* A crescent moon in the quiet corner of the sky (it gives way where the margin is too narrow for it). */
+.id-moon {
+  left: 2.4%; top: 17%; width: clamp(34px, 3.6vw, 62px); aspect-ratio: 1; border-radius: 50%; opacity: 0.9;
+  box-shadow: inset 0.28em -0.12em 0 0 #fff2c2, 0 0 24px 2px rgba(255, 236, 170, 0.2); font-size: clamp(34px, 3.6vw, 62px);
 }
 
 /* A firework: it climbs as a bright streak, pops into a shell, spreads, and fades, then waits its turn (every one has its own delay, so they go off in sequence).
@@ -75,13 +87,13 @@
   0%, 4.5% { transform: scale(0.15) rotate(-14deg); opacity: 0; animation-timing-function: cubic-bezier(0.1, 0.9, 0.2, 1); }
   7% { transform: scale(0.55) rotate(-8deg); opacity: var(--pk, 1); animation-timing-function: cubic-bezier(0.2, 0.8, 0.4, 1); }
   16% { transform: scale(1) rotate(2deg); opacity: var(--pk, 1); animation-timing-function: ease-in; }
-  28%, 100% { transform: scale(1.12) rotate(10deg); opacity: 0; }
+  31%, 100% { transform: scale(1.12) rotate(10deg); opacity: 0; }
 }
 @keyframes id-flash {
   0%, 5% { transform: scale(0.3); opacity: 0; }
   7% { transform: scale(0.75); opacity: 0.5; }
   16% { transform: scale(1.1); opacity: 0.16; }
-  26%, 100% { transform: scale(1.3); opacity: 0; }
+  28%, 100% { transform: scale(1.3); opacity: 0; }
 }
 @keyframes id-trail {
   0% { translate: 0 var(--rise); opacity: 0; }
@@ -99,7 +111,7 @@
 @keyframes id-breeze { from { translate: -7px 0; } to { translate: 7px 0; } }
 
 /* The flag: a pole that stands from the grass, a gold ball on top, and a flag that waves in three folds. */
-.id-pole { right: clamp(14px, 4.4vw, 92px); bottom: 0; width: clamp(120px, 14vw, 206px); height: min(72%, 720px); }
+.id-pole { right: clamp(14px, 4.4vw, 150px); bottom: 0; width: clamp(120px, 14vw, 300px); height: min(72%, 1000px); }
 .id-pole__rod {
   position: absolute; left: 0; top: 12px; bottom: 0; width: 5px; border-radius: 3px; background: linear-gradient(90deg, #8d9bc9, #e8eeff 45%, #8d9bc9);
   box-shadow: 0 0 14px rgba(150, 180, 255, 0.35);
@@ -112,7 +124,7 @@
 @keyframes id-wave { 0%, 100% { transform: skewY(-6.5deg); } 50% { transform: skewY(6.5deg); } }
 
 /* The field along the foot of the hero: hills, two treelines, grass, and rockets and sparklers standing in it. Its sparkler tips twinkle. */
-.id-field { left: 0; right: 0; bottom: -1px; height: clamp(130px, 19vw, 250px); }
+.id-field { left: 0; right: 0; bottom: -1px; height: clamp(130px, 19vw, 470px); }
 .id-field svg { display: block; width: 100%; height: 100%; }
 .id-field--g { pointer-events: none; }
 .id-spw { transform-box: fill-box; transform-origin: 50% 50%; animation: id-tw var(--d, 1.2s) ease-in-out var(--o, 0s) infinite; }
@@ -227,6 +239,14 @@
 .id-lights { position: absolute; left: 0; right: 0; bottom: 22px; height: 14px; background: var(--id-t-pad) repeat-x; animation: id-pulse 2.6s ease-in-out infinite alternate; }
 @keyframes id-pulse { from { opacity: 0.55; } to { opacity: 1; } }
 
+/* Between a phone and a laptop the margins beside a section's content are too narrow for a pinwheel or a sparkler (the kit steps its taps aside here too): they step aside,
+   the rosettes and stars hang from the right edge, and a section keeps just one of them. */
+@media (min-width: 701px) and (max-width: 1279px) {
+  .id-pin, .id-spk { display: none; }
+  .id-sec .sk-pend { left: auto !important; right: 2%; }
+  .id-sec .id-p2 { display: none; }
+}
+
 /* A layer that has left the window stands still until it comes back (season-independence.js marks it .id-off). */
 .id-hero.id-off *, .id-hero.id-off *::before, .id-sec.id-off *, .id-sec.id-off *::before, .id-footer.id-off *, .id-footer.id-off *::before { animation-play-state: paused !important; }
 
@@ -235,7 +255,8 @@
   .id-props--l > :nth-child(1), .id-props--r > :nth-child(5) { display: none; }
 }
 @media (max-width: 1100px) {
-  .id-pole { right: 14px; bottom: 8px; width: 124px; height: calc(clamp(130px, 19vw, 250px) - 22px); }
+  .id-moon { display: none; }
+  .id-pole { right: 14px; bottom: 8px; width: 124px; height: calc(clamp(130px, 19vw, 470px) - 22px); }
   .id-pole__rod { top: 8px; }
   .id-pole__ball { width: 9px; height: 9px; top: 0; left: -2px; }
   .id-wf { top: 8px; }
@@ -259,6 +280,7 @@
   .id-bunt--foot { height: 46px; background-size: 120px 46px; }
   .id-fw--s { --pk: 0.55; }
   .id-fw--a { left: 100% !important; top: 30% !important; }
+  .id-fw--b { left: 100% !important; top: 74% !important; }
   .id-hero .id-fw { --pk: 0.7; }
   .id-footer { min-height: 300px; padding-top: 120px; padding-bottom: 22px; }
   .id-props { margin-bottom: 4px; }
@@ -273,6 +295,7 @@
 @media (prefers-reduced-motion: reduce) {
   .id-fw::before, .id-fw > svg, .id-tr { animation: none; }
   .id-fw--x { display: none; }
+  .id-sec .sk-fly { display: none; }
   .id-fw > svg { opacity: 0.7; }
   .id-fw--s > svg { opacity: 0.38; }
   .id-bunt--hero { translate: 0 0; }
