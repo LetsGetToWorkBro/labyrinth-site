@@ -373,6 +373,9 @@ console.log('\nPicking the date on a calendar:')
 console.log('\nHolidays are not offered:')
 {
   const { page, ctx } = await open('/index.html')
+  // This block is about Thanksgiving 2026: the calendar shows November 2026 only from a day before it, and "the other Thursdays still are" needs three of them still ahead.
+  // So it runs on a day of its own whatever day the suite is run on (Monday, October 12, 2026: Thanksgiving is six weeks out, inside the twelve-week horizon).
+  await ctx.clock.setFixedTime(new Date('2026-10-12T15:00:00Z'))
 
   // The arithmetic, against the published dates. Computed rather than listed
   // because everything but the five fixed dates moves each year — a hardcoded

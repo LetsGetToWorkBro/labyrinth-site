@@ -74,7 +74,12 @@ on every `season-*` file's address (it finds them by name), so a changed theme i
 
 `node season-theme-test.mjs <name>` checks one season on its own (palette and contrast, twelve different section layers, the foot scene, every tap, nothing
 over any words, phones, reduced motion, previews); `site-test.mjs` runs the same checks for all of them and tests every window edge, Easter for any year, and
-the quiet months.
+the quiet months. `SITE_TEST_NOW=2026-12-10T15:00:00Z node site-test.mjs` (also `nav-fit.test.mjs` and `booking.test.mjs`) runs a whole suite as if it were that day;
+add `SKIP_SEASON_PACKS=1` to `site-test.mjs` to leave out the per-pack checks.
+
+When a season switches on, `node scripts/check-season.mjs <name>` (from a checkout of `main`, with `playwright-core` installed) checks the live site: the live `index.html`
+and the season's four files (kit and pack) must be byte for byte the repo's, and the page, built on the real clock, must be that season. `PIN_ISO=2027-05-05T15:00:00Z`
+rehearses it for another day.
 
 ## How booking works
 
