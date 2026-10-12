@@ -41,8 +41,6 @@
   background-repeat: repeat-y;
 }
 [data-season="stpatricks"] .nav--scrolled { background: rgba(6, 19, 12, 0.92); }
-/* The one section the site paints a neutral black of its own: it takes the page's green. */
-[data-season="stpatricks"] .testimonials { background: #071a10; }
 /* The speech bubble: a gold ring and a shadow; it appears at once (the scale still pops) so a tap is answered even on a slow phone, and fades away after. */
 [data-season="stpatricks"] .sk-bubble { box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(255, 200, 61, 0.55); transition: opacity 0.25s, transform 0.15s; }
 [data-season="stpatricks"] .sk-tap.is-tap .sk-bubble { transition: opacity 0s, transform 0.15s; }

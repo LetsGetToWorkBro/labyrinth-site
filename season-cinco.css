@@ -78,7 +78,7 @@
 /* The pinata hangs from below the nav on its rope and swings; tap it. The hero's text sits in a box that is 1100px wide and centred, and that box takes every tap
    that lands on it, so the pinata lives where the box is not: in the margin beside it (as wide as that margin allows) on a big screen, and in the band between the nav
    and the first line of text on a smaller one. Its bubble opens under it, flush with the page edge. */
-.cm-pin { top: var(--nav-height, 72px); right: max(0.6%, calc((100vw - 1100px) / 2 - 190px)); width: clamp(56px, calc((100vw - 1100px) / 2 - 14px), 150px); transform-origin: 50% 0; }
+.cm-pin { --pw: clamp(56px, calc((100vw - 1100px) / 2 - 60px), 150px); top: var(--nav-height, 72px); width: var(--pw); right: max(calc(14px + var(--pw) * 0.17), calc((100vw - 1100px) / 4 - var(--pw) / 2)); transform-origin: 50% 0; }
 .cm-pin .cm-sw { display: block; transform-origin: 50% 0; animation: cm-swing 4.8s ease-in-out infinite; }
 .cm-pin .cm-rope { display: block; width: 2px; height: clamp(34px, 4.4vw, 62px); margin: 0 auto; background: var(--sk-string); }
 .cm-pin svg { display: block; width: 100%; height: auto; }
@@ -86,8 +86,8 @@
 .cm-pin.is-tap .sk-bubble { transform: translate(0, 0) scale(1); }
 @keyframes cm-swing { 0%, 100% { rotate: -9deg; } 50% { rotate: 9deg; } }
 
-.cm-hero .cm-t-cac { bottom: calc(var(--cm-gh) * 30 / 260 - 1px); width: clamp(46px, 5.4vw, 74px); }
-.cm-hero .cm-t-pot { bottom: calc(var(--cm-gh) * 30 / 260 - 1px); width: clamp(50px, 6vw, 84px); }
+.cm-hero .cm-t-cac { bottom: calc(var(--cm-gh) * 30 / 260 - 1px); width: clamp(46px, 5.4vw, 70px); }
+.cm-hero .cm-t-pot { bottom: calc(var(--cm-gh) * 30 / 260 - 1px); width: clamp(50px, 5.4vw, 70px); }
 .cm-tap svg, .cm-pin svg { filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45)); }
 
 /* The pendants in the hero hang from under the nav, not from behind it. */
@@ -185,7 +185,7 @@
 
 /* ── Phones: fewer things, nothing wider than the screen ──────────────────────────────────────────────────────────────────── */
 @media (max-width: 1199px) {
-  .cm-pin { right: 1%; width: 52px; }
+  .cm-pin { --pw: 52px; right: 24px; }
   .cm-pin .cm-rope { height: 6px; }
 }
 @media (max-width: 1279px) {
@@ -201,7 +201,7 @@
   .cm-sec .cm-pd { width: 28px !important; }
   .cm-sec .cm-pd > i { height: 22px; }
   .cm-sec .cm-pd--rist { display: none; }
-  .cm-pin { right: 0.8%; width: 46px; }
+  .cm-pin { --pw: 46px; right: 16px; }
   .cm-hero .cm-t-cac { width: 40px; }
   .cm-hero .cm-t-pot { width: 44px; }
   .cm-mound { width: 124px; }

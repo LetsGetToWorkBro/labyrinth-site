@@ -342,11 +342,11 @@
 
   function hero(k) {
     var out = '<div class="cm-wash"></div>';
-    out += k.twinkles(14, { id: ['sk-sparkle', 'sk-dot', 'sk-sparkle'], colors: [C.yellow, C.pink, C.turq, C.gold, C.cream, C.orange], size: [7, 16], dur: [2.6, 5.2], area: [2, 98], areaY: [8, 60], seed: 41, mobile: 0.5 });
+    out += k.twinkles(10, { id: ['sk-sparkle', 'sk-dot', 'sk-sparkle'], colors: [C.yellow, C.pink, C.turq, C.gold, C.cream, C.orange], size: [7, 16], dur: [2.6, 5.2], area: [2, 98], areaY: [8, 60], seed: 41, mobile: 0.5 });
     out += butterflies(k, 2, 40, 53);
-    out += strings(k, 'cm-pps cm-pps--hero cm-pps--back', 2000, 120, [{ x0: -30, y0: 8, x1: 2030, y1: 8, sag: 18, n: 38, fw: 42, cols: PALS[1], types: 'bfcdae', off: 3, fl: 1, seed: 5 }]);
-    out += strings(k, 'cm-pps cm-pps--hero cm-pps--front', 2000, 120, [{ x0: -30, y0: 2, x1: 2030, y1: 2, sag: 8, n: 36, fw: 52, cols: PALS[0], types: 'abcdef', off: 0, fl: 1, seed: 9 }]);
-    out += confetti(k, 34, 7, { size: [10, 24], opacity: [0.7, 1] }) + fallingPetals(k, 12, 13, [11, 20]);
+    out += strings(k, 'cm-pps cm-pps--hero cm-pps--back', 2000, 120, [{ x0: -30, y0: 8, x1: 2030, y1: 8, sag: 18, n: 38, fw: 42, cols: PALS[1], types: 'bfcdae', off: 3, fl: 2, seed: 5 }]);
+    out += strings(k, 'cm-pps cm-pps--hero cm-pps--front', 2000, 120, [{ x0: -30, y0: 2, x1: 2030, y1: 2, sag: 8, n: 36, fw: 52, cols: PALS[0], types: 'abcdef', off: 0, fl: 2, seed: 9 }]);
+    out += confetti(k, 23, 7, { size: [11, 26], opacity: [0.75, 1] }) + fallingPetals(k, 7, 13, [12, 22]);
     out += pend(k, 'rist', 'l', 1.4, 8, 44, 'cm-pd-h sk-hide-m');
     out += '<div class="cm-ground">' + ground(k) + lights(k) + '</div>';
     out += k.tap('<span class="cm-sw"><i class="cm-rope"></i>' + U('cm-pinata') + '</span>', '¡Olé!', 'cm-pin cm-t-pin');
@@ -357,18 +357,18 @@
 
   /* ── A layer behind each section, different on every one so the page does not repeat itself ─────────────────────────────────────────────────────────── */
   var SECTIONS = {
-    eventStrip:     ['gar:l:1', 'mound:r:1', 'pin:star:r:1.2:92:54', 'pin:ball:r:7:60:42', 'confetti:6:1', 'petals:4:1', 'fly:2:30'],
-    programs:       ['pp:a', 'pots:l:sag,mari,agave', 'mound:r:2', 'pin:star:r:1:70:54', 'tap:nopal:l:38', 'confetti:5:2'],
-    competition:    ['pp:e', 'gar:r:2', 'pots:r:nopal,dahl,olla', 'pin:rist:l:0.8:30:40', 'tap:pin:l:50', 'confetti:5:3', 'tiles:b'],
-    coaches:        ['pp:d', 'mound:l:3', 'pots:r:barrel,mari2', 'pin:ball:r:1:70:46', 'confetti:4:4', 'petals:3:2', 'fly:2:60'],
-    gallery:        ['pp:c', 'pots:l:olla,sag', 'pots:r:agave,dahl2,barrel', 'confetti:4:5', 'fly:3:42', 'tiles:b'],
-    'belt-journey': ['pp:f', 'tiles:r', 'mound:l:4', 'pin:ball:r:5:60:42', 'pin:star:l:0.8:80:52', 'tap:sag:l:44', 'confetti:5:6', 'petals:4:3'],
-    locations:      ['pp:g', 'pots:l:agave,barrel', 'mound:r:5', 'pin:rist:r:1:40:42', 'tap:olla:l:60', 'confetti:4:7', 'fly:2:50'],
-    faq:            ['gar:l:3', 'gar:r:4', 'tiles:t', 'pots:r:sag,dahl3', 'pots:l:mari2,nopal', 'pin:ball:l:9:70:40', 'confetti:5:8', 'petals:4:4'],
-    schedule:       ['pp:h', 'pots:l:mari,nopal', 'pin:rist:l:0.8:36:40', 'pin:star:r:1:84:52', 'tap:chili:r:52', 'confetti:4:9', 'fly:2:70'],
-    testimonials:   ['pp:i', 'mound:l:6', 'mound:r:7', 'pin:star:r:8:50:48', 'tap:pin:l:40', 'confetti:5:10', 'petals:3:5'],
-    pricing:        ['pp:j', 'tiles:l', 'mound:r:8', 'pin:ball:r:4:64:44', 'tap:nopal:r:46', 'confetti:5:11', 'fly:2:55'],
-    contact:        ['pp:b', 'mound:l:9', 'mound:r:10', 'pots:l:olla2,agave', 'pin:rist:r:1:40:42', 'tap:sag:l:42', 'confetti:5:12', 'petals:4:6', 'fly:2:36']
+    eventStrip:     ['gar:l:1', 'mound:r:1', 'pin:star:r:1.8:92:54', 'pin:ball:r:7:60:42', 'confetti:4:1', 'petals:2:1', 'fly:2:30'],
+    programs:       ['pp:a', 'pots:l:sag,mari,agave', 'mound:r:2', 'pin:star:r:1.8:70:54', 'tap:nopal:l:38', 'confetti:4:2'],
+    competition:    ['pp:e', 'gar:r:2', 'pots:r:nopal,dahl,olla', 'pin:rist:l:1.8:30:40', 'tap:pin:l:50', 'confetti:4:3', 'tiles:b'],
+    coaches:        ['pp:d', 'mound:l:3', 'pots:r:barrel,mari2', 'pin:ball:r:1.8:70:46', 'confetti:3:4', 'petals:2:2', 'fly:2:60'],
+    gallery:        ['pp:c', 'pots:l:olla,sag', 'pots:r:agave,dahl2,barrel', 'confetti:3:5', 'fly:3:42', 'tiles:b'],
+    'belt-journey': ['pp:f', 'tiles:r', 'mound:l:4', 'pin:ball:r:5:60:42', 'pin:star:l:1.8:80:52', 'tap:sag:l:44', 'confetti:3:6', 'petals:2:3'],
+    locations:      ['pp:g', 'pots:l:agave,barrel', 'mound:r:5', 'pin:rist:r:1.8:40:42', 'tap:olla:l:60', 'confetti:3:7', 'fly:2:50'],
+    faq:            ['gar:l:3', 'gar:r:4', 'tiles:t', 'pots:r:sag,dahl3', 'pots:l:mari2,nopal', 'pin:ball:l:9:70:40', 'confetti:3:8', 'petals:2:4'],
+    schedule:       ['pp:h', 'pots:l:mari,nopal', 'pin:rist:l:1.8:36:40', 'pin:star:r:1.8:84:52', 'tap:chili:r:52', 'confetti:3:9', 'fly:2:70'],
+    testimonials:   ['pp:i', 'mound:l:6', 'mound:r:7', 'pin:star:r:8:50:48', 'tap:pin:l:40', 'confetti:3:10', 'petals:2:5'],
+    pricing:        ['pp:j', 'tiles:l', 'mound:r:8', 'pin:ball:r:4:64:44', 'tap:nopal:r:46', 'confetti:4:11', 'fly:2:55'],
+    contact:        ['pp:b', 'mound:l:9', 'mound:r:10', 'pots:l:olla2,agave', 'pin:rist:r:1.8:40:42', 'tap:sag:l:42', 'confetti:3:12', 'petals:3:6', 'fly:2:36']
   };
   var TAPS = {
     pin: ['cm-pinball', '¡Olé!', 'cm-t-pin'], star: ['cm-pinata', '¡Olé!', 'cm-t-pin'], sag: ['cm-p-sag', '¡Arriba!', 'cm-t-cac'], nopal: ['cm-p-nopal', '¡Hola!', 'cm-t-cac'],
@@ -421,7 +421,7 @@
         '<div class="cm-props sk-props cm-props--r">' + U('cm-p-barrel', 'cm-i cm-i--barrel') + U('cm-p-dahl', 'cm-i cm-i--dahl', 'color:' + C.pink) + U('cm-p-nopal', 'cm-i cm-i--nopal') + '</div>' +
       '</div>' +
       '<div class="cm-counter"><div class="cm-board"></div><div class="cm-front"></div></div>' + mrow(k) +
-      confetti(k, 8, 300, { size: [8, 15] });
+      confetti(k, 5, 300, { size: [8, 15] });
   }
 
   var T = {

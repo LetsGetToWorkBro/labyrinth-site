@@ -72,7 +72,9 @@
 
 /* Santa's sleigh crosses the sky slowly, in the clear band between the nav and the headline, in front of the string of lights (the kit moves it across; it bobs a little as it
    goes). It answers a tap too: the button sits inside the flyer, and its bubble opens to the side with room, so it is never hidden under the nav or over the words. */
-.xm-sleigh { top: calc(var(--xm-top, 72px) + 1px); }
+.xm-sleigh { top: calc(var(--xm-top, 72px) + 1px); animation-name: xm-cross; }
+/* the kit's crossing starts 120px outside the layer, which is too little for a sleigh 176px wide: it would pop in at the edge, so it gets its own run-up */
+@keyframes xm-cross { from { translate: -200px 0; } 50% { translate: calc(var(--lw, 1000) * 0.5px) var(--wv, -4px); } to { translate: calc(var(--lw, 1000) * 1px + 200px) 0; } }
 .xm-sleigh-tap { position: relative; display: block; width: 100%; }
 .xm-sleigh svg { animation: xm-bob 3.4s ease-in-out infinite alternate; }
 .xm-sleigh-tap .sk-bubble { left: auto; right: 88%; bottom: 30%; transform-origin: 100% 50%; transform: scale(0.6); }
@@ -145,8 +147,8 @@
 .xm-i--snowman { width: clamp(30px, 4vw, 54px); }
 .xm-i--stack { width: clamp(48px, 6.2vw, 84px); }
 .xm-wreath { top: 28px; width: clamp(60px, 7vw, 96px); height: auto; opacity: 0.86; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4)); }
-.xm-wreath--tl { left: -34px; }
-.xm-wreath--tr { right: -34px; }
+.xm-wreath--tl { left: -42px; }
+.xm-wreath--tr { right: -42px; }
 .xm-holly { top: 2px; width: clamp(46px, 5.6vw, 78px); height: auto; opacity: 0.9; filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.35)); }
 .xm-holly--tl { left: clamp(2px, 0.8vw, 14px); transform: scaleX(-1); }
 .xm-holly--tr { right: clamp(2px, 0.8vw, 14px); }
@@ -221,7 +223,7 @@
   .xm-top { opacity: 0.8; }
   .xm-holly, .xm-drift { opacity: 0.6; }
   /* every pendant hangs at the right on a phone, so a wreath or holly meant for the right corner moves to the left one */
-  .xm-wreath--tr { right: auto; left: -34px; }
+  .xm-wreath--tr { right: auto; left: -42px; }
   .xm-holly--tr { right: auto; left: clamp(2px, 0.8vw, 14px); transform: scaleX(-1); }
   .xm-footer { padding-top: 40px; padding-bottom: 56px; min-height: 236px; }
   .xm-f-lights { top: 36px; }

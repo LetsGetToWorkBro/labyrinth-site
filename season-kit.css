@@ -117,5 +117,5 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .sk-hero, .sk-hero *, .sk-sec, .sk-sec *, .sk-footer, .sk-footer * { animation: none !important; transition: none !important; }
-  .sk-p { display: none; }
+  .sk-p, .sk-fly { display: none; }
 }

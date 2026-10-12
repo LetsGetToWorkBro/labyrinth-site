@@ -104,7 +104,6 @@
 .ny-bn { width: clamp(52px, 6.2vw, 88px); transform-origin: 50% 88%; animation: ny-bob var(--bt, 7s) ease-in-out var(--bd0, 0s) infinite; }
 .ny-bn svg { display: block; width: 100%; height: auto; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.38)); }
 @keyframes ny-bob { 0%, 100% { transform: translateY(0) rotate(var(--r0, -4deg)); } 50% { transform: translateY(-14px) rotate(var(--r1, 4deg)); } }
-.ny-hero .ny-tap { width: clamp(52px, 5.6vw, 80px); }
 .ny-popper { filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.5)); transform-origin: 20% 90%; animation: ny-wobble 6s ease-in-out infinite; }
 @keyframes ny-wobble { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg) translateY(-3px); } }
 
@@ -153,7 +152,7 @@
 .ny-pd--star > svg { filter: drop-shadow(0 0 8px rgba(240, 213, 138, 0.45)); }
 
 .ny-curls { top: 0; width: 56px; height: 1px; }
-@media (max-width: 1229px) { .ny-curls { display: none; } }
+@media (max-width: 1279px) { .ny-curls { display: none; } }
 .ny-curls--l { left: clamp(0px, 1vw, 14px); }
 .ny-curls--r { right: clamp(0px, 1vw, 14px); }
 .ny-curl { position: absolute; top: 0; width: var(--w, 30px); height: auto; transform-origin: 50% 0; opacity: 0.92; animation: ny-sway 4.6s ease-in-out infinite alternate; }
@@ -246,10 +245,7 @@
 
 /* ── Phones: fewer things, nothing wider than the screen ────────────────────────────────────────────────────────────────────── */
 @media (max-width: 1099px) {
-  .ny-spk, .ny-tick, .ny-fwx { display: none; }
-}
-@media (max-width: 999px) {
-  .ny-bn { display: none; }
+  .ny-spk, .ny-tick, .ny-fwx, .ny-bn { display: none; }
 }
 /* on the stage the balloons give way first, then the cannons (the kit takes every prop away at 520px) */
 @media (max-width: 899px) {
@@ -284,6 +280,6 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .ny-sign::before { animation: none; }
-  /* the still picture: a few bursts around the edges of the sky, none behind the paragraph or on the balloons, no searchlights */
+  /* the still picture: a few bursts around the edges of the sky, none behind the paragraph or on the balloons */
   .ny-fw--far, .ny-fw--x { display: none; }
 }

@@ -213,10 +213,19 @@
       k.flyers(1, { id: 'vd-cloud', vb: '0 0 200 80', size: [130, 170], dur: [190, 190], top: [24, 26], wave: 0, colors: ['rgba(255,150,198,.22)'], seed: 6, cls: 'vd-cloud vd-cloud--2', dir: 'rtl' });
   }
 
+  // For anyone who has asked for less motion, the hearts that rise are not drawn: these few stand still along the two edges instead (the css shows them only then).
+  function stills() {
+    return [[1.5, 15, 34, 'vd-heart-o', C.rose, -12], [3, 44, 22, 'vd-heart', C.hot, 10], [1.2, 70, 38, 'vd-heart-o', C.pink, 8], [93.5, 27, 30, 'vd-heart', C.rose, 12],
+      [95, 52, 42, 'vd-heart-o', C.hot, -8], [91.5, 72, 24, 'vd-heart', C.blush, 10]].map(function (h) {
+      return '<i class="vd-still" style="left:' + h[0] + '%;top:' + h[1] + '%;width:' + h[2] + 'px;rotate:' + h[5] + 'deg;color:' + h[4] + '">' + ic(h[3], '', HEART_VB) + '</i>';
+    }).join('');
+  }
+
   // The hero: a rosy wash, a huge heart of light, cotton-candy clouds, hearts and sparkles rising and twinkling through all of it, Cupid's arrow trailing ribbons
-  // across the roses, bunting along the top, and two things that answer a tap: an arrow through a heart and a bundle of heart balloons.
+  // (one shot up through the glow on a wide screen, one skimming across the roses), bunting along the top, and two things that answer a tap: an arrow through
+  // a heart and a bundle of heart balloons.
   function hero(k) {
-    return '<div class="vd-wash"></div><div class="vd-glow">' + glow() + '</div>' + clouds(k) +
+    return '<div class="vd-wash"></div><div class="vd-glow">' + glow() + '</div><div class="vd-scrim"></div>' + clouds(k) +
       k.twinkles(14, { id: 'sk-sparkle', size: [8, 18], dur: [3, 6], colors: [C.blush, C.cream, C.rose, '#ffd6df'], seed: 31, mobile: 0.5 }) +
       k.twinkles(4, { id: 'vd-heart', vb: HEART_VB, size: [9, 17], dur: [4, 7], colors: HEARTS, seed: 32, area: [1, 9], areaY: [8, 88], mobile: 0.5, cls: 'vd-tw-heart' }) +
       k.twinkles(4, { id: 'vd-heart', vb: HEART_VB, size: [9, 17], dur: [4, 7], colors: HEARTS, seed: 33, area: [90, 98], areaY: [8, 88], mobile: 0.5, cls: 'vd-tw-heart' }) +
@@ -225,7 +234,8 @@
       k.particles(14, { id: ['vd-heart', 'vd-heart', 'vd-heart-o'], vb: HEART_VB, dir: 'rise', size: [18, 34], dur: [15, 26], area: [0, 100], drift: 60, sway: 26, spin: 0.14, opacity: [0.45, 0.88], colors: HEARTS, seed: 43, mobile: 0.4 }) +
       k.particles(10, { id: 'vd-heart', vb: HEART_VB, dir: 'rise', size: [8, 16], dur: [12, 22], area: [0, 100], drift: 50, sway: 20, spin: 0.2, opacity: [0.5, 0.95], colors: HEARTS, seed: 44, mobile: 0.4 }) +
       k.particles(5, { id: 'vd-petal', vb: '0 0 30 40', dir: 'fall', size: [12, 22], dur: [16, 28], area: [0, 100], drift: 90, sway: 30, spin: 1, opacity: [0.4, 0.8], colors: PETALS, seed: 45, mobile: 0.5 }) +
-      '<div class="vd-bed">' + bed(k) + '</div>' +
+      stills() + '<div class="vd-bed">' + bed(k) + '</div>' +
+      '<i class="vd-shoot">' + ic('vd-arrow', '', '0 0 260 64') + '</i>' +
       k.flyers(1, { id: 'vd-arrow', vb: '0 0 260 64', size: [196, 196], dur: [30, 30], top: [50, 50], wave: 22, seed: 9, cls: 'vd-arrowfly' }) +
       '<div class="vd-bunting"></div>' +
       k.tap(ic('vd-lovearrow', '', LOVE_VB), 'Love ya!', 'vd-tap vd-tap--r vd-tap--arrow sk-hide-m', 'right:0.4%;top:15%;width:68px') +

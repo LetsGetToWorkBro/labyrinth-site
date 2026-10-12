@@ -17,7 +17,7 @@
   }
   var YEAR = yearNow();
 
-  var C = { gold: '#f0d58a', gold2: '#c9a24a', pink: '#ff4fa3', cyan: '#3fe0ff', violet: '#9b6bff', silver: '#dfe4f5', orange: '#ff9a3d', navy: '#0b1030' };
+  var C = { gold: '#f0d58a', pink: '#ff4fa3', cyan: '#3fe0ff', violet: '#9b6bff', silver: '#dfe4f5', orange: '#ff9a3d' };
   var CONF = [C.gold, C.pink, C.cyan, C.violet, C.silver, C.orange];
   var STARS = [C.gold, '#ffffff', C.silver, C.gold];
   // Foil balloon colours: the face and the darker seam around it.
@@ -430,13 +430,13 @@
     eventStrip:     ['garland:star:a', 'curl:l:2', 'hang:r:disco:3:72:44', 'bal:2:1', 'conf:5:1', 'twink:r:34'],
     programs:       ['garland:flag:a', 'pile:l:hat0,horn1', 'hang:r:star:2:96:36', 'tap:horn:r:62:58', 'conf:4:2', 'twink:l:46', 'bal:1:2'],
     competition:    ['garland:light:a', 'clock:l:38:46', 'pile:r:hat2,clock', 'rain:5:3', 'spark:r:26:60', 'bal:2:3'],
-    coaches:        ['garland:fringe:a', 'curl:r:2', 'pile:l:horn2,hat3', 'tap:hat:l:44:62', 'conf:4:4', 'fw:r:52:150:b:pink', 'twink:r:70'],
+    coaches:        ['garland:fringe:a', 'curl:r:2', 'pile:l:horn2,hat3', 'tap:hat:l:44:56', 'conf:4:4', 'fw:r:52:150:b:pink', 'twink:r:70'],
     gallery:        ['garland:bead:a', 'spark:l:30:64', 'spark:r:58:64', 'hang:l:star:2:84:32', 'bal:3:5', 'conf:3:5', 'floor'],
     'belt-journey': ['garland:flag:b', 'pile:r:blower0,hat1', 'hang:r:glint:3:104:30', 'tap:star:l:30:58', 'rain:4:6', 'fw:l:62:140:c:cyan', 'conf:3:6'],
     locations:      ['garland:star:b', 'hang:r:clock:3:76:40', 'pile:l:hat4,blower1', 'tap:clock:l:56:50', 'conf:4:7', 'bal:2:7', 'twink:r:50'],
     faq:            ['garland:light:b', 'curl:l:2', 'hang:r:disco:2.5:100:42', 'pile:r:blower2,horn0', 'twink:l:50', 'conf:4:8', 'fw:l:46:130:a:gold'],
     schedule:       ['garland:fringe:b', 'clock:l:22:44', 'clock:r:52:50', 'tap:clock:r:30:56', 'pile:l:hat2,horn1', 'conf:5:9', 'bal:2:9', 'twink:l:70'],
-    testimonials:   ['garland:bead:b', 'pile:l:hat1,star', 'pile:r:hat3,horn2', 'hang:l:glint:2:90:32', 'tap:spark:r:42:62', 'rain:4:10', 'fw:r:20:130:d:gold'],
+    testimonials:   ['garland:bead:b', 'pile:l:hat1,star', 'pile:r:hat3,horn2', 'hang:l:glint:2:90:32', 'tap:spark:r:42:58', 'rain:4:10', 'fw:r:20:130:d:gold'],
     pricing:        ['garland:flag:c', 'spark:r:44:62', 'curl:l:2', 'pile:r:hat4,hat0', 'hang:r:disco:2:80:38', 'conf:4:11', 'bal:3:11', 'twink:l:40'],
     contact:        ['garland:light:a', 'curl:l:2', 'pile:l:hat0,horn1,hat3', 'pile:r:hat2,blower0,hat4', 'hang:r:star:3.5:90:34', 'tap:horn:l:46:58', 'bal:3:12', 'conf:6:12', 'fw:l:30:150:b:violet', 'floor']
   };
@@ -458,7 +458,7 @@
     return '<svg class="ny-tick ' + cls + '" viewBox="0 0 60 60" style="' + style + '" aria-hidden="true" focusable="false"><use href="#ny-clockface"/>' +
       '<path class="ny-hh" d="M30 31V20" stroke="#0b1030" stroke-width="4" stroke-linecap="round"/><path class="ny-mh" d="M30 31V14.5" stroke="#0b1030" stroke-width="2.6" stroke-linecap="round"/><circle cx="30" cy="31" r="3" fill="#ff4fa3"/></svg>';
   }
-  function sparklerBit(side, top, w, seed) {                    // a sparkler with sparks that come and go around its tip
+  function sparklerBit(side, top, w) {                    // a sparkler with sparks that come and go around its tip
     return '<div class="ny-spk ny-spk--' + side + '" style="' + (side === 'l' ? 'left' : 'right') + ':0.6%;top:' + top + '%;width:' + w + 'px">' + ico('ny-sparkler', 'ny-spk__art', '0 0 100 110') +
       '<i class="sk-tw" style="left:56%;top:6%;--s:14px;--d:1.6s;--o:-.3s;color:#fff">' + ico('sk-sparkle') + '</i><i class="sk-tw" style="left:84%;top:20%;--s:10px;--d:2.1s;--o:-1s;color:#ffe28a">' + ico('sk-sparkle') + '</i>' +
       '<i class="sk-tw" style="left:36%;top:-4%;--s:9px;--d:1.9s;--o:-.7s;color:#ffc94d">' + ico('sk-sparkle') + '</i></div>';
@@ -467,7 +467,7 @@
   function section(specs, k) {
     var out = '';
     specs.forEach(function (spec) {
-      var a = spec.split(':'), kind = a[0], side, bits, t, i, n, cols;
+      var a = spec.split(':'), kind = a[0], side, bits, t, i, n;
       if (kind === 'garland') {
         if (a[1] === 'light') out += '<svg class="ny-gar ny-gar--light" aria-hidden="true" focusable="false"><rect width="100%" height="100%" fill="url(#ny-g-lt-' + a[2] + '0)"/></svg>' +
           '<svg class="ny-gar ny-gar--light ny-gar--c1" aria-hidden="true" focusable="false"><rect width="100%" height="100%" fill="url(#ny-g-lt-' + a[2] + '1)"/></svg>' +
@@ -477,7 +477,7 @@
         out += '<svg class="ny-floorconf" aria-hidden="true" focusable="false"><rect width="100%" height="100%" fill="url(#ny-g-conf)"/></svg>';
       } else if (kind === 'pile') {
         bits = '';
-        a[2].split(',').forEach(function (it) { var d = PILE[it] || PILE[it.replace(/\d$/, '0')]; if (d) bits += ico(d[0], 'ny-i ny-i--' + d[0].slice(3), d[1], d[2]); });
+        a[2].split(',').forEach(function (it) { var d = PILE[it]; if (d) bits += ico(d[0], 'ny-i ny-i--' + d[0].slice(3), d[1], d[2]); });
         out += '<div class="ny-pile ny-pile--' + a[1] + '">' + bits + '</div>';
       } else if (kind === 'hang') {
         t = HANG[a[2]];
@@ -496,7 +496,7 @@
         side = a[1]; t = +a[2];
         out += k.twinkles(4, { id: ['sk-sparkle', 'sk-star', 'ny-glint'], size: [8, 17], dur: [2.6, 5], colors: STARS, seed: 300 + t, area: side === 'l' ? [0.5, 4.5] : [94.5, 99], areaY: [Math.max(2, t - 14), Math.min(97, t + 14)], mobile: 0.5, cls: 'sk-hide-m' });
       } else if (kind === 'spark') {
-        out += sparklerBit(a[1], +a[2], +a[3], 0);
+        out += sparklerBit(a[1], +a[2], +a[3]);
       } else if (kind === 'clock') {
         out += tickClock('ny-tick--' + a[1], (a[1] === 'l' ? 'left' : 'right') + ':0.8%;top:' + a[2] + '%;width:' + a[3] + 'px;--cd:-' + (+a[2] % 11) + 's');
       } else if (kind === 'fw') {

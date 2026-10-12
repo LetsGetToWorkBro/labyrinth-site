@@ -2,7 +2,7 @@
    season-kit.js and season-christmas.css, which draws it). A dark evergreen night: snow in three sizes over the hero, a string of blinking lights
    drooping along its top, Santa's sleigh crossing a big warm moon, snowy hills with lit fir trees and gifts along its foot, a layer behind every
    section (light strings, garlands, baubles swinging on strings, holly, candy canes, gifts, small trees, snowdrifts, a little snow) and a snowy
-   foot scene with four gift tags strung on a line of lights. Tap the snowman, Santa or a bell and it answers.
+   foot scene with four gift tags strung on a line of lights. Tap the snowman, Santa, his sleigh as it crosses the sky, or a bell and it answers.
    Nothing here reads or writes anything about a visitor, and nothing is built unless the page is in the season. */
 (function () {
   var C = { red: '#c8283a', redL: '#e24a5c', redD: '#8f1a2b', green: '#1f7a43', greenL: '#2f9a58', greenD: '#0f4a2a', gold: '#f2c14e', goldL: '#ffe08a', goldD: '#c9922a',
@@ -264,7 +264,7 @@
     return sym('xm-deer', '0 -10 60 52',
       '<g fill="none" stroke="#d4b07a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M48 3C48 -3 44 -7 39 -8M45.6 -1.6L41.6 -7.4M49.4 -0.4L53.6 -5.4"/></g>' +
       '<g fill="none" stroke="#4a2a14" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M36 24L49 27.6M21 25L8 27"/></g>' +
-      '<path d="M12.4 15.4L6.6 13L9.6 19Z" fill="#f4f8fb"/>' +
+      '<path d="M14 15.2L7 12.4L9.6 19.6Z" fill="#f4f8fb"/>' +
       '<ellipse cx="27" cy="19" rx="16" ry="8" transform="rotate(-6 27 19)" fill="#7b4a2a"/><path d="M13.6 22C20 28 35 28 41.6 21.6C37 25 20 25.4 13.6 22Z" fill="#d9bd92"/><ellipse cx="27" cy="15.4" rx="12" ry="3.2" transform="rotate(-6 27 15)" fill="#a8683a" fill-opacity=".6"/>' +
       '<g fill="none" stroke="#5a3317" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M33 25L43 30.4L46.4 38M24 26L15.6 32L8 37.4"/></g>' +
       '<g fill="#2c1708"><circle cx="49.4" cy="27.8" r="1.7"/><circle cx="46.6" cy="38.4" r="1.8"/><circle cx="8" cy="27" r="1.7"/><circle cx="7.6" cy="37.6" r="1.8"/></g>' +
