@@ -50,7 +50,7 @@
 [data-season="cinco"] .hero__h1-visual span { color: var(--gold); text-shadow: 0 0 28px rgba(255, 182, 39, 0.5), 0 0 4px rgba(255, 226, 150, 0.4); }
 [data-season="cinco"] .hero__badge { border-color: rgba(255, 182, 39, 0.55); }
 
-.cm-hero { --cm-gh: clamp(130px, 18vw, 420px); }
+.cm-hero { --cm-gh: clamp(130px, 18vw, 420px); --cm-u: max(calc(min(100vw, 2400px) / 1440), calc(var(--cm-gh) / 260)); }   /* --cm-u: how many px one unit of the 1440 by 260 garden drawing comes to */
 .cm-wash {
   inset: 0;
   background:
@@ -67,9 +67,18 @@
 @keyframes cm-flutter { 0%, 100% { rotate: -4deg; } 50% { rotate: 5deg; } }
 @keyframes cm-sway { from { translate: -5px 0; rotate: -0.22deg; } to { translate: 5px 0; rotate: 0.22deg; } }
 
-/* The wall along the foot of the hero: pots, flowers and cacti stand on a tiled wall, with a string of chili lights over them. */
+/* The garden along the foot of the hero: pots, flowers and cacti stand on a tiled wall, with a string of chili lights over them. The drawing is 1440 by 260 units and is scaled to
+   the width of the screen up to 2400px; wider than that it stays at that size, in the middle, and only the wall (drawn here, not in the picture) goes on to the edges. */
 .cm-ground { left: 0; right: 0; bottom: -1px; height: var(--cm-gh); }
-.cm-ground svg { position: absolute; left: 0; top: 0; display: block; width: 100%; height: 100%; }
+.cm-ground svg { position: absolute; top: 0; left: max(0px, calc(50% - 1200px)); display: block; width: min(100%, 2400px); max-width: none; height: 100%; }
+.cm-wall {
+  left: 0; right: 0; bottom: -1px; height: calc(var(--cm-u) * 28 + 1px);
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)) 0 0 / 100% calc(var(--cm-u) * 2.4) no-repeat,
+    linear-gradient(#f3d9aa, #f3d9aa) 0 0 / 100% calc(var(--cm-u) * 7) no-repeat,
+    linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)) 0 calc(var(--cm-u) * 7) / 100% calc(var(--cm-u) * 3) no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' fill='%23fff1d6'/%3E %3Cg fill='%2317c3b2'%3E%3Cellipse cx='24' cy='24' rx='3.6' ry='12'/%3E%3Cellipse cx='24' cy='24' rx='3.6' ry='12' transform='rotate(90 24 24)'/%3E%3C/g%3E %3Cg fill='%23ff3f8e'%3E%3Cellipse cx='24' cy='24' rx='3' ry='9.5' transform='rotate(45 24 24)'/%3E%3Cellipse cx='24' cy='24' rx='3' ry='9.5' transform='rotate(-45 24 24)'/%3E%3C/g%3E %3Ccircle cx='24' cy='24' r='4.6' fill='%23ff7b00'/%3E%3Ccircle cx='24' cy='24' r='1.8' fill='%23ffd23f'/%3E %3Cg fill='%232a1450'%3E%3Ccircle r='5'/%3E%3Ccircle cx='48' r='5'/%3E%3Ccircle cy='48' r='5'/%3E%3Ccircle cx='48' cy='48' r='5'/%3E%3C/g%3E %3Cg fill='%23ffd23f'%3E%3Ccircle r='2'/%3E%3Ccircle cx='48' r='2'/%3E%3Ccircle cy='48' r='2'/%3E%3Ccircle cx='48' cy='48' r='2'/%3E%3C/g%3E %3Crect x='1' y='1' width='46' height='46' fill='none' stroke='%232a1450' stroke-opacity='.45' stroke-width='2'/%3E%3C/svg%3E") 0 calc(var(--cm-u) * 7) / calc(var(--cm-u) * 24) calc(var(--cm-u) * 24) repeat-x;
+}
 .cm-hl { animation: cm-glow 2.8s ease-in-out infinite; }
 .cm-hl--b { animation-duration: 3.4s; animation-delay: -0.9s; }
 .cm-hl--c { animation-duration: 2.4s; animation-delay: -1.8s; }
@@ -86,8 +95,8 @@
 .cm-pin.is-tap .sk-bubble { transform: translate(0, 0) scale(1); }
 @keyframes cm-swing { 0%, 100% { rotate: -9deg; } 50% { rotate: 9deg; } }
 
-.cm-hero .cm-t-cac { bottom: calc(var(--cm-gh) * 30 / 260 - 1px); width: clamp(46px, 5.4vw, 70px); }
-.cm-hero .cm-t-pot { bottom: calc(var(--cm-gh) * 30 / 260 - 1px); width: clamp(50px, 5.4vw, 70px); }
+.cm-hero .cm-t-cac { bottom: calc(var(--cm-u) * 28 - 2px); width: clamp(46px, 5.4vw, 70px); }
+.cm-hero .cm-t-pot { bottom: calc(var(--cm-u) * 28 - 2px); width: clamp(50px, 5.4vw, 70px); }
 .cm-tap svg, .cm-pin svg { filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45)); }
 
 /* The pendants in the hero hang from under the nav, not from behind it. */
@@ -151,7 +160,7 @@
 [data-season="cinco"] .footer { background: #08060d; }
 .cm-footer > .cm-bunting, .cm-footer > .cm-awning, .cm-footer > .cm-post, .cm-footer > .cm-counter, .cm-footer > .cm-mrow, .cm-footer > .sk-pend { position: absolute; }
 .cm-bunting { left: 0; right: 0; top: 0; height: 40px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='40' viewBox='0 0 240 40'%3E%3Cpath d='M0 4Q120 24 240 4' fill='none' stroke='%23fff1d6' stroke-opacity='.8' stroke-width='2'/%3E%3Cpath d='M4 5.3H26L15 28.3Z' fill='%23ff3f8e'/%3E%3Cpath d='M4 5.3H26L24 9.3H6Z' fill='%23000' fill-opacity='.18'/%3E%3Cpath d='M34 9.1H56L45 32.1Z' fill='%23ffd23f'/%3E%3Cpath d='M34 9.1H56L54 13.1H36Z' fill='%23000' fill-opacity='.18'/%3E%3Cpath d='M64 11.6H86L75 34.6Z' fill='%2317c3b2'/%3E%3Cpath d='M64 11.6H86L84 15.6H66Z' fill='%23000' fill-opacity='.18'/%3E%3Cpath d='M94 12.8H116L105 35.8Z' fill='%23ff7b00'/%3E%3Cpath d='M94 12.8H116L114 16.8H96Z' fill='%23000' fill-opacity='.18'/%3E%3Cpath d='M124 12.8H146L135 35.8Z' fill='%231f9d55'/%3E%3Cpath d='M124 12.8H146L144 16.8H126Z' fill='%23000' fill-opacity='.18'/%3E%3Cpath d='M154 11.6H176L165 34.6Z' fill='%23d62839'/%3E%3Cpath d='M154 11.6H176L174 15.6H156Z' fill='%23000' fill-opacity='.18'/%3E%3Cpath d='M184 9.1H206L195 32.1Z' fill='%23ff3f8e'/%3E%3Cpath d='M184 9.1H206L204 13.1H186Z' fill='%23000' fill-opacity='.18'/%3E%3Cpath d='M214 5.3H236L225 28.3Z' fill='%23ffd23f'/%3E%3Cpath d='M214 5.3H236L234 9.3H216Z' fill='%23000' fill-opacity='.18'/%3E%3C/svg%3E") repeat-x; z-index: 3; }
-.cm-awning { left: -10px; width: calc(100% + 20px); top: 24px; height: var(--cm-aw); z-index: 2; filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.4)); }
+.cm-awning { left: 0; right: 0; top: 24px; height: var(--cm-aw); z-index: 2; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='360' height='80' viewBox='0 0 360 80'%3E%3Cpath d='M0 6H60V50A30 30 0 0 1 0 50Z' fill='%23000' fill-opacity='.3'/%3E%3Cpath d='M60 6H120V50A30 30 0 0 1 60 50Z' fill='%23000' fill-opacity='.3'/%3E%3Cpath d='M120 6H180V50A30 30 0 0 1 120 50Z' fill='%23000' fill-opacity='.3'/%3E%3Cpath d='M180 6H240V50A30 30 0 0 1 180 50Z' fill='%23000' fill-opacity='.3'/%3E%3Cpath d='M240 6H300V50A30 30 0 0 1 240 50Z' fill='%23000' fill-opacity='.3'/%3E%3Cpath d='M300 6H360V50A30 30 0 0 1 300 50Z' fill='%23000' fill-opacity='.3'/%3E%3Cpath d='M0 0H60V44A30 30 0 0 1 0 44Z' fill='%23ff3f8e'/%3E%3Cpath d='M30 0H60V44A30 30 0 0 1 30 74Z' fill='%23000' fill-opacity='.11'/%3E%3Cpath d='M60 0H120V44A30 30 0 0 1 60 44Z' fill='%23ffd23f'/%3E%3Cpath d='M90 0H120V44A30 30 0 0 1 90 74Z' fill='%23000' fill-opacity='.11'/%3E%3Cpath d='M120 0H180V44A30 30 0 0 1 120 44Z' fill='%2317c3b2'/%3E%3Cpath d='M150 0H180V44A30 30 0 0 1 150 74Z' fill='%23000' fill-opacity='.11'/%3E%3Cpath d='M180 0H240V44A30 30 0 0 1 180 44Z' fill='%23ff7b00'/%3E%3Cpath d='M210 0H240V44A30 30 0 0 1 210 74Z' fill='%23000' fill-opacity='.11'/%3E%3Cpath d='M240 0H300V44A30 30 0 0 1 240 44Z' fill='%231f9d55'/%3E%3Cpath d='M270 0H300V44A30 30 0 0 1 270 74Z' fill='%23000' fill-opacity='.11'/%3E%3Cpath d='M300 0H360V44A30 30 0 0 1 300 44Z' fill='%23d62839'/%3E%3Cpath d='M330 0H360V44A30 30 0 0 1 330 74Z' fill='%23000' fill-opacity='.11'/%3E%3Cpath d='M0 0H360V12H0Z' fill='%23000' fill-opacity='.22'/%3E%3Cpath d='M0 12H360V15H0Z' fill='%23fff' fill-opacity='.28'/%3E%3C/svg%3E") 0 0 / auto 100% repeat-x; }
 .cm-post { top: calc(var(--cm-aw) + 20px); bottom: 0; width: 12px; background: linear-gradient(90deg, #8a4b21, #4f270f); z-index: 1; }
 .cm-post--l { left: 3%; }
 .cm-post--r { right: 3%; }
@@ -180,7 +189,7 @@
 @keyframes cm-hang { from { rotate: -1.8deg; } to { rotate: 1.8deg; } }
 .cm-counter { left: 0; right: 0; bottom: 0; height: var(--cm-ct); z-index: 2; }
 .cm-board { position: absolute; left: 0; right: 0; top: 0; height: 12px; background: linear-gradient(#b5702f, #7a3f19); box-shadow: 0 -2px 0 rgba(255, 255, 255, 0.16) inset, 0 6px 14px rgba(0, 0, 0, 0.4); }
-.cm-mrow { left: 0; right: 0; bottom: calc(var(--cm-ct) - 14px); height: 40px; width: 100%; z-index: 3; }
+.cm-mrow { left: 50%; margin-left: -1280px; bottom: calc(var(--cm-ct) - 14px); width: 2560px; max-width: none; height: 40px; z-index: 3; }
 .cm-front { position: absolute; left: 0; right: 0; top: 12px; bottom: 0; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' fill='%23fff1d6'/%3E %3Cg fill='%2317c3b2'%3E%3Cellipse cx='24' cy='24' rx='3.6' ry='12'/%3E%3Cellipse cx='24' cy='24' rx='3.6' ry='12' transform='rotate(90 24 24)'/%3E%3C/g%3E %3Cg fill='%23ff3f8e'%3E%3Cellipse cx='24' cy='24' rx='3' ry='9.5' transform='rotate(45 24 24)'/%3E%3Cellipse cx='24' cy='24' rx='3' ry='9.5' transform='rotate(-45 24 24)'/%3E%3C/g%3E %3Ccircle cx='24' cy='24' r='4.6' fill='%23ff7b00'/%3E%3Ccircle cx='24' cy='24' r='1.8' fill='%23ffd23f'/%3E %3Cg fill='%232a1450'%3E%3Ccircle r='5'/%3E%3Ccircle cx='48' r='5'/%3E%3Ccircle cy='48' r='5'/%3E%3Ccircle cx='48' cy='48' r='5'/%3E%3C/g%3E %3Cg fill='%23ffd23f'%3E%3Ccircle r='2'/%3E%3Ccircle cx='48' r='2'/%3E%3Ccircle cy='48' r='2'/%3E%3Ccircle cx='48' cy='48' r='2'/%3E%3C/g%3E %3Crect x='1' y='1' width='46' height='46' fill='none' stroke='%232a1450' stroke-opacity='.45' stroke-width='2'/%3E%3C/svg%3E") 0 0 / 24px 24px repeat; }
 
 /* ── Phones: fewer things, nothing wider than the screen ──────────────────────────────────────────────────────────────────── */

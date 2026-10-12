@@ -190,7 +190,7 @@
     flag('f', 'M0 0H64V44L56 50L48 44L40 50L32 44L24 50L16 44L8 50L0 44Z' + poly([[16, 7], [23, 14.5], [16, 22], [9, 14.5]]) + poly([[32, 7], [39, 14.5], [32, 22], [25, 14.5]]) + poly([[48, 7], [55, 14.5], [48, 22], [41, 14.5]]) + poly([[24, 24], [31, 31.5], [24, 39], [17, 31.5]]) + poly([[40, 24], [47, 31.5], [40, 39], [33, 31.5]]))
   ].join('');
 
-  // Confetti shapes, a butterfly (wings up and down, so its wing-beat squashes it the way the kit's flap does) and the tile pattern.
+  // Confetti shapes, and a butterfly (wings up and down, so its wing-beat squashes it the way the kit's flap does).
   var CONFETTI =
     sym('cm-cf-r', '0 0 20 20', '<rect x="2" y="6" width="16" height="8" rx="1.6" fill="currentColor"/><rect x="2" y="6" width="16" height="3" rx="1.2" fill="#fff" fill-opacity=".28"/>') +
     sym('cm-cf-t', '0 0 20 20', '<path d="M10 2L18.5 17H1.5Z" fill="currentColor"/><path d="M10 2L18.5 17H10Z" fill="#fff" fill-opacity=".24"/>') +
@@ -201,14 +201,9 @@
     '<path d="M35 21C34 14 36 6 43 2C48 -0.5 53 3 51 9C49 15 46 18 44 19C47 12 46 6 41 5C38 8 36 15 35 21Z" fill="#fff" fill-opacity=".22"/>' +
     '<g fill="#fff"><circle cx="49" cy="5.5" r="1.4"/><circle cx="51" cy="9.5" r="1.3"/><circle cx="19" cy="5.5" r="1.3"/><circle cx="16" cy="9.5" r="1.2"/></g>';
   var BFLY = sym('cm-bfly', '0 0 60 44', wing + '<g transform="matrix(1 0 0 -1 0 44)">' + wing + '</g><ellipse cx="32" cy="22" rx="13" ry="2.4" fill="#fff1d6"/><ellipse cx="32" cy="22" rx="13" ry="2.4" fill="#1a1030" fill-opacity=".85"/><circle cx="46" cy="22" r="2.8" fill="#1a1030"/><path d="M47 21L56 16M47 23L56 28" stroke="#fff1d6" stroke-width="1.2" stroke-linecap="round"/>');
-  var TILE = '<pattern id="cm-tile" width="48" height="48" patternUnits="userSpaceOnUse"><rect width="48" height="48" fill="' + C.cream + '"/>' +
-    '<g fill="' + C.turq + '"><ellipse cx="24" cy="24" rx="3.6" ry="12"/><ellipse cx="24" cy="24" rx="3.6" ry="12" transform="rotate(90 24 24)"/></g><g fill="' + C.pink + '"><ellipse cx="24" cy="24" rx="3" ry="9.5" transform="rotate(45 24 24)"/><ellipse cx="24" cy="24" rx="3" ry="9.5" transform="rotate(-45 24 24)"/></g>' +
-    '<circle cx="24" cy="24" r="4.6" fill="' + C.orange + '"/><circle cx="24" cy="24" r="1.8" fill="' + C.yellow + '"/>' +
-    '<g fill="' + C.indigo + '"><circle cx="0" cy="0" r="5"/><circle cx="48" cy="0" r="5"/><circle cx="0" cy="48" r="5"/><circle cx="48" cy="48" r="5"/></g><g fill="' + C.yellow + '"><circle cx="0" cy="0" r="2"/><circle cx="48" cy="0" r="2"/><circle cx="0" cy="48" r="2"/><circle cx="48" cy="48" r="2"/></g>' +
-    '<rect x="1" y="1" width="46" height="46" fill="none" stroke="' + C.indigo + '" stroke-opacity=".45" stroke-width="2"/></pattern>';
 
   var DEFS = PETAL + MARIGOLD + DAHLIA + BLOOM + LEAF + SAGUARO + NOPAL + BARREL + AGAVE + POT + OLLA + P_SAG + P_NOPAL + P_BARREL + P_AGAVE + P_MARI + P_DAHL + P_OLLA +
-    CHILI + RISTRA + CANDY + PINATA + PINBALL + PP + CONFETTI + BFLY + TILE;
+    CHILI + RISTRA + CANDY + PINATA + PINBALL + PP + CONFETTI + BFLY;
 
   /* ── Pieces the scenes are built from ─────────────────────────────────────────────────────────────────────────────────────── */
   function U(id, cls, style) { return '<svg class="' + (cls || '') + '" viewBox="' + VB[id] + '"' + (style ? ' style="' + style + '"' : '') + ' aria-hidden="true" focusable="false"><use href="#' + id + '"/></svg>'; }
@@ -334,9 +329,6 @@
     out += place('cm-p-mari', 205, base, 128, C.orange) + place('cm-p-sag', 318, base, 200) + place('cm-p-agave', 410, base, 100) + place('cm-p-dahl', 508, base, 134, C.pink) + place('cm-p-nopal', 612, base, 130) +
       place('cm-p-olla', 724, base, 152, C.gold) + place('cm-p-barrel', 832, base, 98) + place('cm-p-dahl', 930, base, 128, C.red) + place('cm-p-sag', 1040, base, 188) + place('cm-p-mari', 1146, base, 124, C.gold) +
       place('cm-p-agave', 1236, base, 104) + place('cm-p-dahl', 1316, base, 112, C.yellow);
-    // the wall: a cream coping and a band of tiles
-    out += '<rect x="-10" y="' + base + '" width="1460" height="7" fill="#f3d9aa"/><rect x="-10" y="' + base + '" width="1460" height="2.4" fill="#fff" fill-opacity=".5"/><rect x="-10" y="' + (base + 7) + '" width="1460" height="3" fill="#000" fill-opacity=".3"/>' +
-      '<g transform="translate(-10 ' + (base + 7) + ') scale(.5)"><rect width="2920" height="' + (2 * (260 - base - 7)) + '" fill="url(#cm-tile)"/></g>';
     return out + '</svg>';
   }
 
@@ -348,7 +340,7 @@
     out += strings(k, 'cm-pps cm-pps--hero cm-pps--front', 2000, 120, [{ x0: -30, y0: 2, x1: 2030, y1: 2, sag: 8, n: 36, fw: 52, cols: PALS[0], types: 'abcdef', off: 0, fl: 2, seed: 9 }]);
     out += confetti(k, 23, 7, { size: [11, 26], opacity: [0.75, 1] }) + fallingPetals(k, 7, 13, [12, 22]);
     out += pend(k, 'rist', 'l', 1.4, 8, 44, 'cm-pd-h sk-hide-m');
-    out += '<div class="cm-ground">' + ground(k) + lights(k) + '</div>';
+    out += '<div class="cm-ground">' + ground(k) + lights(k) + '</div><div class="cm-wall"></div>';
     out += k.tap('<span class="cm-sw"><i class="cm-rope"></i>' + U('cm-pinata') + '</span>', '¡Olé!', 'cm-pin cm-t-pin');
     out += k.tap(U('cm-saguaro'), '¡Arriba!', 'cm-tap cm-t-cac cm-tap-l', 'left:0.4%');
     out += k.tap(U('cm-p-olla', '', 'color:' + C.gold), '¡Fiesta!', 'cm-tap cm-t-pot cm-tap-r', 'right:0.4%');
@@ -398,21 +390,15 @@
   /* ── The market stall above the footer: a striped awning, four painted signs hung under it, a tiled counter with pots of cacti and flowers on it ─────────────────── */
   var SAYINGS = ['Train hard, then celebrate', 'Let\'s roll together', 'Aim high, roll on', 'Every roll is a party'];
   var TITLES = ['FIESTA', '¡VAMOS!', 'ARRIBA', '¡OLÉ!'];
-  function awning() {
-    var out = '', i, x, col = [C.pink, C.yellow, C.turq, C.orange, C.green, C.red];
-    for (i = 0; i < 26; i++) { x = i * 60 - 30; out += '<path d="M' + x + ' 0H' + (x + 60) + 'V44A30 30 0 0 1 ' + x + ' 44Z" fill="' + col[i % 6] + '"/><path d="M' + (x + 30) + ' 0H' + (x + 60) + 'V44A30 30 0 0 1 ' + (x + 30) + ' 74Z" fill="#000" fill-opacity=".11"/>'; }
-    return '<svg class="cm-awning" viewBox="0 0 1440 80" preserveAspectRatio="xMidYMin slice" aria-hidden="true" focusable="false">' + out +
-      '<path d="M0 0H1440V12H0Z" fill="#000" fill-opacity=".22"/><path d="M0 12H1440V15H0Z" fill="#fff" fill-opacity=".28"/><path d="M0 44H1440V80H0Z" fill="none"/></svg>';
-  }
-  // marigolds laid along the counter, in front of the pots
+  // marigolds laid along the counter, in front of the pots: a row of fixed size, 2560px wide and centred, so it is never stretched or cropped (the page cuts off what is wider than the screen)
   function mrow(k) {
     var r = k.rng(29), out = '', x, i = 0;
-    for (x = 12; x < 1440; x += 30 + r() * 22, i++) out += place('cm-marigold', x, 40, 24 + r() * 12, [C.orange, C.gold, '#ff9f1a', C.yellow][i % 4]);
-    return '<svg class="cm-mrow" viewBox="0 0 1440 40" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">' + out + '</svg>';
+    for (x = 14; x < 2560; x += 30 + r() * 22, i++) out += place('cm-marigold', x, 40, 24 + r() * 12, [C.orange, C.gold, '#ff9f1a', C.yellow][i % 4]);
+    return '<svg class="cm-mrow" viewBox="0 0 2560 40" aria-hidden="true" focusable="false">' + out + '</svg>';
   }
   function footer(k) {
     var signs = SAYINGS.map(function (s, i) { return '<div class="cm-sign cm-sign--' + (i + 1) + '"><span>' + TITLES[i] + '</span><em>' + s + '</em></div>'; }).join('');
-    return '<div class="cm-bunting"></div>' + awning() +
+    return '<div class="cm-bunting"></div><div class="cm-awning"></div>' +
       '<div class="cm-post cm-post--l"></div><div class="cm-post cm-post--r"></div>' +
       pend(k, 'rist', 'l', 1.6, 6, 30, 'cm-pd-f sk-hide-m') + pend(k, 'rist', 'r', 1.6, 6, 30, 'cm-pd-f sk-hide-m') +
       '<div class="cm-stall">' +
