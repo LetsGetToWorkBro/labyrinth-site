@@ -2804,6 +2804,12 @@ def render_legacy():
     the week is a second source of truth that drifts the first time a class
     moves. The page links to /schedule, which is generated from schedule_data
     and checked against the CRM by schedule-check.mjs.
+
+    The page used to send Team Legacy families to the transfer form, from the
+    hero and from the #transfer section. The transfers are over and the form
+    was retired on 12 October 2026 (render_legacy_transfer() has the rest), so
+    the hero leads with a free class and #transfer says what happened and who
+    to ask. The section keeps its id because old links point at it.
     """
     url = SITE + "/legacy/"
     head = HEAD % {
@@ -2840,8 +2846,7 @@ def render_legacy():
       <p class="hero__subtitle">Team Legacy Martial Arts has merged with Labyrinth BJJ, and Scott Jones is bringing his team with him. Two head coaches on one mat. Come and see what that looks like.</p>
 
       <div class="hero__ctas">
-        <a href="/legacy/transfer" class="btn btn--gold">Transfer my membership</a>
-        <a data-book-trial href="/#book" class="btn btn--ghost">Try a free class</a>
+        <a data-book-trial href="/#book" class="btn btn--gold">Try a free class</a>
         <a href="tel:2813937983" class="btn btn--ghost">Call the school &middot; 281-393-7983</a>
       </div>
     </div>
@@ -2977,34 +2982,23 @@ def render_legacy():
   </div>
 </section>
 
+<!-- The transfers are over and the form at /legacy/transfer is closed, so this
+     section says what happened and who to ask. The id stays: old links and
+     texts point at #transfer. -->
 <section class="trial" id="transfer">
   <div class="container">
     <div class="fade-in">
-      <p class="section-label">Currently enrolled at Team Legacy?</p>
-      <h2 class="section-title section-title--lg">MOVE YOUR MEMBERSHIP OVER</h2>
+      <p class="section-label">Team Legacy families</p>
+      <h2 class="section-title section-title--lg">THE MOVE IS DONE</h2>
     </div>
 
     <div class="trial__layout">
       <div class="trial__content fade-in">
-        <p>Your spot does not transfer automatically. We need you signed up at Labyrinth so we can put your child in the right class. It takes two minutes. Your September payment to Team Legacy is your last one — <strong>Labyrinth billing starts in October,</strong> so you are never charged twice.</p>
-
-        <h3>What happens next</h3>
-        <ul>
-          <li>Fill in the transfer form and we move your billing across</li>
-          <li>Team Legacy takes its final payment in September; Labyrinth takes over from October</li>
-          <li>We place your child in the age group they should be in</li>
-        </ul>
-
-        <h3>Still being finalised</h3>
-        <ul>
-          <li>What happens with your child&rsquo;s rank</li>
-          <li>Exactly which classes they train, and when</li>
-          <li>Call us and we will walk your family through it</li>
-        </ul>
+        <p>The Team Legacy families moved over to Labyrinth in September, and Labyrinth billing took over in October. If your family has not moved over yet, or you have a question about rank, age group or classes, text or call <a href="tel:2813937983" class="section-subtitle__link">281-393-7983</a> or email <a href="mailto:info@labyrinth.vision" class="section-subtitle__link">info@labyrinth.vision</a>.</p>
 
         <div class="legacy-transfer-cta">
-          <a href="/legacy/transfer" class="btn btn--gold">Transfer my membership</a>
-          <a href="tel:2813937983" class="btn btn--ghost">Or call 281-393-7983</a>
+          <a href="tel:2813937983" class="btn btn--gold">Call or text 281-393-7983</a>
+          <a href="mailto:info@labyrinth.vision" class="btn btn--ghost">Email us</a>
         </div>
       </div>
 
@@ -3051,24 +3045,32 @@ def render_legacy():
 
 
 def render_legacy_transfer():
-    """The membership transfer form, at /legacy/transfer.
+    """What is left at /legacy/transfer now the transfers are over.
 
-    Writes MEMBERS, not leads: a Team Legacy family that signs here already
-    trains, so they belong on the roster from the moment they sign. The
-    member-transfer edge function does that, then hands off to Stripe Checkout
-    in `setup` mode, which stores the card and charges nothing. Every rate here
-    is negotiated, so the price is set afterwards by a person, against a member
-    who already exists and a card already on file.
+    This was the membership transfer form. A Team Legacy family signed it, the
+    member-transfer edge function put them on the roster, and Stripe Checkout
+    in `setup` mode stored their card. The families moved over in September
+    2026 and Labyrinth billing took over in October, so on 12 October 2026 the
+    academy retired the form, and member-transfer now answers every request
+    with 410.
 
-    noindex: it is a billing page for people who are already enrolled
-    somewhere else, not something anybody should reach from a search.
+    The address stays, because families have the link in texts and emails and
+    a dead link would leave them with nothing. What it serves now is a notice
+    in the same frame, in the panel the form used to fill: the form is closed,
+    and here are the phone and the email. There is no form and no script of
+    its own, so the page itself sends nothing; the site-wide nav and its
+    booking button work as they do on every page.
+
+    noindex, and out of the sitemap, as before: nobody should arrive here
+    from a search.
     """
     url = SITE + "/legacy/transfer"
     head = HEAD % {
-        "title": "Transfer Your Membership | Labyrinth BJJ",
-        "description": "Team Legacy members: move your membership to Labyrinth BJJ. Takes two minutes.",
+        "title": "Team Legacy Transfers Are Done | Labyrinth BJJ",
+        "description": "The Team Legacy transfer form is closed. To join or to change a membership, "
+                       "text or call 281-393-7983 or email info@labyrinth.vision.",
         "url": url,
-        "og_title": "Transfer Your Membership | Labyrinth BJJ",
+        "og_title": "Team Legacy Transfers Are Done | Labyrinth BJJ",
         "image": SITE + "/assets/og-image.jpg",
         "schema": "",
     }
@@ -3080,146 +3082,18 @@ def render_legacy_transfer():
   <div class="container container--narrow">
     <div class="fade-in">
       <p class="section-label">Team Legacy members</p>
-      <h1 class="section-title section-title--lg">TRANSFER YOUR MEMBERSHIP</h1>
-      <p class="section-subtitle">Two minutes. Coach Scott is now full time at Labyrinth: fill this in and we will move you across. Your September Team Legacy payment is your last one, and Labyrinth billing starts in October — you are never charged twice.</p>
+      <h1 class="section-title section-title--lg">THE TRANSFERS ARE DONE</h1>
     </div>
 
-    <div class="trial-form fade-in" id="tfPanel">
-      <form id="transferForm" novalidate>
-        <div class="form-row">
-          <div class="form-group form-group--full">
-            <label for="tfStudent">Student name <span class="form-group__hint">add all students on one line, separated by commas</span></label>
-            <input type="text" id="tfStudent" name="students" placeholder="Jordan Smith, Riley Smith" autocomplete="off" required>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label for="tfPhone">Phone</label>
-            <input type="tel" id="tfPhone" name="phone" placeholder="(281) 555-0134" autocomplete="tel" required>
-          </div>
-          <div class="form-group">
-            <label for="tfEmail">Email</label>
-            <input type="email" id="tfEmail" name="email" placeholder="you@email.com" autocomplete="email" required>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group form-group--full">
-            <label for="tfProgram">Who is transferring?</label>
-            <select id="tfProgram" name="program">
-              <option value="kids-3-6">Child, ages 3 to 6</option>
-              <option value="kids-7-12" selected>Child, ages 7 to 12</option>
-              <option value="teens">Teenager, 13 to 15</option>
-              <option value="adult">An adult</option>
-              <option value="family">More than one, mixed ages</option>
-            </select>
-          </div>
-        </div>
-
-        <label class="ennova-check">
-          <input type="checkbox" id="tfWaiver" required>
-          <span>I have read and agree to the <a href="https://crm.labyrinth.vision/waiver" target="_blank" rel="noopener">Labyrinth BJJ liability waiver and membership terms</a>.</span>
-        </label>
-
-        <!-- Storing a card to charge later is only lawful on terms that say
-             what will be charged, when, how the amount is arrived at, and how
-             to stop it. Every rate here is negotiated, so "how the amount is
-             determined" is the sentence doing the real work. -->
-        <label class="ennova-check">
-          <input type="checkbox" id="tfAuth" required>
-          <span>I authorize Labyrinth BJJ to store this card and charge it for my monthly membership, replacing my Team Legacy billing. <strong>Nothing is charged today.</strong> Team Legacy takes its final payment in September, and my Labyrinth billing starts in October. The rate is the one we agree for the plan we choose together, and Labyrinth will confirm it with me before the first charge. It then repeats monthly on the same date. Membership is month to month and I can cancel at any time by telling the academy.</span>
-        </label>
-
-        <div class="form-row">
-          <div class="form-group form-group--full">
-            <label for="tfSig">Signature <span class="form-group__hint">type your full name</span></label>
-            <input type="text" id="tfSig" name="signature" placeholder="Your full name" autocomplete="off" required>
-            <p class="legacy-transfer__hint">Typing your name here counts as your electronic signature, and we keep a copy of what you agreed to.</p>
-          </div>
-        </div>
-
-        <!-- Hidden from people, filled in by robots. -->
-        <div class="legacy-transfer__trap" aria-hidden="true">
-          <label for="tfCompany">Company</label>
-          <input type="text" id="tfCompany" name="company" tabindex="-1" autocomplete="off">
-        </div>
-
-        <button type="submit" class="btn btn--gold trial-form__submit" id="tfSubmit">Continue to card details</button>
-        <p class="ennova-form__error" id="tfError" role="alert" hidden></p>
-      </form>
-      <p class="ennova-fine">The next screen is Stripe, where you enter your card. <strong>No payment is taken there.</strong> The card is stored so your Labyrinth membership can start in October, once we have agreed your rate. Questions? Text or call <a href="tel:2813937983">281-393-7983</a>.</p>
-    </div>
-
-    <div class="trial-form fade-in" id="tfDone" hidden>
-      <h2 class="trial-form__title">You are on the roster.</h2>
-      <p class="legacy-transfer__done">Your card is saved and nothing has been charged. September&rsquo;s Team Legacy payment is your last one; your Labyrinth billing starts in October, and we will confirm your rate with you before then. If anything looks wrong, text or call <a href="tel:2813937983">281-393-7983</a>.</p>
-      <a data-book-trial href="/#book" class="btn btn--gold trial-form__submit">See the class times</a>
+    <div class="trial-form fade-in">
+      <p class="legacy-transfer__done">The transfer form is closed. To join or to change a membership, text or call <a href="tel:2813937983" class="section-subtitle__link">281-393-7983</a> or email <a href="mailto:info@labyrinth.vision" class="section-subtitle__link">info@labyrinth.vision</a>.</p>
+      <div class="legacy-transfer-cta">
+        <a href="tel:2813937983" class="btn btn--gold">Call or text 281-393-7983</a>
+        <a href="mailto:info@labyrinth.vision" class="btn btn--ghost">Email us</a>
+      </div>
     </div>
   </div>
-</section>
-
-<script>
-(function () {
-  var form = document.getElementById('transferForm');
-  var panel = document.getElementById('tfPanel');
-  var done = document.getElementById('tfDone');
-  if (!form) return;
-
-  /* Stripe sends them back here with ?done=1 after the card is stored. Nothing
-     is charged at that point, so the wording has to say so rather than
-     congratulate somebody on a payment they have not made. */
-  var q = new URLSearchParams(location.search);
-  if (q.get('done')) { panel.hidden = true; done.hidden = false; }
-
-  var ENDPOINT = 'https://jctufxvmuvobaggxcwfn.supabase.co/functions/v1/member-transfer';
-  var btn = document.getElementById('tfSubmit');
-  var err = document.getElementById('tfError');
-  var v = function (id) { return (document.getElementById(id).value || '').trim(); };
-
-  var show = function (message) {
-    err.textContent = message;
-    err.hidden = false;
-    btn.disabled = false;
-    btn.textContent = 'Continue to card details';
-  };
-
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    err.hidden = true;
-
-    var students = v('tfStudent'), phone = v('tfPhone'), email = v('tfEmail'), sig = v('tfSig');
-    if (!students || !phone || !sig || email.indexOf('@') === -1
-        || !document.getElementById('tfWaiver').checked
-        || !document.getElementById('tfAuth').checked) {
-      show('Please complete every field above, including both agreements.');
-      return;
-    }
-
-    btn.disabled = true;
-    btn.textContent = 'One moment...';
-
-    fetch(ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        students: students, phone: phone, email: email, signature: sig,
-        program: document.getElementById('tfProgram').value,
-        waiver_accepted: true, billing_authorized: true,
-        company: v('tfCompany')
-      })
-    }).then(function (r) { return r.json().catch(function () { return {}; }); })
-      .then(function (data) {
-        /* Recorded but no card page: they ARE on the roster, so the message
-           must not read as a failure that lost their details. */
-        if (data && data.url) { window.location.href = data.url; return; }
-        show((data && data.error)
-          || 'That did not go through. Please text or call 281-393-7983 and we will move you across.');
-      })
-      .catch(function () {
-        show('That did not go through. Please text or call 281-393-7983 and we will move you across.');
-      });
-  });
-})();
-</script>""",
+</section>""",
         TAIL % {"footer": FOOTER}])
 
 
