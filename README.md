@@ -58,6 +58,7 @@ The homepage dresses for the holiday, by itself, on the academy's clock (Central
 | `newyear` | Jan 1 to 31 | `/?season=newyear` |
 | `valentines` | Feb 1 to 28 (29) | `/?season=valentines` |
 | `easter` | Mar 1 to 31, and on to Easter Sunday in the years Easter falls in April | `/?season=easter` |
+| `stpatricks` | Mar 17, every year (it wins over Easter's month that one day, the way Columbus Day wins over Halloween) | `/?season=stpatricks` |
 | `cinco` | May 1 to 15 | `/?season=cinco` |
 | `memorial` | May 16 to 31 | `/?season=memorial` |
 | `independence` | Jul 1 to 31 | `/?season=independence` |

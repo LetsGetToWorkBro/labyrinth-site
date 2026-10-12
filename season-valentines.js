@@ -47,18 +47,15 @@
 
   // A ribbon that streams behind the arrow: a tapering wave, thin at its free end. phase turns the wave; col is its colour.
   function ribbon(phase, col, hi) {
-    var up = [], dn = [], i, x, t, amp, w, yc, dy, n = 34, len = 126;
+    var up = [], dn = [], mid = [], i, x, t, w, yc, n = 36, len = 126;
     for (i = 0; i <= n; i++) {
       t = i / n; x = 2 + t * len;
-      amp = 13 * Math.pow(1 - t, 0.9) + 1.5;
-      yc = 32 + amp * Math.sin(t * 8.6 + phase);
-      dy = 13 * Math.pow(1 - t, 0.9) * 8.6 / len * Math.cos(t * 8.6 + phase) * len * 0.5;       // a rough slope, only to tilt the ribbon's width
-      w = 0.8 + 4.2 * Math.pow(t, 0.6);
-      up.push(f1(x) + ' ' + f1(yc - w / 2 - Math.abs(dy) * 0.01));
-      dn.push(f1(x) + ' ' + f1(yc + w / 2 + Math.abs(dy) * 0.01));
+      yc = 32 + (13 * Math.pow(1 - t, 0.9) + 1.5) * Math.sin(t * 8.6 + phase);        // the free end swings widest, the end by the arrow hardly at all
+      w = 0.8 + 4.4 * Math.pow(t, 0.6);                                                // and is thinnest
+      up.push(f1(x) + ' ' + f1(yc - w / 2)); dn.push(f1(x) + ' ' + f1(yc + w / 2)); mid.push(f1(x) + ' ' + f1(yc - w * 0.18));
     }
     return '<path d="M' + up.join('L') + 'L' + dn.reverse().join('L') + 'Z" fill="' + col + '"/>' +
-      '<path d="M' + up.slice(2, 30).join('L') + '" fill="none" stroke="' + hi + '" stroke-opacity=".55" stroke-width="1.1" stroke-linecap="round"/>';
+      '<path d="M' + mid.slice(4, 32).join('L') + '" fill="none" stroke="' + hi + '" stroke-opacity=".5" stroke-width="1.1" stroke-linecap="round"/>';
   }
 
   // The bundle of heart balloons: five hearts on strings that meet in a bow.

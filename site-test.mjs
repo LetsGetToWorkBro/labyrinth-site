@@ -2096,6 +2096,8 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
     ['2027-01-01T05:59:00Z', 'christmas', 'Dec 31 23:59'], ['2027-01-01T06:00:00Z', 'newyear', 'Jan 1 00:00'],
     ['2027-02-01T05:59:00Z', 'newyear', 'Jan 31 23:59'], ['2027-02-01T06:00:00Z', 'valentines', 'Feb 1 00:00'],
     ['2027-03-01T05:59:00Z', 'valentines', 'Feb 28 23:59'], ['2027-03-01T06:00:00Z', 'easter', 'Mar 1 00:00'],
+    ['2027-03-17T04:59:00Z', 'easter', 'Mar 16 23:59'], ['2027-03-17T05:00:00Z', 'stpatricks', 'Mar 17 00:00 (St. Patrick\'s Day wins over Easter\'s month)'],
+    ['2027-03-18T04:59:00Z', 'stpatricks', 'Mar 17 23:59'], ['2027-03-18T05:00:00Z', 'easter', 'Mar 18 00:00 (and Easter is back)'],
     ['2027-04-01T04:59:00Z', 'easter', 'Mar 31 23:59'], ['2027-04-01T05:00:00Z', '', 'Apr 1 00:00 (Easter 2027 was March 28)'],
     ['2027-05-01T04:59:00Z', '', 'Apr 30 23:59'], ['2027-05-01T05:00:00Z', 'cinco', 'May 1 00:00'],
     ['2027-05-16T04:59:00Z', 'cinco', 'May 15 23:59'], ['2027-05-16T05:00:00Z', 'memorial', 'May 16 00:00'],
@@ -2103,7 +2105,7 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
     ['2027-07-01T04:59:00Z', '', 'Jun 30 23:59'], ['2027-07-01T05:00:00Z', 'independence', 'Jul 1 00:00'],
     ['2027-08-01T04:59:00Z', 'independence', 'Jul 31 23:59'], ['2027-08-01T05:00:00Z', '', 'Aug 1 00:00'],
   ])
-  check('L2s every season opens at Central midnight on its first day and ends at the Central midnight after its last: Thanksgiving Nov 1-30, Christmas Dec 1-31, New Year Jan 1-31, Valentine\'s Feb 1-28, Easter Mar 1-31, Cinco de Mayo May 1-15, Memorial Day May 16-31, Independence Day Jul 1-31',
+  check('L2s every season opens at Central midnight on its first day and ends at the Central midnight after its last: Thanksgiving Nov 1-30, Christmas Dec 1-31, New Year Jan 1-31, Valentine\'s Feb 1-28, Easter Mar 1-31 except St. Patrick\'s Day on the 17th, Cinco de Mayo May 1-15, Memorial Day May 16-31, Independence Day Jul 1-31',
     edges.length === 0, '\n    ' + edges.join('\n    '))
 
   // Easter moves: in a year it falls in April the season stays through Easter Sunday itself and not a day more
@@ -2131,8 +2133,9 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
     ['2029-05-05T18:00:00Z', 'cinco'], ['2029-05-25T18:00:00Z', 'memorial'], ['2029-07-04T18:00:00Z', 'independence'], ['2031-12-25T18:00:00Z', 'christmas'], ['2035-11-22T18:00:00Z', 'thanksgiving'],
     ['2028-02-29T18:00:00Z', 'valentines', 'leap day 2028'], ['2028-03-01T05:59:00Z', 'valentines', 'Feb 29 23:59 2028'], ['2028-03-01T06:00:00Z', 'easter', 'Mar 1 00:00 2028'],
     ['2027-10-12T18:00:00Z', 'halloween', 'Oct 12 2027 is just Halloween'],
+    ['2028-03-17T18:00:00Z', 'stpatricks'], ['2029-03-17T18:00:00Z', 'stpatricks'], ['2030-03-17T18:00:00Z', 'stpatricks'], ['2028-03-16T18:00:00Z', 'easter'], ['2028-03-18T18:00:00Z', 'easter'],
   ])
-  check('L2s the same windows come round every year (2028, 2029, 2031, 2035), February 29 included, and only Columbus Day is pinned to a year', yrs.length === 0, '\n    ' + yrs.join('\n    '))
+  check('L2s the same windows come round every year (2028, 2029, 2031, 2035), February 29 and St. Patrick\'s Day included, and only Columbus Day is pinned to a year', yrs.length === 0, '\n    ' + yrs.join('\n    '))
   const quiet = await wrong([['2027-04-15T18:00:00Z', ''], ['2027-06-15T18:00:00Z', ''], ['2027-08-15T18:00:00Z', ''], ['2027-09-15T18:00:00Z', '']])
   check('L2s the rest of the year (April after Easter, June, August, September) has no season at all', quiet.length === 0, quiet.join(' '))
   const quietFetched = (await at('2027-06-15T18:00:00Z'), asked.length === 0)

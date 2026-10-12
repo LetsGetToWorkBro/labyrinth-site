@@ -10,6 +10,7 @@ export const PACKS = {
   newyear: '2027-01-10T15:00:00Z',
   valentines: '2027-02-10T15:00:00Z',
   easter: '2027-03-15T15:00:00Z',
+  stpatricks: '2027-03-17T15:00:00Z',
   cinco: '2027-05-05T15:00:00Z',
   memorial: '2027-05-24T15:00:00Z',
   independence: '2027-07-04T15:00:00Z',

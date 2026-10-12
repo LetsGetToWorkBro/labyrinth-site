@@ -260,9 +260,10 @@ button {
 <!-- Seasonal theme: sets <html data-season="…"> from the date on the academy's clock (Central).
      season.css dresses the page under that attribute (Halloween) and does nothing without it. Preview any season at any time: ?season=name (or ?season=off).
      A window is [month, day] from the first day it is on to the day it ends (that day is not in it); one with a year is for that year only.
-     A later window wins over an earlier one, so Columbus Day (October 12, 2026 and nothing else) wins over Halloween that one day.
+     A later window wins over an earlier one, so Columbus Day (October 12, 2026 and nothing else) wins over Halloween that one day, and St. Patrick's Day
+     (March 17, every year) wins over Easter's month that one day.
        halloween Oct 1-31 · columbus Oct 12, 2026 · thanksgiving Nov 1-30 · christmas Dec 1-31 · newyear Jan 1-31 · valentines Feb 1-28/29
-       easter Mar 1-31 (and on to Easter Sunday in the years it falls in April) · cinco May 1-15 · memorial May 16-31 · independence Jul 1-31
+       easter Mar 1-31 (and on to Easter Sunday in the years it falls in April) · stpatricks Mar 17 · cinco May 1-15 · memorial May 16-31 · independence Jul 1-31
      Every season but Halloween brings its own stylesheet and script, fetched only while it is on (the shared season-kit.css and season-kit.js come first
      for all but Columbus Day, which predates the kit): season-<name>.css and season-<name>.js. Nothing is fetched on a day with no season.
      To add a holiday: a window here, its two files, and a block in site-test.mjs. -->
@@ -275,6 +276,7 @@ button {
     {name:'newyear',from:[1,1],to:[2,1]},
     {name:'valentines',from:[2,1],to:[3,1]},
     {name:'easter',from:[3,1],to:[4,1],easter:1},
+    {name:'stpatricks',from:[3,17],to:[3,18]},
     {name:'cinco',from:[5,1],to:[5,16]},
     {name:'memorial',from:[5,16],to:[6,1]},
     {name:'independence',from:[7,1],to:[8,1]}
@@ -287,6 +289,7 @@ button {
     newyear:["./season-newyear.css?v=00000000","./season-newyear.js?v=00000000"],
     valentines:["./season-valentines.css?v=00000000","./season-valentines.js?v=00000000"],
     easter:["./season-easter.css?v=00000000","./season-easter.js?v=00000000"],
+    stpatricks:["./season-stpatricks.css?v=00000000","./season-stpatricks.js?v=00000000"],
     cinco:["./season-cinco.css?v=00000000","./season-cinco.js?v=00000000"],
     memorial:["./season-memorial.css?v=00000000","./season-memorial.js?v=00000000"],
     independence:["./season-independence.css?v=00000000","./season-independence.js?v=00000000"]
