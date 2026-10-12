@@ -48,7 +48,7 @@ for (const path of pages) {
   }
 }
 check('L1 no broken internal links', broken.length === 0, '\n    ' + broken.slice(0,8).join('\n    '))
-check('L1 all 50 pages served 200', pages.length === 50, 'pages: ' + pages.length)
+check('L1 all 51 pages served 200', pages.length === 51, 'pages: ' + pages.length)
 
 // ── L1b: every program page carries the schema and the canonical it exists for ──
 // A program page whose Service block is missing is still a page, and still
@@ -925,12 +925,72 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   const js = readFileSync(join(ROOT, 'booking.js'), 'utf8')
   const readers = readdirSync(ROOT).filter(f => f.endsWith('.js')).filter(f => /utm_source|gclid|fbclid/.test(readFileSync(join(ROOT, f), 'utf8')))
   check('L1src booking.js is the only script that reads the ad tags', readers.length === 1 && readers[0] === 'booking.js', JSON.stringify(readers))
-  const landing = ['index.html', 'programs/adult-bjj-fulshear.html', 'programs/kids-bjj-fulshear.html', 'schedule.html', 'pricing.html', 'pink-october.html']
+  const landing = ['index.html', 'programs/adult-bjj-fulshear.html', 'programs/kids-bjj-fulshear.html', 'programs/martial-arts-fulshear.html', 'schedule.html', 'pricing.html', 'pink-october.html']
   const without = landing.filter(f => !/<script[^>]*src="[^"]*booking\.js\?v=[0-9a-f]{8}"/.test(readFileSync(join(ROOT, f), 'utf8')))
   check('L1src the pages ads and listings send people to all load booking.js, so they see the tag where it lands', without.length === 0, without.join(', '))
   const code = js.split('\n').filter(l => !/^\s*(\/\/|\/\*|\*)/.test(l)).join('\n')   // comments quote the note; only the code builds it
   check('L1src the CRM note is built in one place, and it is the one that is sent',
     (code.match(/booked from the website/g) || []).length === 1 && /note: bookingNote\(data\)/.test(code) && /NOTE_LIMIT = 400;/.test(code))
+}
+
+// ── L1mart: the martial-arts page, and the words that point at it ──
+// On Google Maps "martial arts fulshear" ranked #4 while "bjj fulshear" ranked #1 at every point of the grid: the same profile, the same reviews, so
+// the difference is relevance. The BJJ wording is what wins the second, so "martial arts" is added beside it on the front page and given a page of
+// its own, and nothing takes BJJ out. The front page also carried two different sets of opening hours in its structured data; there is now one,
+// the one a visitor can read on the page.
+{
+  const read = f => readFileSync(join(ROOT, f), 'utf8')
+  const home = read('index.html'), page = read('programs/martial-arts-fulshear.html'), hub = read('programs/index.html'), sitemap = read('sitemap.xml')
+  const title = t => (/<title>([^<]*)<\/title>/.exec(t) || [])[1] || ''
+  const meta = (t, attr, name) => (new RegExp(`<meta ${attr}="${name}" content="([^"]*)"`).exec(t) || [])[1] || ''
+  const text = t => t.replace(/<(script|style)[\s\S]*?<\/\1>/g, ' ').replace(/<[^>]+>/g, ' ').replace(/&amp;/g, '&').replace(/&rsquo;/g, '\u2019').replace(/&middot;/g, '\u00b7').replace(/&nbsp;/g, ' ').replace(/\s+/g, ' ').trim()
+  const bjj = t => /BJJ/.test(t) && /Jiu-Jitsu/.test(t)
+  check('L1mart the front page title keeps BJJ and Jiu-Jitsu and adds Martial Arts', bjj(title(home)) && /Martial Arts/.test(title(home)), title(home))
+  check('L1mart so do the social titles', [meta(home, 'property', 'og:title'), meta(home, 'name', 'twitter:title')].every(t => bjj(t) && /Martial Arts/.test(t)))
+  const d = meta(home, 'name', 'description')
+  check('L1mart the front page description says martial arts and still says Brazilian jiu-jitsu', /martial arts/i.test(d) && /Brazilian jiu-jitsu/i.test(d), d)
+  check('L1mart the martial-arts page has one h1, a title naming martial arts and Fulshear, and its own canonical address',
+    (page.match(/<h1[\s>]/g) || []).length === 1 && /Martial Arts/.test(title(page)) && /Fulshear/.test(title(page))
+      && page.includes('<link rel="canonical" href="https://labyrinth.vision/programs/martial-arts-fulshear">'), title(page))
+  check('L1mart it is in the sitemap, and the front page and the programs list both link to it',
+    sitemap.includes('<loc>https://labyrinth.vision/programs/martial-arts-fulshear</loc>') && home.includes('href="/programs/martial-arts-fulshear"') && hub.includes('href="/programs/martial-arts-fulshear"'))
+  check('L1mart it links every program it describes, so none of them is left standing on its own',
+    ['kids-bjj-fulshear', 'adult-bjj-fulshear', 'youth-wrestling-fulshear', 'bjj-competition-team'].every(x => page.includes(`href="/programs/${x}"`)))
+  check('L1mart it states no price, because prices live on the pricing page and cannot disagree with it there', !/\$\s?\d/.test(text(page)))
+  // The questions in the page's FAQ schema are the ones a visitor reads, in the same words.
+  {
+    const schema = [...page.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(m => JSON.parse(m[1])).find(o => o['@type'] === 'FAQPage')
+    // A link inside an answer is words in the middle of a sentence, so its tags come out without a gap: "Kids." not "Kids ."
+    const flat = t => text(t.replace(/<\/?a[^>]*>/g, ''))
+    const shown = [...page.matchAll(/<div class="faq-item">[\s\S]*?<span>([\s\S]*?)<\/span>[\s\S]*?<div class="faq-item__answer"><p>([\s\S]*?)<\/p>/g)].map(m => [flat(m[1]), flat(m[2])])
+    const said = (schema?.mainEntity || []).map(q => [flat(q.name), flat(q.acceptedAnswer.text)])
+    check('L1mart the FAQ in its structured data is the FAQ on the page, question for question and answer for answer', shown.length >= 5 && JSON.stringify(shown) === JSON.stringify(said), `${shown.length} shown, ${said.length} in the schema`)
+  }
+
+  // Opening hours: one set in all the structured data, and it is what the page prints.
+  const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+  const SHORT = { Mo: 'Monday', Tu: 'Tuesday', We: 'Wednesday', Th: 'Thursday', Fr: 'Friday', Sa: 'Saturday', Su: 'Sunday' }
+  const order = Object.keys(SHORT)
+  const seen = Object.fromEntries(DAYS.map(x => [x, new Set()]))
+  const walk = o => {
+    if (Array.isArray(o)) return o.forEach(walk)
+    if (!o || typeof o !== 'object') return
+    if (o['@type'] === 'OpeningHoursSpecification') for (const day of [].concat(o.dayOfWeek)) seen[day]?.add(`${o.opens}-${o.closes}`)
+    for (const h of [].concat(o.openingHours || [])) {
+      const m = /^(Mo|Tu|We|Th|Fr|Sa|Su)(?:-(Mo|Tu|We|Th|Fr|Sa|Su))? (\d\d:\d\d)-(\d\d:\d\d)$/.exec(h)
+      if (!m) { seen.__bad = (seen.__bad || new Set()).add(h); continue }
+      for (let i = order.indexOf(m[1]); i <= order.indexOf(m[2] || m[1]); i++) seen[SHORT[order[i]]].add(`${m[3]}-${m[4]}`)
+    }
+    Object.values(o).forEach(walk)
+  }
+  for (const m of home.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) walk(JSON.parse(m[1]))
+  const to24 = t => { const m = /^(\d{1,2})(?::(\d{2}))?(am|pm)$/i.exec(t); return m ? String((+m[1] % 12) + (m[3].toLowerCase() === 'pm' ? 12 : 0)).padStart(2, '0') + ':' + (m[2] || '00') : null }
+  const line = /Mon[\u2013-]Fri (\S+?)[\u2013-](\S+?) \u00b7 Sat (\S+?)[\u2013-](\S+?) \u00b7 Sun (\S+?)[\u2013-](\S+?)</.exec(home)
+  const printed = line ? { Monday: [1, 2], Tuesday: [1, 2], Wednesday: [1, 2], Thursday: [1, 2], Friday: [1, 2], Saturday: [3, 4], Sunday: [5, 6] } : null
+  check('L1hours the home page\'s structured data gives every day one opening time and one closing time, not two sets that disagree',
+    DAYS.every(x => seen[x].size === 1) && !seen.__bad, JSON.stringify(Object.fromEntries(DAYS.map(x => [x, [...seen[x]]]))))
+  check('L1hours and they are the hours the page prints for a visitor',
+    !!printed && DAYS.every(x => seen[x].has(`${to24(line[printed[x][0]])}-${to24(line[printed[x][1]])}`)), line ? line[0] : 'the printed hours line was not found')
 }
 
 // ── L1map: the map asks CARTO for its tiles with a key, in one place ──
