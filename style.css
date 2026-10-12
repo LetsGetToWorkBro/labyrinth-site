@@ -5251,6 +5251,19 @@ body {
   .event-strip__sessions { grid-template-columns: 1fr 1fr; gap: 14px; }
 }
 
+/* The Jiu-Jitsu World League card (scripts/build_pages.py: JJWL_CARD, jjwl_card): the full width of the strip, right under the donation card,
+   until the event is over (data-closes). Green, the color the tournament list gives JJWL, in fixed colors so it reads the same under any
+   seasonal theme. Setting JJWL_CARD to None in the script takes the card out; these rules can go with it. */
+.event-strip__link--jjwl { border-color: rgba(34, 197, 94, 0.5); background: linear-gradient(160deg, rgba(34, 197, 94, 0.16), rgba(34, 197, 94, 0.04)); }
+.event-strip__link--jjwl:hover, .event-strip__link--jjwl:focus-visible { border-color: #22c55e; box-shadow: 0 14px 40px rgba(34, 197, 94, 0.18); }
+.event-strip__link--jjwl .event-strip__icon, .event-strip__link--jjwl .event-strip__eyebrow { color: #4ade80; }
+.event-strip__link--jjwl .event-strip__cta { background: #22c55e; color: #04140a; }
+@media (min-width: 900px) {
+  .event-strip__link--jjwl { grid-column: 1 / -1; flex-direction: row; align-items: center; gap: var(--space-6); padding: 24px 28px; }
+  .event-strip__link--jjwl .event-strip__text strong { font-size: 32px; }
+  .event-strip__link--jjwl .event-strip__cta { flex-shrink: 0; padding: 14px 28px; font-size: 17px; }
+}
+
 /* ── Goal reached ─────────────────────────────────────────────────────────────────────────────────────
    Two anonymous donors match every dollar up to the goal, so passing it ends the match and every page that talks about
    it needs a second set of words (scripts/build_pages.py, goal.js, fund.js). <html data-goal="reached"> says which set
