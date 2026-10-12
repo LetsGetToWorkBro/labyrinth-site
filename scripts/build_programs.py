@@ -921,6 +921,7 @@ def render_hub():
     <p class="prog-hero__lead">Five programs under one roof in Fulshear, from a three-year-old's first class to the mats of a competition team ranked in the top 1%% nationally. Every one of them starts with a free class.</p>
     <div class="prog-prose" style="margin-top:var(--space-6)">
       <p>Most people arrive knowing roughly what they want and not what it is called. If it is for a child, it is almost always <a href="/programs/kids-bjj-fulshear">kids Brazilian jiu-jitsu</a>. That is the program with three age groups and six days a week of classes. If it is for you, it is <a href="/programs/adult-bjj-fulshear">adult BJJ</a>, and it does not matter that you have never done a combat sport, because almost nobody who walks in here has.</p>
+      <p>Searching for martial arts in Fulshear in general rather than for one program? <a href="/programs/martial-arts-fulshear">Here is everything we teach, who each class is for, and how to start</a>.</p>
       <p>The other three are additions rather than alternatives. <a href="/programs/bjj-competition-team">The competition team</a> is for anyone, child or adult, who wants harder rounds and the option of entering tournaments. <a href="/programs/youth-wrestling-fulshear">Youth wrestling</a> runs three evenings a week and is the fastest upgrade available to a young grappler's takedowns. <a href="/blog/strength-and-conditioning-for-kids-fulshear">Strength and conditioning</a> is all ages in one room, twice a week, at no extra cost on any membership.</p>
     </div>
     <div class="prog-hero__cta">
@@ -954,6 +955,236 @@ def render_hub():
 </div>""" % (cards, PHONE), TAIL % {"footer": FOOTER}])
 
 
+# ── The martial-arts overview ────────────────────────────────────────────────
+# The one page about the general query, "martial arts in Fulshear". Each program page above answers a narrower question (kids BJJ, adult BJJ,
+# wrestling) and says "martial arts" only in passing, and the front page has to be about everything at once. A parent typing "martial arts
+# Fulshear" is choosing between schools, not between programs, so this is the school's answer to that: what is taught, for whom, who runs it,
+# how to start. Every fact is read off the program pages and the coaches page; where a fact lives somewhere else it is linked, not repeated
+# (prices stay on /pricing, so this page cannot disagree with it). The BJJ pages are untouched: this is added beside them, never instead.
+MARTIAL_ARTS = {
+    "slug": "martial-arts-fulshear",
+    "name": "Martial Arts in Fulshear",
+    "title": "Martial Arts in Fulshear, TX: Kids & Adults | Labyrinth BJJ",
+    "og_title": "Martial Arts in Fulshear, TX: Kids and Adults",
+    "description": "Martial arts for kids and adults in Fulshear, TX: Brazilian jiu-jitsu, youth wrestling, MMA conditioning and a competition team. First class free.",
+    "service_desc": "Martial arts classes in Fulshear, TX for kids from age 3 and adults of any level: Brazilian jiu-jitsu (Gi and No-Gi), youth wrestling, MMA conditioning and a competition team. Your first class is free.",
+    "eyebrow": "Kids and adults",
+    "h1": "Martial Arts in Fulshear, Texas",
+    "lead": "Brazilian jiu-jitsu, youth wrestling and MMA conditioning for ages 3 to adult, under one roof and taught by black belts. Your first class is free.",
+    "facts": [
+        ("Ages", "3 to adult"),
+        ("We teach", "BJJ, wrestling, MMA conditioning"),
+        ("First class", "<em>Free</em>"),
+        ("Where", "Fulshear, TX"),
+    ],
+    "intro": [
+        "Labyrinth BJJ is a martial arts school in Fulshear, Texas. Most of what we teach is Brazilian jiu-jitsu, a grappling art built on leverage, position and control, in two forms: Gi and No-Gi. Around it we run youth wrestling, an MMA conditioning class, a competition team, and strength and conditioning that is open to all ages.",
+        "Children can start at three, in groups separated by age. Adults can start at any age and at any level of fitness: almost everybody who walks in as an adult has never done a combat sport, and the classes are built around that.",
+    ],
+    "cards": [
+        ("/programs/kids-bjj-fulshear", "Kids Brazilian Jiu-Jitsu",
+         "Ages 3–15 in three separated groups, six days a week. Gi, No-Gi and MMA, belt progression tracked, free trials Friday and Saturday."),
+        ("/programs/adult-bjj-fulshear", "Adult Brazilian Jiu-Jitsu",
+         "Seventeen classes a week, Gi and No-Gi, mornings through evenings. Complete beginners are the normal case here."),
+        ("/programs/youth-wrestling-fulshear", "Youth Wrestling",
+         "Ages 7–17, three sessions a week with a Texas National Team wrestler. Included in any kids membership, no background needed."),
+        ("/programs/bjj-competition-team", "Competition Team",
+         "Kids, teens and adults training for IBJJF, ADCC and JJWL. Included in unlimited memberships, and nobody is made to compete."),
+        ("/coaches/scott-jones", "MMA Conditioning",
+         "All ages, Saturday at 9:00 AM, beginners welcome. Taught by Coach Scott Jones, a 7th dan Taekwondo black belt and BJJ brown belt."),
+        ("/blog/strength-and-conditioning-for-kids-fulshear", "Strength &amp; Conditioning",
+         "All ages &middot; Tuesday and Thursday, 4:15 PM"),
+        ("/self-defense-for-women", "Women&rsquo;s Self Defense Seminars",
+         "Free, no experience needed, built on the jiu-jitsu we teach every day. See the next one and RSVP."),
+    ],
+    "groups_title": "Which one is for you",
+    "groups_lead": "Most people arrive knowing roughly what they want and not what it is called. Start here.",
+    "groups": [
+        ("For your child", "Start with kids BJJ",
+         "Ages 3 to 15, in three separate groups, six days a week. From age 7, youth wrestling is included in any kids membership."),
+        ("For you", "Start with adult BJJ",
+         "Seventeen classes a week, Gi and No-Gi, from early morning to evening. Come to whichever class fits your day; we lend you a gi on Gi days."),
+        ("Standing up", "Try MMA conditioning",
+         "Saturday at 9:00 AM, open to all ages, beginners welcome. Coach Scott Jones, a 7th dan Taekwondo black belt, teaches you to stand, move and defend yourself."),
+        ("Harder rounds", "Join the competition team",
+         "Dedicated classes for kids, teens and adults, for anyone who wants harder training. Nobody is ever made to compete."),
+    ],
+    "team_title": "Two schools, one team",
+    "team": [
+        "Team Legacy Martial Arts, the school Coach Scott Jones built, has merged into Labyrinth, and its families and its coach now train here. That makes two head coaches on one mat, and it is why a school that started as jiu-jitsu now also has a 7th dan Taekwondo black belt teaching standing-up skills. <a href=\"/legacy/\">Read what changed</a>.",
+    ],
+    "start_title": "How to start",
+    "start": [
+        "Book a free class online or ring the academy on " + PHONE + ". Any class on the timetable works. For children, free trials run on Friday afternoons and Saturday mornings.",
+        "Wear athletic clothes with no zippers or pockets and bring water. We lend you a gi on Gi days.",
+        "There is no long-term contract: memberships are month to month. The <a href=\"/pricing\">pricing page</a> has the plans, and the <a href=\"/schedule\">schedule</a> has every class time.",
+    ],
+    "faqs": [
+        ("What martial arts classes do you teach in Fulshear?",
+         "Brazilian jiu-jitsu in Gi and No-Gi for kids and adults, youth wrestling for ages 7 to 17, MMA conditioning on Saturdays, and a competition team. We also run strength and conditioning for all ages and free self defense seminars for women."),
+        ("What is the difference between jiu-jitsu and karate or taekwondo?",
+         "Karate and taekwondo are mostly striking arts: punching, kicking and blocking. Jiu-jitsu is a grappling art, built on leverage, position and control, with no striking in it. We teach the grappling side every day, and our MMA conditioning class, led by a 7th dan Taekwondo black belt, covers standing up, moving and defending yourself. Our blog compares the two for children in more detail: <a href=\"/blog/bjj-vs-karate-for-kids\">BJJ vs Karate for Kids</a>."),
+        ("How old do you have to be to start?",
+         "Three. Our Little Grapplers class is for ages 3 to 6, there are separate groups for ages 7 to 12 and 12 to 15, and adults can start at any age."),
+        ("Do I need experience, or to be in shape first?",
+         "No. There is no fitness test at the door, and almost nobody who walks in as an adult has done a combat sport before. You build the conditioning by doing it, and you can scale the warm-up or sit out a round whenever you need to."),
+        ("Is the first class free, and is there a contract?",
+         "Your first class is free, in any class on the timetable. For children, free trials run on Friday afternoons and Saturday mornings. Memberships are month to month with no long-term contract."),
+        ("Where are you, and who do you serve?",
+         "Labyrinth BJJ is at " + ADDRESS + ", telephone " + PHONE + ". We serve Fulshear, Katy, Cinco Ranch, Richmond and the west Houston area."),
+    ],
+    "reading": [
+        ("kids-martial-arts-katy-tx", "Kids Martial Arts Classes in Katy, TX"),
+        ("bjj-vs-karate-for-kids", "BJJ vs Karate for Kids: Which Is Better?"),
+        ("benefits-of-bjj-for-kids", "10 Benefits of Brazilian Jiu-Jitsu for Kids"),
+    ],
+    "close_title": "Book a free class",
+    "close_text": "Any class on the timetable, free. Wear athletic clothes with no zippers or pockets; we lend you a gi on Gi days.",
+}
+
+
+def render_martial_arts():
+    m = MARTIAL_ARTS
+    url = "%s/programs/%s" % (SITE, m["slug"])
+
+    faq_schema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {"@type": "Question", "name": q,
+             "acceptedAnswer": {"@type": "Answer", "text": re.sub(r"<[^>]+>", "", a)}}
+            for q, a in m["faqs"]
+        ],
+    }
+    service_schema = {
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "name": "Martial arts classes",
+        "description": m["service_desc"],
+        "url": url,
+        "serviceType": "Martial arts classes",
+        "areaServed": [{"@type": "City", "name": c} for c in
+                       ["Fulshear, TX", "Katy, TX", "Cinco Ranch, TX", "Richmond, TX", "Rosenberg, TX"]],
+        "provider": {
+            "@type": "SportsActivityLocation",
+            "name": "Labyrinth BJJ",
+            "url": SITE,
+            "telephone": "+1-281-393-7983",
+            "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "6615 West Cross Creek Bend Lane, Suite #400",
+                "addressLocality": "Fulshear",
+                "addressRegion": "TX",
+                "postalCode": "77441",
+                "addressCountry": "US",
+            },
+        },
+    }
+    head = HEAD % {
+        "title": m["title"], "description": m["description"], "url": url, "og_title": m["og_title"],
+        "image": SITE + "/assets/og-image.jpg",
+        "schema": "\n".join([jsonld(service_schema), jsonld(breadcrumb_schema(m["name"], url)), jsonld(faq_schema)]),
+    }
+
+    facts = "\n".join(
+        '      <div class="prog-fact"><div class="prog-fact__label">%s</div>'
+        '<div class="prog-fact__value">%s</div></div>' % (l, v) for l, v in m["facts"])
+    hero = """%(nav)s
+
+%(crumbs)s
+
+<header class="prog-hero">
+  <div class="container">
+    <p class="section-label">%(eyebrow)s</p>
+    <h1 class="prog-hero__title">%(h1)s</h1>
+    <p class="prog-hero__lead">%(lead)s</p>
+    <div class="prog-hero__cta">
+      <a data-book-trial href="/#book" class="btn btn--gold">Book a Free Class</a>
+      <a href="#teach" class="btn btn--ghost">See What We Teach</a>
+    </div>
+    <div class="prog-facts">
+%(facts)s
+    </div>
+  </div>
+</header>""" % {"nav": NAV, "crumbs": crumbs(m["name"]), "eyebrow": m["eyebrow"], "h1": m["h1"], "lead": m["lead"], "facts": facts}
+
+    parts = [head, hero]
+    parts.append(section("The school", "WHAT IT IS",
+                         inner='  <div class="prog-prose fade-in">\n%s\n  </div>'
+                               % "\n".join("    <p>%s</p>" % x for x in m["intro"])))
+
+    cards = "\n".join(
+        '      <a href="%s" class="prog-sibling"><div class="prog-sibling__title">%s</div>'
+        '<div class="prog-sibling__desc">%s</div></a>' % c for c in m["cards"])
+    parts.append("""
+<section class="prog-section" id="teach">
+  <div class="container">
+    <div class="fade-in">
+      <p class="section-label">What we teach</p>
+      <h2 class="section-title section-title--lg">EVERY CLASS UNDER ONE ROOF</h2>
+      <p class="section-subtitle">Your first class is free.</p>
+    </div>
+    <div class="prog-siblings stagger">
+%s
+    </div>
+  </div>
+</section>""" % cards)
+
+    groups = "\n".join(
+        '    <div class="prog-group"><p class="prog-group__tag">%s</p>'
+        '<h3 class="prog-group__title">%s</h3><p class="prog-group__desc">%s</p></div>'
+        % g for g in m["groups"])
+    parts.append(section("Where to begin", m["groups_title"].upper(), m["groups_lead"],
+                         inner='  <div class="prog-groups stagger">\n%s\n  </div>' % groups))
+
+    parts.append(section("One team", m["team_title"].upper(),
+                         inner='  <div class="prog-prose fade-in">\n%s\n  </div>'
+                               % "\n".join("    <p>%s</p>" % x for x in m["team"])))
+    parts.append(section("Getting started", m["start_title"].upper(),
+                         inner='  <div class="prog-prose fade-in">\n%s\n  </div>'
+                               % "\n".join("    <p>%s</p>" % x for x in m["start"])))
+
+    faq_items = "\n".join("""      <div class="faq-item">
+        <button class="faq-item__question" aria-expanded="false">
+          <span>%s</span>
+          <svg class="faq-item__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="faq-item__answer"><p>%s</p></div>
+      </div>""" % (q, a) for q, a in m["faqs"])
+    parts.append("""
+<section class="faq">
+  <div class="container container--narrow">
+    <div class="fade-in">
+      <p class="section-label">Questions</p>
+      <h2 class="section-title section-title--lg">MARTIAL ARTS FAQ</h2>
+    </div>
+    <div class="faq__list stagger">
+%s
+    </div>
+  </div>
+</section>""" % faq_items)
+
+    reading = "\n".join(
+        '    <a href="/blog/%s" class="prog-sibling"><div class="prog-sibling__title">%s</div>'
+        '<div class="prog-sibling__desc">From the Labyrinth blog</div></a>' % (slug, t) for slug, t in m["reading"])
+    parts.append(section("Keep reading", "MORE FROM LABYRINTH",
+                         inner='  <div class="prog-siblings stagger">\n%s\n  </div>' % reading))
+
+    parts.append("""
+<div class="container">
+  <div class="prog-close fade-in">
+    <h2 class="prog-close__title">%s</h2>
+    <p class="prog-close__text">%s</p>
+    <div class="prog-hero__cta" style="justify-content:center">
+      <a data-book-trial href="/#book" class="btn btn--gold">Book a Free Class</a>
+      <a href="tel:2813937983" class="btn btn--ghost">Call %s</a>
+    </div>
+  </div>
+</div>""" % (m["close_title"].upper(), m["close_text"], PHONE))
+    parts.append(TAIL % {"footer": FOOTER})
+    return "\n".join(parts)
+
+
 def main():
     if not os.path.isdir(OUT):
         os.makedirs(OUT)
@@ -964,6 +1195,11 @@ def main():
             fh.write(stamp(html))
         words = len(re.sub(r"<[^>]+>", " ", html).split())
         print("wrote programs/%-30s %6d bytes  ~%d words" % (p["slug"] + ".html", len(html), words))
+    path = os.path.join(OUT, MARTIAL_ARTS["slug"] + ".html")
+    html = render_martial_arts()
+    with open(path, "w", encoding="utf-8") as fh:
+        fh.write(stamp(html))
+    print("wrote programs/%-30s %6d bytes  ~%d words" % (MARTIAL_ARTS["slug"] + ".html", len(html), len(re.sub(r"<[^>]+>", " ", html).split())))
     path = os.path.join(OUT, "index.html")
     with open(path, "w", encoding="utf-8") as fh:
         fh.write(stamp(render_hub()))
