@@ -1,0 +1,53 @@
+HOLIDAY MONDAY, OCTOBER 12: OPEN MAT 10 TO 11:30 AM AND A WRESTLING CLASS AT 2 PM (the post, the story and the captions)
+Files: holiday-mat-feed.png (Facebook and Instagram feed, 1080x1350), holiday-mat-story.png (Instagram Stories, 1080x1920)
+Made by: node scripts/post-holiday-mat.mjs (words only, in the house gold on near-black, no photograph of anybody)
+Links: none. Everything says to call or text (281) 393-7983, because the booking calendar closes on federal holidays and cannot book today's sessions.
+
+What this says, and where each line comes from:
+  - Today is Monday, October 12 (Columbus Day, a federal holiday): "holiday Monday", never the holiday's name.
+  - Open mat 10:00 to 11:30 AM and a wrestling class at 2:00 PM: from the owner's message on October 12. No end time was given for the wrestling class, so none is stated.
+  - "All levels welcome" and "visitors from other academies" are the site's standing words about open mat (the schedule page's FAQ: "free rolling for all
+    levels and all affiliations. Visitors from other academies are welcome"). "Ages 7 to 17" and "no experience needed" are the site's standing words about
+    youth wrestling. They are not something the owner said about today's two sessions: if either is different today, change it in the pictures and here.
+  - No price, no "free class" offer, no coach's name, and nothing about the other classes today: nobody has said whether they run.
+  - Phone and text: the site says "Phone and text 281-393-7983".
+Only for today: the pictures say TODAY and the date. Post them on October 12, and not after about 11:30 AM, when the open mat is over.
+
+==================== FACEBOOK POST ====================
+
+🥋 TRAIN WITH US TODAY 🤼
+
+Holiday Monday, October 12, at Labyrinth BJJ in Fulshear. Two sessions:
+
+🥋 OPEN MAT: 10:00 to 11:30 AM
+All levels are welcome, and visitors from other academies are welcome too.
+
+🤼 WRESTLING CLASS: 2:00 PM
+Our youth wrestling program is for ages 7 to 17, and no wrestling experience is needed.
+
+Questions? Call or text (281) 393-7983.
+
+📍 6615 West Cross Creek Bend Lane, Suite #400, Fulshear, TX 77441
+#FulshearTX #KatyTX #BrazilianJiuJitsu #OpenMat #YouthWrestling
+
+==================== INSTAGRAM CAPTION (feed post) ====================
+
+Train with us today 🥋🤼
+
+Holiday Monday, Oct 12, at Labyrinth BJJ in Fulshear:
+
+🥋 Open mat, 10:00 to 11:30 AM. All levels are welcome, and visitors from other academies are welcome too.
+🤼 Wrestling class, 2:00 PM. Our youth wrestling program is for ages 7 to 17, and no wrestling experience is needed.
+
+Questions? Call or text (281) 393-7983.
+
+📍 Labyrinth BJJ, 6615 West Cross Creek Bend Lane, Suite #400, Fulshear, TX
+#FulshearTX #KatyTX #RichmondTX #BrazilianJiuJitsu #OpenMat #YouthWrestling #Labyrinth
+
+==================== STORY TEXT ====================
+
+Use holiday-mat-story.png as it is: no sticker, no link sticker, no text, no music. It already carries the date, the two times, the address and the phone number.
+
+==================== IMAGE ALT TEXT (the feed image and the story image; 100 characters at most, which is Instagram's limit) ====================
+
+Monday Oct 12: open mat 10 to 11:30 AM and a wrestling class at 2 PM at Labyrinth BJJ in Fulshear.
