@@ -929,10 +929,65 @@ def goal_loader():
     return stamp('<script src="/goal.js" defer data-endpoint="%s"></script>' % EVENT["donations_endpoint"])
 
 
+# ── A one-day card at the top of the "this month" strip ──────────────────────────────────────────────
+#
+# A holiday's hours (a day the booking calendar is closed and the sessions are announced by hand) go in the strip as a
+# card of their own for that one day. The card is first and the full width of the strip, because it is the one thing
+# on the page that stops being true tonight. It hides itself outside its day like every other card: data-opens is
+# midnight Central at the start of the day, data-closes midnight Central at the end of it (CDT, UTC-5). It carries the
+# hours and the address in the card, and links to the directions, because the calendar cannot book that day.
+# TO RETIRE IT: set TODAY_CARD to None and run this script (the card, its entry in the hero chip and nothing else go).
+# TO REUSE IT: replace the facts; "sessions" is a list of (what, when, note), and nothing here knows the holiday.
+
+TODAY_CARD = {
+    "opens_utc": "2026-10-12T05:00:00Z",
+    "closes_utc": "2026-10-13T05:00:00Z",
+    "eyebrow": "Columbus Day &middot; Monday, October 12",
+    "title": "Open mat and wrestling today",
+    "chip": "Open mat and wrestling today",
+    "sessions": [
+        ("Open mat", "10:00 to 11:30 AM", "All levels are welcome, and visitors from other academies are welcome too."),
+        ("Wrestling class", "2:00 PM", "Our youth wrestling program is for ages 7 to 17, and no wrestling experience is needed."),
+    ],
+    "cta": "Get directions",
+}
+
+
+def _compass(size=30):
+    """A compass rose for the one-day card; colored by CSS like the ribbon."""
+    return ('<svg class="compass" width="%d" height="%d" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" '
+            'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9.5"/>'
+            '<path d="M12 4.5l2.2 5.3 5.3 2.2-5.3 2.2L12 19.5l-2.2-5.3L4.5 12l5.3-2.2z" fill="currentColor" fill-opacity=".22"/></svg>') % (size, size)
+
+
+def today_card():
+    """The one-day card (see TODAY_CARD), or nothing once it has been retired."""
+    c = TODAY_CARD
+    if not c:
+        return ""
+    sessions = "".join(
+        '\n        <span class="event-strip__session"><b>%s <i>%s</i></b><span>%s</span></span>' % (what, when, note)
+        for what, when, note in c["sessions"])
+    return """<a class="event-strip__link event-strip__link--today" href="%(maps)s" target="_blank" rel="noopener noreferrer" data-opens="%(opens)s" data-closes="%(closes)s" data-short="%(chip)s">
+      <span class="event-strip__icon">%(compass)s</span>
+      <span class="event-strip__text">
+        <span class="event-strip__eyebrow"><span class="event-strip__pill">Today</span> %(eyebrow)s</span>
+        <strong>%(title)s</strong>
+        <span class="event-strip__sessions">%(sessions)s
+        </span>
+        <span class="event-strip__where">Labyrinth BJJ, %(address)s. Questions? Call or text %(phone)s.</span>
+      </span>
+      <span class="event-strip__cta">%(cta)s</span>
+    </a>
+    """ % {"maps": EVENT["maps_url"], "opens": c["opens_utc"], "closes": c["closes_utc"], "chip": c["chip"], "compass": _compass(30),
+           "eyebrow": c["eyebrow"], "title": c["title"], "sessions": sessions, "address": ADDRESS, "phone": PHONE, "cta": c["cta"]}
+
+
 def event_strip():
     """The homepage's "This month at Labyrinth" block: the donation drive, Pink
     October, the free self defense seminar and the kids' HYROX list, as cards right
-    under the hero. Each card hides itself after its own last day, and the whole
+    under the hero, and on a holiday the day's hours as a card above them (see
+    TODAY_CARD). Each card hides itself after its own last day, and the whole
     block after the last of them, so nobody is invited to something that has gone.
     The same script fills the seminar's "N days to go" badge and the hero chip (the
     one line under the hero buttons that jumps here), both from the cards that are
@@ -946,7 +1001,7 @@ def event_strip():
       <p class="event-strip__kicker">What&rsquo;s happening</p>
       <h2 class="event-strip__title" id="tm-title">THIS MONTH AT LABYRINTH</h2>
     </div>
-    <a class="event-strip__link event-strip__link--donate" href="@@DONATEPATH@@" data-closes="@@DONATECLOSES@@" data-short="Donate" data-nochip>
+    @@TODAYCARD@@<a class="event-strip__link event-strip__link--donate" href="@@DONATEPATH@@" data-closes="@@DONATECLOSES@@" data-short="Donate" data-nochip>
       <span class="event-strip__icon">@@RIBBON@@</span>
       <span class="event-strip__text">
         <span class="event-strip__eyebrow" data-goal-not>Matching gift &middot; Rolling for Ribbons</span>
@@ -992,7 +1047,8 @@ def event_strip():
 <script>(function(){
   var s=document.getElementById('eventStrip'),n=0,names=[];
   s.querySelectorAll('a[data-closes]').forEach(function(a){
-    if(Date.now()>Date.parse(a.getAttribute('data-closes')))a.hidden=true;else{n++;if(!a.hasAttribute('data-nochip'))names.push(a.getAttribute('data-short'));}
+    var o=a.getAttribute('data-opens');
+    if(Date.now()>Date.parse(a.getAttribute('data-closes'))||(o&&Date.now()<Date.parse(o)))a.hidden=true;else{n++;if(!a.hasAttribute('data-nochip'))names.push(a.getAttribute('data-short'));}
   });
   if(!n)s.hidden=true;
   // "5 days to go" on the seminar card, on the academy's clock (Central).
@@ -1010,6 +1066,7 @@ def event_strip():
     else{chip.querySelector('span').textContent='This month: '+names.join(' \u00b7 ');chip.hidden=false}
   }
 })()</script>""" \
+        .replace("@@TODAYCARD@@", today_card()) \
         .replace("@@RIBBON@@", ribbon(30)).replace("@@BOLT@@", _hyrox_bolt(30)) \
         .replace("@@DONATEPATH@@", DONATE["path"]).replace("@@DONATECLOSES@@", DONATE["closes_utc"]).replace("@@GOAL@@", _money(EVENT["goal"])).replace("@@TOTAL@@", _money(_match_total())) \
         .replace("@@PINK@@", PINK["path"]).replace("@@PINKCLOSES@@", PINK["closes_utc"]) \

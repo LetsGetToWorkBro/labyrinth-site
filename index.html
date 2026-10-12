@@ -276,7 +276,7 @@ button {
     if(name==='halloween'){var l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Creepster&display=swap';document.head.appendChild(l)}
     if(name==='columbus'){var c=document.createElement('link');c.rel='stylesheet';c.href="./season-columbus.css?v=3a6ee446";document.head.appendChild(c);var j=document.createElement('script');j.src="./season-columbus.js?v=a55c09d7";document.head.appendChild(j)}}
 })()</script>
-<link rel="stylesheet" href="./style.css?v=03e04d1a">
+<link rel="stylesheet" href="./style.css?v=5bbc7699">
 <link rel="stylesheet" href="./season.css?v=c67a099d">
 <link rel="stylesheet" href="./booking.css?v=925cffbb">
 
@@ -726,6 +726,19 @@ button {
       <p class="event-strip__kicker">What&rsquo;s happening</p>
       <h2 class="event-strip__title" id="tm-title">THIS MONTH AT LABYRINTH</h2>
     </div>
+    <a class="event-strip__link event-strip__link--today" href="https://maps.google.com/?cid=7150744267965161030" target="_blank" rel="noopener noreferrer" data-opens="2026-10-12T05:00:00Z" data-closes="2026-10-13T05:00:00Z" data-short="Open mat and wrestling today">
+      <span class="event-strip__icon"><svg class="compass" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9.5"/><path d="M12 4.5l2.2 5.3 5.3 2.2-5.3 2.2L12 19.5l-2.2-5.3L4.5 12l5.3-2.2z" fill="currentColor" fill-opacity=".22"/></svg></span>
+      <span class="event-strip__text">
+        <span class="event-strip__eyebrow"><span class="event-strip__pill">Today</span> Columbus Day &middot; Monday, October 12</span>
+        <strong>Open mat and wrestling today</strong>
+        <span class="event-strip__sessions">
+        <span class="event-strip__session"><b>Open mat <i>10:00 to 11:30 AM</i></b><span>All levels are welcome, and visitors from other academies are welcome too.</span></span>
+        <span class="event-strip__session"><b>Wrestling class <i>2:00 PM</i></b><span>Our youth wrestling program is for ages 7 to 17, and no wrestling experience is needed.</span></span>
+        </span>
+        <span class="event-strip__where">Labyrinth BJJ, 6615 West Cross Creek Bend Lane, Suite #400, Fulshear, TX 77441. Questions? Call or text (281) 393-7983.</span>
+      </span>
+      <span class="event-strip__cta">Get directions</span>
+    </a>
     <a class="event-strip__link event-strip__link--donate" href="/donate" data-closes="2026-11-01T05:00:00Z" data-short="Donate" data-nochip>
       <span class="event-strip__icon"><svg class="ribbon" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7" fill="currentColor" fill-opacity=".18"/></svg></span>
       <span class="event-strip__text">
@@ -772,7 +785,8 @@ button {
 <script>(function(){
   var s=document.getElementById('eventStrip'),n=0,names=[];
   s.querySelectorAll('a[data-closes]').forEach(function(a){
-    if(Date.now()>Date.parse(a.getAttribute('data-closes')))a.hidden=true;else{n++;if(!a.hasAttribute('data-nochip'))names.push(a.getAttribute('data-short'));}
+    var o=a.getAttribute('data-opens');
+    if(Date.now()>Date.parse(a.getAttribute('data-closes'))||(o&&Date.now()<Date.parse(o)))a.hidden=true;else{n++;if(!a.hasAttribute('data-nochip'))names.push(a.getAttribute('data-short'));}
   });
   if(!n)s.hidden=true;
   // "5 days to go" on the seminar card, on the academy's clock (Central).
