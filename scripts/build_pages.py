@@ -983,12 +983,68 @@ def today_card():
            "eyebrow": c["eyebrow"], "title": c["title"], "sessions": sessions, "address": ADDRESS, "phone": PHONE, "cta": c["cta"]}
 
 
+# ── The Jiu-Jitsu World League card in the "this month" strip ─────────────────────────────────────────
+#
+# A tournament the families care about gets a card of its own, the full width of the strip and right under the donation card
+# (the one-day card above is the only thing that comes before it), from now until the event is over. It carries the day and the
+# place, and links to JJWL's own page for the event; it opens in a new tab, because it is somebody else's site. The weekday is
+# worked out from the date rather than typed. data-closes is midnight Central at the end of the event day (CDT, UTC-5), so the
+# card, its entry in the hero chip and nothing else go by themselves that night.
+# The facts are from jjworldleague.com's pages for the event (checked October 12, 2026): "The Nationals South II", held in the
+# Fort Bend County EpiCenter (Houston), 28505 Southwest Fwy, Rosenberg, TX 77471, on October 17th, 2026. JJWL gives each event
+# four pages (nat-south-ii-gi-youth, -gi-adults, -nogi-youth, -nogi-adults) and no page for the event as a whole, so the card
+# links to one of them; the others are one click away on that page. The card says nothing about registration (JJWL's own page
+# does, and it changes): it is not an invitation to sign up, it is where the event is.
+# TO RETIRE IT: set JJWL_CARD to None and run this script. TO REUSE IT: replace the facts; nothing here knows this event.
+
+JJWL_CARD = {
+    "date": "2026-10-17",
+    "closes_utc": "2026-10-18T05:00:00Z",
+    "title": "JJWL Houston",
+    "chip": "JJWL Houston",
+    "event": "The Nationals South II",
+    "venue": "Fort Bend County EpiCenter, Rosenberg, TX",
+    "url": "https://www.jjworldleague.com/events/nat-south-ii-gi-youth",
+    "cta": "Event page",
+}
+
+
+def _medal(size=30):
+    """A medal for the Jiu-Jitsu World League card; colored by CSS like the ribbon."""
+    return ('<svg class="medal" width="%d" height="%d" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" '
+            'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'
+            '<path d="M8 2.5 12 10l4-7.5"/><circle cx="12" cy="15.2" r="6" fill="currentColor" fill-opacity=".18"/>'
+            '<path d="m12 12 1 2 2.2.3-1.6 1.5.4 2.2-2-1.1-2 1.1.4-2.2-1.6-1.5 2.2-.3z" fill="currentColor" stroke="none"/></svg>') % (size, size)
+
+
+def jjwl_card():
+    """The Jiu-Jitsu World League card (see JJWL_CARD), or nothing once it has been retired."""
+    import datetime
+    c = JJWL_CARD
+    if not c:
+        return ""
+    d = datetime.date.fromisoformat(c["date"])
+    when = d.strftime("%a, %b ") + str(d.day)
+    return """<a class="event-strip__link event-strip__link--jjwl" href="%(url)s" target="_blank" rel="noopener noreferrer" data-closes="%(closes)s" data-short="%(chip)s">
+      <span class="event-strip__icon">%(medal)s</span>
+      <span class="event-strip__text">
+        <span class="event-strip__eyebrow">%(when)s &middot; %(venue)s</span>
+        <strong>%(title)s</strong>
+        <span>%(event)s from the Jiu-Jitsu World League, with youth and adult gi and no-gi divisions. See the details on JJWL&rsquo;s event page.</span>
+      </span>
+      <span class="event-strip__cta">%(cta)s</span>
+    </a>
+    """ % {"url": c["url"], "closes": c["closes_utc"], "chip": c["chip"], "medal": _medal(30), "when": when, "venue": c["venue"],
+           "title": c["title"], "event": c["event"], "cta": c["cta"]}
+
+
 def event_strip():
     """The homepage's "This month at Labyrinth" block: the donation drive, Pink
     October, the free self defense seminar and the kids' HYROX list, as cards right
-    under the hero, and on a holiday the day's hours as a card above them (see
-    TODAY_CARD). Each card hides itself after its own last day, and the whole
-    block after the last of them, so nobody is invited to something that has gone.
+    under the hero, a tournament card (see JJWL_CARD) after the donation card, and
+    on a holiday the day's hours as a card above them (see TODAY_CARD). Each card
+    hides itself after its own last day, and the whole block after the last of
+    them, so nobody is invited to something that has gone.
     The same script fills the seminar's "N days to go" badge and the hero chip (the
     one line under the hero buttons that jumps here), both from the cards that are
     still showing. The donation card is the full-width one on top: the bar under
@@ -1014,7 +1070,7 @@ def event_strip():
       <span class="event-strip__cta" data-goal-not>Donate</span>
       <span class="event-strip__cta" data-goal-only>Keep giving</span>
     </a>
-    <a class="event-strip__link event-strip__link--pink" href="@@PINK@@" data-closes="@@PINKCLOSES@@" data-short="Pink October">
+    @@JJWLCARD@@<a class="event-strip__link event-strip__link--pink" href="@@PINK@@" data-closes="@@PINKCLOSES@@" data-short="Pink October">
       <span class="event-strip__icon">@@RIBBON@@</span>
       <span class="event-strip__text">
         <span class="event-strip__eyebrow">All October &middot; Breast cancer awareness</span>
@@ -1066,7 +1122,7 @@ def event_strip():
     else{chip.querySelector('span').textContent='This month: '+names.join(' \u00b7 ');chip.hidden=false}
   }
 })()</script>""" \
-        .replace("@@TODAYCARD@@", today_card()) \
+        .replace("@@TODAYCARD@@", today_card()).replace("@@JJWLCARD@@", jjwl_card()) \
         .replace("@@RIBBON@@", ribbon(30)).replace("@@BOLT@@", _hyrox_bolt(30)) \
         .replace("@@DONATEPATH@@", DONATE["path"]).replace("@@DONATECLOSES@@", DONATE["closes_utc"]).replace("@@GOAL@@", _money(EVENT["goal"])).replace("@@TOTAL@@", _money(_match_total())) \
         .replace("@@PINK@@", PINK["path"]).replace("@@PINKCLOSES@@", PINK["closes_utc"]) \

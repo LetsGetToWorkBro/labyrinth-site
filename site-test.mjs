@@ -685,10 +685,10 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   check('L1x the homepage links to the event page before the event',
     (await rp.locator('a.event-strip__link[href="/self-defense-for-women"]').count()) === 1
       && await rp.isVisible('#eventStrip'))
-  check('L1x each October strip link carries a pink ribbon and a pink button (the HYROX row has its own volt look, the donation card is solid pink with a dark button, and a holiday\'s one-day card is navy and gold)',
+  check('L1x each October strip link carries a pink ribbon and a pink button (the HYROX row has its own volt look, the donation card is solid pink with a dark button, a holiday\'s one-day card is navy and gold, and the Jiu-Jitsu World League card is green)',
     (await rp.locator('#eventStrip svg.ribbon').count()) === 3
-      && await rp.evaluate(() => [...document.querySelectorAll('.event-strip__link:not(.event-strip__link--hyrox):not(.event-strip__link--donate):not(.event-strip__link--today) .event-strip__icon')].every(i => getComputedStyle(i).color === 'rgb(229, 143, 181)')
-        && [...document.querySelectorAll('.event-strip__link:not(.event-strip__link--hyrox):not(.event-strip__link--donate):not(.event-strip__link--today) .event-strip__cta')].every(c => getComputedStyle(c).backgroundColor === 'rgb(229, 143, 181)')))
+      && await rp.evaluate(() => [...document.querySelectorAll('.event-strip__link:not(.event-strip__link--hyrox):not(.event-strip__link--donate):not(.event-strip__link--today):not(.event-strip__link--jjwl) .event-strip__icon')].every(i => getComputedStyle(i).color === 'rgb(229, 143, 181)')
+        && [...document.querySelectorAll('.event-strip__link:not(.event-strip__link--hyrox):not(.event-strip__link--donate):not(.event-strip__link--today):not(.event-strip__link--jjwl) .event-strip__cta')].every(c => getComputedStyle(c).backgroundColor === 'rgb(229, 143, 181)')))
   check('L1x the strip names the event, the date and the cause',
     /Rolling for Ribbons/.test(await rp.textContent('#eventStrip'))
       && /Oct 24/.test(await rp.textContent('#eventStrip')) && /Breast cancer/i.test(await rp.textContent('#eventStrip')))
@@ -1865,13 +1865,13 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
       return getComputedStyle(sec).pointerEvents === 'none' && +getComputedStyle(sec).zIndex < +getComputedStyle(c).zIndex
     }))
   check('L2h the gold turns pumpkin orange', h1.gold === '#ff8a1f', h1.gold)
-  check('L2h the donation, Pink October, the seminar and HYROX are four cards right under the hero, in that order',
-    JSON.stringify(h1.cards) === JSON.stringify(['/donate', '/pink-october', '/self-defense-for-women', '/hyrox-youngstars']) && h1.stripTop < 1000 && /THIS MONTH AT LABYRINTH/i.test(h1.title), JSON.stringify(h1))
+  check('L2h the donation, the Jiu-Jitsu World League event, Pink October, the seminar and HYROX are five cards right under the hero, in that order',
+    JSON.stringify(h1.cards) === JSON.stringify(['/donate', 'https://www.jjworldleague.com/events/nat-south-ii-gi-youth', '/pink-october', '/self-defense-for-women', '/hyrox-youngstars']) && h1.stripTop < 1000 && /THIS MONTH AT LABYRINTH/i.test(h1.title), JSON.stringify(h1))
   check('L2h the seminar card counts down the days and the hero has a line that jumps to the cards',
-    h1.badge === '10 days to go' && /Pink October/.test(h1.chip) && /self defense/i.test(h1.chip) && /HYROX/.test(h1.chip) && !/donat/i.test(h1.chip), JSON.stringify(h1))
+    h1.badge === '10 days to go' && /JJWL Houston/.test(h1.chip) && /Pink October/.test(h1.chip) && /self defense/i.test(h1.chip) && /HYROX/.test(h1.chip) && !/donat/i.test(h1.chip), JSON.stringify(h1))
   const colors = await hh.evaluate(() => [...document.querySelectorAll('#eventStrip .event-strip__cta')].filter(c => c.offsetParent !== null).map(c => getComputedStyle(c).backgroundColor))
-  check('L2h each card keeps its own color on the dark page: a dark Donate button on the solid pink card, then pink, pink, volt yellow',
-    colors.join('|') === 'rgb(26, 11, 18)|rgb(229, 143, 181)|rgb(229, 143, 181)|rgb(227, 255, 46)', colors.join('|'))
+  check('L2h each card keeps its own color on the dark page: a dark Donate button on the solid pink card, then green, pink, pink, volt yellow',
+    colors.join('|') === 'rgb(26, 11, 18)|rgb(34, 197, 94)|rgb(229, 143, 181)|rgb(229, 143, 181)|rgb(227, 255, 46)', colors.join('|'))
   await hh.dispatchEvent('.season-ghost--1', 'click')
   check('L2h tapping a ghost makes it say Boo', await hh.evaluate(() => document.querySelector('.season-ghost--1').classList.contains('is-boo')))
   check('L2h the hero chip leads to the cards', (await hh.getAttribute('#heroChip', 'href')) === '#eventStrip')
@@ -1963,8 +1963,8 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
   const MAPS = 'https://maps.google.com/?cid=7150744267965161030'
   const cards = await cp.evaluate(() => [...document.querySelectorAll('#eventStrip a.event-strip__link')].filter(a => !a.hidden).map(a => a.getAttribute('href')))
   const colors = await cp.evaluate(() => [...document.querySelectorAll('#eventStrip .event-strip__cta')].filter(c => c.offsetParent !== null).map(c => getComputedStyle(c).backgroundColor))
-  check('L2c the strip is the day\'s card first, then the donation, Pink October, the seminar and HYROX, each in its own colour (gold on navy, dark on solid pink, pink, pink, volt)',
-    JSON.stringify(cards) === JSON.stringify([MAPS, '/donate', '/pink-october', '/self-defense-for-women', '/hyrox-youngstars']) && colors.join('|') === 'rgb(226, 184, 90)|rgb(26, 11, 18)|rgb(229, 143, 181)|rgb(229, 143, 181)|rgb(227, 255, 46)', JSON.stringify({ cards, colors }))
+  check('L2c the strip is the day\'s card first, then the donation, the Jiu-Jitsu World League event, Pink October, the seminar and HYROX, each in its own colour (gold on navy, dark on solid pink, green, pink, pink, volt)',
+    JSON.stringify(cards) === JSON.stringify([MAPS, '/donate', 'https://www.jjworldleague.com/events/nat-south-ii-gi-youth', '/pink-october', '/self-defense-for-women', '/hyrox-youngstars']) && colors.join('|') === 'rgb(226, 184, 90)|rgb(26, 11, 18)|rgb(34, 197, 94)|rgb(229, 143, 181)|rgb(229, 143, 181)|rgb(227, 255, 46)', JSON.stringify({ cards, colors }))
 
   // The day's card: what the owner said about the day, in the strip, on the page that cannot book it.
   const tc = await cp.evaluate(() => {
@@ -1990,7 +1990,7 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
     !/\$|free|price|cost|discount|% off|rsvp|book|sign up|register|trial|coach|professor|instructor|black belt|champion|top 1|national|donat/i.test(tc.all) && !/[–—]/.test(tc.all), tc.all)
   check('L2c its Today tag is red with white letters, dark enough to read', tc.pill === 'rgb(200, 40, 58)', tc.pill)
   const chip = await cp.evaluate(() => document.getElementById('heroChip').hidden ? '' : document.getElementById('heroChip').textContent.replace(/\s+/g, ' ').trim())
-  check('L2c the line under the hero buttons names it first', /^This month: Open mat and wrestling today · Pink October · Free self defense seminar · Kids HYROX race/.test(chip), chip)
+  check('L2c the line under the hero buttons names it first', /^This month: Open mat and wrestling today · JJWL Houston · Pink October · Free self defense seminar · Kids HYROX race/.test(chip), chip)
   check('L2c the decoration never takes a tap from the page: its layers let every tap through, and the hero button is what is under its own middle',
     await cp.evaluate(() => {
       const layers = ['.cd-hero', '.cd-sec', '.cd-footer', '.cd-sea'].map(s => document.querySelector(s))
@@ -2066,6 +2066,77 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
   check('L2c with reduced motion on, nothing flies, floats, swings, bobs or spins',
     await rm.evaluate(() => ['.cd-gull--1', '.cd-lookout--1', '.cd-ship-s', '.cd-wave', '.cd-compass--hero', '.cd-lantern', '.cd-twinkle'].every(sel => getComputedStyle(document.querySelector(sel)).animationName === 'none')))
   await ctx.close()
+}
+
+// ── L2j: the Jiu-Jitsu World League card in "this month" ──
+// The Nationals South II, Saturday, October 17, 2026, held in the Fort Bend County EpiCenter (JJWL calls it Houston): a card of its own, the full width of the strip and right under
+// the donation card, until the event is over, that sends people to JJWL's own page for it in a new tab. The facts are from jjworldleague.com's pages for the event (October 12, 2026).
+{
+  const URLH = 'http://localhost:4620/'
+  const JJWL = 'https://www.jjworldleague.com/events/nat-south-ii-gi-youth'
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } })
+  const jp = await ctx.newPage()
+  const read = () => {
+    const a = document.querySelector('a.event-strip__link--jjwl'), d = document.querySelector('a.event-strip__link--donate')
+    const t = (el, s) => (el.querySelector(s)?.textContent ?? '').replace(/\s+/g, ' ').trim()
+    const chip = document.getElementById('heroChip'), r = a.getBoundingClientRect(), cs = s => getComputedStyle(a.querySelector(s))
+    return {
+      shown: a.offsetParent !== null && r.height > 0, cards: [...document.querySelectorAll('#eventStrip a.event-strip__link')].filter(x => !x.hidden).map(x => x.getAttribute('href')),
+      chip: chip.hidden ? '' : chip.textContent.replace(/\s+/g, ' ').trim(), eyebrow: t(a, '.event-strip__eyebrow'), title: t(a, 'strong'), cta: t(a, '.event-strip__cta'), all: a.textContent.replace(/\s+/g, ' ').trim(),
+      href: a.getAttribute('href'), target: a.target, rel: a.rel, sameWidth: Math.abs(r.width - d.getBoundingClientRect().width) < 2, below: r.top >= d.getBoundingClientRect().bottom - 1,
+      icon: cs('.event-strip__icon').color, eyebrowColor: cs('.event-strip__eyebrow').color, ctaBg: cs('.event-strip__cta').backgroundColor, ctaFg: cs('.event-strip__cta').color, medal: !!a.querySelector('svg.medal'),
+    }
+  }
+  const at = async (iso, page = jp, q = '') => { await page.clock.setFixedTime(new Date(iso)); await page.goto(URLH + q, { waitUntil: 'load' }); return page.evaluate(read) }
+
+  const a = await at('2026-10-14T15:00:00Z')
+  check('L2j on October 14 the strip has a card for the Jiu-Jitsu World League event: JJWL Houston, the Nationals South II, Saturday, October 17, in the Fort Bend County EpiCenter in Rosenberg',
+    a.shown && a.eyebrow === 'Sat, Oct 17 · Fort Bend County EpiCenter, Rosenberg, TX' && a.title === 'JJWL Houston' && /The Nationals South II/.test(a.all) && /Jiu-Jitsu World League/.test(a.all) && /youth and adult gi and no-gi/.test(a.all), JSON.stringify(a))
+  check('L2j and October 17, 2026 is a Saturday, as the card says', new Date('2026-10-17T12:00:00Z').getUTCDay() === 6 && /^Sat, Oct 17 /.test(a.eyebrow))
+  const u = new globalThis.URL(a.href)
+  check('L2j it goes to JJWL\'s own page for the event, in a new tab that is told nothing about this site', a.href === JJWL && u.protocol === 'https:' && u.hostname === 'www.jjworldleague.com' && u.pathname === '/events/nat-south-ii-gi-youth'
+    && a.target === '_blank' && /\bnoopener\b/.test(a.rel) && /\bnoreferrer\b/.test(a.rel) && a.cta === 'Event page', JSON.stringify(a))
+  check('L2j the line under the hero buttons names it before Pink October', /^This month: JJWL Houston · Pink October · Free self defense seminar · Kids HYROX race/.test(a.chip), a.chip)
+  check('L2j it is the full width of the strip and right under the donation card', a.sameWidth && a.below && a.cards.indexOf(JJWL) === a.cards.indexOf('/donate') + 1 && a.cards.indexOf('/donate') >= 0, JSON.stringify(a))
+  const lum = c => { const [r, g, b] = c.match(/\d+/g).slice(0, 3).map(Number).map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4 }); return 0.2126 * r + 0.7152 * g + 0.0722 * b }
+  const ratio = (f, b) => (Math.max(lum(f), lum(b)) + 0.05) / (Math.min(lum(f), lum(b)) + 0.05)
+  check('L2j it is green (the color the tournament list gives JJWL), with a medal, dark letters on the green button and light green for the day and the place, all readable on the dark card',
+    a.medal && a.ctaBg === 'rgb(34, 197, 94)' && a.icon === 'rgb(74, 222, 128)' && a.eyebrowColor === 'rgb(74, 222, 128)' && ratio(a.ctaFg, a.ctaBg) >= 4.5 && ratio(a.eyebrowColor, 'rgb(14, 40, 24)') >= 4.5, JSON.stringify({ ...a, ctaRatio: ratio(a.ctaFg, a.ctaBg) }))
+  check('L2j it says nothing about registration, a price, a time of day, a coach or a result (JJWL says what is open, and the registration there has closed), and uses no dashes',
+    !/\$|free|price|cost|regist|sign up|rsvp|book|\b\d{1,2}:\d{2}\b|\b(am|pm)\b|coach|professor|champion|medal|gold|\bwin|\bwon\b|compet/i.test(a.all) && !/[–—]/.test(a.all), a.all)
+
+  // The window: it is there through the whole of the 17th and gone from the first second after Central midnight that night, for good.
+  const edge = {}
+  for (const [name, iso] of [['firstOfOctober', '2026-10-01T05:00:00Z'], ['columbusDay', '2026-10-12T15:00:00Z'], ['eventMorning', '2026-10-17T13:00:00Z'], ['lateOn', '2026-10-18T04:59:00Z'], ['midnightOut', '2026-10-18T05:00:01Z'],
+    ['nextDay', '2026-10-19T15:00:00Z'], ['november', '2026-11-02T15:00:00Z'], ['nextYear', '2027-10-17T15:00:00Z']]) edge[name] = (await at(iso)).shown
+  check('L2j it is there from the first of October through the evening of Saturday, October 17, and gone from the first second after Central midnight that night (and on that date next year)',
+    edge.firstOfOctober && edge.columbusDay && edge.eventMorning && edge.lateOn && !edge.midnightOut && !edge.nextDay && !edge.november && !edge.nextYear, JSON.stringify(edge))
+  const after = await at('2026-10-19T15:00:00Z')
+  check('L2j once the event is over the strip and the hero line are what they were (the donation, Pink October, the seminar, HYROX) and nothing of JJWL is shown',
+    JSON.stringify(after.cards) === JSON.stringify(['/donate', '/pink-october', '/self-defense-for-women', '/hyrox-youngstars']) && !/JJWL/.test(after.chip) && /Pink October/.test(after.chip), JSON.stringify(after))
+  const same = []
+  for (const [iso, q] of [['2026-10-12T15:00:00Z', ''], ['2026-10-14T15:00:00Z', ''], ['2026-10-14T15:00:00Z', '?season=off'], ['2026-10-14T15:00:00Z', '?season=christmas'], ['2026-10-14T15:00:00Z', '?season=valentines']]) {
+    const r = await at(iso, jp, q)
+    if (!(r.shown && r.ctaBg === 'rgb(34, 197, 94)' && r.icon === 'rgb(74, 222, 128)' && r.sameWidth)) same.push(`${iso} ${q}: ${JSON.stringify(r)}`)
+  }
+  check('L2j under any theme (Halloween, Columbus Day, none, a preview of Christmas or Valentine\'s Day) it is the same green card', same.length === 0, same.join('\n'))
+  await ctx.close()
+
+  // Phones: the card is on the screen, everything in it stays inside it, in the order a person reads it, and nothing makes the page wider.
+  const fits = () => {
+    const a = document.querySelector('a.event-strip__link--jjwl'), r = a.getBoundingClientRect(), top = s => a.querySelector(s).getBoundingClientRect().top, desc = a.querySelectorAll('.event-strip__text > span')[1]
+    return r.height > 0 && r.left >= -0.5 && r.right <= innerWidth + 0.5 && !(document.documentElement.scrollWidth > innerWidth)
+      && [...a.querySelectorAll('*')].every(e => { const b = e.getBoundingClientRect(); return b.width === 0 || (b.left >= r.left - 0.5 && b.right <= r.right + 0.5 && e.scrollWidth <= e.clientWidth + 1) })
+      && top('.event-strip__eyebrow') < top('strong') && top('strong') < desc.getBoundingClientRect().top && desc.getBoundingClientRect().top < top('.event-strip__cta')
+  }
+  for (const [w, h, label] of [[390, 844, 'a phone'], [320, 640, 'the smallest phone'], [820, 1000, 'a tablet']]) {
+    const pc = await browser.newContext({ viewport: { width: w, height: h } })
+    const pp = await pc.newPage()
+    await pp.clock.setFixedTime(new Date('2026-10-14T15:00:00Z'))
+    await pp.goto(URLH, { waitUntil: 'load' })
+    check(`L2j on ${label} the card fits: inside the screen and in reading order, top to bottom, with nothing sticking out`, await pp.evaluate(fits))
+    await pc.close()
+  }
 }
 
 // ── L2s: the seasons, window by window ──
