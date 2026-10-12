@@ -121,14 +121,16 @@
   // sparkles drifting, hills with clover patches, a green top hat, and a lucky clover; the pot, the hat and the clover answer a tap.
   function hero(k) {
     return '<div class="sp-aura"></div><div class="sp-sun"></div><div class="sp-horizon"></div><div class="sp-glow"></div>' +
+      k.use('sp-clover4', 'sp-ghost sp-ghost--a', AR.c4) + k.use('sp-clover3', 'sp-ghost sp-ghost--b', AR.c3) +
       '<svg class="sp-bow" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><defs><linearGradient id="sp-fadeg" gradientUnits="userSpaceOnUse" x1="0" y1="100" x2="100" y2="0"><stop offset="0" stop-color="#fff"/><stop offset=".55" stop-color="#fff" stop-opacity=".8"/><stop offset="1" stop-color="#fff" stop-opacity=".12"/></linearGradient>' +
         '<mask id="sp-fadem"><rect width="100" height="100" fill="url(#sp-fadeg)"/></mask></defs><g mask="url(#sp-fadem)"><use href="#sp-bowq" transform="rotate(180 50 50)"/></g></svg>' +
-      k.twinkles(14, { id: ['sk-sparkle', 'sk-sparkle', 'sp-coin'], size: [10, 24], dur: [3, 6.5], colors: [GOLD, '#fff3b0', MINT, GOLD], seed: 5, areaY: [3, 64], mobile: 0.5 }) +
+      k.twinkles(12, { id: ['sk-sparkle', 'sk-sparkle', 'sp-coin'], size: [10, 24], dur: [3, 6.5], colors: [GOLD, '#fff3b0', MINT, GOLD], seed: 5, areaY: [3, 64], mobile: 0.5 }) +
       k.twinkles(9, { id: ['sp-clover3', 'sp-clover3', 'sp-clover4'], colors: GREENS, size: [22, 40], seed: 41, areaY: [4, 66], mobile: 0.5, cls: 'sp-still' }) +
       k.particles(16, { id: ['sp-clover3', 'sp-clover3', 'sp-clover3', 'sp-clover3', 'sp-clover3', 'sp-clover4'], colors: GREENS, size: [24, 50], dur: [15, 27], drift: 130, sway: 40, seed: 11, mobile: 0.5, opacity: [0.75, 1] }) +
-      k.particles(10, { id: ['sp-clover3', 'sp-clover3', 'sp-clover3', 'sp-clover4'], colors: GREENS, size: [12, 22], dur: [20, 34], drift: 90, sway: 24, seed: 12, mobile: 0.4, opacity: [0.4, 0.7] }) +
+      k.particles(8, { id: ['sp-clover3', 'sp-clover3', 'sp-clover3', 'sp-clover4'], colors: GREENS, size: [12, 22], dur: [20, 34], drift: 90, sway: 24, seed: 12, mobile: 0.4, opacity: [0.4, 0.7] }) +
       k.particles(6, { id: 'sk-sparkle', dir: 'rise', colors: [GOLD, '#fff3b0'], size: [8, 16], dur: [16, 26], drift: 30, sway: 14, spin: 0.3, area: [60, 86], seed: 21, mobile: 0.5, opacity: [0.5, 0.9] }) +
       '<div class="sp-hills">' + hills(k) + '</div>' +
+      k.twinkles(5, { id: 'sk-sparkle', size: [10, 20], dur: [2.4, 4.4], colors: [GOLD, '#fff3b0'], seed: 51, area: [66, 84], areaY: [72, 90], mobile: 0.6 }) +
       '<div class="sp-potglow"></div>' +
       k.tap(k.use('sp-pot', '', AR.pot), 'Lucky you!', 'sp-tap sp-tap--pot') +
       k.tap(k.use('sp-hat', '', AR.hat), 'Lucky!', 'sp-tap sp-tap--hat') +
@@ -140,16 +142,16 @@
   // either side where the header is centred), bottoms stay low, and what falls keeps to one margin.
   var SECTIONS = {
     eventStrip:     ['knot:a', 'bow:tr:110', 'clov:bl:1', 'base:r:stack,coins', 'leaves:4:1:l', 'glint:6:1:b'],
-    programs:       ['knot:b', 'pend:hat:r:3:92:36', 'base:l:pot', 'clov:br:2', 'rain:5:2:r', 'glint:8:2:b', 'tap:clover:l:30:52'],
-    competition:    ['knot:c', 'bow:tr:130', 'pend:coin:l:2:76:30', 'base:l:stack', 'rain:4:3:l', 'glint:6:3:r'],
-    coaches:        ['knot:d', 'bunt:b:low', 'clov:tr:3', 'base:r:pot,coins', 'leaves:4:4:l', 'glint:6:4:b', 'tap:hat:r:58:54'],
+    programs:       ['knot:b', 'pend:hat:r:3:92:36', 'base:l:pot', 'clov:br:2', 'rain:5:2:r', 'glint:8:2:b', 'tap:clover:l:30:52', 'peek:r:40:clover4:60:14', 'peek:l:66:coin:44:-10'],
+    competition:    ['knot:c', 'bow:tr:130', 'pend:coin:l:2:76:30', 'base:l:stack', 'rain:4:3:l', 'glint:6:3:r', 'peek:r:46:shoe:46:10'],
+    coaches:        ['knot:d', 'bunt:b:low', 'clov:tr:3', 'base:r:pot,coins', 'leaves:4:4:l', 'glint:6:4:b', 'tap:hat:r:58:54', 'peek:l:34:clover3:58:-16', 'peek:l:78:coin:42:8'],
     gallery:        ['knot:e', 'bow:tl:130', 'pend:clover:r:2.5:80:32', 'bow:bl:130', 'base:r:stack,shoe', 'rain:4:5:r', 'leaves:3:5:l'],
     'belt-journey': ['knot:a', 'bunt:a:low', 'clov:tr:1', 'base:l:coins,stack', 'rain:5:6:r', 'glint:5:6:l', 'tap:pot:r:46:54'],
-    locations:      ['knot:b', 'bow:tr:120', 'pend:hat:l:3:70:34', 'base:l:shoe,pot', 'leaves:5:7:r', 'glint:5:7:l'],
+    locations:      ['knot:b', 'bow:tr:120', 'pend:hat:l:3:70:34', 'base:l:shoe,pot', 'leaves:5:7:r', 'glint:5:7:l', 'peek:r:52:clover3:56:12'],
     faq:            ['knot:c', 'clov:tl:2', 'pend:clover:r:1.5:100:32', 'bow:br:130', 'rain:4:8:l', 'glint:5:8:r', 'tap:coin:l:34:40'],
     schedule:       ['knot:d', 'bunt:b:low', 'clov:tr:1', 'base:r:stack,coins', 'leaves:4:9:l', 'glint:6:9:b', 'tap:hat:l:62:54'],
     testimonials:   ['knot:e', 'bow:tr:120', 'pend:coin:l:2:96:30', 'base:l:stack,pot', 'rain:5:10:r', 'glint:5:10:l', 'tap:clover:r:34:50'],
-    pricing:        ['knot:a', 'clov:tl:3', 'pend:hat:r:2.5:84:34', 'bow:bl:130', 'leaves:4:11:r', 'glint:6:11:b'],
+    pricing:        ['knot:a', 'clov:tl:3', 'pend:hat:r:2.5:84:34', 'bow:bl:130', 'leaves:4:11:r', 'glint:6:11:b', 'peek:r:34:shoe:46:-12', 'peek:l:52:clover4:62:12', 'peek:r:74:coin:44:6'],
     contact:        ['knot:b', 'bunt:a:low', 'clov:tr:2', 'base:l:coins,stack', 'base:r:shoe,coins', 'rain:4:12:l', 'glint:4:12:r', 'tap:pot:r:30:54']
   };
   var ITEMS = { pot: ['sp-pot', AR.pot], stack: ['sp-stack', AR.stack], coins: ['sp-coinflat', AR.flat], coin: ['sp-coin', AR.coin], shoe: ['sp-shoe', AR.shoe],
@@ -184,6 +186,9 @@
         bits = '';
         a[2].split(',').forEach(function (it) { d = ITEMS[it]; if (d) bits += k.use(d[0], 'sp-i sp-i--' + it, d[1]); });
         out += '<div class="sp-base sp-base--' + a[1] + '">' + bits + '</div>';
+      } else if (kind === 'peek') {
+        d = ITEMS[a[3]];
+        out += '<span class="sp-peek sp-peek--' + a[1] + ' sk-hide-m" style="top:' + a[2] + '%;width:' + a[4] + 'px;rotate:' + a[5] + 'deg">' + k.use(d[0], '', d[1]) + '</span>';
       } else if (kind === 'rain' || kind === 'leaves' || kind === 'glint') {
         (AREA[a[3]] || [[0, 100]]).forEach(function (ar, j, all) {
           var n = Math.max(1, Math.round(+a[1] / all.length)), seed = (kind === 'rain' ? 200 : kind === 'leaves' ? 100 : 300) + +a[2] + j * 7;
@@ -238,7 +243,7 @@
 
   var T = {
     name: 'stpatricks', prefix: 'sp',
-    meta: { bg: '#06130c', gold: '#ffc83d', emoji: '🍀', tapSay: ['Lucky you!', 'Lucky!', 'Found one!', 'Shiny!'], sayings: SAYINGS },
+    meta: { bg: '#06130c', gold: '#ffc83d', emoji: '\uD83C\uDF40', tapSay: ['Lucky you!', 'Lucky!', 'Found one!', 'Shiny!'], sayings: SAYINGS },
     defs: DEFS,
     hero: hero,
     sections: {},

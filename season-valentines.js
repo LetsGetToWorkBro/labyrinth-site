@@ -209,8 +209,8 @@
 
   // Two soft clouds of cotton candy, each crossing the sky at its own height.
   function clouds(k) {
-    return k.flyers(1, { id: 'vd-cloud', vb: '0 0 200 80', size: [190, 250], dur: [150, 150], top: [9, 11], wave: 0, colors: ['rgba(255,170,200,.17)'], seed: 5, cls: 'vd-cloud vd-cloud--1' }) +
-      k.flyers(1, { id: 'vd-cloud', vb: '0 0 200 80', size: [130, 170], dur: [190, 190], top: [24, 26], wave: 0, colors: ['rgba(255,120,170,.15)'], seed: 6, cls: 'vd-cloud vd-cloud--2', dir: 'rtl' });
+    return k.flyers(1, { id: 'vd-cloud', vb: '0 0 200 80', size: [190, 250], dur: [150, 150], top: [9, 11], wave: 0, colors: ['rgba(255,186,216,.26)'], seed: 5, cls: 'vd-cloud vd-cloud--1' }) +
+      k.flyers(1, { id: 'vd-cloud', vb: '0 0 200 80', size: [130, 170], dur: [190, 190], top: [24, 26], wave: 0, colors: ['rgba(255,150,198,.22)'], seed: 6, cls: 'vd-cloud vd-cloud--2', dir: 'rtl' });
   }
 
   // The hero: a rosy wash, a huge heart of light, cotton-candy clouds, hearts and sparkles rising and twinkling through all of it, Cupid's arrow trailing ribbons
@@ -228,7 +228,7 @@
       '<div class="vd-bed">' + bed(k) + '</div>' +
       k.flyers(1, { id: 'vd-arrow', vb: '0 0 260 64', size: [196, 196], dur: [30, 30], top: [50, 50], wave: 22, seed: 9, cls: 'vd-arrowfly' }) +
       '<div class="vd-bunting"></div>' +
-      k.tap(ic('vd-lovearrow', '', LOVE_VB), 'Love ya!', 'vd-tap vd-tap--r vd-tap--arrow sk-hide-m', 'right:0.4%;top:30%;width:68px') +
+      k.tap(ic('vd-lovearrow', '', LOVE_VB), 'Love ya!', 'vd-tap vd-tap--r vd-tap--arrow sk-hide-m', 'right:0.4%;top:15%;width:68px') +
       k.tap(ic('vd-bundle', '', BUNDLE_VB), 'Aww!', 'vd-tap vd-tap--r vd-tap--balloons', 'right:2.5%;bottom:0;width:clamp(64px,9vw,122px)');
   }
 

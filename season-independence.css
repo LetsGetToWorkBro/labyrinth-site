@@ -51,8 +51,10 @@
 
 /* The glow of the last of the daylight, low in the sky behind the trees. */
 .id-glow {
-  left: 50%; bottom: 0; width: min(130vw, 1600px); height: clamp(260px, 36vw, 520px); transform: translateX(-50%);
-  background: radial-gradient(ellipse 50% 70% at 50% 100%, rgba(255, 132, 92, 0.5) 0%, rgba(214, 72, 132, 0.26) 36%, rgba(92, 62, 192, 0.12) 62%, transparent 76%);
+  left: 0; right: 0; bottom: 0; height: clamp(260px, 36vw, 520px);
+  background:
+    linear-gradient(to top, rgba(255, 138, 84, 0.46) 0%, rgba(240, 96, 112, 0.3) 18%, rgba(168, 66, 140, 0.16) 42%, transparent 72%),
+    radial-gradient(ellipse 50% 70% at 50% 100%, rgba(255, 150, 96, 0.5) 0%, rgba(214, 72, 132, 0.22) 38%, transparent 72%);
 }
 
 /* A firework: it climbs as a bright streak, pops into a shell, spreads, and fades, then waits its turn (every one has its own delay, so they go off in sequence).
@@ -169,7 +171,9 @@
 @keyframes id-sway { from { transform: rotate(-2.5deg); } to { transform: rotate(2.5deg); } }
 .id-sec .id-tap { opacity: 0.7; animation: id-bob 7s ease-in-out infinite; }
 [data-season="independence"] .id-tap.is-tap { opacity: 1; animation: sk-wiggle 0.4s ease-in-out 2; }
-.id-tap .sk-bubble { transition-duration: 0.1s; }
+.id-tap .sk-bubble { transition: opacity 0.25s, transform 0.25s; }
+.id-tap.is-tap .sk-bubble { transition: none; animation: id-pop 0.22s cubic-bezier(0.2, 0.9, 0.3, 1.25) both; }
+@keyframes id-pop { from { transform: translate(-50%, 8px) scale(0.5); } to { transform: translate(-50%, 0) scale(1); } }
 @keyframes id-bob { 0%, 100% { translate: 0 0; } 50% { translate: 6px -12px; } }
 .id-sec .sk-fly { opacity: 0.85; }
 
@@ -189,7 +193,7 @@
 .id-beam--r { right: 9%; --a: 16deg; animation-delay: -4s; }
 @keyframes id-search { from { transform: rotate(calc(var(--a) - 7deg)); } to { transform: rotate(calc(var(--a) + 7deg)); } }
 .id-props, .id-signs { position: relative; z-index: 1; }
-.id-props { display: flex; align-items: flex-end; gap: clamp(2px, 0.8vw, 10px); margin-bottom: 10px; }
+.id-props { display: flex; flex: 1 1 0; min-width: 0; align-items: flex-end; justify-content: space-evenly; gap: clamp(2px, 0.8vw, 10px); margin-bottom: 10px; }
 .id-i { display: block; flex: none; height: auto; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4)); }
 .id-footer .id-i--rocket { width: clamp(22px, 2.6vw, 40px); }
 .id-footer .id-i--r1 { width: clamp(26px, 3vw, 46px); }

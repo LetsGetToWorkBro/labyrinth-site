@@ -18,6 +18,10 @@
 .sk-sec { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
 .sk-sec > * { position: absolute; }
 .sk-sec ~ .container { position: relative; z-index: 1; }
+/* A section's content sits above its layer, so a tap decoration under the empty part of the content box could not be pressed: the box lets a press through to the layer
+   and the things inside it (its children, and so everything in them) still take theirs. */
+.sk-sec ~ .container { pointer-events: none; }
+.sk-sec ~ .container > * { pointer-events: auto; }
 
 /* The one section with a colour of its own in style.css (the reviews, a shade lighter than the page) follows the theme's page colour instead of staying black. */
 :root[data-season] .testimonials { background: var(--bg); background: color-mix(in srgb, var(--bg) 97%, #fff); }

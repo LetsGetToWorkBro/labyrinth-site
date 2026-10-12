@@ -6,8 +6,8 @@
    Nothing here reads or writes anything about a visitor, and nothing is built unless the page is in the season. */
 (function () {
   var C = {
-    red: '#c8283a', white: '#f3f1ea', blue: '#2a4390', blueLt: '#3b58b3', ice: '#cdd8f2',
-    poppy: '#d92d3a', poppyDk: '#7d1220', poppyLt: '#ff6b6b',
+    red: '#c8283a', white: '#f3f1ea', blue: '#2a4390', blueLt: '#3b58b3',
+    poppy: '#d92d3a', poppyDk: '#7d1220',
     stem: '#2a5a3b', leaf: '#2f6b44', leafLt: '#4a8c5c', brass: '#d9bd6a', pole: '#cfd5e8', slate: '#8294c2', slateDk: '#5f72a6'
   };
   var PETALS = ['#d9343f', '#ff6b6b', '#e8505c', '#f3f1ea', '#ffffff', '#dfe6f7'];
@@ -142,7 +142,7 @@
 
   /* ── the eagle: wings spread, the fingered tips of its feathers, a white head and tail. Drawn on a 320 by 140 sheet, centred on x = 160 ── */
   function eagleWing() {
-    var s = '', i;
+    var s = '';
     // trailing edge first (the shorter secondary feathers), then the long primaries over them, then the shoulder and its highlight
     [[178, 74, 97, 29, 16], [190, 73, 91, 30, 16], [202, 72, 85, 29, 16], [213, 70, 78, 27, 15], [222, 66, 70, 25, 14]].forEach(function (f) { s += '<path d="' + blade(f[0], f[1], f[2], f[3], f[4]) + '" fill="' + C.slateDk + '"/>'; });
     [[236, 34, -12, 78, 11.5], [234, 41, -3, 80, 12.5], [231, 48, 6, 78, 12.5], [226, 55, 16, 70, 12.5], [219, 62, 28, 60, 12.5], [210, 68, 42, 50, 12]].forEach(function (f, j) {
@@ -323,7 +323,7 @@
     competition:    ['top:stars', 'glow:br:red', 'pile:r:poppy,flag,bloom', 'pend:head:l:2:80:34', 'stars:r:60:4:2', 'petals:4:3'],
     coaches:        ['top:ribbon', 'stem:r:0.6:46', 'pile:l:bud,flag', 'tap:poppy:r:104:0.3:36', 'stars:l:70:2:3', 'petals:4:4', 'glow:tl:white'],
     gallery:        ['top:swag', 'wreath:l:-36:140:-3', 'pile:r:flag,poppy', 'pend:star:r:5:70:26', 'petals:3:5', 'glow:bl:blue'],
-    'belt-journey': ['top:bunting', 'stem:r:0.8:42', 'pend:star:l:2:92:28', 'tap:star:r:150:0.3:34', 'pile:l:poppy,bloom,flag', 'petals:5:6', 'eagle:60:rtl:2'],
+    'belt-journey': ['top:bunting', 'stem:r:0.8:42', 'pend:star:l:2:92:28', 'tap:star:r:150:0.3:34', 'pile:l:poppy,bloom,flag', 'petals:5:6', 'glow:br:blue'],
     locations:      ['top:stars', 'flagpole:l:72', 'pile:r:poppy,bud', 'stars:r:50:4:4', 'pend:head:r:3:100:32', 'petals:4:7'],
     faq:            ['top:ribbon', 'wreath:r:200:130:7', 'stem:l:3:50', 'bow:l:6:60:44', 'stars:r:90:3:5', 'petals:4:8', 'tap:flag:l:360:8:62'],
     schedule:       ['top:swag', 'pile:l:flag,poppy,flag', 'pend:star:r:2:84:30', 'stars:r:50:4:6', 'petals:4:9', 'glow:tr:blue'],
@@ -332,7 +332,7 @@
     contact:        ['top:stars', 'pile:l:poppy,flag,poppy', 'pile:r:flag,poppy,bud', 'bow:r:5:70:42', 'stars:l:80:3:9', 'petals:4:12', 'glow:tl:red']
   };
   var ITEMS = { poppy: ['md-poppy', '0 0 64 128'], bloom: ['md-poppyb', '0 0 64 128'], bud: ['md-bud', '0 0 64 128'], flag: ['md-flagsm', '0 0 52 100'] };
-  var PENDS = { star: ['md-star', '0 0 24 25', 'md-pst'], head: ['md-head', '0 0 64 64', 'md-phd'], bow: ['md-bow', '0 4 100 118', 'md-pbw'] };
+  var PENDS = { star: ['md-star', '0 0 24 25', 'md-pst'], head: ['md-head', '0 0 64 64', 'md-phd'] };
 
   function section(specs, k) {
     var out = '';

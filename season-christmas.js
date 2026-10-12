@@ -431,16 +431,9 @@
     return out + '</svg>';
   }
 
-  // Flakes that stay where they are: shown only to anyone who has asked for less motion, in place of the falling snow.
-  function stillSnow(k) {
-    var r = k.rng(61), out = '<svg class="xm-still" viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">', i, w;
-    for (i = 0; i < 26; i++) { w = 9 + r() * 18; out += '<use href="#xm-flake-' + 'abc'.charAt(i % 3) + '" x="' + n(r() * 1000) + '" y="' + n(120 + r() * 760) + '" width="' + n(w) + '" height="' + n(w) + '" style="color:' + SNOWC[i % 3] + ';opacity:' + (0.45 + r() * 0.5).toFixed(2) + '"/>'; }
-    return out + '</svg>';
-  }
-
   // ── the hero ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
   function hero(k) {
-    var sl = k.flyers(1, { id: 'xm-sleigh', vb: '0 0 300 100', size: [190, 190], dur: [84, 84], top: [8, 8], dir: 'ltr', wave: 8, seed: 4, cls: 'xm-sleigh' });
+    var sl = '<i class="sk-fly sk-fly--ltr xm-sleigh" style="--s:176px;--d:84s;--o:-24s;--wv:-4px">' + k.tap(k.use('xm-sleigh', '', '0 0 300 100'), 'Ho ho ho!', 'xm-sleigh-tap') + '</i>';
     return '<div class="xm-sky"></div><div class="xm-halo"></div>' +
       k.twinkles(8, { id: ['sk-sparkle', 'xm-star5'], colors: SPARK, size: [8, 16], dur: [3, 6], area: [0, 100], areaY: [7.5, 12], seed: 3, mobile: 0.5 }) +
       k.twinkles(8, { id: ['sk-sparkle', 'xm-star5'], colors: SPARK, size: [8, 17], dur: [3, 6], area: [76, 99], areaY: [11, 44], seed: 8, mobile: 0.4 }) +
@@ -448,7 +441,8 @@
       '<div class="xm-moon"></div>' +
       '<i class="xm-bigstar">' + k.use('xm-bigstar', '', '0 0 100 100') + '</i>' +
       '<i class="xm-shoot xm-shoot--1"></i><i class="xm-shoot xm-shoot--2"></i>' +
-      stillSnow(k) +
+      k.twinkles(7, { id: ['xm-flake-a', 'xm-flake-b'], colors: SNOWC, size: [12, 24], dur: [4, 8], area: [0.4, 7], areaY: [10, 64], seed: 41, mobile: 0.5 }) +
+      k.twinkles(7, { id: ['xm-flake-a', 'xm-flake-b'], colors: SNOWC, size: [12, 24], dur: [4, 8], area: [92, 99], areaY: [38, 70], seed: 42, mobile: 0.5 }) +
       k.particles(24, { id: 'xm-flake-c', colors: SNOWC, size: [4, 9], dur: [18, 30], opacity: [0.55, 0.95], drift: 50, sway: 22, spin: 0, seed: 33, mobile: 0.5 }) +
       heroLights(k) + sl +
       '<div class="xm-scene">' + scene(k) + '</div>' +
@@ -484,7 +478,7 @@
     icicle: ['xm-icw', 'xm-ic', 64], stars: ['xm-stw', 'xm-st', 58], pennant: ['xm-pn-w', 'xm-pn', 48], garland: ['xm-gl-w', 'xm-gl', 52]
   };
   function section(specs, k) {
-    var out = '';
+    var out = '', pends = 0;                         // a phone puts every pendant at the same place, so only the first of a section is kept there
     specs.forEach(function (spec) {
       var a = spec.split(':'), kind = a[0], bits = '', d, h;
       if (kind === 'top') {
@@ -501,7 +495,7 @@
         out += '<div class="xm-pile xm-pile--' + a[1] + '">' + bits + '</div>';
       } else if (kind === 'orn') {
         d = ORN[a[5]];
-        out += k.pendant(k.use(d[0], '', d[1]), { side: a[1], at: a[2], len: +a[3], w: +a[4], cls: a[5].indexOf('bauble') === 0 ? 'xm-c-' + (a[6] || 'red') : 'xm-o-' + a[5] });
+        out += k.pendant(k.use(d[0], '', d[1]), { side: a[1], at: a[2], len: +a[3], w: +a[4], cls: (a[5].indexOf('bauble') === 0 ? 'xm-c-' + (a[6] || 'red') : 'xm-o-' + a[5]) + (pends++ ? ' sk-hide-m' : '') });
       } else if (kind === 'wreath') {
         out += k.use('xm-wreath', 'xm-wreath xm-wreath--' + a[1], '0 0 100 104');
       } else if (kind === 'holly') {
@@ -551,9 +545,12 @@
 
   // Tap the snowman, Santa or a bell and a little pop of flakes or gold leaves the thing you tapped.
   function onTap(el, k) {
-    if (el.classList.contains('xm-snowman-tap')) k.burst(el, { id: 'xm-flake-b', n: 12, colors: ['#ffffff', '#d6ecff'], size: [9, 16], dist: [40, 90] });
-    else if (el.classList.contains('xm-santa-tap')) k.burst(el, { id: 'xm-star5', n: 12, colors: ['#ffe08a', '#ff4056', '#3fd47a', '#ffffff'], size: [9, 15], dist: [46, 96] });
-    else k.burst(el, { id: 'sk-sparkle', n: 10, colors: ['#ffe08a', '#fff6d6'], size: [8, 14], dist: [30, 70] });
+    var c = el.classList;
+    if (c.contains('xm-snowman-tap')) k.burst(el, { id: 'xm-flake-b', n: 12, colors: ['#ffffff', '#d6ecff'], size: [9, 16], dist: [40, 90] });
+    else if (c.contains('xm-santa-tap') || c.contains('xm-sleigh-tap')) {
+      if (c.contains('xm-sleigh-tap')) c.toggle('xm-bub-r', el.getBoundingClientRect().left + el.offsetWidth / 2 < window.innerWidth / 2);
+      k.burst(el, { id: 'xm-star5', n: 12, colors: ['#ffe08a', '#ff4056', '#3fd47a', '#ffffff'], size: [9, 15], dist: [46, 96] });
+    } else k.burst(el, { id: 'sk-sparkle', n: 10, colors: ['#ffe08a', '#fff6d6'], size: [8, 14], dist: [30, 70] });
   }
 
   var T = {

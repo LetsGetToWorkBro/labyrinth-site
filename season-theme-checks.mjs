@@ -36,9 +36,27 @@ const overText = () => {
   for (let n; (n = walker.nextNode());) { const r = document.createRange(); r.selectNodeContents(n); for (const b of r.getClientRects()) if (b.width > 2 && b.height > 2) rects.push({ b, t: n.nodeValue.trim().slice(0, 28) }) }
   for (const t of taps) {
     const a = t.getBoundingClientRect(), i = 3
-    for (const { b, t: text } of rects) if (a.left + i < b.right && a.right - i > b.left && a.top + i < b.bottom && a.bottom - i > b.top) { out.push(`${[...t.classList].pop()} over "${text}"`); break }
+    for (const { b, t: text } of rects) if (a.left + i < b.right && a.right - i > b.left && a.top + i < b.bottom && a.bottom - i > b.top) { out.push(`${[...t.classList].filter(c => c !== 'sk-tap').join('.')} over "${text}"`); break }
   }
   return out
+}
+
+
+// Every tap decoration that is on the screen can be pressed with a real click: what is under the middle of it is the decoration itself, not the page's content.
+const pressable = () => {
+  const bad = []
+  for (const t of document.querySelectorAll('.sk-tap')) {
+    if (getComputedStyle(t).display === 'none' || t.getBoundingClientRect().width === 0) continue
+    // scroll the page (not scrollIntoView, which would also scroll the decoration layers themselves) so the tap is in the middle of the window
+    // (instantly: the page scrolls smoothly otherwise, and the tap would not be there yet)
+    const r0 = t.getBoundingClientRect(); window.scrollTo({ top: Math.max(0, window.scrollY + r0.top + r0.height / 2 - innerHeight / 2), left: 0, behavior: 'instant' })
+    const r = t.getBoundingClientRect(), x = r.left + r.width / 2, y = r.top + r.height / 2
+    if (x < 0 || x > innerWidth) continue          // a tap that moves (a hopping bunny) is off the screen at times: nothing to press then
+    const top = document.elementFromPoint(x, y)
+    if (!top || top.closest('[data-tap]') !== t) bad.push(`${[...t.classList].filter(c => c !== 'sk-tap').join('.')} is under ${top ? top.tagName + '.' + String(top.className).split(' ')[0] : 'nothing'}`)
+  }
+  window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+  return bad
 }
 
 // A page for `name` on the day `iso` (a pinned clock), with the requests it made for the pack's files and anything that went wrong in it.
@@ -113,6 +131,8 @@ export async function checkPack({ browser, base, check, name, iso }) {
 
   const over = await page.evaluate(overText)
   check(`${L} at 1280px no tap decoration lies over any words (the margins are 64px: keep them to the sides)`, over.length === 0, JSON.stringify(over))
+  const press = await page.evaluate(pressable)
+  check(`${L} at 1280px every tap decoration can be pressed with a real click (its middle is not under the page's content)`, press.length === 0, JSON.stringify(press))
 
   // The taps: at least three decorations answer a tap, one of them in the hero, each with its own words from the pack's meta.
   const tapCount = st.taps.length
@@ -137,8 +157,8 @@ export async function checkPack({ browser, base, check, name, iso }) {
   // Tablets: below 1280px the margins are too narrow for decorations in a section, which the kit hides; the hero's must still keep off the words.
   for (const [w, h] of [[1024, 768], [820, 1000]]) {
     const t = await open(browser, base, iso ?? PACKS[name], '', { width: w, height: h })
-    const o = await t.page.evaluate(overText)
-    check(`${L} at ${w}px no tap decoration lies over any words, and nothing sticks out sideways`, o.length === 0 && !(await t.page.evaluate(() => document.documentElement.scrollWidth > innerWidth)), JSON.stringify(o))
+    const o = await t.page.evaluate(overText), pr = await t.page.evaluate(pressable)
+    check(`${L} at ${w}px no tap decoration lies over any words or can not be pressed, and nothing sticks out sideways`, o.length === 0 && pr.length === 0 && !(await t.page.evaluate(() => document.documentElement.scrollWidth > innerWidth)), JSON.stringify({ o, pr }))
     await t.ctx.close()
   }
 
@@ -157,8 +177,8 @@ export async function checkPack({ browser, base, check, name, iso }) {
       const cards = [...document.querySelectorAll('#eventStrip a.event-strip__link')].filter(a => a.offsetParent !== null).every(a => { const b = a.getBoundingClientRect(); return b.left >= -0.5 && b.right <= innerWidth + 0.5 })
       return { overflow: document.documentElement.scrollWidth > innerWidth, over, cards, taps: [...document.querySelectorAll('.sk-tap')].filter(t => getComputedStyle(t).display !== 'none').length }
     })
-    const words = await m.page.evaluate(overText)
-    check(`${L} on a ${w}px phone nothing sticks out sideways, the cards stay on the screen, and no tap decoration lies over a link, a button or any words`, !r.overflow && r.cards && r.over.length === 0 && words.length === 0, JSON.stringify({ ...r, words }))
+    const words = await m.page.evaluate(overText), pr = await m.page.evaluate(pressable)
+    check(`${L} on a ${w}px phone nothing sticks out sideways, the cards stay on the screen, and no tap decoration lies over a link, a button or any words, or can not be pressed`, !r.overflow && r.cards && r.over.length === 0 && words.length === 0 && pr.length === 0, JSON.stringify({ ...r, words, pr }))
     await m.ctx.close()
   }
 

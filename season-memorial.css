@@ -42,6 +42,9 @@
 [data-season="memorial"] .hero { padding-bottom: clamp(130px, 19vw, 240px); }
 [data-season="memorial"] .hero__h1-visual span { color: var(--gold); text-shadow: 0 0 26px rgba(255, 107, 107, 0.34), 0 0 4px rgba(255, 190, 190, 0.3); }
 [data-season="memorial"] .hero__badge { border-color: rgba(255, 107, 107, 0.5); background: rgba(255, 107, 107, 0.1); }
+/* The site's hover glows are written in the old gold; here they glow poppy red. */
+[data-season="memorial"] .btn--gold:hover { box-shadow: 0 4px 16px rgba(255, 107, 107, 0.35), 0 0 30px rgba(255, 107, 107, 0.15); }
+[data-season="memorial"] .hero__stat:hover .hero__stat-value { text-shadow: 0 0 20px rgba(255, 107, 107, 0.5), 0 0 40px rgba(255, 107, 107, 0.2); }
 
 .md-dusk {
   left: 50%; bottom: clamp(20px, 4vw, 60px); width: clamp(340px, 74vw, 1060px); aspect-ratio: 1.7; transform: translate(-50%, 46%); border-radius: 50%;
@@ -60,7 +63,7 @@
 
 /* The eagle: large, slow, and unhurried. It rides one long glide across the layer and leans a little into the air as it goes. */
 .md-eagle { opacity: 0.6; animation-name: md-soar; animation-timing-function: linear; }
-.md-eagle--h { --s: clamp(150px, 15vw, 270px) !important; animation-delay: calc(var(--d, 90s) * -0.64); }
+.md-eagle--h { --s: clamp(150px, 15vw, 270px) !important; animation-delay: calc(var(--d, 90s) * -0.58); }
 .md-eagle.sk-fly--rtl { animation-name: md-soar-rtl; }
 .md-eagle svg { animation: md-bank 18s ease-in-out infinite alternate; }
 @keyframes md-soar {
@@ -75,7 +78,7 @@
 }
 @keyframes md-bank { from { rotate: -2.5deg; } to { rotate: 2.5deg; } }
 
-/* The field along the foot of the hero: rows of poppies, a row of small flags among them, grass in front. Clumps sway a little, each in its own time. */
+/* The field along the foot of the hero: rows of poppies, a row of small flags among them, grass in front. Each row leans a little, in its own time. */
 .md-field { left: 0; right: 0; bottom: -1px; height: clamp(120px, 19vw, 240px); }
 .md-fl { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
 /* Dusk settles over the field: the nearest rows sink into the page's own navy. */
@@ -93,11 +96,14 @@
 .md-t-star { color: #cdd8f2; animation: md-glimmer 5.5s ease-in-out infinite; filter: drop-shadow(0 0 8px rgba(205, 216, 242, 0.5)); }
 @keyframes md-glimmer { 0%, 100% { opacity: 0.5; scale: 0.92; } 50% { opacity: 0.9; scale: 1.06; } }
 [data-season="memorial"] .sk-tap.is-tap { animation: md-nod 1.3s ease-in-out 1; opacity: 1; }
+/* The ones that sway or glimmer keep doing so through the nod (so nothing snaps back when it ends). */
+[data-season="memorial"] .md-t-poppy.is-tap { animation: md-sway 8s ease-in-out infinite alternate, md-nod 1.3s ease-in-out 1; }
+[data-season="memorial"] .md-t-flag.is-tap { animation: md-sway 10s ease-in-out -3s infinite alternate, md-nod 1.3s ease-in-out 1; }
+[data-season="memorial"] .md-t-star.is-tap { animation: md-glimmer 5.5s ease-in-out infinite, md-nod 1.3s ease-in-out 1; }
 @keyframes md-nod { 0%, 100% { rotate: 0deg; } 30% { rotate: -3deg; } 70% { rotate: 3deg; } }
-[data-season="memorial"] .sk-bubble { font-weight: 600; letter-spacing: 0.06em; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4); }
-/* The bubble answers at once and then fades away slowly. */
-[data-season="memorial"] .sk-bubble { transition: opacity 0.45s ease, transform 0.45s ease; }
-[data-season="memorial"] .sk-tap.is-tap .sk-bubble { transition: opacity 0.07s linear, transform 0.12s ease-out; }
+/* The bubble answers at once, with no wait for the next frame, and then fades away slowly. */
+[data-season="memorial"] .sk-bubble { font-weight: 600; letter-spacing: 0.06em; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4); transition: opacity 0.45s ease, transform 0.45s ease; }
+[data-season="memorial"] .sk-tap.is-tap .sk-bubble { transition: none; }
 /* A tap near a side keeps its bubble on the screen: the bubble lines up with the side nearest the edge instead of centring. */
 .md-bl .sk-bubble { left: 0; transform: translate(0, 6px) scale(0.6); transform-origin: 0 100%; }
 .md-bl.is-tap .sk-bubble { transform: translate(0, 0) scale(1); }
@@ -108,7 +114,7 @@
 [data-season="memorial"] .event-strip { background: linear-gradient(to bottom, #070d1c, rgba(13, 21, 48, 0.7)); }
 [data-season="memorial"] .event-strip::before {
   content: ""; position: absolute; top: 0; left: 0; right: 0; height: 6px; opacity: 0.88;
-  background: repeating-linear-gradient(90deg, #c8283a 0 26px, #f3f1ea 26px 52px, #2a4390 52px 78px);
+  background: repeating-linear-gradient(90deg, var(--md-red) 0 26px, var(--md-white) 26px 52px, var(--md-blue) 52px 78px);
 }
 [data-season="memorial"] .event-strip__title { font-size: clamp(36px, 6vw, 60px); text-shadow: 0 0 24px rgba(255, 107, 107, 0.24); }
 [data-season="memorial"] .event-strip__title::after { content: " \2B50"; }
@@ -130,7 +136,7 @@
 .md-top--bunting { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2296%22%20height%3D%2244%22%20viewBox%3D%220%200%2096%2044%22%3E%3Cpath%20d%3D%22M0%203Q48%2020%2096%203%22%20fill%3D%22none%22%20stroke%3D%22%23cdd8f2%22%20stroke-opacity%3D%22.5%22%20stroke-width%3D%221.4%22%2F%3E%3Cpath%20d%3D%22M6%205.5L26%209.2L16%2031Z%22%20fill%3D%22%23c8283a%22%2F%3E%3Cpath%20d%3D%22M38%2011L58%2011L48%2034Z%22%20fill%3D%22%23f3f1ea%22%2F%3E%3Cpath%20d%3D%22M70%209.2L90%205.5L80%2031Z%22%20fill%3D%22%232f4fa3%22%2F%3E%3Cpath%20d%3D%22M6%205.5L26%209.2L16%2031Z%22%20fill%3D%22%23fff%22%20fill-opacity%3D%22.08%22%2F%3E%3C%2Fsvg%3E"); }
 .md-top--stars { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22112%22%20height%3D%2252%22%20viewBox%3D%220%200%20112%2052%22%3E%3Cpath%20d%3D%22M0%203Q56%2018%20112%203%22%20fill%3D%22none%22%20stroke%3D%22%23cdd8f2%22%20stroke-opacity%3D%22.42%22%20stroke-width%3D%221.2%22%2F%3E%3Cpath%20d%3D%22M28%208.6V16M56%2010.5V19.5M84%208.6V16%22%20stroke%3D%22%23cdd8f2%22%20stroke-opacity%3D%22.32%22%20stroke-width%3D%221%22%2F%3E%3Cpath%20d%3D%22M28%2015L29.52%2018.91L33.71%2019.15L30.45%2021.8L31.53%2025.85L28%2023.58L24.47%2025.85L25.55%2021.8L22.29%2019.15L26.48%2018.91Z%22%20fill%3D%22%23e9edf8%22%20stroke%3D%22%23e9edf8%22%20stroke-width%3D%22.8%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M56%2019.5L58.02%2024.72L63.61%2025.03L59.27%2028.56L60.7%2033.97L56%2030.94L51.3%2033.97L52.73%2028.56L48.39%2025.03L53.98%2024.72Z%22%20fill%3D%22%23ffe9b8%22%20stroke%3D%22%23ffe9b8%22%20stroke-width%3D%22.8%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M84%2015L85.52%2018.91L89.71%2019.15L86.45%2021.8L87.53%2025.85L84%2023.58L80.47%2025.85L81.55%2021.8L78.29%2019.15L82.48%2018.91Z%22%20fill%3D%22%23e9edf8%22%20stroke%3D%22%23e9edf8%22%20stroke-width%3D%22.8%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E"); height: 54px; opacity: 0.8; }
 .md-top--swag { background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22160%22%20height%3D%2244%22%20viewBox%3D%220%200%20160%2044%22%3E%3Cg%20fill%3D%22none%22%3E%3Cpath%20d%3D%22M0%205Q40%2042%2080%205T160%205%22%20stroke%3D%22%23c8283a%22%20stroke-width%3D%229%22%2F%3E%3Cpath%20d%3D%22M0%205Q40%2042%2080%205T160%205%22%20stroke%3D%22%23f3f1ea%22%20stroke-width%3D%225.4%22%2F%3E%3Cpath%20d%3D%22M0%205Q40%2042%2080%205T160%205%22%20stroke%3D%22%232f4fa3%22%20stroke-width%3D%222.2%22%2F%3E%3C%2Fg%3E%3Cpath%20d%3D%22M0%20-2L1.77%202.56L6.66%202.84L2.86%205.93L4.11%2010.66L0%208.01L-4.11%2010.66L-2.86%205.93L-6.66%202.84L-1.77%202.56Z%22%20fill%3D%22%23f3f1ea%22%20stroke%3D%22%23f3f1ea%22%20stroke-width%3D%22.8%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M80%20-2L81.77%202.56L86.66%202.84L82.86%205.93L84.11%2010.66L80%208.01L75.89%2010.66L77.14%205.93L73.34%202.84L78.23%202.56Z%22%20fill%3D%22%23f3f1ea%22%20stroke%3D%22%23f3f1ea%22%20stroke-width%3D%22.8%22%20stroke-linejoin%3D%22round%22%2F%3E%3Cpath%20d%3D%22M160%20-2L161.77%202.56L166.66%202.84L162.86%205.93L164.11%2010.66L160%208.01L155.89%2010.66L157.14%205.93L153.34%202.84L158.23%202.56Z%22%20fill%3D%22%23f3f1ea%22%20stroke%3D%22%23f3f1ea%22%20stroke-width%3D%22.8%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E"); height: 46px; opacity: 0.78; }
-.md-top--ribbon { height: 9px; opacity: 0.8; background: linear-gradient(#c8283a 0 3px, #f3f1ea 3px 6px, #2f4fa3 6px 9px); box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4); }
+.md-top--ribbon { height: 9px; opacity: 0.8; background: linear-gradient(var(--md-red) 0 3px, var(--md-white) 3px 6px, #2f4fa3 6px 9px); box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4); }
 
 .md-pend { opacity: 0.92; animation-duration: 8s; }
 .md-pend > svg { filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4)); }
@@ -194,7 +200,7 @@
   position: relative; padding: 16px 6px 30px; text-align: center; transform-origin: 50% 0; animation: md-hang 9s ease-in-out infinite alternate;
   background: linear-gradient(#1c2d62, #0f1a42); clip-path: polygon(0 0, 100% 0, 100% 100%, 50% calc(100% - 14px), 0 100%); box-shadow: inset 0 0 0 1px rgba(205, 216, 242, 0.26);
 }
-.md-banner::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 5px; background: linear-gradient(90deg, #c8283a 0 33.4%, #f3f1ea 33.4% 66.7%, #2f4fa3 66.7%); }
+.md-banner::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 5px; background: linear-gradient(90deg, var(--md-red) 0 33.4%, var(--md-white) 33.4% 66.7%, #2f4fa3 66.7%); }
 .md-banner::after { content: ""; position: absolute; left: 50%; bottom: 17px; width: 11px; height: 11px; margin-left: -5.5px; background: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2214%22%20height%3D%2214%22%20viewBox%3D%220%200%2014%2014%22%3E%3Cpath%20d%3D%22M7%201.4L8.52%205.31L12.71%205.55L9.45%208.2L10.53%2012.25L7%209.98L3.47%2012.25L4.55%208.2L1.29%205.55L5.48%205.31Z%22%20fill%3D%22%23cdd8f2%22%20stroke%3D%22%23cdd8f2%22%20stroke-width%3D%22.8%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E") center / contain no-repeat; opacity: 0.8; }
 .md-banner span { display: block; font: 700 clamp(14px, 1.9vw, 19px)/1 var(--font-display), sans-serif; letter-spacing: 0.1em; color: var(--gold); }
 .md-banner em { display: block; margin-top: 7px; font-style: normal; font-size: clamp(10.5px, 1.35vw, 13px); line-height: 1.25; color: #d5ddf3; }
@@ -235,3 +241,6 @@
   .md-eagle { translate: calc(var(--lw, 1000) * 0.6px) 0; }
   .md-eagle--s { translate: calc(var(--lw, 1000) * 0.72px) 0; }
 }
+
+/* Where the hero's content fills the window (below about 1180px) the star in the hero's left margin would be under it, so it steps aside. */
+@media (max-width: 1180px) { .md-t-star { display: none; } }

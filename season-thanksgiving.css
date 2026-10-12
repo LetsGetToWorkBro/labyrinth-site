@@ -66,7 +66,7 @@
 .tg-turkey { filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.5)); }
 .tg-pump-tap { filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.5)); }
 .tg-acorn-tap { opacity: 0.7; animation: tg-bob 6.5s ease-in-out infinite; filter: drop-shadow(0 0 12px rgba(240, 162, 60, 0.5)); }
-@media (max-width: 1100px) { .tg-acorn-tap { display: none; } }
+@media (max-width: 1180px) { .tg-acorn-tap { display: none; } }
 @keyframes tg-bob { 0%, 100% { transform: translate(0, 0) rotate(-8deg); } 50% { transform: translate(8px, -14px) rotate(6deg); } }
 
 /* ── This month: the cards under the hero get a harvest-striped edge and a turkey ────────────────────────────────────────────── */

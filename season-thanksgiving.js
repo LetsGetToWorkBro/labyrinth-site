@@ -80,7 +80,7 @@
       '<div class="tg-field">' + field(k) + '</div>' +
       k.tap(k.use('tg-turkey', '', '0 0 190 176'), 'Gobble gobble!', 'tg-turkey', 'right:4%;bottom:7px;width:clamp(86px,12vw,158px)') +
       k.tap(k.use('tg-pumpkin', '', '0 0 100 90'), 'Pie time!', 'tg-pump-tap', 'left:3%;bottom:6px;width:clamp(50px,7vw,92px)') +
-      k.tap(k.use('tg-acorn', '', '0 0 40 62'), 'Nuts!', 'tg-acorn-tap', 'right:7%;top:44%;width:clamp(22px,3vw,40px)');
+      k.tap(k.use('tg-acorn', '', '0 0 40 62'), 'Nuts!', 'tg-acorn-tap', 'right:2%;top:44%;width:clamp(22px,3vw,40px)');
   }
 
   // A layer behind each section, different on every one so the page does not repeat itself.

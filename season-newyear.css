@@ -129,7 +129,9 @@
    mirror balls and stars on strings, sparklers, balloons rising, confetti coming down, and here and there something that answers a tap. */
 .ny-gar { position: absolute; left: 0; top: 0; width: 100%; height: 64px; display: block; opacity: 0.85; }
 .ny-gar--flag { height: 56px; }
-.ny-gar--fringe { height: 96px; opacity: 0.78; }
+.ny-gar--star { height: 52px; }
+#eventStrip .ny-gar--star { height: 42px; }
+.ny-gar--fringe { height: 88px; opacity: 0.62; }
 .ny-gar--bead, .ny-gar--light { height: 50px; }
 .ny-gar--c1 { animation: ny-chase 2.8s ease-in-out infinite; }
 .ny-gar--c2 { animation: ny-chase 2.8s ease-in-out -1.4s infinite; }
@@ -238,6 +240,9 @@
 }
 .ny-sheen { position: absolute; left: 0; top: 0; width: 34%; height: 100%; background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.16), transparent); animation: ny-slide 8s linear infinite; }
 @keyframes ny-slide { from { translate: -110% 0; } to { translate: 340% 0; } }
+
+/* A layer that is off the screen stands still (season-newyear.js, init). */
+.ny-asleep, .ny-asleep * { animation-play-state: paused !important; }
 
 /* ── Phones: fewer things, nothing wider than the screen ────────────────────────────────────────────────────────────────────── */
 @media (max-width: 1099px) {

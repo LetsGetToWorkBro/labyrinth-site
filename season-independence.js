@@ -87,8 +87,8 @@
     '<rect x="27.6" y="28" width="4.8" height="50" rx="2.4" fill="#5b6490"/><rect x="27.6" y="28" width="1.6" height="50" rx=".8" fill="#8e98c4"/><rect x="27.6" y="28" width="4.8" height="10" rx="2.4" fill="#ff9d3d"/>' +
     '<g transform="translate(30 24)">' + P(spokes(12, 7, 22, 0, 0.66), 2.4, C.gold) + P(dots(12, 25, 0), 4, C.gold) + P(dots(6, 14, 15), 3, C.white) + F(glintD(0, 0, 12), C.white) + '</g></symbol>';
 
-  // A pinwheel's head: four curled blades, red, white, blue and white, pinned in gold.
-  function blade(fill, fold) { return F('M50 50L50 6C74 6 92 24 92 48C78 38 62 40 50 50Z', fill) + F('M50 50L50 6C58 7 66 11 72 17L56 40Z', fold); }
+  // A pinwheel's head: four folded vanes, red, white, blue and white, pinned in gold.
+  function blade(fill, fold) { return F('M50 50L50 5L88 12Z', fill) + F('M50 50L88 12L84 46Z', fold, ' stroke="' + fold + '" stroke-width=".9" stroke-linejoin="round"'); }
   var PINWHEEL = '<symbol id="id-pinw" viewBox="0 0 100 100">' + blade(C.red, C.red2) + '<g transform="rotate(90 50 50)">' + blade(C.white, C.ice) + '</g><g transform="rotate(180 50 50)">' + blade(C.blue, C.blue2) + '</g><g transform="rotate(270 50 50)">' + blade(C.white, C.ice) + '</g>' +
     '<circle cx="50" cy="50" r="8" fill="' + C.gold2 + '"/><circle cx="50" cy="50" r="5.4" fill="' + C.gold + '"/><circle cx="48.4" cy="48.4" r="1.7" fill="#fff" fill-opacity=".85"/></symbol>';
 
@@ -157,8 +157,8 @@
   }
   var FAN = fanD();
   var FOUNTAIN = '<symbol id="id-fountain" viewBox="0 0 90 110">' + P(FAN[0], 2.6, C.gold) + P(FAN[1], 3.4, C.goldHi) + P('M45 58V12M33 56L26 22M57 56L64 22', 2.4, '#fff', '.8') + F(glintD(45, 14, 9), '#fff') +
-    '<rect x="29" y="64" width="32" height="36" rx="4" fill="' + C.red + '"/><rect x="29" y="64" width="11" height="36" rx="4" fill="' + C.red2 + '" fill-opacity=".4"/><rect x="29" y="77" width="32" height="9" fill="#fff"/><rect x="29" y="77" width="11" height="9" fill="' + C.ice + '"/>' +
-    '<rect x="26" y="58" width="38" height="9" rx="3" fill="' + C.blue + '"/><rect x="24" y="98" width="42" height="7" rx="2.5" fill="' + C.navy + '"/></symbol>';
+    '<rect x="26" y="66" width="38" height="30" rx="3" fill="' + C.red + '"/><rect x="26" y="66" width="12" height="30" rx="3" fill="' + C.red2 + '" fill-opacity=".4"/><rect x="26" y="78" width="38" height="8" fill="#fff"/><rect x="26" y="78" width="12" height="8" fill="' + C.ice + '"/>' +
+    '<rect x="31" y="60" width="28" height="8" rx="2" fill="' + C.blue + '"/><rect x="20" y="94" width="50" height="9" rx="2" fill="' + C.wood + '"/><rect x="20" y="94" width="50" height="3" rx="1.5" fill="#e6b266"/></symbol>';
 
   // A wooden stick for the pinwheels, and the gradient that shades the folds of a waving flag.
   var FLAGSH = '<linearGradient id="id-fsh" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity=".18"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#0a1233" stop-opacity=".26"/></linearGradient>' +
@@ -352,7 +352,7 @@
   }
 
   // ── The launch field above the footer: a night sky with bursts, bunting between poles, crates, rockets and fountains, four signs, a glowing ground ───
-  var SAYINGS = ['Go off with a bang!', 'Shine bright all night', 'Free to be your best', 'Brave hearts, big sparks'];
+  var SAYINGS = ['Go off with a bang!', 'Shine bright all night', 'Dream big, aim high', 'Brave hearts, big sparks'];
   var TITLES = ['BOOM', 'STARS', 'FREEDOM', 'BRAVE'];
   function fountain(k) {
     return '<div class="id-fount">' + k.use('id-fountain', 'id-i id-i--fountain', '0 0 90 110') + '<i class="id-fz id-fz--1">' + k.use('id-glint', '', '0 0 20 20') + '</i><i class="id-fz id-fz--2">' + k.use('id-glint', '', '0 0 20 20') + '</i><i class="id-fz id-fz--3">' + k.use('id-glint', '', '0 0 20 20') + '</i></div>';

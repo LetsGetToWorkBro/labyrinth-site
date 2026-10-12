@@ -158,13 +158,13 @@
       '<ellipse cx="15.5" cy="17" rx="4.4" ry="8" transform="rotate(26 15.5 17)" fill="#fff" fill-opacity=".55"/></symbol>' +
     // a foil star: two tones, a rim, a glint
     '<symbol id="ny-star" viewBox="0 0 50 50"><path d="' + star5(25, 26, 22, 10) + '" fill="#f0d58a" stroke="#f0d58a" stroke-width="3" stroke-linejoin="round"/>' +
-      '<path d="M25 26L47 20L34.5 36.5ZM25 26L40 46L25 37ZM25 26L10 46L15.5 36.5Z" fill="#c9a24a" fill-opacity=".55"/>' +
+      '<path d="M25 26L47 20L34.5 36.5ZM25 26L40 46L25 37ZM25 26L10 46L15.5 36.5Z" fill="#c9a24a" fill-opacity=".4"/>' +
       '<path d="M25 26L25 4L31 18Z" fill="#fff" fill-opacity=".4"/><circle cx="19" cy="17" r="2.4" fill="#fff" fill-opacity=".8"/></symbol>' +
     // a foil star balloon on its string (the colour is the current colour)
-    '<symbol id="ny-sbal" viewBox="0 0 60 100"><path d="M30 62C25 72 35 78 30 99" fill="none" stroke="#cfd5ec" stroke-opacity=".85" stroke-width="1.7" stroke-linecap="round"/>' +
-      '<path d="' + star5(30, 29, 28, 13) + '" fill="currentColor" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/>' +
-      '<path d="M30 29L58 22L42 43ZM30 29L50 56L30 46ZM30 29L10 56L18 43Z" fill="#000" fill-opacity=".16"/><path d="M30 29L30 2L38 21Z" fill="#fff" fill-opacity=".38"/>' +
-      '<path d="M30 58L26 65H34Z" fill="currentColor"/></symbol>';
+    '<symbol id="ny-sbal" viewBox="0 0 60 100"><path d="M30 64C25 74 35 80 30 99" fill="none" stroke="#cfd5ec" stroke-opacity=".85" stroke-width="1.7" stroke-linecap="round"/>' +
+      '<path d="' + star5(30, 32, 27, 12.5) + '" fill="currentColor" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/>' +
+      '<path d="M30 32L57 25.5L41.5 46ZM30 32L49 58L30 49ZM30 32L11 58L18.5 46Z" fill="#000" fill-opacity=".16"/><path d="M30 32L30 5.5L37.5 24Z" fill="#fff" fill-opacity=".38"/>' +
+      '<path d="M30 60L26 67H34Z" fill="currentColor"/></symbol>';
 
   // ── Things to wear and to make a noise with.
   var PROPS =
@@ -246,14 +246,16 @@
 
   // A garland is a tile that repeats along the top of a section (a pattern a <rect> is filled with).
   function swagY(x, h) { var t = x / 120; return 3 + 4 * h * t * (1 - t); }
-  function garStar(id, cols) {                                  // a swag with stars hanging from it
-    var o = '<pattern id="' + id + '" width="120" height="64" patternUnits="userSpaceOnUse"><path d="M0 3Q60 ' + f(3 + 2 * 15) + ' 120 3" fill="none" stroke="#c9cfe8" stroke-opacity=".75" stroke-width="2"/><circle cx="0" cy="3" r="3" fill="#c9cfe8"/><circle cx="120" cy="3" r="3" fill="#c9cfe8"/>';
+  function garStar(id, cols, depth, rad) {                       // a swag with stars hanging from it (depth: how far it sags; rad: the size of the big stars)
+    depth = depth || 15; rad = rad || 11.5;
+    var h = Math.ceil(3 + depth + 7 + 2 * rad + 4);
+    var o = '<pattern id="' + id + '" width="120" height="' + h + '" patternUnits="userSpaceOnUse"><path d="M0 3Q60 ' + f(3 + 2 * depth) + ' 120 3" fill="none" stroke="#c9cfe8" stroke-opacity=".75" stroke-width="2"/><circle cx="0" cy="3" r="3" fill="#c9cfe8"/><circle cx="120" cy="3" r="3" fill="#c9cfe8"/>';
     [[20, 0], [60, 1], [100, 2]].forEach(function (p) {
-      var y = swagY(p[0], 15), c = cols[p[1] % cols.length];
-      o += '<path d="M' + p[0] + ' ' + f(y) + 'V' + f(y + 7) + '" stroke="#c9cfe8" stroke-opacity=".7" stroke-width="1.4"/><path d="' + star5(p[0], y + 18, 11.5, 5.2) + '" fill="' + c + '" stroke="' + c + '" stroke-width="2" stroke-linejoin="round"/>' +
-        '<path d="' + star5(p[0] - 1.2, y + 17, 5.4, 2.5) + '" fill="#fff" fill-opacity=".5"/>';
+      var y = swagY(p[0], depth), c = cols[p[1] % cols.length];
+      o += '<path d="M' + p[0] + ' ' + f(y) + 'V' + f(y + 7) + '" stroke="#c9cfe8" stroke-opacity=".7" stroke-width="1.4"/><path d="' + star5(p[0], y + 7 + rad, rad, rad * 0.45) + '" fill="' + c + '" stroke="' + c + '" stroke-width="2" stroke-linejoin="round"/>' +
+        '<path d="' + star5(p[0] - 1.2, y + 6 + rad, rad * 0.47, rad * 0.22) + '" fill="#fff" fill-opacity=".5"/>';
     });
-    [40, 80].forEach(function (x, i) { var y = swagY(x, 15); o += '<path d="' + star5(x, y + 11, 6.4, 3) + '" fill="' + cols[(i + 3) % cols.length] + '" stroke="' + cols[(i + 3) % cols.length] + '" stroke-width="1.4" stroke-linejoin="round"/>'; });
+    [40, 80].forEach(function (x, i) { var y = swagY(x, depth); o += '<path d="' + star5(x, y + 6 + rad * 0.5, rad * 0.56, rad * 0.26) + '" fill="' + cols[(i + 3) % cols.length] + '" stroke="' + cols[(i + 3) % cols.length] + '" stroke-width="1.4" stroke-linejoin="round"/>'; });
     return o + '</pattern>';
   }
   function garFlag(id, cols) {                                  // pennant bunting
@@ -303,7 +305,7 @@
     return o + '</pattern>';
   }
   var GARLANDS =
-    garStar('ny-g-star-a', [C.gold, C.silver, C.pink]) + garStar('ny-g-star-b', [C.cyan, C.violet, C.gold]) +
+    garStar('ny-g-star-a', [C.gold, C.silver, C.pink], 9, 9.5) + garStar('ny-g-star-b', [C.cyan, C.violet, C.gold]) +
     garFlag('ny-g-flag-a', [C.gold, C.pink, C.cyan, C.violet, C.silver]) + garFlag('ny-g-flag-b', [C.violet, C.gold, C.silver, C.cyan, C.pink]) + garFlag('ny-g-flag-c', [C.pink, C.silver, C.gold, C.violet, C.cyan]) +
     garLight('ny-g-lt-a0', [C.gold, C.pink, C.cyan, C.violet, '#ffffff', C.orange], 'base') + garLight('ny-g-lt-a1', [C.gold, C.pink, C.cyan, C.violet, '#ffffff', C.orange], 'a') + garLight('ny-g-lt-a2', [C.gold, C.pink, C.cyan, C.violet, '#ffffff', C.orange], 'b') +
     garLight('ny-g-lt-b0', [C.cyan, C.gold, C.violet, C.pink, C.silver, C.cyan], 'base') + garLight('ny-g-lt-b1', [C.cyan, C.gold, C.violet, C.pink, C.silver, C.cyan], 'a') + garLight('ny-g-lt-b2', [C.cyan, C.gold, C.violet, C.pink, C.silver, C.cyan], 'b') +
@@ -400,7 +402,7 @@
     o += '<div class="ny-aurora"></div>';
     o += '<svg class="ny-year" viewBox="0 0 ' + (74 * (ys.length - 1) + 80) + ' 120" aria-hidden="true" focusable="false">' + year + '</svg>';
     // ghosts: big, faint bursts far back (behind the balloons and the photograph, away from the words), then the near ones, one every two seconds around the edges of the sky
-    o += firework('b', 56, 60, 1.5, C.cyan, 3, { far: true, m: [30, 52, 1.5] }) + firework('a', 86, 40, 1.5, C.violet, 9, { far: true, m: [78, 40, 1.4] }) + firework('d', 5, 56, 1.3, C.pink, 5, { far: true, hideM: true });
+    o += firework('c', 56, 60, 1.5, C.cyan, 3, { far: true, m: [30, 52, 1.5] }) + firework('a', 86, 40, 1.5, C.violet, 9, { far: true, m: [78, 40, 1.4] }) + firework('d', 5, 56, 1.3, C.pink, 5, { far: true, hideM: true });
     o += firework('a', 90, 17, 1.0, C.gold, 1, { m: [86, 8.5, 0.8] }) + firework('b', 4, 36, 0.66, C.pink, 3.2, { hideM: true }) + firework('c', 69, 13, 0.66, C.cyan, 5.4, { m: [13, 9.5, 0.72] }) +
       firework('d', 93, 52, 1.0, C.gold, 7.6, { m: [94, 38, 0.8], noStill: true }) + firework('a', 74, 47, 0.7, '#ffffff', 9.8, { hideM: true, noStill: true }) + firework('b', 3, 62, 0.6, C.violet, 12, { hideM: true }) + firework('c', 80, 12, 0.56, C.gold, 11.2, { hideM: true, noStill: true });
     o += '<i class="ny-shoot ny-shoot--1"></i><i class="ny-shoot ny-shoot--2"></i>';
@@ -409,6 +411,7 @@
     o += k.particles(12, { id: ['ny-cf', 'ny-rib', 'ny-cf'], colors: CONF, size: [12, 22], dur: [12, 22], drift: 120, sway: 36, spin: 2, seed: 21, mobile: 0.5, opacity: [0.75, 1], cls: 'ny-flip' }) +
       k.particles(14, { id: ['ny-tri', 'ny-ring', 'sk-star', 'sk-dot'], colors: CONF, size: [10, 20], dur: [12, 22], drift: 120, sway: 36, spin: 2, seed: 22, mobile: 0.5, opacity: [0.7, 1] });
     o += k.twinkles(8, { id: ['sk-sparkle', 'ny-glint'], size: [8, 14], dur: [1.8, 3.6], colors: ['#ffe9a8', '#ffffff', C.pink], seed: 41, area: [3, 97], areaY: [78, 96], mobile: 0.5 });
+    o += k.particles(3, { id: ['ny-bal', 'ny-sbal', 'ny-bal'], colors: ['#ff5aa8', '#46dfff', '#ffd25e'], dir: 'rise', size: [36, 54], dur: [30, 44], area: [0.5, 5], drift: 24, sway: 14, spin: 0.03, opacity: [0.75, 0.95], seed: 61, mobile: 0.34, cls: 'ny-rise' });
     // the city and its tower
     o += '<div class="ny-city">' + skyline() +
       k.tap('<i class="ny-halo"></i>' + ico('ny-tower', '', '0 0 100 250'), SAY.tower, 'ny-tower ny-t-tower', 'left:62.5%;bottom:0;width:6.4%') + '</div>';
@@ -481,10 +484,10 @@
         out += k.pendant(ico(t[0], '', t[1]), { side: a[1], at: +a[3], len: +a[4], w: +a[5], cls: 'ny-pd ny-pd--' + a[2] });
       } else if (kind === 'curl') {
         side = a[1]; n = +a[2]; bits = '';
-        for (i = 0; i < n; i++) bits += ico('ny-curl', 'ny-curl', CURL_VB, (side === 'l' ? 'left' : 'right') + ':' + (i * 24) + 'px;--w:' + (24 + (i % 2) * 4) + 'px;color:' + CURL_COLS[(i + (side === 'l' ? 0 : 2)) % CURL_COLS.length] + ';animation-delay:-' + (i * 1.7) + 's');
+        for (i = 0; i < n; i++) bits += ico('ny-curl', 'ny-curl', CURL_VB, (side === 'l' ? 'left' : 'right') + ':' + (i * 20) + 'px;--w:' + (22 + (i % 2) * 4) + 'px;color:' + CURL_COLS[(i + (side === 'l' ? 0 : 2)) % CURL_COLS.length] + ';animation-delay:-' + (i * 1.7) + 's');
         out += '<div class="ny-curls ny-curls--' + side + '">' + bits + '</div>';
       } else if (kind === 'bal') {
-        out += k.particles(+a[1], { id: ['ny-bal', 'ny-bal', 'ny-sbal'], colors: [C.pink, C.cyan, C.gold, C.violet, C.silver], dir: 'rise', size: [34, 52], dur: [26, 42], drift: 50, sway: 22, spin: 0.03, opacity: [0.6, 0.9], seed: 700 + +a[2], mobile: 0.34, cls: 'ny-rise' });
+        out += k.particles(+a[1], { id: ['ny-bal', 'ny-bal', 'ny-sbal'], colors: ['#ff5aa8', '#46dfff', '#a98aff', '#ffd25e', '#e8ecf8'], dir: 'rise', size: [34, 52], dur: [26, 42], drift: 50, sway: 22, spin: 0.03, opacity: [0.72, 0.95], seed: 700 + +a[2], mobile: 0.34, cls: 'ny-rise' });
       } else if (kind === 'conf') {
         out += k.particles(+a[1], { id: ['ny-cf', 'ny-rib', 'ny-tri', 'ny-ring', 'sk-dot', 'sk-star'], colors: CONF, size: [9, 17], dur: [13, 24], drift: 80, sway: 28, spin: 2, opacity: [0.5, 0.88], seed: 100 + +a[2], mobile: 0.5 });
       } else if (kind === 'rain') {
@@ -536,7 +539,7 @@
       k.pendant(ico('ny-disco', '', '0 0 60 68'), { side: 'l', at: 50, len: 30, w: 58, delay: 2, cls: 'ny-fdisco' }) +
       k.twinkles(5, { id: ['sk-sparkle', 'ny-glint'], size: [9, 17], dur: [1.6, 3], colors: ['#ffffff', C.gold, C.cyan, C.pink], seed: 845, area: [45.5, 54.5], areaY: [16, 44], mobile: 0, cls: 'sk-hide-m' }) +
       '<div class="ny-floor"><i class="ny-sheen"></i></div>' +
-      k.particles(4, { id: ['ny-bal', 'ny-sbal'], colors: [C.pink, C.cyan, C.gold, C.violet], dir: 'rise', size: [32, 48], dur: [18, 30], drift: 40, sway: 22, spin: 0.03, opacity: [0.7, 0.95], seed: 810, mobile: 0.5, cls: 'ny-rise' }) +
+      k.particles(4, { id: ['ny-bal', 'ny-sbal'], colors: ['#ff5aa8', '#46dfff', '#ffd25e', '#a98aff'], dir: 'rise', size: [32, 48], dur: [18, 30], drift: 40, sway: 22, spin: 0.03, opacity: [0.7, 0.95], seed: 810, mobile: 0.5, cls: 'ny-rise' }) +
       k.particles(7, { id: ['ny-cf', 'ny-rib', 'ny-tri', 'ny-ring', 'sk-dot'], colors: CONF, size: [9, 16], dur: [10, 18], drift: 70, sway: 26, spin: 2, opacity: [0.6, 0.95], seed: 820, mobile: 0.5 }) +
       k.twinkles(12, { id: ['sk-sparkle', 'ny-glint', 'sk-star'], size: [6, 13], dur: [1.8, 3.6], colors: STARS.concat([C.cyan, C.pink]), seed: 830, area: [1, 99], areaY: [70, 98], mobile: 0.5 }) +
       k.twinkles(5, { id: ['sk-sparkle', 'ny-glint'], size: [8, 16], dur: [2.5, 5], colors: STARS, seed: 840, area: [1, 99], areaY: [8, 40], mobile: 0.4 });
@@ -560,6 +563,16 @@
     }
   }
 
+  // A layer that is off the screen stands still (and moves again as it comes into view), so the page stays light however many layers it has.
+  // Without IntersectionObserver every layer simply keeps moving. Nothing is read or kept about the visitor.
+  function init() {
+    if (!window.IntersectionObserver) return;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { en.target.classList.toggle('ny-asleep', !en.isIntersecting); });
+    }, { rootMargin: '160px 0px' });
+    [].forEach.call(document.querySelectorAll('.ny-hero, .ny-sec, .ny-footer'), function (e) { io.observe(e); });
+  }
+
   var T = {
     name: 'newyear', prefix: 'ny',
     meta: { bg: '#070a16', gold: '#f0d58a', emoji: '🎆', tapSay: Object.keys(SAY).map(function (key) { return SAY[key]; }), sayings: SAYINGS },
@@ -567,6 +580,7 @@
     hero: hero,
     sections: {},
     footer: footer,
+    init: init,
     onTap: onTap
   };
   Object.keys(SECTIONS).forEach(function (id) { T.sections[id] = function (k) { return section(SECTIONS[id], k); }; });

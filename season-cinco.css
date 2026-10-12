@@ -162,7 +162,7 @@
 .cm-footer .cm-i--mari, .cm-footer .cm-i--dahl, .cm-footer .cm-i--olla { width: clamp(56px, 7vw, 92px); }
 .cm-footer .cm-i--barrel { width: clamp(50px, 6.4vw, 84px); }
 .cm-footer .cm-i--nopal { width: clamp(54px, 6.8vw, 88px); }
-.cm-signs { align-self: flex-start; align-items: flex-start; }
+.cm-signs { align-self: flex-start; align-items: flex-start; margin-bottom: 30px; }
 .cm-sign {
   position: relative; margin-top: var(--drop, 30px); padding: 14px 8px 11px; text-align: center; border-radius: 10px; color: #1f0d3d; background: var(--c);
   box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.42), inset 0 0 0 5px rgba(42, 20, 80, 0.22), 0 10px 22px rgba(0, 0, 0, 0.45);
@@ -211,6 +211,8 @@
   .cm-tiles--l, .cm-tiles--r { width: 14px; background-size: 14px 14px; }
   .cm-tiles--b, .cm-tiles--t { height: 16px; background-size: 16px 16px; }
   .cm-footer { --cm-aw: 46px; --cm-ct: 48px; }
+  .cm-mrow { display: none; }
+  .cm-signs { margin-bottom: 6px; }
   .cm-post { width: 8px; }
 }
 @media (max-width: 520px) {
