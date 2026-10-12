@@ -4,6 +4,7 @@ import { readFileSync, existsSync, readdirSync } from 'node:fs'
 import { extname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { execFileSync } from 'node:child_process'
+import { PACKS, checkPack } from './season-theme-checks.mjs'
 
 // The repository itself, wherever it happens to be checked out. This was a
 // hard-coded /workspace path, which made the suite unrunnable from any other
@@ -23,6 +24,9 @@ const server = createServer((req,res)=>{
 await new Promise(r=>server.listen(4620,'127.0.0.1',r))
 
 const browser = await chromium.launch({ executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome', args:['--no-proxy-server'] })
+// SITE_TEST_NOW=2026-12-10T15:00:00Z node site-test.mjs runs the whole suite as if it were that day (a test that pins its own clock still does), to prove that no check depends on which season
+// the homepage happens to be wearing on the day somebody runs it.
+if (process.env.SITE_TEST_NOW) { const nc = browser.newContext.bind(browser); browser.newContext = async o => { const c = await nc(o); await c.clock.setFixedTime(new Date(process.env.SITE_TEST_NOW)); return c } }
 const page = await (await browser.newContext()).newPage()
 let pass=0, fail=0
 const check=(n,c,x='')=>{ if(c){console.log('PASS  '+n);pass++}else{console.log('FAIL  '+n+'  '+x);fail++} }
@@ -1885,7 +1889,7 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
   check('L2h with reduced motion on, nothing flies, floats or flickers',
     (await rm.evaluate(() => ['.season-bat--1', '.season-ghost--1', '.season-pump--a', '.season-fog--1'].every(sel => getComputedStyle(document.querySelector(sel)).animationName === 'none'))))
 
-  // After October: the page is itself again and only the kids' race is left.
+  // After October: Halloween is over (November is Thanksgiving's) and only the kids' race is left of the October block.
   await hh.clock.setFixedTime(new Date('2026-11-02T15:00:00Z'))
   await hh.goto(URLH, { waitUntil: 'load' })
   const h2 = await hh.evaluate(() => ({
@@ -1896,8 +1900,8 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
     chip: document.getElementById('heroChip').textContent,
     title: getComputedStyle(document.querySelector('.event-strip__title')).fontFamily,
   }))
-  check('L2h on November 2 the decorations are gone and the gold is back',
-    h2.season === '' && h2.deco && h2.gold === '#C8A24C', JSON.stringify(h2))
+  check('L2h on November 2 the Halloween decorations are gone and the pumpkin orange with them (the page is Thanksgiving now)',
+    h2.season === 'thanksgiving' && h2.deco && h2.gold === '#f0a23c', JSON.stringify(h2))
   check('L2h and only the HYROX card (and its chip) are left of the October block',
     JSON.stringify(h2.cards) === JSON.stringify(['/hyrox-youngstars']) && /HYROX/.test(h2.chip) && !/Pink/.test(h2.chip), JSON.stringify(h2))
 
@@ -2004,7 +2008,7 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
     ['nextDay', '2026-10-14T15:00:00Z'], ['nextYear', '2027-10-12T15:00:00Z'], ['november', '2026-11-02T15:00:00Z']]) edge[name] = await at(iso)
   check('L2c it starts at midnight Central on October 12 (the minute before is still Halloween)', edge.beforeEve === 'halloween' && edge.midnightIn === 'columbus', JSON.stringify(edge))
   check('L2c it ends at midnight Central that night, and from October 13 the page is Halloween again', edge.lateOn === 'columbus' && edge.midnightOut === 'halloween' && edge.nextDay === 'halloween', JSON.stringify(edge))
-  check('L2c on October 12 of the next year nothing happens, and after October there is no theme at all', edge.nextYear === 'halloween' && edge.november === '', JSON.stringify(edge))
+  check('L2c on October 12 of the next year nothing happens (it is just Halloween), and in November Columbus Day is long gone', edge.nextYear === 'halloween' && edge.november === 'thanksgiving', JSON.stringify(edge))
 
   // The day's card keeps the theme's hours: it opens at midnight Central on October 12 and is gone from the first second after midnight Central that night.
   const shown = {}
@@ -2062,6 +2066,97 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
   check('L2c with reduced motion on, nothing flies, floats, swings, bobs or spins',
     await rm.evaluate(() => ['.cd-gull--1', '.cd-lookout--1', '.cd-ship-s', '.cd-wave', '.cd-compass--hero', '.cd-lantern', '.cd-twinkle'].every(sel => getComputedStyle(document.querySelector(sel)).animationName === 'none')))
   await ctx.close()
+}
+
+// ── L2s: the seasons, window by window ──
+// index.html's head chooses the season from the date on the academy's clock (Central). A window opens at Central midnight on its first day and closes at the Central midnight
+// that ends its last. The clocks change on the second Sunday of March and the first Sunday of November, so the instants below are CDT (UTC-5) from mid-March to the end of
+// October and CST (UTC-6) the rest of the year. Each season but Halloween brings its own files (the kit first), which are fetched only while it is on; the checks for what a
+// season looks like are in season-theme-checks.mjs and run for every one of them at the end of this block.
+{
+  const ctx = await browser.newContext()
+  const sp = await ctx.newPage()
+  const asked = []
+  sp.on('request', r => { const m = /\/(season-[a-z]+\.(?:css|js))/.exec(r.url()); if (m) asked.push(m[1]) })
+  const at = async (iso, q = '') => {
+    asked.length = 0
+    await sp.clock.setFixedTime(new Date(iso))
+    await sp.goto('http://localhost:4620/' + q, { waitUntil: 'domcontentloaded' })
+    return sp.evaluate(() => document.documentElement.dataset.season || '')
+  }
+  const wrong = async rows => { const bad = []; for (const [iso, want, what] of rows) { const got = await at(iso); if (got !== want) bad.push(`${what ?? iso}: wanted '${want}', got '${got}'`) } return bad }
+
+  // the edges of every window, in 2026-27
+  const edges = await wrong([
+    ['2026-10-01T04:59:00Z', '', 'Sep 30 23:59'], ['2026-10-01T05:00:00Z', 'halloween', 'Oct 1 00:00'],
+    ['2026-10-12T04:59:00Z', 'halloween', 'Oct 11 23:59'], ['2026-10-12T05:00:00Z', 'columbus', 'Oct 12 00:00 (Columbus Day wins over Halloween)'],
+    ['2026-10-13T04:59:00Z', 'columbus', 'Oct 12 23:59'], ['2026-10-13T05:00:00Z', 'halloween', 'Oct 13 00:00 (and Halloween is back)'],
+    ['2026-11-01T04:59:00Z', 'halloween', 'Oct 31 23:59'], ['2026-11-01T05:00:00Z', 'thanksgiving', 'Nov 1 00:00'],
+    ['2026-12-01T05:59:00Z', 'thanksgiving', 'Nov 30 23:59'], ['2026-12-01T06:00:00Z', 'christmas', 'Dec 1 00:00'],
+    ['2027-01-01T05:59:00Z', 'christmas', 'Dec 31 23:59'], ['2027-01-01T06:00:00Z', 'newyear', 'Jan 1 00:00'],
+    ['2027-02-01T05:59:00Z', 'newyear', 'Jan 31 23:59'], ['2027-02-01T06:00:00Z', 'valentines', 'Feb 1 00:00'],
+    ['2027-03-01T05:59:00Z', 'valentines', 'Feb 28 23:59'], ['2027-03-01T06:00:00Z', 'easter', 'Mar 1 00:00'],
+    ['2027-04-01T04:59:00Z', 'easter', 'Mar 31 23:59'], ['2027-04-01T05:00:00Z', '', 'Apr 1 00:00 (Easter 2027 was March 28)'],
+    ['2027-05-01T04:59:00Z', '', 'Apr 30 23:59'], ['2027-05-01T05:00:00Z', 'cinco', 'May 1 00:00'],
+    ['2027-05-16T04:59:00Z', 'cinco', 'May 15 23:59'], ['2027-05-16T05:00:00Z', 'memorial', 'May 16 00:00'],
+    ['2027-06-01T04:59:00Z', 'memorial', 'May 31 23:59'], ['2027-06-01T05:00:00Z', '', 'Jun 1 00:00'],
+    ['2027-07-01T04:59:00Z', '', 'Jun 30 23:59'], ['2027-07-01T05:00:00Z', 'independence', 'Jul 1 00:00'],
+    ['2027-08-01T04:59:00Z', 'independence', 'Jul 31 23:59'], ['2027-08-01T05:00:00Z', '', 'Aug 1 00:00'],
+  ])
+  check('L2s every season opens at Central midnight on its first day and ends at the Central midnight after its last: Thanksgiving Nov 1-30, Christmas Dec 1-31, New Year Jan 1-31, Valentine\'s Feb 1-28, Easter Mar 1-31, Cinco de Mayo May 1-15, Memorial Day May 16-31, Independence Day Jul 1-31',
+    edges.length === 0, '\n    ' + edges.join('\n    '))
+
+  // Easter moves: in a year it falls in April the season stays through Easter Sunday itself and not a day more
+  const eas = await wrong([
+    ['2027-03-29T15:00:00Z', 'easter', '2027 Mar 29 (after Easter, still March)'],
+    ['2028-04-01T05:00:00Z', 'easter', '2028 Apr 1 00:00 (Easter is Apr 16)'], ['2028-04-10T15:00:00Z', 'easter', '2028 Apr 10'],
+    ['2028-04-17T04:59:00Z', 'easter', '2028 Apr 16 23:59 (Easter Sunday)'], ['2028-04-17T05:00:00Z', '', '2028 Apr 17 00:00'],
+    ['2029-04-02T04:59:00Z', 'easter', '2029 Apr 1 23:59 (Easter Sunday)'], ['2029-04-02T05:00:00Z', '', '2029 Apr 2 00:00'],
+    ['2030-04-22T04:59:00Z', 'easter', '2030 Apr 21 23:59 (Easter Sunday)'], ['2030-04-22T05:00:00Z', '', '2030 Apr 22 00:00'],
+    ['2026-04-05T15:00:00Z', 'easter', '2026 Apr 5 (Easter Sunday of the year before)'],
+  ])
+  check('L2s Easter keeps its window to March, and in the years Easter falls in April (2028: Apr 16, 2029: Apr 1, 2030: Apr 21) the season runs on through Easter Sunday and ends at that midnight',
+    eas.length === 0, '\n    ' + eas.join('\n    '))
+  const idx = readFileSync(join(ROOT, 'index.html'), 'utf8')
+  const easterSrc = /function easter\(y\)\{.*?\}(?=\n)/.exec(idx)?.[0]
+  const easter = easterSrc ? new Function(`${easterSrc}; return easter`)() : null
+  const KNOWN = { 2024: [3, 31], 2025: [4, 20], 2026: [4, 5], 2027: [3, 28], 2028: [4, 16], 2029: [4, 1], 2030: [4, 21], 2031: [4, 13], 2032: [3, 28], 2033: [4, 17], 2034: [4, 9], 2035: [3, 25],
+    2036: [4, 13], 2037: [4, 5], 2038: [4, 25], 2039: [4, 10], 2040: [4, 1], 2041: [4, 21], 2042: [4, 6], 2043: [3, 29], 2044: [4, 17], 2045: [4, 9] }
+  check('L2s the page works out Easter Sunday for any year: its dates from 2024 to 2045 are the published ones', !!easter && Object.entries(KNOWN).every(([y, [m, d]]) => easter(+y) === m * 100 + d),
+    easter ? Object.entries(KNOWN).filter(([y, [m, d]]) => easter(+y) !== m * 100 + d).join(' ') : 'no easter() in the head')
+
+  // every year the same, with nothing pinned to a year but Columbus Day
+  const yrs = await wrong([
+    ['2028-11-15T18:00:00Z', 'thanksgiving'], ['2028-12-15T18:00:00Z', 'christmas'], ['2029-01-15T18:00:00Z', 'newyear'], ['2029-02-15T18:00:00Z', 'valentines'], ['2029-03-15T18:00:00Z', 'easter'],
+    ['2029-05-05T18:00:00Z', 'cinco'], ['2029-05-25T18:00:00Z', 'memorial'], ['2029-07-04T18:00:00Z', 'independence'], ['2031-12-25T18:00:00Z', 'christmas'], ['2035-11-22T18:00:00Z', 'thanksgiving'],
+    ['2028-02-29T18:00:00Z', 'valentines', 'leap day 2028'], ['2028-03-01T05:59:00Z', 'valentines', 'Feb 29 23:59 2028'], ['2028-03-01T06:00:00Z', 'easter', 'Mar 1 00:00 2028'],
+    ['2027-10-12T18:00:00Z', 'halloween', 'Oct 12 2027 is just Halloween'],
+  ])
+  check('L2s the same windows come round every year (2028, 2029, 2031, 2035), February 29 included, and only Columbus Day is pinned to a year', yrs.length === 0, '\n    ' + yrs.join('\n    '))
+  const quiet = await wrong([['2027-04-15T18:00:00Z', ''], ['2027-06-15T18:00:00Z', ''], ['2027-08-15T18:00:00Z', ''], ['2027-09-15T18:00:00Z', '']])
+  check('L2s the rest of the year (April after Easter, June, August, September) has no season at all', quiet.length === 0, quiet.join(' '))
+  const quietFetched = (await at('2027-06-15T18:00:00Z'), asked.length === 0)
+  check('L2s and on a day with no season nothing of any season is fetched', quietFetched, JSON.stringify(asked))
+
+  // the preview switch and what it will and will not do
+  const bogus = await at('2027-06-15T18:00:00Z', '?season=bogus'), bogusFetched = [...asked]
+  const inherited = await at('2027-06-15T18:00:00Z', '?season=constructor'), inheritedFetched = [...asked]
+  check('L2s a made-up or inherited name in ?season= loads nothing', bogusFetched.length === 0 && inheritedFetched.length === 0 && bogus === 'bogus', JSON.stringify({ bogus, bogusFetched, inherited, inheritedFetched }))
+  check('L2s ?season=off turns every season off on the day it would be on', (await at('2026-12-10T18:00:00Z', '?season=off')) === '' && asked.length === 0 && (await at('2026-12-10T18:00:00Z')) === 'christmas')
+
+  // the head names every season's two files with a current version, and the files exist
+  const refs = [...idx.matchAll(/"\.\/(season-[a-z]+\.(?:css|js))\?v=([0-9a-f]{8})"/g)].map(m => [m[1], m[2]])
+  const names = Object.keys(PACKS)
+  const missing = ['season-kit.css', 'season-kit.js', 'season-columbus.css', 'season-columbus.js', ...names.flatMap(n => [`season-${n}.css`, `season-${n}.js`])].filter(f => !refs.some(r => r[0] === f))
+  check('L2s the head names the kit and every season\'s two files, each by a version, and none is still the 00000000 placeholder, and every file is there',
+    missing.length === 0 && refs.every(([f, v]) => v !== '00000000' && existsSync(join(ROOT, f))), JSON.stringify({ missing, placeholders: refs.filter(r => r[1] === '00000000').map(r => r[0]) }))
+  await ctx.close()
+
+  // what each season looks like, for every season that has its files (SKIP_SEASON_PACKS=1 leaves this out when the suite is run once for each day of the year, as they pin their own clocks)
+  for (const name of process.env.SKIP_SEASON_PACKS ? [] : Object.keys(PACKS)) {
+    check(`L2s ${name} has its two files`, existsSync(join(ROOT, `season-${name}.js`)) && existsSync(join(ROOT, `season-${name}.css`)))
+    if (existsSync(join(ROOT, `season-${name}.js`)) && existsSync(join(ROOT, `season-${name}.css`))) await checkPack({ browser, base: 'http://localhost:4620', check, name })
+  }
 }
 
 // ── L1v: the academy is in Texas, so the spelling is American ──

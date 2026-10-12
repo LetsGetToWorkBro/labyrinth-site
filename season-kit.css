@@ -1,0 +1,114 @@
+/* ══ Seasonal packs: the layers and effects every holiday theme shares ═══════════════════════════════════════════════════════════
+   Loaded by index.html's <head> with season-kit.js and the pack's own two files, only on the days that pack is on (see season-kit.js for
+   how a pack is made). This file knows nothing about any holiday: it keeps the decoration behind the content, lets every tap through,
+   moves the things that fall or rise, and stills all of it for anyone who has asked for less motion. A pack's own stylesheet comes after
+   this one and does the colours and the look. Everything here is under a .sk- class that only season-kit.js creates, except the one rule
+   that gives each section of the page something to hold its layer. */
+
+.sk-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+/* The scene over the hero photograph. The headline and buttons (z-index 3) stay above it; the donation bar (4) above them. */
+.sk-hero { position: absolute; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
+.sk-hero > * { position: absolute; }
+
+/* Every section holds one layer, behind its content: clipped to the section, never wider than the page. */
+:root[data-season] :is(#eventStrip, #programs, #competition, #coaches, #gallery, #belt-journey, #locations, #faq, #schedule, #testimonials, #pricing, #contact) {
+  position: relative; overflow: clip;
+}
+.sk-sec { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.sk-sec > * { position: absolute; }
+.sk-sec ~ .container { position: relative; z-index: 1; }
+
+/* The scene above the footer. A pack styles it (signs, ground, props); this is only its frame. */
+.sk-footer { position: relative; overflow: hidden; margin-top: var(--space-12, 48px); pointer-events: none; }
+.sk-footer > * { pointer-events: none; }
+/* The four signs of the foot scene sit in a .sk-signs row (the pack draws what a sign looks like): a sign is a fixed width on a wide screen and a quarter of the row on a
+   phone, so keep a sign's title to seven letters and its saying to about twenty-six characters. The props on either side (.sk-props) give way to the signs on a small screen. */
+.sk-signs { display: flex; align-items: flex-end; justify-content: center; gap: clamp(8px, 2vw, 22px); }
+.sk-signs > * { width: clamp(84px, 14vw, 140px); }
+@media (max-width: 520px) {
+  .sk-footer { padding-left: 8px !important; padding-right: 8px !important; }
+  .sk-signs { width: 100%; gap: 6px; }
+  .sk-signs > * { width: calc((100% - 18px) / 4); min-width: 0; }
+  .sk-props { display: none !important; }
+}
+
+/* Things that fall or rise: each carries its own size, speed, start, drift and spin as CSS variables (season-kit.js, particles()), and
+   --h is the height of the layer it is in, so it crosses all of it. One animation moves it, one sways it, one turns it. */
+.sk-p { position: absolute; top: 0; width: var(--s, 16px); height: var(--s, 16px); opacity: var(--op, 0.9); pointer-events: none; will-change: translate; }
+.sk-p svg { display: block; width: 100%; height: 100%; }
+.sk-p--fall { animation: sk-fall var(--d, 18s) linear var(--o, 0s) infinite, sk-sway var(--sd, 5s) ease-in-out var(--o, 0s) infinite alternate, sk-spin calc(var(--sd, 5s) * 2) ease-in-out var(--o, 0s) infinite alternate; }
+.sk-p--rise { top: auto; bottom: 0; animation: sk-rise var(--d, 18s) linear var(--o, 0s) infinite, sk-sway var(--sd, 5s) ease-in-out var(--o, 0s) infinite alternate, sk-spin calc(var(--sd, 5s) * 2) ease-in-out var(--o, 0s) infinite alternate; }
+@keyframes sk-fall {
+  0% { translate: 0 -40px; opacity: 0; }
+  7% { opacity: var(--op, 0.9); }
+  93% { opacity: var(--op, 0.9); }
+  100% { translate: var(--x, 40px) calc(var(--h, 700) * 1px + 40px); opacity: 0; }
+}
+@keyframes sk-rise {
+  0% { translate: 0 40px; opacity: 0; }
+  7% { opacity: var(--op, 0.9); }
+  93% { opacity: var(--op, 0.9); }
+  100% { translate: var(--x, 40px) calc(var(--h, 700) * -1px - 40px); opacity: 0; }
+}
+@keyframes sk-sway { from { transform: translateX(calc(var(--sw, 24px) * -1)); } to { transform: translateX(var(--sw, 24px)); } }
+@keyframes sk-spin { from { rotate: 0deg; } to { rotate: var(--r, 360deg); } }
+
+/* Stars and lights that pulse where they are (season-kit.js, twinkles()). */
+.sk-tw { position: absolute; width: var(--s, 14px); height: var(--s, 14px); animation: sk-twinkle var(--d, 4s) ease-in-out var(--o, 0s) infinite; pointer-events: none; }
+.sk-tw svg { display: block; width: 100%; height: 100%; }
+@keyframes sk-twinkle { 0%, 100% { opacity: 0.2; transform: scale(0.7); } 50% { opacity: 1; transform: scale(1.15); } }
+
+/* Things that cross the layer (season-kit.js, flyers()): --lw is the layer's width, --wv how far they rise or fall on the way, and wings that beat squash them up and down. */
+.sk-fly { position: absolute; left: 0; width: var(--s, 40px); height: auto; pointer-events: none; will-change: translate; animation: sk-cross var(--d, 26s) linear var(--o, 0s) infinite; }
+.sk-fly svg { display: block; width: 100%; height: auto; }
+.sk-fly--rtl { animation-name: sk-cross-rtl; }
+.sk-fly--rtl svg { transform: scaleX(-1); }
+.sk-fly--flap { animation: sk-cross var(--d, 26s) linear var(--o, 0s) infinite, sk-flap 0.5s ease-in-out infinite alternate; }
+.sk-fly--flap.sk-fly--rtl { animation: sk-cross-rtl var(--d, 26s) linear var(--o, 0s) infinite, sk-flap 0.5s ease-in-out infinite alternate; }
+@keyframes sk-cross { from { translate: -120px 0; } 50% { translate: calc(var(--lw, 1000) * 0.5px) var(--wv, -20px); } to { translate: calc(var(--lw, 1000) * 1px + 120px) 0; } }
+@keyframes sk-cross-rtl { from { translate: calc(var(--lw, 1000) * 1px + 120px) 0; } 50% { translate: calc(var(--lw, 1000) * 0.5px) var(--wv, -20px); } to { translate: -120px 0; } }
+@keyframes sk-flap { from { scale: 1 1; } to { scale: 1 0.5; } }
+
+/* Something hanging on a string (season-kit.js, pendant()): the string is --sk-string, the swing is gentle, and a phone keeps it short and to the right. */
+.sk-pend { top: 0; width: var(--w, 30px); transform-origin: 50% 0; animation: sk-swing 5.5s ease-in-out infinite; pointer-events: none; }
+.sk-pend > i { display: block; width: 1.5px; height: var(--len, 80px); margin: 0 auto; background: var(--sk-string, rgba(255, 255, 255, 0.45)); }
+.sk-pend > svg { display: block; width: 100%; height: auto; }
+@keyframes sk-swing { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
+@media (max-width: 700px) {
+  .sk-pend { left: auto !important; right: 3%; --w: 26px; }
+  .sk-pend > i { height: min(var(--len, 80px), 66px); }
+}
+
+/* A pop of small shapes from a tapped decoration (season-kit.js, burst()). */
+.sk-burst { position: absolute; display: block; pointer-events: none; z-index: 5; }
+.sk-burst svg { display: block; width: 100%; height: 100%; }
+
+/* A decoration that answers a tap: a plain button (no frame, no focus ring, out of the tab order) with a speech bubble that shows while it is tapped. */
+.sk-tap {
+  position: absolute; padding: 0; margin: 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; pointer-events: auto;
+  -webkit-tap-highlight-color: transparent; outline: none;
+}
+.sk-tap > svg { display: block; width: 100%; height: auto; }
+.sk-bubble {
+  position: absolute; left: 50%; bottom: 100%; transform: translate(-50%, 6px) scale(0.6); opacity: 0; pointer-events: none; z-index: 6; white-space: nowrap;
+  padding: 5px 12px; border-radius: 999px; background: var(--sk-bubble-bg, #fff); color: var(--sk-bubble-fg, #111);
+  font: 700 18px/1 var(--font-display), sans-serif; letter-spacing: 0.03em; transition: opacity 0.15s, transform 0.15s;
+}
+.sk-tap.is-tap .sk-bubble { opacity: 1; transform: translate(-50%, 0) scale(1); }
+.sk-tap.is-tap { animation: sk-wiggle 0.4s ease-in-out 2; }
+@keyframes sk-wiggle { 0%, 100% { rotate: 0deg; } 25% { rotate: -7deg; } 75% { rotate: 7deg; } }
+
+/* The margins beside a section's content are 64px wide at 1280px and shrink from there, so the tap decorations that live in them (inside a section's layer) step aside below that;
+   the hero's own tap decorations sit away from its text and stay. */
+@media (max-width: 1279px) {
+  .sk-sec .sk-tap { display: none !important; }
+}
+@media (max-width: 700px) {
+  .sk-hide-m { display: none !important; }
+  .sk-bubble { font-size: 15px; padding: 4px 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sk-hero, .sk-hero *, .sk-sec, .sk-sec *, .sk-footer, .sk-footer * { animation: none !important; transition: none !important; }
+  .sk-p { display: none; }
+}

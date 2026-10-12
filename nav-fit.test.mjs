@@ -26,6 +26,9 @@ const server=createServer((req,res)=>{let p=decodeURIComponent(req.url.split('?'
   res.setHeader('content-type',T[extname(f)]??'application/octet-stream');res.end(readFileSync(f))})
 await new Promise(r=>server.listen(4651,'127.0.0.1',r))
 const browser=await chromium.launch({executablePath: process.env.CHROME ?? '/opt/pw-browsers/chromium-1194/chrome-linux/chrome',args:['--no-proxy-server']})
+// SITE_TEST_NOW=2026-12-10T15:00:00Z node nav-fit.test.mjs runs the whole suite as if it were that day (a test that pins its own clock still does), to prove that no check depends on which season
+// the homepage happens to be wearing on the day somebody runs it.
+if (process.env.SITE_TEST_NOW) { const nc = browser.newContext.bind(browser); browser.newContext = async o => { const c = await nc(o); await c.clock.setFixedTime(new Date(process.env.SITE_TEST_NOW)); return c } }
 const ctx=await browser.newContext(); const page=await ctx.newPage()
 let worst=null
 for(let w=1261; w<=1920; w+=20){

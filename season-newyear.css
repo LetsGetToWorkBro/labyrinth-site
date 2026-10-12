@@ -1,0 +1,14 @@
+/* New Year: work in progress */
+:root[data-season="newyear"] {
+  --bg: #070a16;
+  --surface: #0d1226;
+  --surface-elevated: #141a33;
+  --border: rgba(240, 213, 138, 0.14);
+  --border-strong: rgba(240, 213, 138, 0.3);
+  --text-muted: #a3acc6;
+  --gold: #f0d58a;
+  --gold-hover: #f8e4a6;
+  --sk-bubble-bg: #f6e7b8;
+  --sk-bubble-fg: #0e1430;
+  --sk-string: rgba(223, 228, 245, 0.55);
+}
