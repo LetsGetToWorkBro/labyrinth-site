@@ -180,6 +180,12 @@
   document.addEventListener('click', function (e) {
     var t = e.target && e.target.closest && e.target.closest('[data-tap]');
     if (!t) return;
+    // A decoration in a margin has its bubble start at the screen's edge instead of being centred over it (and cut off).
+    var b = t.querySelector('.sk-bubble');
+    if (b && !/\bsk-edge-[lr]\b/.test(t.className)) {
+      var tr = t.getBoundingClientRect(), mid = tr.left + tr.width / 2, half = b.offsetWidth / 2, vw = document.documentElement.clientWidth;
+      if (mid - half < 4) t.classList.add('sk-edge-l'); else if (mid + half > vw - 4) t.classList.add('sk-edge-r');
+    }
     t.classList.add('is-tap');
     clearTimeout(t._skTimer);
     t._skTimer = setTimeout(function () { t.classList.remove('is-tap'); }, 1400);

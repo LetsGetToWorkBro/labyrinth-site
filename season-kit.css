@@ -103,6 +103,11 @@
   font: 700 18px/1 var(--font-display), sans-serif; letter-spacing: 0.03em; transition: opacity 0.15s, transform 0.15s;
 }
 .sk-tap.is-tap .sk-bubble { opacity: 1; transform: translate(-50%, 0) scale(1); }
+/* Near the left or right edge of the screen the bubble starts at the decoration's edge instead of being centred on it (season-kit.js adds sk-edge-l or sk-edge-r). */
+.sk-tap.sk-edge-l .sk-bubble { left: 0; transform: translate(0, 6px) scale(0.6); transform-origin: 0 100%; }
+.sk-tap.sk-edge-l.is-tap .sk-bubble { transform: translate(0, 0) scale(1); }
+.sk-tap.sk-edge-r .sk-bubble { left: auto; right: 0; transform: translate(0, 6px) scale(0.6); transform-origin: 100% 100%; }
+.sk-tap.sk-edge-r.is-tap .sk-bubble { transform: translate(0, 0) scale(1); }
 .sk-tap.is-tap { animation: sk-wiggle 0.4s ease-in-out 2; }
 @keyframes sk-wiggle { 0%, 100% { rotate: 0deg; } 25% { rotate: -7deg; } 75% { rotate: 7deg; } }
 

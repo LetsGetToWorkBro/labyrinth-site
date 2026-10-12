@@ -148,10 +148,8 @@
 .xm-i--stack { width: clamp(48px, 6.2vw, 84px); }
 .xm-wreath { top: 28px; width: clamp(60px, 7vw, 96px); height: auto; opacity: 0.86; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.4)); }
 .xm-wreath--tl { left: -42px; }
-.xm-wreath--tr { right: -42px; }
 .xm-holly { top: 2px; width: clamp(46px, 5.6vw, 78px); height: auto; opacity: 0.9; filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.35)); }
 .xm-holly--tl { left: clamp(2px, 0.8vw, 14px); transform: scaleX(-1); }
-.xm-holly--tr { right: clamp(2px, 0.8vw, 14px); }
 .xm-drift { bottom: -2px; width: clamp(150px, 20vw, 290px); height: auto; opacity: 0.72; }
 .xm-drift--l { left: 0; }
 .xm-drift--r { right: 0; transform: scaleX(-1); }
@@ -212,6 +210,11 @@
 .xm-tag--4 span::before { border-color: rgba(15, 74, 42, 0.4); }
 @keyframes xm-tagswing { from { transform: rotate(-2.4deg); } to { transform: rotate(2.4deg); } }
 
+/* ── Narrow windows: below 1280px the page's side margins shrink from 64px to 24px, so what hangs on the left (ornaments and the wreath, which would meet the headings) steps aside ── */
+@media (max-width: 1279px) {
+  .xm-pl, .xm-wreath--tl { display: none; }
+}
+
 /* ── Phones: fewer things, nothing wider than the screen ──────────────────────────────────────────────────────────────────────── */
 @media (max-width: 1000px) {
   .xm-props .xm-i--stack, .xm-props .xm-i--gift, .xm-props .xm-i--tree3 { display: none; }
@@ -223,9 +226,6 @@
   .xm-pile .xm-i:nth-child(n+3) { display: none; }
   .xm-top { opacity: 0.8; }
   .xm-holly, .xm-drift { opacity: 0.6; }
-  /* every pendant hangs at the right on a phone, so a wreath or holly meant for the right corner moves to the left one */
-  .xm-wreath--tr { right: auto; left: -42px; }
-  .xm-holly--tr { right: auto; left: clamp(2px, 0.8vw, 14px); transform: scaleX(-1); }
   .xm-footer { padding-top: 40px; padding-bottom: 56px; min-height: 236px; }
   .xm-f-lights { top: 36px; }
   .xm-shoot--2 { display: none; }

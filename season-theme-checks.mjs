@@ -143,7 +143,11 @@ export async function checkPack({ browser, base, check, name, iso }) {
       const b = t.querySelector('.sk-bubble')
       // wait (up to 1.2 s; the bubble stays 1.4 s) until it is fully shown, so a slow machine does not fail a pack that is right
       for (const t0 = performance.now(); performance.now() - t0 < 1200 && !(t.classList.contains('is-tap') && b && getComputedStyle(b).opacity === '1');) await new Promise(r => setTimeout(r, 40))
-      return { on: t.classList.contains('is-tap'), text: b ? b.textContent : '', shown: b ? getComputedStyle(b).opacity : '0' }
+      // (measured with the little wiggle a tap gives its decoration stopped: it turns the whole thing a few degrees for a moment, which is not where the bubble stays)
+      const was = t.style.animation; t.style.animation = 'none'
+      const br = b ? b.getBoundingClientRect() : null
+      t.style.animation = was
+      return { on: t.classList.contains('is-tap'), text: b ? b.textContent : '', shown: b ? getComputedStyle(b).opacity : '0', inView: !!br && br.left >= -1 && br.right <= document.documentElement.clientWidth + 1, cls: [...t.classList].filter(c => c !== 'sk-tap').join('.') }
     }, i)
     said.push(r)
   }
@@ -151,6 +155,7 @@ export async function checkPack({ browser, base, check, name, iso }) {
     tapCount >= 3 && st.taps.some(t => t.inHero) && said.every(r => r.on && r.shown === '1' && meta.tapSay.includes(r.text)) && meta.tapSay.every(s => said.some(r => r.text === s)), JSON.stringify({ said, meta: meta.tapSay }))
   const gone = await page.evaluate(async () => { await new Promise(r => setTimeout(r, 1700)); return [...document.querySelectorAll('[data-tap]')].every(t => !t.classList.contains('is-tap')) })
   check(`${L} and the bubble goes away again by itself`, gone)
+  check(`${L} every bubble stays on the screen when its decoration is tapped (not cut off at the edge)`, said.every(r => r.inView), JSON.stringify(said.filter(r => !r.inView).map(r => r.cls)))
   check(`${L} nothing sticks out sideways on a desktop screen`, !st.overflow)
   await d.ctx.close()
 
