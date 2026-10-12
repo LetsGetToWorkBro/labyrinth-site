@@ -4,16 +4,27 @@
    headline, foil balloons that carry the digits of the year, a city skyline along the foot of the hero with a glowing clock tower that reads midnight,
    a layer behind every section (garlands of stars, pennants and lights, curly streamers, party hats, noisemakers, sparklers, small clocks, balloons
    rising), and a party stage above the footer (confetti cannons, balloons, a glittering floor and four signs). Tap a balloon, the clock tower or the
-   party popper (and a few things further down the page) and they answer. The year is the academy's current year (the kit's k.now.year).
+   party popper (and a few things further down the page) and they answer. The year is the one the page welcomes: January's own year all through January
+   and the coming year at any other time, so a preview in the autumn already says the next one (see yearNow below).
    Nothing here reads or writes anything about a visitor, and nothing is built unless the page is in the season. */
 (function () {
   var K0 = window.SeasonKit;
 
-  // The year on the academy's clock (the kit's k.now.year), read now so that the tap bubbles listed in meta say exactly what the page shows.
+  // The year this page welcomes, on the academy's clock (the kit's k.now), read now so that the tap bubbles listed in meta say exactly what the page shows.
+  // All through January (the season) it is that January's year; at any other time (a preview in the autumn, say) it is the New Year that is coming, so
+  // looked at in October 2026 it says 2027, and in January 2027 it says 2027 too.
   function yearNow() {
-    try { if (K0 && K0.helpers) return K0.helpers().now.year; } catch (e) { /* fall through */ }
-    try { return +new Intl.DateTimeFormat('en-US', { timeZone: 'America/Chicago', year: 'numeric' }).format(new Date()); } catch (e) { /* fall through */ }
-    return new Date().getFullYear();
+    var d = null;
+    try { if (K0 && K0.helpers) d = K0.helpers().now; } catch (e) { d = null; }
+    if (!d) {
+      try {
+        var p = {};
+        new Intl.DateTimeFormat('en-US', { timeZone: 'America/Chicago', year: 'numeric', month: 'numeric' }).formatToParts(new Date()).forEach(function (x) { p[x.type] = +x.value; });
+        if (p.year && p.month) d = p;
+      } catch (e) { d = null; }
+    }
+    if (!d) { var n = new Date(); d = { year: n.getFullYear(), month: n.getMonth() + 1 }; }
+    return d.month === 1 ? d.year : d.year + 1;
   }
   var YEAR = yearNow();
 

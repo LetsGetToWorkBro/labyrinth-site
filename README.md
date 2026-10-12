@@ -63,7 +63,7 @@ The homepage dresses for the holiday, by itself, on the academy's clock (Central
 | `memorial` | May 16 to 31 | `/?season=memorial` |
 | `independence` | Jul 1 to 31 | `/?season=independence` |
 
-`/?season=off` shows the page with no theme. A window opens at Central midnight on its first day and ends at the Central midnight after its last. A later
+`/?season=off` shows the page with no theme. The New Year theme shows the year it welcomes: that January's own year all through January, and the coming year when previewed at any other time (looked at in October 2026 it says 2027). A window opens at Central midnight on its first day and ends at the Central midnight after its last. A later
 window wins over an earlier one; a window with a `year` is for that year only. April (after Easter), June, August and September have no season.
 
 Each season but Halloween is two files, `season-<name>.css` and `season-<name>.js`, loaded (after `season-kit.css` and `season-kit.js`) only while it is on.
