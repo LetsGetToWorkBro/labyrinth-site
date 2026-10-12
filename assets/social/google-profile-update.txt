@@ -1,0 +1,51 @@
+GOOGLE BUSINESS PROFILE: CATEGORIES, SERVICES, DESCRIPTION, BOOKING LINK, AND THE OLD TEAM LEGACY LISTING (the wording for a one-time muse job)
+
+Why: on "martial arts fulshear" the Fulshear profile is #4 of 14 (average rank 3.78, top 3 at 3 of 9 points), while on "bjj fulshear" it is #1 at every point.
+Stars and reviews are not the gap (5.0, 65 reviews, against 68, 38 and 15 for the three listings above it). Relevance is: the profile lists one
+category and no services, and the old Team Legacy listing (7609 Tiki Dr, a location that has closed) is #2 in that scan.
+What this changes: adds three categories (the primary, Martial arts school, stays), a description that says martial arts and keeps Brazilian jiu-jitsu,
+nine services, and tagged website and booking links so the CRM can say how many bookings the profile sends (the tags show up on a lead as
+"Came from: google / organic / business-profile"). On the Team Legacy listing it points the website at the merger page and says what happened.
+What it does not change: the business name (do NOT put "martial arts" or "Fulshear" in it: Google suspends profiles for that, and the name is
+where the BJJ #1 comes from), the address, phone number, hours, the primary category, photos, posts or reviews. Hours are read, not changed, so the
+profile can be compared with the website (Mon-Fri 6:30 AM-9 PM, Sat 9 AM-2 PM, Sun 10:30 AM-2 PM).
+Closing the Team Legacy listing is a separate message (muse-prompt-team-legacy-close.txt), sent only when Coach Scott Jones and the owner say go.
+Everything below was checked against the site's own pages by the build script (scratchpad), and nothing here carries a price, a ranking, a free-class
+offer or fundraiser wording: Google's description rules do not allow promotions, and these fields are not updated often.
+The muse prompt is built from the blocks below and checks them, so edit them here.
+
+==================== PROFILE ====================
+Profile: https://maps.google.com/?cid=7150744267965161030
+Name: Labyrinth BJJ
+Address: 6615 West Cross Creek Bend Lane, Suite #400, Fulshear, TX 77441
+Phone: (281) 393-7983
+Primary category (leave it as it is): Martial arts school
+Website, only if the current one is on labyrinth.vision: https://labyrinth.vision/?utm_source=google&utm_medium=organic&utm_campaign=business-profile
+Appointment link, only if there is none: https://labyrinth.vision/?utm_source=google&utm_medium=organic&utm_campaign=business-profile#book
+
+==================== CATEGORIES TO ADD ====================
+Brazilian jiu-jitsu school
+Self-defense school
+Wrestling school
+
+==================== DESCRIPTION ====================
+Labyrinth BJJ is a martial arts school in Fulshear, Texas, teaching Brazilian jiu-jitsu to kids from age 3 and to adults at every level, in Gi and No-Gi classes from early morning to evening. We also run youth wrestling for ages 7 to 17, MMA conditioning, strength and conditioning, self defense seminars for women, private lessons, a Sunday open mat and a competition team, with nobody ever made to compete. Team Legacy Martial Arts has merged with our school, so Coach Scott Jones, a 7th dan Taekwondo black belt, now teaches here beside our black belt instructors. Beginners are welcome and memberships are month to month. Serving Fulshear, Katy, Cinco Ranch, Richmond and the west Houston area.
+
+==================== SERVICES ====================
+Kids Brazilian jiu-jitsu | Brazilian jiu-jitsu for kids ages 3 to 15, in three age groups and six days a week. Gi and No-Gi classes with belt progress tracked, taught by black belts. Beginners are welcome.
+Adult Brazilian jiu-jitsu | Gi and No-Gi Brazilian jiu-jitsu for adults of every level, with seventeen classes a week from early morning to evening. Complete beginners are welcome, and we lend you a gi on Gi days.
+Youth wrestling | Wrestling for ages 7 to 17, three sessions a week, coached by a Texas National Team wrestler. Takedowns, top control and conditioning, with no wrestling background needed.
+MMA conditioning | A weekly all-ages MMA conditioning class taught by Coach Scott Jones, a 7th dan Taekwondo black belt and BJJ brown belt. Beginners are welcome.
+Competition team | Dedicated classes for kids, teens and adults who want harder training and the option of entering tournaments. Nobody is ever made to compete.
+Strength and conditioning | An all-ages strength and conditioning class twice a week, open to every level.
+Self defense seminars for women | Self defense seminars for women, built on the jiu-jitsu we teach every day. No experience is needed, and you can come on your own or bring a friend.
+Private lessons | One-on-one jiu-jitsu coaching for a specific problem, or in the weeks before a tournament.
+Open mat | Sunday open mat for all levels, open to students and to visitors from other academies.
+
+==================== TEAM LEGACY DETAILS ====================
+Name starts with: Team Legacy
+Address: 7609 Tiki Dr
+Website: https://labyrinth.vision/legacy/?utm_source=google&utm_medium=organic&utm_campaign=team-legacy-listing
+
+==================== TEAM LEGACY DESCRIPTION ====================
+Team Legacy Martial Arts has merged with Labyrinth BJJ and no longer trains at this address. Coach Scott Jones and the Team Legacy students now train at Labyrinth BJJ, 6615 West Cross Creek Bend Lane, Suite 400, Fulshear, TX 77441. Kids from age 3 and adults train Brazilian jiu-jitsu, youth wrestling and MMA conditioning, and beginners are welcome.
