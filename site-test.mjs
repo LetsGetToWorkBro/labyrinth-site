@@ -681,10 +681,10 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   check('L1x the homepage links to the event page before the event',
     (await rp.locator('a.event-strip__link[href="/self-defense-for-women"]').count()) === 1
       && await rp.isVisible('#eventStrip'))
-  check('L1x each October strip link carries a pink ribbon and a pink button (the HYROX row has its own volt look, the donation card is solid pink with a dark button)',
+  check('L1x each October strip link carries a pink ribbon and a pink button (the HYROX row has its own volt look, the donation card is solid pink with a dark button, and a holiday\'s one-day card is navy and gold)',
     (await rp.locator('#eventStrip svg.ribbon').count()) === 3
-      && await rp.evaluate(() => [...document.querySelectorAll('.event-strip__link:not(.event-strip__link--hyrox):not(.event-strip__link--donate) .event-strip__icon')].every(i => getComputedStyle(i).color === 'rgb(229, 143, 181)')
-        && [...document.querySelectorAll('.event-strip__link:not(.event-strip__link--hyrox):not(.event-strip__link--donate) .event-strip__cta')].every(c => getComputedStyle(c).backgroundColor === 'rgb(229, 143, 181)')))
+      && await rp.evaluate(() => [...document.querySelectorAll('.event-strip__link:not(.event-strip__link--hyrox):not(.event-strip__link--donate):not(.event-strip__link--today) .event-strip__icon')].every(i => getComputedStyle(i).color === 'rgb(229, 143, 181)')
+        && [...document.querySelectorAll('.event-strip__link:not(.event-strip__link--hyrox):not(.event-strip__link--donate):not(.event-strip__link--today) .event-strip__cta')].every(c => getComputedStyle(c).backgroundColor === 'rgb(229, 143, 181)')))
   check('L1x the strip names the event, the date and the cause',
     /Rolling for Ribbons/.test(await rp.textContent('#eventStrip'))
       && /Oct 24/.test(await rp.textContent('#eventStrip')) && /Breast cancer/i.test(await rp.textContent('#eventStrip')))
@@ -1956,10 +1956,37 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
   check('L2c the "this month" title gets a little sailboat', /⛵/.test(c1.title), c1.title)
   check('L2c only that day is its stylesheet and script fetched, and each by a versioned address',
     requested.length === 2 && requested.every(r => /^season-columbus\.(css|js)\?v=[0-9a-f]{8}$/.test(r)), JSON.stringify(requested))
+  const MAPS = 'https://maps.google.com/?cid=7150744267965161030'
   const cards = await cp.evaluate(() => [...document.querySelectorAll('#eventStrip a.event-strip__link')].filter(a => !a.hidden).map(a => a.getAttribute('href')))
   const colors = await cp.evaluate(() => [...document.querySelectorAll('#eventStrip .event-strip__cta')].filter(c => c.offsetParent !== null).map(c => getComputedStyle(c).backgroundColor))
-  check('L2c the donation, Pink October, the seminar and HYROX are still the four cards under the hero, each in its own colour',
-    JSON.stringify(cards) === JSON.stringify(['/donate', '/pink-october', '/self-defense-for-women', '/hyrox-youngstars']) && colors.join('|') === 'rgb(26, 11, 18)|rgb(229, 143, 181)|rgb(229, 143, 181)|rgb(227, 255, 46)', JSON.stringify({ cards, colors }))
+  check('L2c the strip is the day\'s card first, then the donation, Pink October, the seminar and HYROX, each in its own colour (gold on navy, dark on solid pink, pink, pink, volt)',
+    JSON.stringify(cards) === JSON.stringify([MAPS, '/donate', '/pink-october', '/self-defense-for-women', '/hyrox-youngstars']) && colors.join('|') === 'rgb(226, 184, 90)|rgb(26, 11, 18)|rgb(229, 143, 181)|rgb(229, 143, 181)|rgb(227, 255, 46)', JSON.stringify({ cards, colors }))
+
+  // The day's card: what the owner said about the day, in the strip, on the page that cannot book it.
+  const tc = await cp.evaluate(() => {
+    const a = document.querySelector('a.event-strip__link--today'), d = document.querySelector('a.event-strip__link--donate')
+    const t = (el, s) => (el.querySelector(s)?.textContent ?? '').replace(/\s+/g, ' ').trim()
+    return {
+      eyebrow: t(a, '.event-strip__eyebrow'), title: t(a, 'strong'), cta: t(a, '.event-strip__cta'), where: t(a, '.event-strip__where'),
+      sessions: [...a.querySelectorAll('.event-strip__session')].map(s => ({ what: t(s, 'b'), note: t(s, 'span') })),
+      all: a.textContent.replace(/\s+/g, ' ').trim(), href: a.getAttribute('href'), target: a.target, rel: a.rel,
+      first: [...document.querySelectorAll('#eventStrip a.event-strip__link')].find(x => !x.hidden) === a,
+      sameWidth: Math.abs(a.getBoundingClientRect().width - d.getBoundingClientRect().width) < 2, above: a.getBoundingClientRect().bottom <= d.getBoundingClientRect().top,
+      pill: getComputedStyle(a.querySelector('.event-strip__pill')).backgroundColor,
+    }
+  })
+  check('L2c the first card of the strip is the day\'s hours, as wide as the donation card: Columbus Day, Monday, October 12, the open mat 10:00 to 11:30 AM and the wrestling class 2:00 PM',
+    tc.first && tc.sameWidth && tc.above && tc.eyebrow === 'Today Columbus Day · Monday, October 12' && tc.title === 'Open mat and wrestling today'
+      && JSON.stringify(tc.sessions.map(s => s.what)) === JSON.stringify(['Open mat 10:00 to 11:30 AM', 'Wrestling class 2:00 PM']), JSON.stringify(tc))
+  check('L2c it carries the site\'s standing words about each session, the address and the number to call or text, and sends people to the directions in a new tab',
+    tc.sessions[0].note === 'All levels are welcome, and visitors from other academies are welcome too.' && tc.sessions[1].note === 'Our youth wrestling program is for ages 7 to 17, and no wrestling experience is needed.'
+      && tc.where === 'Labyrinth BJJ, 6615 West Cross Creek Bend Lane, Suite #400, Fulshear, TX 77441. Questions? Call or text (281) 393-7983.'
+      && tc.cta === 'Get directions' && tc.href === MAPS && tc.target === '_blank' && /\bnoopener\b/.test(tc.rel), JSON.stringify(tc))
+  check('L2c it names no price, free offer, sign-up, coach or claim nobody gave (the calendar is closed that day, so there is nothing to book and nothing to RSVP to)',
+    !/\$|free|price|cost|discount|% off|rsvp|book|sign up|register|trial|coach|professor|instructor|black belt|champion|top 1|national|donat/i.test(tc.all) && !/[–—]/.test(tc.all), tc.all)
+  check('L2c its Today tag is red with white letters, dark enough to read', tc.pill === 'rgb(200, 40, 58)', tc.pill)
+  const chip = await cp.evaluate(() => document.getElementById('heroChip').hidden ? '' : document.getElementById('heroChip').textContent.replace(/\s+/g, ' ').trim())
+  check('L2c the line under the hero buttons names it first', /^This month: Open mat and wrestling today · Pink October · Free self defense seminar · Kids HYROX race/.test(chip), chip)
   check('L2c the decoration never takes a tap from the page: its layers let every tap through, and the hero button is what is under its own middle',
     await cp.evaluate(() => {
       const layers = ['.cd-hero', '.cd-sec', '.cd-footer', '.cd-sea'].map(s => document.querySelector(s))
@@ -1978,6 +2005,23 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
   check('L2c it starts at midnight Central on October 12 (the minute before is still Halloween)', edge.beforeEve === 'halloween' && edge.midnightIn === 'columbus', JSON.stringify(edge))
   check('L2c it ends at midnight Central that night, and from October 13 the page is Halloween again', edge.lateOn === 'columbus' && edge.midnightOut === 'halloween' && edge.nextDay === 'halloween', JSON.stringify(edge))
   check('L2c on October 12 of the next year nothing happens, and after October there is no theme at all', edge.nextYear === 'halloween' && edge.november === '', JSON.stringify(edge))
+
+  // The day's card keeps the theme's hours: it opens at midnight Central on October 12 and is gone from the first second after midnight Central that night.
+  const shown = {}
+  for (const [name, iso] of [['weekBefore', '2026-10-05T15:00:00Z'], ['beforeEve', '2026-10-12T04:59:00Z'], ['midnightIn', '2026-10-12T05:00:00Z'], ['noon', '2026-10-12T17:00:00Z'], ['lateOn', '2026-10-13T04:59:00Z'],
+    ['midnightOut', '2026-10-13T05:00:01Z'], ['nextDay', '2026-10-14T15:00:00Z'], ['nextYear', '2027-10-12T15:00:00Z']]) {
+    await at(iso)
+    // Drawn, not just unmarked: the card must not be on the page as a box, whatever its hidden attribute says.
+    shown[name] = await cp.evaluate(() => { const a = document.querySelector('a.event-strip__link--today'); return !!a && a.offsetParent !== null && a.getBoundingClientRect().height > 0 })
+  }
+  check('L2c the day\'s card opens at midnight Central on October 12 (not the minute before, and not the week before)', !shown.weekBefore && !shown.beforeEve && shown.midnightIn && shown.noon, JSON.stringify(shown))
+  check('L2c it stays through the evening and is gone after midnight Central, and on October 12 of the next year there is no card', shown.lateOn && !shown.midnightOut && !shown.nextDay && !shown.nextYear, JSON.stringify(shown))
+  await at('2026-10-14T15:00:00Z')
+  const chipAfter = await cp.evaluate(() => document.getElementById('heroChip').textContent)
+  check('L2c once it is over the strip and the hero line are the October ones again', !/Open mat/.test(chipAfter) && /Pink October/.test(chipAfter), chipAfter)
+  await at('2026-10-12T15:00:00Z', '?season=off')
+  check('L2c the card does not need the theme: with the theme off on the day it is still there, first, in navy and gold',
+    await cp.evaluate(() => { const a = [...document.querySelectorAll('#eventStrip a.event-strip__link')].find(x => !x.hidden); return !!a && a.classList.contains('event-strip__link--today') && getComputedStyle(a.querySelector('.event-strip__cta')).backgroundColor === 'rgb(226, 184, 90)' && !document.documentElement.dataset.season }))
   await at('2026-10-14T15:00:00Z')
   const gone = await cp.evaluate(() => ({ defs: document.querySelectorAll('.cd-defs, .cd-hero, .cd-sec, .cd-footer').length, gold: getComputedStyle(document.documentElement).getPropertyValue('--gold').trim(), halloween: [...document.querySelectorAll('.season-hero')].filter(e => getComputedStyle(e).display !== 'none').length }))
   check('L2c once it is over there is nothing of it left on the page, nothing of it was fetched, and the Halloween gold and graveyard are back',
@@ -1994,11 +2038,22 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
   check('L2c on a phone nothing sticks out sideways and the cards stack',
     !(await mp.evaluate(() => document.documentElement.scrollWidth > innerWidth)) &&
     (await mp.evaluate(() => { const c = [...document.querySelectorAll('#eventStrip a.event-strip__link')]; return c[1].getBoundingClientRect().top > c[0].getBoundingClientRect().bottom })))
+  // Everything in the day's card stays inside it, in the order a person reads it: the day, the title, the two sessions, the address, the button.
+  // The strip and the card are on the screen (a line that will not wrap makes the whole strip wider than the phone, and the page hides the overflow, so the page's own width says nothing).
+  const stays = () => {
+    const a = document.querySelector('a.event-strip__link--today'), r = a.getBoundingClientRect()
+    const y = s => a.querySelector(s).getBoundingClientRect().top
+    const onScreen = [...document.querySelectorAll('#eventStrip .event-strip__title, #eventStrip a.event-strip__link:not([hidden])')].every(e => { const b = e.getBoundingClientRect(); return b.left >= -0.5 && b.right <= innerWidth + 0.5 })
+    // Each box is inside the card, and no box has text running out of it (a long line that will not wrap runs past its box without moving the box).
+    return onScreen && [...a.querySelectorAll('*')].every(e => { const b = e.getBoundingClientRect(); return b.width === 0 || (b.left >= r.left - 0.5 && b.right <= r.right + 0.5 && e.scrollWidth <= e.clientWidth + 1) })
+      && y('.event-strip__eyebrow') < y('strong') && y('strong') < y('.event-strip__session') && y('.event-strip__session') < y('.event-strip__where') && y('.event-strip__where') < y('.event-strip__cta')
+  }
+  check('L2c on a phone the day\'s card is the first card, and everything in it stays inside it, top to bottom', await mp.evaluate(stays) && await mp.evaluate(() => [...document.querySelectorAll('#eventStrip a.event-strip__link')].find(x => !x.hidden).classList.contains('event-strip__link--today')))
   const sm = await (await browser.newContext({ viewport: { width: 320, height: 640 } })).newPage()
   await sm.clock.setFixedTime(new Date('2026-10-12T15:00:00Z'))
   await sm.goto(URLH, { waitUntil: 'load' })
   await sm.waitForTimeout(250)
-  check('L2c and on the smallest phone too', !(await sm.evaluate(() => document.documentElement.scrollWidth > innerWidth)))
+  check('L2c and on the smallest phone too', !(await sm.evaluate(() => document.documentElement.scrollWidth > innerWidth)) && await sm.evaluate(stays))
 
   const rm = await (await browser.newContext({ reducedMotion: 'reduce' })).newPage()
   await rm.clock.setFixedTime(new Date('2026-10-12T15:00:00Z'))

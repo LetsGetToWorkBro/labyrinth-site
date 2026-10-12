@@ -5226,6 +5226,31 @@ body {
   .event-strip__link--donate .event-strip__cta { flex-shrink: 0; padding: 14px 28px; font-size: 17px; }
 }
 
+/* The one-day card (scripts/build_pages.py: TODAY_CARD, today_card): a holiday's hours, first in the strip and the full width of
+   it for that day. Navy and gold with the day in red, in fixed colors so it reads the same under any seasonal theme. It hides
+   itself outside its day (data-opens, data-closes). Setting TODAY_CARD to None in the script takes the card out; these rules can go with it. */
+.event-strip__link--today {
+  border-color: rgba(226, 184, 90, 0.6); background: linear-gradient(135deg, #142b62 0%, #0a1530 72%);
+  box-shadow: 0 14px 44px rgba(10, 21, 48, 0.6);
+}
+.event-strip__link--today:hover, .event-strip__link--today:focus-visible { border-color: #e2b85a; box-shadow: 0 16px 50px rgba(226, 184, 90, 0.24); }
+.event-strip__link--today .event-strip__icon, .event-strip__link--today .event-strip__eyebrow { color: #e2b85a; }
+.event-strip__link--today .event-strip__text { color: #c9d1e6; }
+.event-strip__link--today .event-strip__text strong { color: #f4f1e8; }
+.event-strip__link--today .event-strip__cta { background: #e2b85a; color: #0a1530; }
+.event-strip__pill { display: inline-block; margin-right: 4px; padding: 3px 10px; border-radius: 999px; background: #c8283a; color: #fff; font-weight: 800; }
+.event-strip__sessions { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 4px; }
+.event-strip__session { display: flex; flex-direction: column; gap: 3px; padding: 10px 14px; border-left: 3px solid #e2b85a; border-radius: 0 10px 10px 0; background: rgba(244, 241, 232, 0.07); }
+.event-strip__session b { color: #f4f1e8; font-size: 17px; font-weight: 800; line-height: 1.3; }
+.event-strip__session i { display: inline-block; margin-left: 4px; color: #e2b85a; font-style: normal; }
+.event-strip__where { color: #a9b5d2; font-size: 14px; }
+@media (min-width: 900px) {
+  .event-strip__link--today { grid-column: 1 / -1; flex-direction: row; align-items: center; gap: var(--space-6); padding: 24px 28px; }
+  .event-strip__link--today .event-strip__text strong { font-size: 32px; }
+  .event-strip__link--today .event-strip__cta { flex-shrink: 0; padding: 14px 28px; font-size: 17px; }
+  .event-strip__sessions { grid-template-columns: 1fr 1fr; gap: 14px; }
+}
+
 /* ── Goal reached ─────────────────────────────────────────────────────────────────────────────────────
    Two anonymous donors match every dollar up to the goal, so passing it ends the match and every page that talks about
    it needs a second set of words (scripts/build_pages.py, goal.js, fund.js). <html data-goal="reached"> says which set
