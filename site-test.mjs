@@ -925,7 +925,7 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   const js = readFileSync(join(ROOT, 'booking.js'), 'utf8')
   const readers = readdirSync(ROOT).filter(f => f.endsWith('.js')).filter(f => /utm_source|gclid|fbclid/.test(readFileSync(join(ROOT, f), 'utf8')))
   check('L1src booking.js is the only script that reads the ad tags', readers.length === 1 && readers[0] === 'booking.js', JSON.stringify(readers))
-  const landing = ['index.html', 'programs/adult-bjj-fulshear.html', 'programs/kids-bjj-fulshear.html', 'programs/martial-arts-fulshear.html', 'schedule.html', 'pricing.html', 'pink-october.html']
+  const landing = ['index.html', 'programs/adult-bjj-fulshear.html', 'programs/kids-bjj-fulshear.html', 'programs/martial-arts-fulshear.html', 'schedule.html', 'pricing.html', 'pink-october.html', 'legacy/index.html']
   const without = landing.filter(f => !/<script[^>]*src="[^"]*booking\.js\?v=[0-9a-f]{8}"/.test(readFileSync(join(ROOT, f), 'utf8')))
   check('L1src the pages ads and listings send people to all load booking.js, so they see the tag where it lands', without.length === 0, without.join(', '))
   const code = js.split('\n').filter(l => !/^\s*(\/\/|\/\*|\*)/.test(l)).join('\n')   // comments quote the note; only the code builds it
