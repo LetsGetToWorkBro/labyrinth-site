@@ -1033,92 +1033,115 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
     (js.match(/GYM_FULSHEAR\.lat/g) || []).length === 2 && (js.match(/GYM_KATY\.lat/g) || []).length === 1)
 }
 
-// ── L1s: the Team Legacy transfer ──
-// The announcement is public and indexable; the transfer form is a billing
-// page for people already enrolled somewhere else, so it is noindex and stays
-// out of the sitemap.
+// ── L1s: the Team Legacy transfer is finished ──
+// The Team Legacy families moved over in September 2026 and Labyrinth billing
+// took over in October, so on 12 October 2026 the transfer form was retired.
+// The member-transfer function now answers every request 410, and the form
+// that posted to it is gone with it.
 //
-// The form itself is the part that matters. A transferring family is a MEMBER
-// from the moment they sign, so it creates roster rows rather than a lead, and
-// it hands off to Stripe in setup mode: the card is stored and NOTHING is
-// charged, because every rate here is negotiated and gets set afterwards by a
-// person. The signature and both agreements are the legal basis for storing
-// that card, so none of them may be optional and all of them must be sent.
+// /legacy/transfer still answers, because families have the link in texts and
+// emails, but it is a notice now: the form is closed, and here are the phone
+// and the email. There is nothing on it to fill in and nothing on it that
+// sends, so nobody types their details into a page that could only refuse
+// them. It stays noindex and out of the sitemap.
+//
+// The announcement no longer sends anybody there. Its #transfer section keeps
+// its id, because old links point at it, and gives the phone and the email.
 {
   const announce = readFileSync(join(ROOT,'legacy/index.html'),'utf8')
   const transfer = readFileSync(join(ROOT,'legacy/transfer.html'),'utf8')
+  const words = html => html
+    .replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<!--[\s\S]*?-->/g, ' ')
+    .replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()
+  const LONG_DASH = /[\u2013\u2014]|&[mn]dash;/
 
-  // It shipped pointing at /legacy, which is the announcement itself.
-  check('L1s the announcement links to the transfer form',
-    /href="\/legacy\/transfer"/.test(announce))
-  check('L1s the transfer form is noindex',
-    /name="robots"[^>]*noindex/.test(transfer))
+  check('L1s the announcement no longer offers the transfer form: no "Transfer my membership" and no link to /legacy/transfer',
+    !/Transfer my membership/i.test(announce) && !/href="[^"]*\/legacy\/transfer\b/.test(announce))
+  const linkers = []
+  for (const d of ['', 'blog', 'programs', 'areas', 'coaches', 'legacy'])
+    for (const f of readdirSync(join(ROOT, d)).filter(x => x.endsWith('.html')).map(x => d ? d + '/' + x : x))
+      if (f !== 'legacy/transfer.html' && /href="[^"]*\/legacy\/transfer\b/.test(readFileSync(join(ROOT, f), 'utf8'))) linkers.push(f)
+  check('L1s nothing on the site links to the transfer page any more', linkers.length === 0, linkers.join(', '))
+
+  const section = (announce.match(/<section\b[^>]*\bid="transfer"[^>]*>[\s\S]*?<\/section>/) || [''])[0]
+  const said = words(section)
+  check('L1s the #transfer section is still there, so old #transfer links still land', section !== '')
+  check('L1s it says what happened, in the past tense: the families moved over in September and Labyrinth billing took over in October',
+    /moved over to Labyrinth in September/.test(said) && /Labyrinth billing took over in October/.test(said)
+      && !/transfer form|fill in|billing starts|takes over from|two minutes/i.test(said), said)
+  check('L1s it tells a family that has not moved over, or has a question about rank, age group or classes, to text, call or email',
+    /not moved over yet/.test(said) && /rank, age group or classes/.test(said)
+      && /text or call 281-393-7983 or email info@labyrinth\.vision/.test(said), said)
+  check('L1s and offers a gold "Call or text 281-393-7983" button and an "Email us" button',
+    /<a href="tel:2813937983" class="btn btn--gold">Call or text 281-393-7983<\/a>/.test(section)
+      && /<a href="mailto:info@labyrinth\.vision" class="btn btn--ghost">Email us<\/a>/.test(section))
+
+  const main = (transfer.match(/<main\b[^>]*>([\s\S]*?)<\/main>/) || ['', ''])[1]
+  check('L1s the transfer page is still noindex', /name="robots"[^>]*noindex/.test(transfer))
   const locs = [...readFileSync(join(ROOT,'sitemap.xml'),'utf8')
     .matchAll(/<loc>([^<]+)<\/loc>/g)].map(m => m[1])
-  check('L1s the transfer form is not in the sitemap',
+  check('L1s and still not in the sitemap',
     !locs.some(u => u.includes('/legacy/transfer')), locs.filter(u => u.includes('legacy')).join(', '))
+  check('L1s its title and link preview say the form is closed, not "transfer your membership"',
+    /<title>[^<]*Transfers Are Done[^<]*<\/title>/.test(transfer)
+      && /property="og:description" content="The Team Legacy transfer form is closed\./.test(transfer)
+      && !/Transfer Your Membership|two minutes/i.test(transfer))
+  check('L1s it has no form and nothing to fill in', main !== '' && !/<(form|input|select|textarea)\b/i.test(transfer))
+  const own = [...transfer.matchAll(/<script\b([^>]*)>[\s\S]*?<\/script>/gi)]
+    .filter(m => !/\bsrc=/.test(m[1]) && !/application\/ld\+json/.test(m[1]))
+  const loaded = [...transfer.matchAll(/<script\b[^>]*\bsrc="\/([^"?]+)/gi)].map(m => m[1])
+  check('L1s the form\'s script is gone: no script of its own, and none it loads names member-transfer',
+    own.length === 0 && ![transfer, ...loaded.map(s => readFileSync(join(ROOT, s), 'utf8'))].some(t => /member-transfer/.test(t)),
+    JSON.stringify({ own: own.length, loaded }))
+  check('L1s no long dashes in the new words on either page', !LONG_DASH.test(section) && !LONG_DASH.test(main))
 
-  // Storing a card to charge later is only lawful on terms that say what is
-  // charged, when, how the amount is arrived at, and how to stop it. Every
-  // rate here is different, so "how the amount is determined" is the sentence
-  // doing the real work, and losing it in an edit would be invisible.
-  for (const [what, re] of [
-    ['nothing is charged today', /Nothing is charged today/i],
-    ['when the last Team Legacy payment lands', /final payment in September/i],
-    ['when Labyrinth billing starts', /billing starts in October/i],
-    ['how the rate is decided', /rate is the one we agree/i],
-    ['when it recurs', /repeats monthly/i],
-    ['how to cancel', /cancel at any time/i],
-  ]) {
-    check(`L1s the billing consent states ${what}`, re.test(transfer))
-  }
-
-  let posted = null
-  await page.route('**/functions/v1/member-transfer', route => {
-    posted = JSON.parse(route.request().postData() || '{}')
-    return route.fulfill({
-      status: 200, contentType: 'application/json',
-      body: JSON.stringify({ ok: true, recorded: true, url: 'http://localhost:4620/pricing' }),
-    })
+  // In a real browser: it is served, it says so, and it sends nothing to
+  // Supabase. Its own context, so no route set elsewhere in this file stands
+  // between the page and the wire.
+  const ctx = await browser.newContext()
+  const tp = await ctx.newPage()
+  const toSupabase = []
+  tp.on('request', r => { if (/(^|\.)supabase\.co$/i.test(new URL(r.url()).hostname)) toSupabase.push(r.method() + ' ' + r.url()) })
+  // Anything that did try is stopped here rather than sent to the real project.
+  await tp.route(/^https?:\/\/([^/]+\.)?supabase\.co\//i, route => route.abort())
+  const res = await tp.goto('http://localhost:4620/legacy/transfer', { waitUntil:'networkidle' })
+  check('L1s /legacy/transfer is still served (200), for the families who have the link', res?.status() === 200, String(res?.status()))
+  const shown = await tp.evaluate(() => {
+    const m = document.querySelector('main')
+    return {
+      h1: document.querySelector('h1')?.textContent.trim(),
+      text: m.innerText,
+      fields: m.querySelectorAll('form, input, select, textarea, button').length,
+      buttons: [...m.querySelectorAll('a.btn')].map(a => [a.getAttribute('href'), a.className, a.textContent.trim()]),
+    }
   })
+  check('L1s it says the transfers are done and the form is closed',
+    shown.h1 === 'THE TRANSFERS ARE DONE' && /The transfer form is closed\./.test(shown.text), shown.h1)
+  check('L1s it shows the phone number and the email',
+    /281-393-7983/.test(shown.text) && /info@labyrinth\.vision/.test(shown.text), shown.text)
+  check('L1s with a gold "Call or text 281-393-7983" button and an "Email us" button, and nothing to fill in',
+    JSON.stringify(shown.buttons) === JSON.stringify([
+      ['tel:2813937983', 'btn btn--gold', 'Call or text 281-393-7983'],
+      ['mailto:info@labyrinth.vision', 'btn btn--ghost', 'Email us']]) && shown.fields === 0,
+    JSON.stringify(shown))
+  // Scrolled to the end and given a moment, in case anything waits to be seen.
+  await tp.evaluate(() => scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }))
+  await tp.waitForTimeout(1000)
+  check('L1s in a real browser the page makes no request to supabase.co', toSupabase.length === 0, toSupabase.join(', '))
 
-  // Neither agreement ticked: nothing may leave the page.
-  await page.goto('http://localhost:4620/legacy/transfer', { waitUntil:'networkidle' })
-  await page.fill('#tfStudent', 'Site Test')
-  await page.fill('#tfPhone', '2813937983')
-  await page.fill('#tfEmail', 'site-test@example.com')
-  await page.fill('#tfSig', 'Site Test')
-  await page.click('#tfSubmit')
-  await page.waitForTimeout(300)
-  check('L1s no card step without the waiver and the billing authority',
-    posted === null, JSON.stringify(posted))
-
-  // Complete, and it goes.
-  await page.selectOption('#tfProgram', 'kids-3-6')
-  await page.check('#tfWaiver')
-  await page.check('#tfAuth')
-  await page.click('#tfSubmit')
-  await page.waitForTimeout(800)
-
-  check('L1s a complete transfer is sent to member-transfer',
-    posted !== null && posted.students === 'Site Test', JSON.stringify(posted))
-  check('L1s with the programme the family picked',
-    posted?.program === 'kids-3-6', JSON.stringify(posted?.program))
-  check('L1s and the signature and both agreements',
-    posted?.signature === 'Site Test'
-    && posted?.waiver_accepted === true && posted?.billing_authorized === true,
-    JSON.stringify(posted))
-  check('L1s then hands off to the Stripe URL it was given',
-    page.url() === 'http://localhost:4620/pricing', page.url())
-
-  // Stripe returns them with ?done=1. Nothing was charged, so the page has to
-  // say that rather than thank them for a payment they have not made.
-  await page.goto('http://localhost:4620/legacy/transfer?done=1', { waitUntil:'networkidle' })
-  check('L1s coming back from Stripe shows the confirmation, not the form',
-    await page.isVisible('#tfDone') && !(await page.isVisible('#tfPanel')))
-  check('L1s and says nothing has been charged',
-    /nothing has been charged/i.test(await page.textContent('#tfDone')))
-  await page.unroute('**/functions/v1/member-transfer')
+  // The announcement's hero leads with a free class now, and the button does
+  // what it says.
+  const lp = await ctx.newPage()
+  await lp.goto('http://localhost:4620/legacy/', { waitUntil:'networkidle' })
+  const lead = lp.locator('.hero__ctas > a').first()
+  const leadText = (await lead.textContent()).trim(), leadClass = await lead.getAttribute('class')
+  await lead.click()
+  await lp.waitForTimeout(400)
+  check('L1s the announcement hero leads with a gold "Try a free class", and it opens the booking modal',
+    leadText === 'Try a free class' && leadClass === 'btn btn--gold'
+      && await lp.evaluate(() => document.getElementById('bookingOverlay')?.classList.contains('open') === true),
+    JSON.stringify([leadText, leadClass]))
+  await ctx.close()
 }
 
 // ── L1t: who may book what, and until when ──
@@ -1193,15 +1216,14 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   check('L1t a class is bookable up to the minute it starts',
     cut.skip || (cut.soonToday && cut.pastNextWeek), JSON.stringify(cut))
 
-  // The campaign pages carry the booking modal at the top, and Legacy leads
-  // with the transfer.
+  // The campaign pages carry the booking modal at the top. Legacy used to lead
+  // with the transfer form; the transfers are over, so it leads with the class.
   const ennova = readFileSync(join(ROOT,'ennova.html'),'utf8')
   check('L1t the Ennova hero opens the booking modal',
     /hero__ctas[\s\S]{0,400}data-book-trial/.test(ennova))
   const legacyPage = readFileSync(join(ROOT,'legacy/index.html'),'utf8')
-  check('L1t the Legacy hero leads with the transfer and can book a class',
-    /hero__ctas\s*">\s*<a href="\/legacy\/transfer"/.test(legacyPage)
-    && /hero__ctas[\s\S]{0,600}data-book-trial/.test(legacyPage))
+  check('L1t the Legacy hero leads with a free class, which opens the booking modal',
+    /hero__ctas\s*">\s*<a data-book-trial href="\/#book" class="btn btn--gold">Try a free class<\/a>/.test(legacyPage))
 
   // And the Ennova button actually opens it.
   await page.goto('http://localhost:4620/ennova', { waitUntil:'networkidle' })
