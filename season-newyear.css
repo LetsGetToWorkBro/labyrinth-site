@@ -117,7 +117,7 @@
 [data-season="newyear"] .event-strip { background: linear-gradient(to bottom, #070a16, rgba(13, 18, 38, 0.72)); }
 [data-season="newyear"] .event-strip::before {
   content: ""; position: absolute; top: 0; left: 0; right: 0; height: 7px;
-  background: repeating-linear-gradient(90deg, #f0d58a 0 22px, #ff4fa3 22px 44px, #3fe0ff 44px 66px, #9b6bff 66px 88px, #dfe4f5 88px 110px);
+  background: repeating-linear-gradient(90deg, var(--gold) 0 22px, var(--ny-pink) 22px 44px, var(--ny-cyan) 44px 66px, var(--ny-violet) 66px 88px, var(--ny-silver) 88px 110px);
 }
 [data-season="newyear"] .event-strip__title { font-size: clamp(36px, 6vw, 60px); text-shadow: 0 0 24px rgba(240, 213, 138, 0.4); }
 [data-season="newyear"] .event-strip__title::after { content: " \1F386"; }
@@ -224,11 +224,11 @@
 .ny-sign::after { content: ""; position: absolute; left: 50%; top: 100%; width: 10px; height: 50px; translate: -50% 0; background: linear-gradient(90deg, #5b6494, #2a3058 60%, #1b2046); }
 .ny-sign span { display: block; font: 700 clamp(14px, 2vw, 20px) / 1 var(--font-display), sans-serif; color: var(--sgt); letter-spacing: 0.1em; text-shadow: 0 0 14px var(--sgg); }
 .ny-sign em { display: block; margin-top: 7px; font-style: normal; font-size: clamp(10.5px, 1.4vw, 13px); line-height: 1.25; color: #e9edfb; }
-.ny-sign--0 { --sg: #f0d58a; --sgt: #f7e4ac; --sgg: rgba(240, 213, 138, 0.45); }
-.ny-sign--1 { --sg: #ff4fa3; --sgt: #ff8cc4; --sgg: rgba(255, 79, 163, 0.5); margin-bottom: 52px; }
+.ny-sign--0 { --sg: var(--gold); --sgt: #f7e4ac; --sgg: rgba(240, 213, 138, 0.45); }
+.ny-sign--1 { --sg: var(--ny-pink); --sgt: #ff8cc4; --sgg: rgba(255, 79, 163, 0.5); margin-bottom: 52px; }
 .ny-sign--1::before { animation-delay: -1.1s; }
-.ny-sign--2 { --sg: #3fe0ff; --sgt: #8aeeff; --sgg: rgba(63, 224, 255, 0.45); margin-bottom: 46px; }
-.ny-sign--3 { --sg: #9b6bff; --sgt: #c3a9ff; --sgg: rgba(155, 107, 255, 0.5); margin-bottom: 56px; }
+.ny-sign--2 { --sg: var(--ny-cyan); --sgt: #8aeeff; --sgg: rgba(63, 224, 255, 0.45); margin-bottom: 46px; }
+.ny-sign--3 { --sg: var(--ny-violet); --sgt: #c3a9ff; --sgg: rgba(155, 107, 255, 0.5); margin-bottom: 56px; }
 .ny-sign--3::before { animation-delay: -1.1s; }
 @keyframes ny-bulbs { from { opacity: 0.45; } to { opacity: 0.95; } }
 .ny-floor { position: absolute; left: 0; right: 0; bottom: 0; height: 78px; overflow: hidden; background: linear-gradient(to bottom, rgba(26, 32, 88, 0) 0, #1a2058 12%, #0e1334 58%, #070a16 100%); border-top: 1px solid rgba(240, 213, 138, 0.3); }

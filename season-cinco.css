@@ -111,15 +111,15 @@
    A string of papel picado along the top, a marigold garland down an edge, a heap of flowers or a row of potted cacti in a bottom
    corner, chili ristras and pinatas swinging on strings, confetti coming down, butterflies crossing, a strip of tiles along an edge,
    and here and there a pinata, a cactus or a pot of flowers that answers a tap. */
-.cm-sec .cm-pps { top: 0; height: 84px; animation-duration: 9s; }
+.cm-sec .cm-pps { top: 0; height: 84px; opacity: 0.88; animation-duration: 9s; }
 .cm-sec .cm-pps--e, .cm-sec .cm-pps--f { animation-duration: 11s; }
-.cm-gar { top: -6px; height: 400px; width: auto; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.35)); }
+.cm-gar { top: -6px; height: 400px; width: auto; opacity: 0.85; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.35)); }
 .cm-gar--l { left: 2px; }
 .cm-gar--r { right: 2px; transform: scaleX(-1); }
-.cm-mound { bottom: -10px; width: clamp(150px, 19vw, 270px); height: auto; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.35)); }
+.cm-mound { bottom: -10px; width: clamp(150px, 19vw, 270px); height: auto; opacity: 0.88; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.35)); }
 .cm-mound--l { left: clamp(0px, 0.8vw, 16px); }
 .cm-mound--r { right: clamp(0px, 0.8vw, 16px); transform: scaleX(-1); }
-.cm-pots { bottom: -2px; display: flex; align-items: flex-end; gap: clamp(0px, 0.4vw, 6px); }
+.cm-pots { bottom: -2px; display: flex; align-items: flex-end; gap: clamp(0px, 0.4vw, 6px); opacity: 0.9; }
 .cm-pots--l { left: clamp(4px, 2vw, 32px); }
 .cm-pots--r { right: clamp(4px, 2vw, 32px); }
 .cm-i { display: block; height: auto; flex-shrink: 0; filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.35)); }
@@ -130,8 +130,8 @@
 .cm-i--mari, .cm-i--dahl { width: clamp(54px, 6.2vw, 82px); }
 .cm-i--olla { width: clamp(54px, 6.2vw, 82px); }
 .cm-sec .sk-pend > svg { filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4)); }
-.cm-pd--rist { opacity: 0.95; }
-.cm-tiles { opacity: 0.88; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' fill='%23fff1d6'/%3E %3Cg fill='%2317c3b2'%3E%3Cellipse cx='24' cy='24' rx='3.6' ry='12'/%3E%3Cellipse cx='24' cy='24' rx='3.6' ry='12' transform='rotate(90 24 24)'/%3E%3C/g%3E %3Cg fill='%23ff3f8e'%3E%3Cellipse cx='24' cy='24' rx='3' ry='9.5' transform='rotate(45 24 24)'/%3E%3Cellipse cx='24' cy='24' rx='3' ry='9.5' transform='rotate(-45 24 24)'/%3E%3C/g%3E %3Ccircle cx='24' cy='24' r='4.6' fill='%23ff7b00'/%3E%3Ccircle cx='24' cy='24' r='1.8' fill='%23ffd23f'/%3E %3Cg fill='%232a1450'%3E%3Ccircle r='5'/%3E%3Ccircle cx='48' r='5'/%3E%3Ccircle cy='48' r='5'/%3E%3Ccircle cx='48' cy='48' r='5'/%3E%3C/g%3E %3Cg fill='%23ffd23f'%3E%3Ccircle r='2'/%3E%3Ccircle cx='48' r='2'/%3E%3Ccircle cy='48' r='2'/%3E%3Ccircle cx='48' cy='48' r='2'/%3E%3C/g%3E %3Crect x='1' y='1' width='46' height='46' fill='none' stroke='%232a1450' stroke-opacity='.45' stroke-width='2'/%3E%3C/svg%3E"); background-size: 24px 24px; }
+.cm-sec .cm-pd { opacity: 0.92; }
+.cm-tiles { opacity: 0.8; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' fill='%23fff1d6'/%3E %3Cg fill='%2317c3b2'%3E%3Cellipse cx='24' cy='24' rx='3.6' ry='12'/%3E%3Cellipse cx='24' cy='24' rx='3.6' ry='12' transform='rotate(90 24 24)'/%3E%3C/g%3E %3Cg fill='%23ff3f8e'%3E%3Cellipse cx='24' cy='24' rx='3' ry='9.5' transform='rotate(45 24 24)'/%3E%3Cellipse cx='24' cy='24' rx='3' ry='9.5' transform='rotate(-45 24 24)'/%3E%3C/g%3E %3Ccircle cx='24' cy='24' r='4.6' fill='%23ff7b00'/%3E%3Ccircle cx='24' cy='24' r='1.8' fill='%23ffd23f'/%3E %3Cg fill='%232a1450'%3E%3Ccircle r='5'/%3E%3Ccircle cx='48' r='5'/%3E%3Ccircle cy='48' r='5'/%3E%3Ccircle cx='48' cy='48' r='5'/%3E%3C/g%3E %3Cg fill='%23ffd23f'%3E%3Ccircle r='2'/%3E%3Ccircle cx='48' r='2'/%3E%3Ccircle cy='48' r='2'/%3E%3Ccircle cx='48' cy='48' r='2'/%3E%3C/g%3E %3Crect x='1' y='1' width='46' height='46' fill='none' stroke='%232a1450' stroke-opacity='.45' stroke-width='2'/%3E%3C/svg%3E"); background-size: 24px 24px; }
 .cm-tiles--b { left: 0; right: 0; bottom: 0; height: 24px; background-repeat: repeat-x; }
 .cm-tiles--t { left: 0; right: 0; top: 0; height: 24px; background-repeat: repeat-x; }
 .cm-tiles--l { left: 0; top: 0; bottom: 0; width: 22px; background-size: 22px 22px; background-repeat: repeat-y; }
@@ -223,7 +223,4 @@
   .cm-sign--2 { --drop: 24px; }
   .cm-sign--3 { --drop: 16px; }
   .cm-sign--4 { --drop: 22px; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .cm-bf { display: none; }
 }

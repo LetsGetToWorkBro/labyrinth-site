@@ -161,7 +161,8 @@
 .xm-c-blue { color: #3d86d1; }
 .xm-c-green { color: #2a9a58; }
 .xm-sec .xm-tap { opacity: 0.7; width: 48px; }
-.xm-sec .xm-tap > svg { transform-origin: 50% 8%; animation: sk-swing 6s ease-in-out infinite; filter: drop-shadow(0 0 8px rgba(242, 193, 78, 0.5)); }
+.xm-sec .xm-tap::before { content: ""; position: absolute; left: 50%; top: 52%; width: 200%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(242, 193, 78, 0.32) 0%, transparent 62%); pointer-events: none; }
+.xm-sec .xm-tap > svg { position: relative; transform-origin: 50% 8%; animation: sk-swing 6s ease-in-out infinite; }
 .xm-sec .xm-tap.is-tap { opacity: 1; }
 
 /* ── The foot of the page: a line of lights between two trees, four gift tags hanging from it, snow underneath ──────────────────── */

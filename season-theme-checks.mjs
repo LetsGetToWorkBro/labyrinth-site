@@ -185,7 +185,7 @@ export async function checkPack({ browser, base, check, name, iso }) {
   // Less motion: whatever moves stops, and what only exists to fall or rise is not drawn.
   const rm = await open(browser, base, iso ?? PACKS[name], '', null, true)
   const calm = await rm.page.evaluate(() => ({
-    moving: [...document.querySelectorAll('.sk-hero *, .sk-sec *, .sk-footer *')].filter(e => getComputedStyle(e).animationName !== 'none').length,
+    moving: [...document.querySelectorAll('.sk-hero *, .sk-sec *, .sk-footer *')].filter(e => getComputedStyle(e).animationName !== 'none' || getComputedStyle(e, '::before').animationName !== 'none' || getComputedStyle(e, '::after').animationName !== 'none').length,
     falling: [...document.querySelectorAll('.sk-p, .sk-fly')].filter(e => getComputedStyle(e).display !== 'none').length,
   }))
   check(`${L} with reduced motion on, nothing moves and nothing falls or rises`, calm.moving === 0 && calm.falling === 0, JSON.stringify(calm))

@@ -347,7 +347,7 @@
       flags += '<path d="M' + n(x - 9.5) + ' ' + n(y - 0.4) + 'L' + n(x + 9.5) + ' ' + n(y - 0.4) + 'L' + n(x) + ' ' + n(y + 24) + 'Z" fill="' + cs[i] + '"/><path d="M' + n(x - 9.5) + ' ' + n(y - 0.4) + 'L' + n(x) + ' ' + n(y - 0.4) + 'L' + n(x) + ' ' + n(y + 24) + 'Z" fill="#fff" fill-opacity=".14"/>';
     }
     for (i = 0; i < 4; i++) { t = i / 4 + 0.125; glints.push(glint(TW * t, swagY(t, 12) + 30, C.goldL)); }
-    return pat('xm-pn-w', 48, '<path d="M0 4Q100 28 200 4" fill="none" stroke="' + WIRE + '" stroke-width="1.6"/>' + anchors(4) + flags) + pair('xm-pn', 48, glints);
+    return pat('xm-pn-w', 56, '<path d="M0 4Q100 28 200 4" fill="none" stroke="' + WIRE + '" stroke-width="1.6"/>' + anchors(4) + flags) + pair('xm-pn', 56, glints);
   }
   function garland() {
     var path = 'M0 8Q100 40 200 8', body = '', glints = [], i, t, bc = [C.red, C.gold, C.red, C.blueL, C.gold];
@@ -454,14 +454,14 @@
 
   // ── a layer behind each section, different on every one so the page does not repeat itself ──────────────────────────────────────
   var SECTIONS = {
-    eventStrip:     ['top:multi:8', 'holly:tl', 'pile:l:gift-c,gift-a,fir3', 'orn:r:1.6:96:30:bauble:red', 'orn:r:4.4:60:24:star', 'snow:5:1', 'stars:l:30'],
-    programs:       ['top:garland', 'pile:l:firlit3,stack', 'orn:r:1.6:110:34:bauble-s:gold', 'orn:r:4.6:64:26:cane', 'tap:r:58', 'snow:4:2', 'stars:r:24', 'drift:r'],
+    eventStrip:     ['top:multi:8', 'holly:tl', 'pile:l:gift-c,gift-a,fir3', 'orn:r:1.6:96:30:bauble:red', 'orn:r:3.1:60:22:star', 'snow:5:1', 'stars:l:30'],
+    programs:       ['top:garland', 'pile:l:firlit3,stack', 'orn:r:1.6:110:34:bauble-s:gold', 'orn:r:3.1:64:24:cane', 'tap:r:58', 'snow:4:2', 'stars:r:24', 'drift:r'],
     competition:    ['top:warm', 'holly:tl', 'pile:r:cane,gift-d,cane', 'orn:r:1.6:90:28:stocking', 'snow:5:3', 'stars:l:60', 'drift:l'],
-    coaches:        ['top:icicle:cool', 'wreath:tr', 'pile:r:fir,gift-e,gift-a', 'orn:l:1.4:76:30:bauble-d:blue', 'orn:l:4:114:24:bauble:red', 'tap:l:34', 'snow:4:4', 'stars:r:50'],
+    coaches:        ['top:icicle:cool', 'wreath:tr', 'pile:r:fir,gift-e,gift-a', 'orn:l:0.8:76:28:bauble-d:blue', 'orn:l:2.4:96:20:bauble:red', 'tap:l:34', 'snow:4:4', 'stars:r:50'],
     gallery:        ['top:rg', 'pile:l:gift-d,gift-a,gift-c', 'pile:r:snowman,gift-f', 'orn:r:1.6:70:28:ginger', 'drift:l', 'snow:3:5', 'stars:r:20'],
     'belt-journey': ['top:stars', 'pile:r:gift-f,gift-b', 'holly:tl', 'orn:r:1.6:104:30:cane', 'snow:5:6', 'drift:r', 'stars:l:52'],
     locations:      ['top:cool', 'pile:l:firlit3,gift-b', 'wreath:tr', 'orn:l:1.6:80:30:bauble-z:green', 'snow:4:7', 'stars:l:40', 'stars:r:70'],
-    faq:            ['top:pennant', 'pile:r:cane,stack', 'orn:l:1.4:100:32:bauble:gold', 'orn:l:4.2:56:22:star', 'drift:l', 'snow:5:8', 'stars:r:30'],
+    faq:            ['top:pennant', 'pile:r:cane,stack', 'orn:l:1.4:100:32:bauble:gold', 'orn:l:3.1:56:22:star', 'drift:l', 'snow:5:8', 'stars:r:30'],
     schedule:       ['top:gold', 'wreath:tl', 'pile:l:fir3,gift-f', 'pile:r:gift-a,holly', 'orn:r:1.6:76:30:bauble-d:red', 'tap:r:68', 'snow:4:9', 'stars:l:50'],
     testimonials:   ['top:garland', 'pile:l:holly,gift-b', 'pile:r:firlit,gift-d', 'orn:l:1.6:90:28:stocking', 'orn:r:1.6:60:24:bauble-z:blue', 'snow:3:10', 'drift:r', 'stars:l:30'],
     pricing:        ['top:multi', 'wreath:tr', 'pile:r:stack,cane', 'pile:l:holly,gift-a', 'orn:l:1.6:110:30:ginger', 'snow:5:11', 'stars:l:24', 'stars:r:56'],
@@ -475,7 +475,7 @@
   var ORN = { bauble: ['xm-bauble', '0 0 40 54'], 'bauble-s': ['xm-bauble-s', '0 0 40 54'], 'bauble-d': ['xm-bauble-d', '0 0 40 54'], 'bauble-z': ['xm-bauble-z', '0 0 40 54'], star: ['xm-star-orn', '0 0 44 50'], cane: ['xm-cane', '0 0 50 86'], stocking: ['xm-stocking', '0 0 60 94'], ginger: ['xm-ginger', '0 0 60 78'] };
   var TOPS = {
     multi: ['xm-lw', 'xm-lt-multi', 44], warm: ['xm-lw', 'xm-lt-warm', 44], rg: ['xm-lw', 'xm-lt-rg', 44], cool: ['xm-lw', 'xm-lt-cool', 44], gold: ['xm-lw', 'xm-lt-gold', 44],
-    icicle: ['xm-icw', 'xm-ic', 64], stars: ['xm-stw', 'xm-st', 58], pennant: ['xm-pn-w', 'xm-pn', 48], garland: ['xm-gl-w', 'xm-gl', 52]
+    icicle: ['xm-icw', 'xm-ic', 64], stars: ['xm-stw', 'xm-st', 58], pennant: ['xm-pn-w', 'xm-pn', 56], garland: ['xm-gl-w', 'xm-gl', 52]
   };
   function section(specs, k) {
     var out = '', pends = 0;                         // a phone puts every pendant at the same place, so only the first of a section is kept there

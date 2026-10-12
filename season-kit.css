@@ -116,6 +116,7 @@
   .sk-bubble { font-size: 15px; padding: 4px 10px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .sk-hero, .sk-hero *, .sk-sec, .sk-sec *, .sk-footer, .sk-footer * { animation: none !important; transition: none !important; }
+  .sk-hero, .sk-hero *, .sk-sec, .sk-sec *, .sk-footer, .sk-footer *,
+  .sk-hero *::before, .sk-hero *::after, .sk-sec *::before, .sk-sec *::after, .sk-footer *::before, .sk-footer *::after { animation: none !important; transition: none !important; }
   .sk-p, .sk-fly { display: none; }
 }
