@@ -1911,6 +1911,104 @@ check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.
   await ctx.close()
 }
 
+// ── L2c: Columbus Day, October 12, 2026 and not one day more ──
+// The homepage wears a one-day theme: navy, gold and flag colours, a sea with three caravels along the hero, a compass, gulls, spyglasses that call
+// Land ho!, a layer of decoration behind every section, and a harbour above the footer. It is built to leave by itself: the window in index.html's head
+// is pinned to the year and the day on the academy's clock (Central), it wins over Halloween that one day, and its stylesheet and script are fetched
+// only then. Each case pins the clock.
+{
+  const URLH = 'http://localhost:4620/'
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } })
+  const cp = await ctx.newPage()
+  const asked = []
+  cp.on('request', r => { if (/season-columbus\./.test(r.url())) asked.push(r.url().replace(/^.*\//, '')) })
+  const at = async (iso, q = '') => {
+    asked.length = 0
+    await cp.clock.setFixedTime(new Date(iso))
+    await cp.goto(URLH + q, { waitUntil: 'load' })
+    await cp.waitForTimeout(250)
+    return cp.evaluate(() => document.documentElement.dataset.season || '')
+  }
+
+  const on = await at('2026-10-12T15:00:00Z')
+  const requested = [...asked]
+  const c1 = await cp.evaluate(() => {
+    const vis = sel => [...document.querySelectorAll(sel)].filter(e => getComputedStyle(e).display !== 'none').length
+    const css = getComputedStyle(document.documentElement)
+    return {
+      season: document.documentElement.dataset.season,
+      sea: vis('.cd-hero .cd-sea'), ships: document.querySelectorAll('.cd-hero .cd-ship-s').length, gulls: vis('.cd-hero .cd-gull'), lookouts: vis('.cd-hero .cd-lookout'),
+      compass: vis('.cd-hero .cd-compass'), sun: vis('.cd-hero .cd-sun'), twinkles: vis('.cd-hero .cd-twinkle'),
+      secs: [...document.querySelectorAll('main > section')].filter(x => x.id !== 'hero' && x.querySelector(':scope > .cd-sec')).length,
+      lanterns: vis('.cd-sec .cd-lantern'), bunting: vis('.cd-sec .cd-bunting'), docks: vis('.cd-sec .cd-dock'), secLookouts: vis('.cd-sec .cd-lookout'), secCompass: vis('.cd-sec .cd-compass-s'),
+      planks: vis('.cd-footer .cd-plank'), harbour: vis('.cd-footer'),
+      halloween: vis('.season-hero') + vis('.season-footer') + vis('.season-sec'),
+      bg: css.getPropertyValue('--bg').trim(), gold: css.getPropertyValue('--gold').trim(),
+      title: getComputedStyle(document.querySelector('.event-strip__title'), '::after').content,
+    }
+  })
+  check('L2c on October 12, 2026 the homepage is Columbus Day: a sea with three caravels, a compass, gulls, stars and spyglasses over the hero, and a harbour above the footer',
+    on === 'columbus' && c1.sea === 1 && c1.ships === 3 && c1.gulls === 3 && c1.lookouts === 3 && c1.compass === 1 && c1.sun === 1 && c1.twinkles >= 10 && c1.planks === 4 && c1.harbour === 1, JSON.stringify(c1))
+  check('L2c Columbus Day runs through the whole page: every section after the hero has its own compass, lantern, flags and dockside',
+    c1.secs === 12 && c1.secCompass >= 12 && c1.lanterns >= 9 && c1.bunting >= 10 && c1.docks >= 10 && c1.secLookouts >= 6, JSON.stringify(c1))
+  check('L2c none of the Halloween decoration shows that day', c1.halloween === 0, JSON.stringify(c1))
+  check('L2c the page turns navy and the gold gets brighter', c1.bg === '#07112b' && c1.gold === '#e2b85a', JSON.stringify({ bg: c1.bg, gold: c1.gold }))
+  check('L2c the "this month" title gets a little sailboat', /⛵/.test(c1.title), c1.title)
+  check('L2c only that day is its stylesheet and script fetched, and each by a versioned address',
+    requested.length === 2 && requested.every(r => /^season-columbus\.(css|js)\?v=[0-9a-f]{8}$/.test(r)), JSON.stringify(requested))
+  const cards = await cp.evaluate(() => [...document.querySelectorAll('#eventStrip a.event-strip__link')].filter(a => !a.hidden).map(a => a.getAttribute('href')))
+  const colors = await cp.evaluate(() => [...document.querySelectorAll('#eventStrip .event-strip__cta')].filter(c => c.offsetParent !== null).map(c => getComputedStyle(c).backgroundColor))
+  check('L2c the donation, Pink October, the seminar and HYROX are still the four cards under the hero, each in its own colour',
+    JSON.stringify(cards) === JSON.stringify(['/donate', '/pink-october', '/self-defense-for-women', '/hyrox-youngstars']) && colors.join('|') === 'rgb(26, 11, 18)|rgb(229, 143, 181)|rgb(229, 143, 181)|rgb(227, 255, 46)', JSON.stringify({ cards, colors }))
+  check('L2c the decoration never takes a tap from the page: its layers let every tap through, and the hero button is what is under its own middle',
+    await cp.evaluate(() => {
+      const layers = ['.cd-hero', '.cd-sec', '.cd-footer', '.cd-sea'].map(s => document.querySelector(s))
+      const btn = document.querySelector('.hero__ctas a.btn'), r = btn.getBoundingClientRect()
+      const top = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2)
+      const sec = document.querySelector('#programs .cd-sec'), c = document.querySelector('#programs > .container')
+      return layers.slice(0, 2).every(e => getComputedStyle(e).pointerEvents === 'none') && !!top && top.closest('a.btn') === btn && +getComputedStyle(sec).zIndex < +getComputedStyle(c).zIndex
+    }))
+  await cp.dispatchEvent('.cd-lookout--1', 'click')
+  check('L2c tapping a spyglass makes it call Land ho', await cp.evaluate(() => document.querySelector('.cd-lookout--1').classList.contains('is-land') && /Land ho/.test(document.querySelector('.cd-lookout--1 .cd-bubble').textContent)))
+
+  // The window: Central midnight to Central midnight, that year only, and it hands the page back to Halloween by itself.
+  const edge = {}
+  for (const [name, iso] of [['beforeEve', '2026-10-12T04:59:00Z'], ['midnightIn', '2026-10-12T05:00:00Z'], ['lateOn', '2026-10-13T04:59:00Z'], ['midnightOut', '2026-10-13T05:00:00Z'],
+    ['nextDay', '2026-10-14T15:00:00Z'], ['nextYear', '2027-10-12T15:00:00Z'], ['november', '2026-11-02T15:00:00Z']]) edge[name] = await at(iso)
+  check('L2c it starts at midnight Central on October 12 (the minute before is still Halloween)', edge.beforeEve === 'halloween' && edge.midnightIn === 'columbus', JSON.stringify(edge))
+  check('L2c it ends at midnight Central that night, and from October 13 the page is Halloween again', edge.lateOn === 'columbus' && edge.midnightOut === 'halloween' && edge.nextDay === 'halloween', JSON.stringify(edge))
+  check('L2c on October 12 of the next year nothing happens, and after October there is no theme at all', edge.nextYear === 'halloween' && edge.november === '', JSON.stringify(edge))
+  await at('2026-10-14T15:00:00Z')
+  const gone = await cp.evaluate(() => ({ defs: document.querySelectorAll('.cd-defs, .cd-hero, .cd-sec, .cd-footer').length, gold: getComputedStyle(document.documentElement).getPropertyValue('--gold').trim(), halloween: [...document.querySelectorAll('.season-hero')].filter(e => getComputedStyle(e).display !== 'none').length }))
+  check('L2c once it is over there is nothing of it left on the page, nothing of it was fetched, and the Halloween gold and graveyard are back',
+    gone.defs === 0 && asked.length === 0 && gone.gold === '#ff8a1f' && gone.halloween === 1, JSON.stringify({ ...gone, asked }))
+
+  // The preview switches work any time of year.
+  check('L2c ?season=columbus previews it in July', (await at('2026-07-10T15:00:00Z', '?season=columbus')) === 'columbus')
+  check('L2c ?season=off turns it off on the day', (await at('2026-10-12T15:00:00Z', '?season=off')) === '' && asked.length === 0)
+
+  const mp = await (await browser.newContext({ viewport: { width: 390, height: 844 } })).newPage()
+  await mp.clock.setFixedTime(new Date('2026-10-12T15:00:00Z'))
+  await mp.goto(URLH, { waitUntil: 'load' })
+  await mp.waitForTimeout(250)
+  check('L2c on a phone nothing sticks out sideways and the cards stack',
+    !(await mp.evaluate(() => document.documentElement.scrollWidth > innerWidth)) &&
+    (await mp.evaluate(() => { const c = [...document.querySelectorAll('#eventStrip a.event-strip__link')]; return c[1].getBoundingClientRect().top > c[0].getBoundingClientRect().bottom })))
+  const sm = await (await browser.newContext({ viewport: { width: 320, height: 640 } })).newPage()
+  await sm.clock.setFixedTime(new Date('2026-10-12T15:00:00Z'))
+  await sm.goto(URLH, { waitUntil: 'load' })
+  await sm.waitForTimeout(250)
+  check('L2c and on the smallest phone too', !(await sm.evaluate(() => document.documentElement.scrollWidth > innerWidth)))
+
+  const rm = await (await browser.newContext({ reducedMotion: 'reduce' })).newPage()
+  await rm.clock.setFixedTime(new Date('2026-10-12T15:00:00Z'))
+  await rm.goto(URLH, { waitUntil: 'load' })
+  await rm.waitForTimeout(250)
+  check('L2c with reduced motion on, nothing flies, floats, swings, bobs or spins',
+    await rm.evaluate(() => ['.cd-gull--1', '.cd-lookout--1', '.cd-ship-s', '.cd-wave', '.cd-compass--hero', '.cd-lantern', '.cd-twinkle'].every(sel => getComputedStyle(document.querySelector(sel)).animationName === 'none')))
+  await ctx.close()
+}
+
 // ── L1v: the academy is in Texas, so the spelling is American ──
 // This kept coming back — colour, programme, grey, sceptical, organised — and
 // "remember not to" is not a mechanism. Checked against what a visitor

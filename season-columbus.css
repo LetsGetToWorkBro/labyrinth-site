@@ -1,0 +1,198 @@
+/* ══ Columbus Day: the homepage for Monday, October 12, 2026 only ═══════════════════════════════════════════════════════════════
+   index.html's <head> sets <html data-season="…"> from the date on the academy's clock (Central) and, only when it says "columbus",
+   loads this file and season-columbus.js. On every other day neither is fetched, so the page is exactly what it always was.
+   The window in index.html is pinned to 2026 and to that one day: on October 13 the page is Halloween again by itself, and next
+   October 12 nothing happens. Preview any time with /?season=columbus (and /?season=off for the page without any theme).
+   Everything here is under that attribute (or under a .cd- class that only season-columbus.js creates), and the decoration is
+   aria-hidden, sits behind the content and never takes a tap away from it. To run it again another year: change the year and the
+   date in index.html's SEASONS list. To retire it: delete this file, season-columbus.js, their two names in scripts/stamp_assets.py,
+   the "columbus" window and loader lines in index.html's <head>, and the L2c block in site-test.mjs. */
+
+.cd-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+/* ── The colours: a night chart, with the academy's gold, a signal red and sail cream ─────────────────────────────────────────── */
+:root[data-season="columbus"] {
+  --bg: #07112b;
+  --surface: #0d1a3f;
+  --surface-elevated: #132450;
+  --border: rgba(226, 184, 90, 0.16);
+  --border-strong: rgba(226, 184, 90, 0.34);
+  --text-muted: #a9b5d2;
+  --gold: #e2b85a;
+  --gold-hover: #efcb78;
+  --cd-red: #d1303f;
+  --cd-cream: #f4f1e8;
+  --cd-blue: #3a6fd8;
+}
+[data-season="columbus"] body {
+  background:
+    radial-gradient(ellipse 70% 40% at 90% 0%, rgba(46, 92, 190, 0.3), transparent 70%),
+    linear-gradient(rgba(244, 241, 232, 0.028) 1px, transparent 1px) 0 0 / 96px 96px,
+    linear-gradient(90deg, rgba(244, 241, 232, 0.028) 1px, transparent 1px) 0 0 / 96px 96px,
+    var(--bg);
+}
+[data-season="columbus"] .nav--scrolled { background: rgba(7, 17, 43, 0.92); }
+
+/* ── The hero: the photograph goes to blue hour, the headline catches the sun, and the sea comes up along the bottom ───────────── */
+[data-season="columbus"] .hero__still img { filter: saturate(0.8) brightness(0.84); }
+[data-season="columbus"] .hero__bg::after {
+  background: linear-gradient(to bottom, rgba(5, 14, 42, 0.74) 0%, rgba(8, 22, 62, 0.56) 40%, rgba(5, 12, 36, 0.84) 72%, #07112b 100%);
+}
+[data-season="columbus"] .hero { padding-bottom: clamp(130px, 19vw, 230px); }
+[data-season="columbus"] .hero__h1-visual span { color: var(--gold); text-shadow: 0 0 28px rgba(226, 184, 90, 0.5), 0 0 4px rgba(255, 226, 150, 0.4); }
+[data-season="columbus"] .hero__badge { border-color: rgba(226, 184, 90, 0.55); }
+
+.cd-hero { position: absolute; inset: 0; z-index: 2; pointer-events: none; overflow: hidden; }
+.cd-sun {
+  position: absolute; left: 50%; bottom: clamp(30px, 5vw, 70px); width: clamp(280px, 46vw, 680px); aspect-ratio: 1; transform: translate(-50%, 40%);
+  border-radius: 50%; background: radial-gradient(circle, rgba(255, 218, 130, 0.62) 0%, rgba(255, 186, 84, 0.26) 34%, transparent 68%);
+}
+.cd-compass { position: absolute; display: block; height: auto; color: rgba(226, 184, 90, 0.2); }
+.cd-compass--hero { right: clamp(-120px, -4vw, -30px); top: calc(var(--nav-height, 72px) + 40px); width: clamp(240px, 34vw, 500px); color: rgba(226, 184, 90, 0.32); animation: cd-spin 240s linear infinite; }
+.cd-bunting {
+  position: absolute; left: 0; right: 0; top: 0; height: 40px; opacity: 0.9;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='40' viewBox='0 0 128 40'%3E%3Cpath d='M0 3Q64 15 128 3' fill='none' stroke='%23f4f1e8' stroke-opacity='.5' stroke-width='1.5'/%3E%3Cpath d='M6 6L26 9L16 30Z' fill='%23d1303f'/%3E%3Cpath d='M38 9L58 9L48 31Z' fill='%23f4f1e8'/%3E%3Cpath d='M70 9L90 6L80 29Z' fill='%233a6fd8'/%3E%3Cpath d='M102 7L122 9L112 30Z' fill='%23e2b85a'/%3E%3C/svg%3E") repeat-x;
+}
+
+/* Stars come out over the water: a handful of small twinkles. */
+.cd-twinkle { position: absolute; width: var(--s, 14px); height: var(--s, 14px); color: #fff4cf; animation: cd-twinkle var(--d, 4s) ease-in-out var(--o, 0s) infinite; }
+.cd-twinkle svg { display: block; width: 100%; height: 100%; }
+@keyframes cd-twinkle { 0%, 100% { opacity: 0.2; transform: scale(0.7); } 50% { opacity: 1; transform: scale(1.15); } }
+
+/* Gulls cross the hero (the way the bats do): translate carries them, scale flaps the wings. */
+.cd-gull { position: absolute; left: -90px; width: clamp(30px, 4.4vw, 58px); height: auto; color: var(--cd-cream); opacity: 0.92; filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.35)); }
+.cd-gull--1 { top: 24%; animation: cd-gull-fly 20s linear infinite, cd-gull-flap 0.5s ease-in-out infinite alternate; }
+.cd-gull--2 { top: 15%; width: clamp(24px, 3.2vw, 42px); animation: cd-gull-fly 27s linear -9s infinite, cd-gull-flap 0.42s ease-in-out infinite alternate; }
+.cd-gull--3 { top: 36%; width: clamp(20px, 2.7vw, 34px); animation: cd-gull-fly 34s linear -18s infinite, cd-gull-flap 0.36s ease-in-out infinite alternate; }
+@keyframes cd-gull-fly {
+  0% { translate: 0 0; }
+  25% { translate: 30vw -22px; }
+  50% { translate: 62vw 18px; }
+  75% { translate: 88vw -14px; }
+  100% { translate: calc(100vw + 120px) 8px; }
+}
+@keyframes cd-gull-flap { from { scale: 1 1; } to { scale: 1 0.5; } }
+
+/* Spyglasses bob at the edges (the way the ghosts do) and call Land ho! when tapped. */
+.cd-lookout {
+  position: absolute; width: clamp(54px, 8vw, 104px); height: auto; padding: 0; border: 0; background: none; pointer-events: auto; cursor: pointer; opacity: 0.8;
+  -webkit-tap-highlight-color: transparent; filter: drop-shadow(0 0 14px rgba(226, 184, 90, 0.5)); animation: cd-float 6.5s ease-in-out infinite;
+}
+.cd-lookout svg { display: block; width: 100%; height: auto; }
+.cd-lookout--1 { left: 0.5%; top: 47%; width: clamp(46px, 6vw, 78px); }
+.cd-lookout--2 { right: 1.5%; top: 54%; width: clamp(44px, 6.5vw, 82px); animation-delay: -2.4s; }
+.cd-lookout--3 { left: 46%; top: 17%; width: clamp(36px, 4.6vw, 62px); opacity: 0.5; animation-delay: -4s; }
+@keyframes cd-float { 0%, 100% { transform: translate(0, 0) rotate(-14deg); } 50% { transform: translate(10px, -18px) rotate(-5deg); } }
+.cd-bubble {
+  position: absolute; left: 50%; bottom: 100%; transform: translate(-50%, 6px) scale(0.6); opacity: 0; pointer-events: none; padding: 5px 12px; border-radius: 999px;
+  background: var(--cd-cream); color: #07112b; font: 700 18px/1 var(--font-display), sans-serif; letter-spacing: 0.04em; white-space: nowrap; transition: opacity 0.15s, transform 0.15s;
+}
+.cd-lookout.is-land { opacity: 1; animation: cd-float 6.5s ease-in-out infinite, cd-shake 0.4s 2; }
+.cd-lookout.is-land .cd-bubble { opacity: 1; transform: translate(-50%, 0) scale(1); }
+@keyframes cd-shake { 0%, 100% { rotate: 0deg; } 25% { rotate: -9deg; } 75% { rotate: 9deg; } }
+
+/* The sea along the foot of the hero: two layers of waves that slide, three caravels that bob, and the page's own colour at the bottom. */
+.cd-sea { position: absolute; left: 0; right: 0; bottom: -1px; height: clamp(110px, 17vw, 230px); }
+.cd-sea svg { display: block; width: 100%; height: 100%; }
+.cd-wave { animation: cd-wave 15s linear infinite; }
+.cd-wave--b { animation-duration: 24s; animation-direction: reverse; }
+.cd-ship-s { transform-box: fill-box; transform-origin: 50% 92%; animation: cd-bob 5.6s ease-in-out infinite; }
+.cd-ship-s--b { animation-delay: -1.9s; animation-duration: 6.4s; }
+.cd-ship-s--c { animation-delay: -3.4s; animation-duration: 5.1s; }
+.cd-fleet { animation: cd-drift 46s ease-in-out infinite alternate; }
+@keyframes cd-wave { to { transform: translateX(-360px); } }
+@keyframes cd-bob { 0%, 100% { transform: translateY(0) rotate(-1.8deg); } 50% { transform: translateY(-5px) rotate(2deg); } }
+@keyframes cd-drift { from { transform: translateX(-34px); } to { transform: translateX(34px); } }
+@keyframes cd-spin { to { transform: rotate(360deg); } }
+
+/* ── This month: the cards under the hero get a flag-striped edge and a little sailboat ──────────────────────────────────────── */
+[data-season="columbus"] .event-strip { background: linear-gradient(to bottom, #07112b, rgba(13, 26, 63, 0.7)); }
+[data-season="columbus"] .event-strip::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 7px;
+  background: repeating-linear-gradient(90deg, #d1303f 0 26px, #f4f1e8 26px 52px, #17306a 52px 78px);
+}
+[data-season="columbus"] .event-strip__title { font-size: clamp(36px, 6vw, 60px); text-shadow: 0 0 24px rgba(226, 184, 90, 0.4); }
+[data-season="columbus"] .event-strip__title::after { content: " \26F5"; }
+[data-season="columbus"] .event-strip__link { box-shadow: 0 10px 34px rgba(0, 0, 0, 0.45); }
+
+/* ── The harbour above the footer: planks on posts with the things jiu-jitsu sails past, barrels, a flag and a ship ──────────── */
+.cd-footer {
+  position: relative; overflow: hidden; display: flex; align-items: flex-end; justify-content: center; gap: clamp(8px, 2vw, 22px);
+  margin-top: var(--space-12, 48px); padding: 70px 16px 0;
+  background: linear-gradient(to bottom, transparent, rgba(46, 92, 190, 0.1) 70%, rgba(46, 92, 190, 0.18));
+}
+[data-season="columbus"] .footer { background: #050c20; }
+.cd-footer .cd-i { position: static; flex-shrink: 0; margin-bottom: 6px; }
+.cd-footer .cd-i--barrel { width: clamp(44px, 7vw, 76px); }
+.cd-footer .cd-i--flag { width: clamp(38px, 5vw, 56px); }
+.cd-footer .cd-i--ship { width: clamp(90px, 14vw, 170px); margin-bottom: 14px; animation: cd-bob 5.6s ease-in-out infinite; }
+.cd-planks { display: flex; align-items: flex-end; justify-content: center; gap: clamp(8px, 2vw, 22px); }
+.cd-plank {
+  position: relative; width: clamp(84px, 14vw, 140px); margin-bottom: 40px; padding: 14px 8px 12px; text-align: center; border-radius: 8px;
+  background: linear-gradient(#7a5226, #53361a); box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.07), 0 -6px 26px rgba(0, 0, 0, 0.4);
+}
+.cd-plank::after { content: ""; position: absolute; left: 50%; top: 100%; width: 12px; height: 46px; transform: translateX(-50%); background: linear-gradient(#53361a, #2e1d0d); }
+.cd-plank span { display: block; font: 700 clamp(15px, 2.2vw, 22px)/1 var(--font-display), sans-serif; color: var(--gold); letter-spacing: 0.1em; }
+.cd-plank em { display: block; margin-top: 7px; font-style: normal; font-size: clamp(10.5px, 1.4vw, 13px); line-height: 1.25; color: #f1e6cc; }
+.cd-plank:nth-child(1) { transform: rotate(-2deg); }
+.cd-plank:nth-child(2) { margin-bottom: 52px; }
+.cd-plank:nth-child(3) { transform: rotate(1.5deg); }
+.cd-plank:nth-child(4) { margin-bottom: 46px; transform: rotate(-1deg); }
+.cd-footer-sea { position: absolute; left: 0; right: 0; bottom: 0; height: 34px; }
+.cd-footer-sea svg { display: block; width: 100%; height: 100%; }
+
+/* ── The rest of the page ──────────────────────────────────────────────────────────────────────────────────────────────────────
+   Every section has its own layer of decoration (built by season-columbus.js, SECTIONS), sitting behind the content so it never
+   gets in the way: a compass rose in a corner, a ship's lantern swinging on its chain, a spyglass in the margin, flags along the
+   top, a dockside of barrels, crates, an anchor, a coil of rope and a flag at the foot, gulls crossing, stars over the water. */
+[data-season="columbus"] :is(#eventStrip, #programs, #competition, #coaches, #gallery, #belt-journey, #locations, #faq, #schedule, #testimonials, #pricing, #contact) {
+  position: relative; overflow: clip;
+}
+.cd-sec { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+[data-season="columbus"] .cd-sec ~ .container { position: relative; z-index: 1; }
+.cd-sec > * { position: absolute; }
+.cd-compass-s { top: 0; width: clamp(110px, 15vw, 210px); color: rgba(226, 184, 90, 0.17); animation: cd-spin 300s linear infinite; }
+.cd-compass-s--l { left: -34px; }
+.cd-compass-s--r { right: -34px; }
+.cd-lantern { top: 0; width: var(--w, 36px); transform-origin: 50% 0; animation: cd-swing 5.5s ease-in-out infinite; }
+.cd-lantern i { display: block; width: 1.5px; height: var(--len, 80px); margin: 0 auto; background: rgba(244, 241, 232, 0.5); }
+.cd-lantern svg { display: block; width: 100%; height: auto; filter: drop-shadow(0 0 12px rgba(255, 196, 86, 0.65)); }
+@keyframes cd-swing { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
+.cd-sec .cd-lookout { opacity: 0.42; }
+.cd-sec .cd-lookout.is-land { opacity: 1; }
+.cd-gull-s { left: -90px; }
+.cd-stars { display: flex; gap: 12px; padding: 0 clamp(6px, 1.4vw, 22px); }
+.cd-dock { bottom: -2px; display: flex; align-items: flex-end; gap: clamp(2px, 0.6vw, 10px); }
+.cd-dock--l { left: clamp(4px, 2.2vw, 36px); }
+.cd-dock--r { right: clamp(4px, 2.2vw, 36px); }
+.cd-i { display: block; height: auto; flex-shrink: 0; }
+.cd-i--barrel { width: clamp(34px, 4.8vw, 62px); }
+.cd-i--crate { width: clamp(34px, 4.6vw, 58px); }
+.cd-i--anchor { width: clamp(28px, 3.6vw, 48px); transform: rotate(8deg); filter: drop-shadow(0 0 8px rgba(226, 184, 90, 0.4)); }
+.cd-i--rope { width: clamp(40px, 5vw, 66px); }
+.cd-i--flag { width: clamp(28px, 3.4vw, 46px); }
+.cd-i--flag .cd-flagcloth { transform-box: fill-box; transform-origin: 0 50%; animation: cd-wag 3.2s ease-in-out infinite; }
+@keyframes cd-wag { 0%, 100% { transform: skewY(0deg); } 50% { transform: skewY(-6deg); } }
+
+@media (max-width: 700px) {
+  .cd-compass-s { width: 84px; }
+  .cd-sec .cd-lookout { opacity: 0.3; width: 38px !important; }
+  .cd-gull-s:nth-of-type(n+3) { display: none; }
+  .cd-stars { display: none; }
+  .cd-lantern { left: auto !important; right: 3%; --w: 28px; }
+  .cd-lantern i { height: min(var(--len, 80px), 70px); }
+  .cd-dock .cd-i:nth-child(n+3) { display: none; }
+  .cd-bunting { height: 36px; opacity: 0.75; }
+}
+/* Phones: fewer things flying about, nothing wider than the screen. */
+@media (max-width: 700px) {
+  .cd-gull--3, .cd-lookout--3 { display: none; }
+  .cd-lookout--1 { top: 62%; left: 2%; opacity: 0.5; }
+  .cd-lookout--2 { top: 70%; right: 3%; opacity: 0.5; }
+  .cd-compass--hero { width: 200px; right: -70px; }
+  .cd-footer .cd-i--ship, .cd-footer .cd-i--flag { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cd-hero, .cd-hero *, .cd-sec, .cd-sec *, .cd-footer, .cd-footer * { animation: none !important; }
+  .cd-gull { left: 12%; }
+}
