@@ -723,7 +723,7 @@
   background: var(--gold-hover);
 }
 
-/* === STATE C: FRIDAY ONLY === */
+/* === STATE C: KIDS TRIALS, EVERY DAY OF THE WEEK === */
 
 .booking-kidstrial-info {
   text-align: center;
@@ -753,6 +753,24 @@
   font-weight: 600;
   color: var(--gold);
   font-family: var(--font-body);
+}
+
+/* The list spans the week, so each day's classes sit under the day's name:
+   sixteen rows with nothing to separate them would read as one long wall. */
+.booking-kidstrial-days {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.booking-kidstrial-day__name {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
 }
 
 .booking-kidstrial-classes {
@@ -789,9 +807,9 @@
   color: var(--text-muted);
 }
 
-/* The next date this class runs. Per class, not per panel: the list spans a
-   Friday and a Saturday, so one date above the whole list would be wrong for
-   half of it. */
+/* The next date this class runs. Per class, not per day or per panel: two
+   classes on one weekday need not share it (one has started, the other has not),
+   and a week of classes could not share one at all. */
 .booking-kidstrial-class__date {
   font-size: 12px;
   color: var(--gold);
@@ -878,14 +896,19 @@
     padding: 20px 12px;
   }
 
+  /* Name and button stay on one row. Stacked, with a full-width button each,
+     sixteen classes were more than three screens of scrolling on a phone. */
   .booking-kidstrial-class {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
+    gap: 12px;
+    padding: 12px 14px;
+  }
+
+  .booking-kidstrial-class__info {
+    min-width: 0;
   }
 
   .booking-kidstrial-class__btn {
-    width: 100%;
-    text-align: center;
+    flex-shrink: 0;
+    padding: 8px 12px;
   }
 }

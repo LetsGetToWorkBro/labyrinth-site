@@ -206,7 +206,7 @@ AREAS = [
             ("Why would I drive to Fulshear at all?",
              "The Fulshear academy runs the full seven-day timetable and is where the competition team trains, so some Cinco Ranch families come west for a specific session (the Saturday competition classes, or the all-ages strength and conditioning on Tuesday and Thursday) and train in Katy the rest of the week."),
             ("Is the first class free at both?",
-             "Yes. Try either, or both. Adults can book into any class on the Fulshear timetable; kids trials run on Friday afternoons in the Gi and on Saturday mornings, MMA Conditioning at 9:00 (all ages) or No-Gi grappling at 10:00."),
+             "Yes. Try either, or both. Adults can book into any class on the Fulshear timetable, and kids can start on any day of the week."),
         ],
     },
     {

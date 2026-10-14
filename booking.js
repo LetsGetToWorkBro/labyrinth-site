@@ -56,34 +56,52 @@
     {name:'MMA Conditioning', type:'', day:'Sat', time:'9:00 AM', crm:'MMA Conditioning'},
     {name:'Open Mat', type:'', day:'Sun', time:'10:30 AM', crm:'Open Mat'}
   ];
-  /* The classes a child who has never trained here may book into.
-     Friday is the Gi afternoon and covers every age from three up. Saturday
-     morning starts at seven, because there is no 3\u20136 class on a Saturday
-     to put a younger child in: MMA Conditioning at 9:00 (an all-ages class,
-     so it is also bookable straight from the timetable), then No-Gi grappling
-     at 10:00. Everything else on the kids timetable is either a regular class
-     that trial students do not drop into or an advanced one with a belt
-     requirement. */
+  /* The classes a child who has never trained here may book into: every class
+     on the kids timetable that is not an advanced one, on every day of the
+     week. A new child can start on a Monday as easily as on a Friday.
+
+     Which class depends on how old they are, and the age is in each name.
+     Kids BJJ for three to six runs on Monday, Wednesday and Friday; seven and
+     up has a class on each of those days too, then No-Gi grappling on a
+     Saturday morning and Youth Wrestling on Wednesday, Thursday and Sunday.
+     Strength & Conditioning (Tuesday and Thursday) and MMA Conditioning
+     (Saturday) are for all ages, so they are also bookable straight from the
+     timetable, and they are what a child of any age can start in on those days.
+
+     Not here: the advanced grappling classes (Tuesday, Thursday, Saturday
+     noon), which need a gray-white belt or two years of wrestling, and Open
+     Mat, which is open training time rather than an instructed class. The
+     timetable sends a tap on an advanced class to this list. */
   var KIDS_TRIAL_CLASSES = [
+    {name:'Kids BJJ (3\u20136)', type:'Gi', day:'Mon', time:'4:45 PM', crm:'Kids 3-6'},
+    {name:'Kids BJJ (7\u201312)', type:'Gi', day:'Mon', time:'5:15 PM', crm:'Kids 7-12'},
+    {name:'Teens BJJ (12\u201315)', type:'Gi', day:'Mon', time:'5:15 PM', crm:'Teens'},
+    {name:'Strength & Conditioning (all ages)', type:'', day:'Tue', time:'4:15 PM', crm:'Strength & Conditioning'},
+    {name:'Kids BJJ (3\u20136)', type:'Gi', day:'Wed', time:'4:45 PM', crm:'Kids 3-6'},
+    {name:'Kids BJJ (7\u201312)', type:'Gi', day:'Wed', time:'5:15 PM', crm:'Kids 7-12'},
+    {name:'Teens BJJ (12\u201315)', type:'Gi', day:'Wed', time:'5:15 PM', crm:'Teens'},
+    {name:'Youth Wrestling (7\u201317)', type:'', day:'Wed', time:'7:30 PM', crm:'Wrestling'},
+    {name:'Strength & Conditioning (all ages)', type:'', day:'Thu', time:'4:15 PM', crm:'Strength & Conditioning'},
+    {name:'Youth Wrestling (7\u201317)', type:'', day:'Thu', time:'7:30 PM', crm:'Wrestling'},
     {name:'Kids BJJ (3\u20136)', type:'Gi', day:'Fri', time:'4:45 PM', crm:'Kids 3-6'},
     {name:'Kids BJJ Comp (7\u201312)', type:'Gi', day:'Fri', time:'5:15 PM', crm:'Kids 7-12'},
     {name:'Teens BJJ Comp (12\u201315)', type:'Gi', day:'Fri', time:'5:15 PM', crm:'Teens'},
     {name:'MMA Conditioning (all ages)', type:'', day:'Sat', time:'9:00 AM', crm:'MMA Conditioning'},
-    {name:'Kids Grappling (7\u201312)', type:'No-Gi', day:'Sat', time:'10:00 AM', crm:'Kids 7-12'}
+    {name:'Kids Grappling (7\u201312)', type:'No-Gi', day:'Sat', time:'10:00 AM', crm:'Kids 7-12'},
+    {name:'Youth Wrestling (7\u201317)', type:'', day:'Sun', time:'1:00 PM', crm:'Wrestling'}
   ];
 
-  /* What the booking endpoint will accept. Anything else is discarded there
-     and replaced with the default, silently, so a class added above without a
-     `crm` has to fail loudly here instead.
+  /* What the booking endpoint will accept: PROGRAMS in
+     supabase/functions/_shared/trial-emails.ts. Anything else is discarded
+     there and replaced with the default, silently, so a class added above
+     without a valid `crm` has to fail loudly instead (site-test does).
 
-     The last two are PENDING: the endpoint's own list does not carry them yet,
-     so until PROGRAMS in supabase/functions/_shared/trial-emails.ts gains them
-     these two classes still arrive as Adult BJJ. Sending them now is harmless
-     (the endpoint substitutes exactly what it substitutes today) and means the
-     site needs no second change once that deploy happens. The real class is in
-     the note either way. */
-  var CRM_PROGRAMS = ['Adult BJJ', 'Kids 3-6', 'Kids 7-12', 'Teens', 'Wrestling', 'Womens', 'MMA Conditioning'];
-  var CRM_PROGRAMS_PENDING = ['Strength & Conditioning', 'Open Mat'];
+     Strength & Conditioning and Open Mat used to be sent ahead of the endpoint
+     learning them, and arrived as Adult BJJ in the meantime. It has them now,
+     so a child's Tuesday or Thursday trial is filed as Strength & Conditioning
+     and the confirmation email names that class. The real class is in the note
+     as well, either way. */
+  var CRM_PROGRAMS = ['Adult BJJ', 'Kids 3-6', 'Kids 7-12', 'Teens', 'Wrestling', 'Womens', 'MMA Conditioning', 'Strength & Conditioning', 'Open Mat'];
 
   /**
    * Which of the CRM's programmes a class belongs to.
@@ -1001,26 +1019,69 @@
     document.getElementById('bookingErrorClose').addEventListener('click', closeBookingModal);
   }
 
-  // ── Render State C: Kids Friday Only ──
-  function showKidsTrials() {
-    /* Each class carries its own next date now that the list spans two days.
-       It used to print one "Next Friday: ..." line above the whole list, which
-       stops being true the moment a Saturday class is in it. */
-    var html = '<div class="booking-content-enter">';
-    html += '<div class="booking-step-header"><h3>Kids Trials</h3></div>';
-    html += '<div class="booking-kidstrial-info">';
-    html += '<div class="booking-kidstrial-info__icon">\uD83E\uDD4B</div>';
-    html += '<p>Kids trials run on <strong>Friday afternoons</strong> in the Gi, for every age from three up, and on <strong>Saturday morning</strong> in No-Gi for ages seven and above. Pick whichever suits you.</p>';
-    html += '</div>';
-    html += '<div class="booking-kidstrial-classes">';
+  // ── Render State C: Kids trials, every day of the week ──
+
+  /* When a class next runs, in words a parent can act on: "today" when there
+     is still time to get here, "tomorrow", otherwise the date. The weekday is
+     the heading the row sits under, so it is not repeated. */
+  function nextLabel(d) {
+    var now = centralNow();
+    var days = Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate())
+      - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 86400000);
+    if (days === 0) return 'today';
+    if (days === 1) return 'tomorrow';
+    return MONTH_NAMES[d.getMonth()].slice(0, 3) + ' ' + d.getDate();
+  }
+
+  /* The trial classes grouped under the day they run, the soonest day first.
+
+     Each class carries its own next date, because two classes on one weekday
+     need not share it: one that started an hour ago is next week while the
+     later one is today. It is the date the form will offer first, so a closed
+     day is skipped here exactly as it is there. The list used to take the next
+     weekday without asking whether the academy was open, which is harmless
+     until Mondays are on it, where most of the holidays fall: it would promise
+     Labor Day and the form would then open on the Monday after. */
+  function kidsTrialDays() {
+    var days = [], byDay = {};
     KIDS_TRIAL_CLASSES.forEach(function (cls, i) {
-      var when = formatDate(getNextDayDate(cls.day, cls.time));
-      html += '<div class="booking-kidstrial-class">';
-      html += '<div class="booking-kidstrial-class__info"><span class="booking-kidstrial-class__name">' + cls.name + '</span>';
-      html += '<span class="booking-kidstrial-class__time">' + cls.time + ', ' + cls.type + '</span>';
-      html += '<span class="booking-kidstrial-class__date">Next: ' + when + '</span></div>';
-      html += '<button class="booking-kidstrial-class__btn" data-kid-idx="' + i + '">Book This Class</button>';
-      html += '</div>';
+      var next = upcomingDayDates(cls.day, cls.time, 1)[0] || getNextDayDate(cls.day, cls.time);
+      var group = byDay[cls.day];
+      if (!group) {
+        group = byDay[cls.day] = { day: cls.day, soonest: next, classes: [] };
+        days.push(group);
+      }
+      if (next < group.soonest) group.soonest = next;
+      group.classes.push({ cls: cls, idx: i, next: next });
+    });
+    days.sort(function (a, b) { return a.soonest - b.soonest; });
+    return days;
+  }
+
+  function showKidsTrials() {
+    var html = '<div class="booking-content-enter">';
+    html += '<div class="booking-step-header"><h3>Kids Trials</h3><p>Free, on any day of the week</p></div>';
+    html += '<div class="booking-kidstrial-info">';
+    html += '<div class="booking-kidstrial-info__icon">🥋</div>';
+    html += '<p>Pick a day and a class. Every class here is open to a child who has never trained, and the ages are in the class name. The advanced grappling classes need a gray-white belt or higher, or two years of wrestling, so they are not listed.</p>';
+    html += '</div>';
+    html += '<div class="booking-kidstrial-days">';
+    kidsTrialDays().forEach(function (group) {
+      var dayFull = dayAbbrToFull(group.day);
+      html += '<section class="booking-kidstrial-day" data-day="' + group.day + '">';
+      html += '<h4 class="booking-kidstrial-day__name">' + dayFull + '</h4>';
+      html += '<div class="booking-kidstrial-classes">';
+      group.classes.forEach(function (item) {
+        var cls = item.cls;
+        html += '<div class="booking-kidstrial-class">';
+        html += '<div class="booking-kidstrial-class__info"><span class="booking-kidstrial-class__name">' + cls.name + '</span>';
+        html += '<span class="booking-kidstrial-class__time">' + cls.time + (cls.type ? ', ' + cls.type : '') + '</span>';
+        html += '<span class="booking-kidstrial-class__date">Next: ' + nextLabel(item.next) + '</span></div>';
+        // Sixteen buttons that all say the same thing: the label is what a screen reader has to tell them apart.
+        html += '<button class="booking-kidstrial-class__btn" data-kid-idx="' + item.idx + '" aria-label="Book ' + cls.name + ', ' + dayFull + ' at ' + cls.time + '">Book This Class</button>';
+        html += '</div>';
+      });
+      html += '</div></section>';
     });
     html += '</div></div>';
     bookingContent.innerHTML = html;

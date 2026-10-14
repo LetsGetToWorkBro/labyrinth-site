@@ -65,7 +65,7 @@ Window: any time
 Photo: https://labyrinth.vision/assets/kids-nogi.jpg
 Button: Learn more https://labyrinth.vision/programs/kids-bjj-fulshear
 Text:
-Kids Brazilian jiu-jitsu in Fulshear, for ages 3 to 15, in three separate age groups: Little Grapplers (3 to 6), Kids BJJ (7 to 12) and Teens (12 to 15). Taught by black belts, with belt progression tracked so a child can see how far they have come. Your child's first class is free, and trial classes are on Fridays and Saturdays.
+Kids Brazilian jiu-jitsu in Fulshear, for ages 3 to 15, in three separate age groups: Little Grapplers (3 to 6), Kids BJJ (7 to 12) and Teens (12 to 15). Taught by black belts, with belt progression tracked so a child can see how far they have come. Your child's first class is free, and they can start on any day of the week.
 
 ==================== POST E4 ====================
 Type: Update

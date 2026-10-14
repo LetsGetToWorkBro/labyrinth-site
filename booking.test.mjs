@@ -58,9 +58,10 @@ const check = (label, got, want) => {
  * A page with the CRM stubbed out and console errors collected.
  * `referer` is what the first page believes sent the visitor; `init` is a function (with `arg`) run in the page before any of its own
  * scripts, for seeding or breaking browser storage.
+ * `viewport` is a { width, height } for a phone-sized page.
  */
-async function open(path, { referer, init, arg } = {}) {
-  const ctx = await browser.newContext()
+async function open(path, { referer, init, arg, viewport } = {}) {
+  const ctx = await browser.newContext(viewport ? { viewport } : {})
   const errors = []
   let posted = null
   if (init) await ctx.addInitScript(init, arg)
@@ -446,6 +447,180 @@ console.log('\nHolidays are not offered:')
     return window.LabyrinthBooking.upcomingDates('Fri', '5:15 PM').every(d => !shut.has(ymd(d)))
   }), true)
 
+  await ctx.close()
+}
+
+// ── Kids can try a class on any day of the week ──────────────────────────────
+//
+// Kids trials were Friday afternoon and Saturday morning, and the picker was
+// five rows under a paragraph saying so. Membership is open and a child can
+// start on any day, so the picker is every class a new child may start in,
+// grouped under the day it runs with the soonest day first, and the date beside
+// each class is the date the form will open on. This runs on a Friday evening
+// with Labor Day on the Monday, so the order, today, tomorrow, and a shut Monday
+// being skipped rather than promised are all in view at once.
+console.log('\nKids can try a class on any day of the week:')
+{
+  const { page, ctx, errors, posted } = await open('/index.html')
+  // Friday, September 4, 2026, 5:00 PM Central: the 4:45 class has started (so it is next Friday), the 5:15 classes have not (so they are today), Saturday is tomorrow, and Monday the 7th is Labor Day.
+  await ctx.clock.setFixedTime(new Date('2026-09-04T22:00:00Z'))
+  await page.evaluate(() => window.LabyrinthBooking.openKidsTrials())
+  await page.waitForSelector('.booking-kidstrial-class__btn')
+
+  const pick = await page.evaluate(() => ({
+    heading: document.querySelector('#bookingContent h3')?.textContent,
+    sub: document.querySelector('#bookingContent .booking-step-header p')?.textContent,
+    days: [...document.querySelectorAll('.booking-kidstrial-day')].map(d => ({
+      day: d.getAttribute('data-day'),
+      title: d.querySelector('.booking-kidstrial-day__name')?.textContent,
+      rows: [...d.querySelectorAll('.booking-kidstrial-class')].map(r => ({
+        name: r.querySelector('.booking-kidstrial-class__name')?.textContent,
+        time: r.querySelector('.booking-kidstrial-class__time')?.textContent,
+        next: r.querySelector('.booking-kidstrial-class__date')?.textContent,
+        label: r.querySelector('.booking-kidstrial-class__btn')?.getAttribute('aria-label'),
+      })),
+    })),
+    buttons: document.querySelectorAll('.booking-kidstrial-class__btn').length,
+    listed: window.LabyrinthBooking.kidsTrialClasses.length,
+  }))
+  const byDay = Object.fromEntries(pick.days.map(d => [d.day, d]))
+  const nexts = d => byDay[d].rows.map(r => r.next)
+
+  check('it is the kids trial list, and says trials are free on any day', [pick.heading, pick.sub], ['Kids Trials', 'Free, on any day of the week'])
+  check('the days come in the order they come round: Friday is today, Monday is after Labor Day',
+    pick.days.map(d => d.day), ['Fri', 'Sat', 'Sun', 'Tue', 'Wed', 'Thu', 'Mon'])
+  check('each day is headed by its name', pick.days.map(d => d.title),
+    ['Friday', 'Saturday', 'Sunday', 'Tuesday', 'Wednesday', 'Thursday', 'Monday'])
+  check('every class a new child may start in is there once, each with a button', [pick.buttons, pick.days.flatMap(d => d.rows).length], [pick.listed, pick.listed])
+  check('and that is sixteen classes across all seven days', [pick.listed, pick.days.length], [16, 7])
+  check('Friday: the 4:45 that has started is next Friday, the 5:15s are today',
+    nexts('Fri'), ['Next: Sep 11', 'Next: today', 'Next: today'])
+  check('Saturday is tomorrow', nexts('Sat'), ['Next: tomorrow', 'Next: tomorrow'])
+  check('Sunday is the 6th', nexts('Sun'), ['Next: Sep 6'])
+  check('Tuesday to Thursday are the 8th to the 10th',
+    [nexts('Tue'), nexts('Wed'), nexts('Thu')],
+    [['Next: Sep 8'], ['Next: Sep 9', 'Next: Sep 9', 'Next: Sep 9', 'Next: Sep 9'], ['Next: Sep 10', 'Next: Sep 10']])
+  check('Monday is Labor Day, so Monday’s classes say the 14th and never the 7th',
+    nexts('Mon'), ['Next: Sep 14', 'Next: Sep 14', 'Next: Sep 14'])
+
+  // Who is on it, by day: the class a child of any age can start in on every day, and nothing that needs a belt.
+  const names = d => byDay[d].rows.map(r => r.name)
+  check('Monday and Wednesday: the three Gi groups, and wrestling on Wednesday evening',
+    [names('Mon'), names('Wed')],
+    [['Kids BJJ (3–6)', 'Kids BJJ (7–12)', 'Teens BJJ (12–15)'],
+     ['Kids BJJ (3–6)', 'Kids BJJ (7–12)', 'Teens BJJ (12–15)', 'Youth Wrestling (7–17)']])
+  check('Tuesday is strength and conditioning for all ages, and the advanced grappling class is not offered',
+    names('Tue'), ['Strength & Conditioning (all ages)'])
+  check('Thursday is strength and conditioning and wrestling, not the advanced grappling',
+    names('Thu'), ['Strength & Conditioning (all ages)', 'Youth Wrestling (7–17)'])
+  check('Friday keeps its three Gi classes', names('Fri'), ['Kids BJJ (3–6)', 'Kids BJJ Comp (7–12)', 'Teens BJJ Comp (12–15)'])
+  check('Saturday morning is MMA conditioning and the 10:00 No-Gi, and not the noon advanced classes',
+    byDay.Sat.rows.map(r => `${r.name} ${r.time}`), ['MMA Conditioning (all ages) 9:00 AM', 'Kids Grappling (7–12) 10:00 AM, No-Gi'])
+  check('Sunday is youth wrestling', names('Sun'), ['Youth Wrestling (7–17)'])
+  check('no class is shown with a dangling comma after its time',
+    pick.days.flatMap(d => d.rows).every(r => !/[,\s]$/.test(r.time)), true)
+  const labels = pick.days.flatMap(d => d.rows.map(r => r.label))
+  check('sixteen identical buttons are told apart by their labels',
+    [new Set(labels).size, labels.includes('Book Kids BJJ (3–6), Monday at 4:45 PM')], [16, true])
+
+  // All the way through for every class on the list: the picker's own button,
+  // the form it opens, and what actually reaches the CRM.
+  const groupOf = n => /Wrestling/.test(n) ? 'Wrestling' : /^MMA/.test(n) ? 'MMA Conditioning'
+    : /^Strength/.test(n) ? 'Strength & Conditioning' : /^Teens/.test(n) ? 'Teens'
+    : /\(3–6\)/.test(n) ? 'Kids 3-6' : 'Kids 7-12'
+  const filed = []
+  const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+  for (let i = 0; i < pick.listed; i++) {
+    await page.evaluate(() => window.LabyrinthBooking.openKidsTrials())
+    await page.waitForSelector(`.booking-kidstrial-class__btn[data-kid-idx="${i}"]`)
+    const cls = await page.evaluate(i => window.LabyrinthBooking.kidsTrialClasses[i], i)
+    await page.click(`.booking-kidstrial-class__btn[data-kid-idx="${i}"]`)
+    await page.waitForSelector('#bookingForm')
+    const form = await page.evaluate(() => ({
+      name: document.querySelector('.booking-class-badge__name')?.textContent,
+      when: document.querySelector('.booking-class-info__datetime')?.textContent,
+      date: document.querySelector('input[name="bookingDate"]:checked')?.value,
+    }))
+    await page.fill('#bookingName', 'Test Parent')
+    await page.fill('#bookingEmail', 'test@example.com')
+    await page.fill('#bookingPhone', '2815550000')
+    // The success screen is the end of this booking: the stub has answered and the page has drawn the reply. Moving on any sooner lets that
+    // screen replace the next list. Each booking the stub receives is a new object, so a stale one is told from this one.
+    const before = posted()
+    await page.click('#bookingSubmitBtn')
+    await page.waitForSelector('.booking-success')
+    const sent = posted() === before ? null : posted()
+    const [, month, day, year] = form.date.match(/^\w+, (\w+) (\d+), (\d+)$/)
+    const iso = `${year}-${String(MONTHS.indexOf(month) + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+    filed.push({ cls: `${cls.day} ${cls.time} ${cls.name}`, form: `${form.name} | ${form.when}`,
+      ok: form.name === cls.name && sent?.program === groupOf(cls.name)
+        && (sent?.trialAt ?? '').startsWith(iso) && (sent?.note ?? '').includes(cls.name),
+      got: `${sent?.program} @ ${sent?.trialAt}` })
+  }
+  check('every one books into its own class and is filed under its own group, on the date the list promised',
+    filed.filter(f => !f.ok), [])
+  check('the first Monday class is the 14th, 4:45 PM Central, filed as Kids 3-6',
+    filed.find(f => f.cls.startsWith('Mon 4:45 PM'))?.got.startsWith('Kids 3-6 @ 2026-09-14T16:45:00'), true)
+  check('and the page is clean throughout', errors, [])
+  await ctx.close()
+}
+
+// The timetable sends a child to the right place from either kind of card.
+console.log('\nThe timetable and the kids list agree:')
+{
+  const { page, ctx } = await open('/index.html')
+  await ctx.clock.setFixedTime(new Date('2026-09-04T22:00:00Z'))
+  const kind = await page.evaluate(() => {
+    const cards = [...document.querySelectorAll('.sc__class[data-aud="kids"]')]
+    const list = new Set(window.LabyrinthBooking.kidsTrialClasses.map(c => `${c.name}|${c.day}|${c.time}`))
+    return {
+      kids: cards.length,
+      // A kids card books straight to a form exactly when its class is on the list.
+      agree: cards.every(c => (c.getAttribute('data-book') === 'form') === list.has(`${c.getAttribute('data-name')}|${c.getAttribute('data-day')}|${c.getAttribute('data-time')}`)),
+      kidsMode: cards.filter(c => c.getAttribute('data-book') === 'kids').map(c => c.textContent).every(t => /Advanced/.test(t)),
+      kidsModeCount: cards.filter(c => c.getAttribute('data-book') === 'kids').length,
+    }
+  })
+  check('every kids class on the timetable books straight to a form exactly when the list offers it',
+    [kind.kids > 10, kind.agree], [true, true])
+  check('and the six that send you to the list are the advanced ones', [kind.kidsModeCount, kind.kidsMode], [6, true])
+
+  await page.locator('.sc__class[data-book="kids"]:visible').first().click()
+  await page.waitForTimeout(300)
+  check('an advanced class opens the list of classes a new child can start in, not a form',
+    await page.evaluate(() => [document.querySelectorAll('.booking-kidstrial-day').length, !!document.getElementById('bookingForm')]), [7, false])
+  await page.keyboard.press('Escape')
+  await page.waitForTimeout(200)
+
+  await page.locator('.sc__class[data-day="Mon"][data-name="Kids BJJ (3–6)"]').first().click()
+  await page.waitForTimeout(300)
+  check('a Monday kids class books straight to its form, which says Monday',
+    await page.evaluate(() => [document.querySelector('.booking-class-badge__name')?.textContent, document.querySelector('.booking-class-info__datetime')?.textContent]),
+    ['Kids BJJ (3–6)', 'Monday at 4:45 PM'])
+  await ctx.close()
+}
+
+// A phone: sixteen rows must not be wider than the screen or push a button out of its row.
+console.log('\nThe kids list on a phone:')
+{
+  const { page, ctx } = await open('/index.html', { viewport: { width: 375, height: 667 } })
+  await page.evaluate(() => window.LabyrinthBooking.openKidsTrials())
+  await page.waitForTimeout(400)
+  const fit = await page.evaluate(() => {
+    const modal = document.querySelector('.booking-modal')
+    const rows = [...document.querySelectorAll('.booking-kidstrial-class')]
+    const bad = []
+    rows.forEach((r, i) => {
+      const rb = r.getBoundingClientRect(), info = r.querySelector('.booking-kidstrial-class__info').getBoundingClientRect(),
+        btn = r.querySelector('.booking-kidstrial-class__btn').getBoundingClientRect()
+      if (btn.right > rb.right + 0.5 || btn.left < rb.left - 0.5) bad.push(`row ${i}: the button is outside its row`)
+      if (info.right > btn.left + 0.5) bad.push(`row ${i}: the text runs under the button`)
+      if (rb.right > window.innerWidth + 0.5) bad.push(`row ${i}: wider than the screen`)
+    })
+    return { rows: rows.length, bad, sideways: modal.scrollWidth > modal.clientWidth + 1 }
+  })
+  check('sixteen rows, each with its button inside it and clear of the text', [fit.rows, fit.bad], [16, []])
+  check('and nothing scrolls sideways', fit.sideways, false)
   await ctx.close()
 }
 

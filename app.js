@@ -873,7 +873,7 @@
     var agesEl = clone.querySelector('.type-sched-bar__ages, .sched-cell__ages, .schedule-day__ages');
     var ages = agesEl ? agesEl.textContent.trim() : '';
     if (agesEl) agesEl.parentNode.removeChild(agesEl);
-    var base = clone.textContent.replace(/Trials Fri & Sat/g, '').replace(/\s+/g, ' ').trim();
+    var base = clone.textContent.replace(/Beginner trials/g, '').replace(/\s+/g, ' ').trim();
     return ages ? base + ' ' + ages : base;
   }
 
@@ -1007,7 +1007,7 @@
     if (programCard) {
       var prog = programCard.getAttribute('data-program');
       if (prog === 'youth-bjj') {
-        // Show Friday kids classes directly
+        // The kids trial classes, every day of the week
         LabyrinthBooking.openKidsTrials();
       } else if (prog === 'adult-bjj' || prog === 'competition') {
         LabyrinthBooking.openAdultList();

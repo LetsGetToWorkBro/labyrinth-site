@@ -172,18 +172,16 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   drift.length === 0, '\n    ' + drift.join('\n    '))
 
 // ── L1j: every bookable class maps to a programme the CRM will accept ──
-// The booking endpoint validates `program` against its own six values and
+// The booking endpoint validates `program` against its own list and
 // replaces anything else with the default, without saying so. That is why
 // every trial, kids included, arrived as "Adult BJJ" and was confirmed by
 // email as one. A class added without a valid `crm` fails here instead.
 {
   const js = readFileSync(join(ROOT, 'booking.js'), 'utf8')
-  // The six the endpoint accepts today, plus the two it will accept once
-  // PROGRAMS in _shared/trial-emails.ts is extended. Sending a pending one
-  // degrades to exactly today's behaviour rather than breaking.
-  const LIVE = ['Adult BJJ', 'Kids 3-6', 'Kids 7-12', 'Teens', 'Wrestling', 'Womens', 'MMA Conditioning']
-  const PENDING = ['Strength & Conditioning', 'Open Mat']
-  const ALLOWED = LIVE.concat(PENDING)
+  // PROGRAMS in the CRM's _shared/trial-emails.ts. Strength & Conditioning and
+  // Open Mat used to be sent ahead of the endpoint knowing them; it has them now.
+  const ALLOWED = ['Adult BJJ', 'Kids 3-6', 'Kids 7-12', 'Teens', 'Wrestling', 'Womens', 'MMA Conditioning',
+    'Strength & Conditioning', 'Open Mat']
   const entries = [...js.matchAll(/\{name:'(.*?)',[^}]*?crm:'(.*?)'\}/g)]
   const missing = [...js.matchAll(/\{name:'(.*?)', ?type:.*?\}/g)]
     .filter(m => !/crm:/.test(m[0])).map(m => m[1])
@@ -193,11 +191,20 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
     [...missing.map(m => 'no crm: ' + m), ...wrong].join('; '))
 
   // The kids classes must not be filed as adult ones, which is the bug a
-  // reader of the confirmation email actually saw.
+  // reader of the confirmation email actually saw. And now that the list spans
+  // the week, each one is filed under the group its own name says: a teens
+  // class filed as Kids 7-12 would be confirmed by email as the wrong room.
   const kidsBlock = js.slice(js.indexOf('KIDS_TRIAL_CLASSES = ['))
-  const kids = [...kidsBlock.slice(0, kidsBlock.indexOf('];')).matchAll(/crm:'(.*?)'/g)].map(m => m[1])
+  const kidEntries = [...kidsBlock.slice(0, kidsBlock.indexOf('];')).matchAll(/\{name:'(.*?)',[^}]*?crm:'(.*?)'\}/g)]
+    .map(m => [m[1].replace(/\\u2013/g, '–'), m[2]])
+  const groupOf = n => /Wrestling/.test(n) ? 'Wrestling' : /^MMA/.test(n) ? 'MMA Conditioning'
+    : /^Strength/.test(n) ? 'Strength & Conditioning' : /^Teens/.test(n) ? 'Teens'
+    : /\(3–6\)/.test(n) ? 'Kids 3-6' : 'Kids 7-12'
   check('L1j kids trial classes are not filed as Adult BJJ',
-    kids.length === 5 && kids.every(k => k !== 'Adult BJJ'), kids.join(', '))
+    kidEntries.length > 0 && kidEntries.every(([, k]) => k !== 'Adult BJJ'), kidEntries.map(e => e[1]).join(', '))
+  check('L1j each kids trial class is filed under the group its name says',
+    kidEntries.every(([n, k]) => groupOf(n) === k),
+    kidEntries.filter(([n, k]) => groupOf(n) !== k).map(([n, k]) => `${n} -> ${k}`).join('; '))
 
   check('L1j the booking payload sends the CRM programme, not the display name',
     /program: data\.crmProgram/.test(js) && !/program: data\.className/.test(js))
@@ -1145,16 +1152,17 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
 }
 
 // ── L1t: who may book what, and until when ──
-// The rule: a brand-new child books a trial only into the classes flagged
-// "trial" (Friday afternoon, Saturday morning); youth wrestling is its own
-// program and books directly; adults book anything; and a class is bookable
-// right up to its start.
+// The rule: a brand-new child books a trial into any kids class that is not
+// advanced, on any day of the week (the classes flagged "trial", youth wrestling
+// included), or into one of the all-ages classes; the advanced grappling classes
+// stay off the list because they need a belt; adults book anything; and a class
+// is bookable right up to its start.
 //
 // This used to sweep three hand-kept copies of the week and exempted Friday
 // and Saturday wholesale, which let the Saturday-noon advanced classes carry a
 // Book button behind the belt warning. There is now one generated schedule and
 // one set of drawers, and the check is exact: every directly bookable kids
-// class must be one the kids trial list actually offers.
+// class must be one the kids trial list actually offers, wrestling too.
 {
   await page.goto('http://localhost:4620/', { waitUntil:'domcontentloaded' })
 
@@ -1164,7 +1172,6 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
     const norm = n => n.replace(/\s+/g, ' ').trim()
     document.querySelectorAll('.sc__class[data-aud="kids"][data-book="form"]').forEach(c => {
       const name = c.getAttribute('data-name')
-      if (/wrestl/i.test(name)) return
       const key = `${name}|${c.getAttribute('data-day')}|${c.getAttribute('data-time')}`
       if (!trials.has(key)) out.push(`schedule ${key}`)
     })
@@ -1172,7 +1179,7 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
     document.querySelectorAll('#drawer-kids-gi .type-sched-bar, #drawer-kids-nogi .type-sched-bar').forEach(bar => {
       const nameEl = bar.querySelector('.type-sched-bar__name')
       const name = norm(nameEl?.textContent || '').replace(/\((\d)/, ' ($1').replace(/\s+\(/, ' (')
-      if (/wrestl/i.test(name) || !bar.querySelector('.type-sched-bar__book')) return
+      if (!bar.querySelector('.type-sched-bar__book')) return
       const day = bar.querySelector('.type-sched-bar__day')?.textContent.trim()
       const time = bar.querySelector('.type-sched-bar__time')?.textContent.trim()
       if (!trials.has(`${name}|${day}|${time}`)) out.push(`drawer ${name}|${day}|${time}`)
@@ -1187,12 +1194,33 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   check('L1t kids classes outside the trial list are never bookable',
     leaks.length === 0, leaks.join('; '))
 
-  // The same rule from the data side: the picker offers kids exactly these.
-  const kidsList = await page.evaluate(() =>
-    LabyrinthBooking.kidsTrialClasses.map(c => c.day + ' ' + c.type))
-  check('L1t the kids trial list is Friday Gi, Saturday No-Gi and Saturday MMA Conditioning',
-    kidsList.length > 0 && kidsList.every(x => x.startsWith('Fri ') || x === 'Sat No-Gi' || x === 'Sat '),
-    kidsList.join(', '))
+  // The same rule from the data side. Every day of the week has a class a new
+  // child can start in, which is the point of the change...
+  const trialDays = await page.evaluate(() => [...new Set(LabyrinthBooking.kidsTrialClasses.map(c => c.day))])
+  check('L1t a new child can start on every day of the week',
+    ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].every(d => trialDays.includes(d)), trialDays.join(', '))
+
+  // ...and the advanced classes are not on the list, because a child with no
+  // belt and no wrestling behind them would be put in a room that needs both.
+  const advKeys = new Set(JSON.parse(execFileSync('python3', ['-c',
+    "import sys; sys.path.insert(0,'scripts'); import json, schedule_data as s; " +
+    "print(json.dumps([[n+((' ('+a+')') if a else ''),st,d,t] for d,t,n,a,st,au,f in s.CLASSES if 'adv' in f]))"],
+    { cwd: ROOT }).toString()).map(r => r.join('|')))
+  const onList = jsArray('KIDS_TRIAL_CLASSES')
+  check('L1t there are advanced classes to keep off the list', advKeys.size >= 6, 'advanced: ' + advKeys.size)
+  check('L1t no advanced class is on the kids trial list',
+    [...advKeys].every(k => !onList.has(k)), [...advKeys].filter(k => onList.has(k)).join('; '))
+
+  // Every kids class is exactly one of the two: a new class added to the week
+  // without either flag would be neither bookable nor marked, and nothing else
+  // would notice.
+  const kidsFlags = JSON.parse(execFileSync('python3', ['-c',
+    "import sys; sys.path.insert(0,'scripts'); import json, schedule_data as s; " +
+    "print(json.dumps([[d,t,n,sorted(f)] for d,t,n,a,st,au,f in s.CLASSES if au == 'kids']))"],
+    { cwd: ROOT }).toString())
+  const neitherOrBoth = kidsFlags.filter(([, , , f]) => f.includes('trial') === f.includes('adv'))
+  check('L1t every kids class is either a trial class or an advanced one',
+    kidsFlags.length > 10 && neitherOrBoth.length === 0, neitherOrBoth.map(r => r.slice(0, 3).join(' ')).join('; '))
 
   // Bookable until the class starts. Behaviour, on the academy's clock: a
   // class starting a minute from now is offered today; one that started a

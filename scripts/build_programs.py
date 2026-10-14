@@ -187,13 +187,13 @@ def jsonld(obj):
 PROGRAMS = [
     {
         "slug": "kids-bjj-fulshear",
-        "hub_blurb": "Ages 3–15 in three separated groups, six days a week. Gi, No-Gi and MMA, belt progression tracked, free trials Friday and Saturday.",
+        "hub_blurb": "Ages 3–15 in three separated groups, six days a week. Gi, No-Gi and MMA, belt progression tracked, free trials any day of the week.",
         "nav_name": "Kids BJJ",
         "name": "Kids Brazilian Jiu-Jitsu",
         "h1": "Kids Brazilian Jiu-Jitsu in Fulshear",
         "title": "Kids BJJ Classes in Fulshear, TX (Ages 3–15) | Labyrinth BJJ",
         "og_title": "Kids BJJ Classes in Fulshear, TX: Ages 3 to 15",
-        "description": "Kids Brazilian jiu-jitsu in Fulshear, TX. Separate groups for ages 3–6, 7–12 and 12–15, six days a week. Free trial Friday or Saturday.",
+        "description": "Kids Brazilian jiu-jitsu in Fulshear, TX. Separate groups for ages 3–6, 7–12 and 12–15, six days a week. Free trial any day of the week.",
         "eyebrow": "Ages 3–15",
         "image": "youth-card",
         "image_alt": "Kids Brazilian jiu-jitsu class at Labyrinth BJJ in Fulshear, TX",
@@ -203,7 +203,7 @@ PROGRAMS = [
             ("Ages", "3 to 15"),
             ("Runs", "Six days a week"),
             ("Membership", "<em>From $239</em>/month"),
-            ("Free trial", "Friday or Saturday"),
+            ("Free trial", "Any day of the week"),
         ],
         "intro": [
             "Most parents come to us for one of three reasons. Their child is being pushed around at school and they want them to be able to handle it. Their child has energy that no amount of playground time absorbs. Or their child has tried a sport, sat on a bench for a season, and quietly decided they are not sporty.",
@@ -221,7 +221,7 @@ PROGRAMS = [
              "Their own classes, because a thirteen-year-old training with eight-year-olds gets bored and a thirteen-year-old training with adults gets hurt. Teens train Gi and No-Gi and can move into the competition classes when they want to."),
         ],
         "schedule_title": "Kids class times",
-        "schedule_note": "Classes marked <strong>ADV</strong> are the advanced grappling classes: a child needs a gray-white belt or higher, or two or more years of wrestling, to join one. Everything else is open to any child in the age range, including one who has never trained. <strong>Free trials for kids run on Friday afternoons and Saturday mornings.</strong> Friday is Gi and takes every age from three up; Saturday at 10:00 AM is No-Gi and starts at seven, because there is no 3–6 class on a Saturday to put a younger child in.",
+        "schedule_note": "Classes marked <strong>ADV</strong> are the advanced grappling classes: a child needs a gray-white belt or higher, or two or more years of wrestling, to join one. Everything else is open to any child in the age range, including one who has never trained. <strong>Free trials for kids run on any day of the week.</strong> Ages 3–6 have their own class at 4:45 PM on Monday, Wednesday and Friday; on Saturday morning, MMA Conditioning at 9:00 is open to every age and the 10:00 AM No-Gi class starts at seven.",
         "week": schedule_data.week_for({"Kids BJJ", "Kids Grappling", "Teens Grappling", "Teens BJJ", "Kids BJJ Comp", "Teens BJJ Comp", "MMA Conditioning"}),
         "body_title": "What a class actually looks like",
         "body": [
@@ -243,7 +243,7 @@ PROGRAMS = [
             ("Is jiu-jitsu safe for a young child?",
              "It is one of the safest martial arts a child can do, because there is no striking in it at all. BJJ is grappling (leverage, position and control) so children are not being hit, and they are not hitting anyone. Classes are grouped by age, beginners are not put in with advanced kids, and a coach is watching every round. Falling safely is one of the first things we teach, and it is the skill parents tell us shows up outside the gym."),
             ("When can we come and try a class?",
-             "Two options. Friday afternoons in the Gi: 4:45 PM for ages 3–6, and 5:15 PM for 7–12 and 12–15. Or Saturday morning: MMA Conditioning at 9:00 for all ages, or No-Gi grappling at 10:00 for ages 7 and up. It is free either way, there is no commitment, and nobody will call you afterwards to talk you into anything. Book online or ring the academy on " + PHONE + "."),
+             "Any day of the week. On Monday, Wednesday and Friday, Little Grapplers for ages 3–6 is at 4:45 PM and the 7–12 and teen groups are at 5:15 PM. Tuesday and Thursday at 4:15 PM is strength and conditioning, open to all ages, and youth wrestling for ages 7–17 runs on Wednesday and Thursday at 7:30 PM and on Sunday at 1:00 PM. Saturday morning is MMA conditioning at 9:00 for all ages, or No-Gi grappling at 10:00 for ages 7 and up. It is free, there is no commitment, and nobody will call you afterwards to talk you into anything. Book online or ring the academy on " + PHONE + "."),
             ("Does my child need a gi to start?",
              "No. Come in a t-shirt and shorts or leggings with no zippers, buttons or pockets. We have loaner gis for trial classes. If your child carries on training we will get them fitted properly, but nobody needs to spend money to find out whether their kid likes it."),
             ("Will my child have to compete?",
@@ -252,7 +252,7 @@ PROGRAMS = [
              "The advanced grappling classes (Tuesday and Thursday at 5:15 PM, and Saturday at 12:00 PM) need a gray-white belt or higher, or two or more years of wrestling. They move faster and drill at a higher intensity. Every other class on the timetable is open to a complete beginner."),
         ],
         "close_title": "Book their first class",
-        "close_text": "Free, on a Friday afternoon or a Saturday morning, in whatever they already own. If they like it you will know within about ten minutes, and so will they.",
+        "close_text": "Free, on any day of the week, in whatever they already own. If they like it you will know within about ten minutes, and so will they.",
         "related_posts": [
             ("benefits-of-bjj-for-kids", "10 Benefits of BJJ for Kids"),
             ("what-age-should-kids-start-jiu-jitsu", "What Age Should Kids Start Jiu-Jitsu?"),
@@ -983,7 +983,7 @@ MARTIAL_ARTS = {
     ],
     "cards": [
         ("/programs/kids-bjj-fulshear", "Kids Brazilian Jiu-Jitsu",
-         "Ages 3–15 in three separated groups, six days a week. Gi, No-Gi and MMA, belt progression tracked, free trials Friday and Saturday."),
+         "Ages 3–15 in three separated groups, six days a week. Gi, No-Gi and MMA, belt progression tracked, free trials any day of the week."),
         ("/programs/adult-bjj-fulshear", "Adult Brazilian Jiu-Jitsu",
          "Seventeen classes a week, Gi and No-Gi, mornings through evenings. Complete beginners are the normal case here."),
         ("/programs/youth-wrestling-fulshear", "Youth Wrestling",
@@ -1015,7 +1015,7 @@ MARTIAL_ARTS = {
     ],
     "start_title": "How to start",
     "start": [
-        "Book a free class online or ring the academy on " + PHONE + ". Any class on the timetable works. For children, free trials run on Friday afternoons and Saturday mornings.",
+        "Book a free class online or ring the academy on " + PHONE + ". Any class on the timetable works. For children, free trials run on any day of the week.",
         "Wear athletic clothes with no zippers or pockets and bring water. We lend you a gi on Gi days.",
         "There is no long-term contract: memberships are month to month. The <a href=\"/pricing\">pricing page</a> has the plans, and the <a href=\"/schedule\">schedule</a> has every class time.",
     ],
@@ -1029,7 +1029,7 @@ MARTIAL_ARTS = {
         ("Do I need experience, or to be in shape first?",
          "No. There is no fitness test at the door, and almost nobody who walks in as an adult has done a combat sport before. You build the conditioning by doing it, and you can scale the warm-up or sit out a round whenever you need to."),
         ("Is the first class free, and is there a contract?",
-         "Your first class is free, in any class on the timetable. For children, free trials run on Friday afternoons and Saturday mornings. Memberships are month to month with no long-term contract."),
+         "Your first class is free, in any class on the timetable. For children, free trials run on any day of the week. Memberships are month to month with no long-term contract."),
         ("Where are you, and who do you serve?",
          "Labyrinth BJJ is at " + ADDRESS + ", telephone " + PHONE + ". We serve Fulshear, Katy, Cinco Ranch, Richmond and the west Houston area."),
     ],
