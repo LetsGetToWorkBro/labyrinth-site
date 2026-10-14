@@ -43,19 +43,21 @@ def _booking(name, ages, aud, flags):
     """How a card books, and the name booking.js knows the class by.
 
     'form'   straight to the booking form for this class.
-    'kids'   the kids trial picker: a regular or advanced kids class that a
-             brand-new child does not trial into. booking.js only offers kids
-             trials in the classes flagged "trial", and a card that opened a
-             form for any other would book a child into the wrong room.
-
-    Youth Wrestling books directly even though it is not a kids "trial" class:
-    it is its own program with its own CRM pipeline, and the day cards this
-    replaced booked it directly too.
+    'kids'   the kids trial picker: an advanced kids class, which a brand-new
+             child cannot start in. booking.js only offers kids trials in the
+             classes flagged "trial", which is every kids class that is not
+             advanced, and a card that opened a form for an advanced one would
+             book a child into a room that needs a belt.
     """
     book_name = "%s (%s)" % (name, ages) if ages and _has_age_range(ages) else name
-    if aud in ("adult", "all") or "trial" in flags or name == "Youth Wrestling":
+    if aud in ("adult", "all") or "trial" in flags:
         return "form", book_name
     return "kids", book_name
+
+
+# What a card or a drawer bar says about an advanced class, where a tap goes to
+# the kids trial list instead of a form. One string, because it names one place.
+TRIAL_HINT = "Beginner trials"
 
 
 def _card(day, time, name, ages, style, aud, flags):
@@ -70,7 +72,7 @@ def _card(day, time, name, ages, style, aud, flags):
         tags.append('<span class="sc__tag sc__tag--trial">Free trial</span>')
     if mode == "kids":
         # Why tapping this one opens something else, before they tap it.
-        tags.append('<span class="sc__hint">Trials: Fri &amp; Sat</span>')
+        tags.append('<span class="sc__hint">%s</span>' % TRIAL_HINT)
     age_html = ('<span class="sc__ages">%s</span>' % html.escape(ages)) if ages else ""
     label = "%s, %s at %s%s" % (
         name, day, time, (", ages " + ages) if ages and _has_age_range(ages) else "")
@@ -125,7 +127,7 @@ def render(uid="sc"):
       </ul>
     </div>
     <div class="sc__picker" role="group" aria-label="Choose a day" hidden>%(days)s</div>
-    <p class="sc__kids-note" hidden><strong>Kids trials</strong> are on Friday afternoons in the Gi (ages 3 and up) and Saturday mornings: MMA Conditioning at 9:00 (all ages) or No-Gi grappling at 10:00 (ages 7 and up).</p>
+    <p class="sc__kids-note" hidden><strong>Kids trials</strong> are free on any day of the week: tap any class marked Free trial, or open to all ages. Advanced classes need a gray-white belt or higher, or two years of wrestling, so a new child starts in another one.</p>
     <div class="sc__week">
 %(cols)s
     </div>
@@ -163,7 +165,7 @@ def drawer_rows(key):
         adv = '<span class="type-sched-bar__badge-adv">ADV</span>' if "adv" in flags else ""
         action = ('<a data-book-trial href="/#book" class="type-sched-bar__book">Book Trial</a>'
                   if mode == "form" else
-                  '<span class="type-sched-bar__trial-badge">Trials Fri &amp; Sat</span>')
+                  '<span class="type-sched-bar__trial-badge">%s</span>' % TRIAL_HINT)
         out.append('<div class="type-sched-bar type-sched-bar--%s"><span class="type-sched-bar__day">%s</span>'
                    '<span class="type-sched-bar__time">%s</span><span class="type-sched-bar__name">%s%s</span>%s%s</div>'
                    % (tone, SHORT[day], time, html.escape(name), ages_html, adv, action))

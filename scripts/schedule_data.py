@@ -22,6 +22,13 @@ CLASSES is the week as the academy runs it. Each entry:
     flags     set of markers: "adv"   needs a grey-white belt or 2 yrs wrestling
                               "comp"  competition class
                               "trial" a class a brand-new child may book into
+
+Every kids class is one or the other of "trial" and "adv": a child who has never
+trained can start in any class that is not advanced, on any day of the week,
+and site-test checks that nothing falls between the two. Open Mat is the one
+class for everybody that is left off the kids list on purpose: it is open
+training time rather than an instructed class. If the academy wants new
+children in it, flag it here and add it to KIDS_TRIAL_CLASSES in booking.js.
 """
 
 DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
@@ -31,31 +38,31 @@ CLASSES = [
     # ── Monday ──
     ("Monday", "6:30 AM", "Adult BJJ", "", "Gi", "adult", set()),
     ("Monday", "11:00 AM", "Adult BJJ", "", "Gi", "adult", set()),
-    ("Monday", "4:45 PM", "Kids BJJ", "3–6", "Gi", "kids", set()),
-    ("Monday", "5:15 PM", "Kids BJJ", "7–12", "Gi", "kids", set()),
-    ("Monday", "5:15 PM", "Teens BJJ", "12–15", "Gi", "kids", set()),
+    ("Monday", "4:45 PM", "Kids BJJ", "3–6", "Gi", "kids", {"trial"}),
+    ("Monday", "5:15 PM", "Kids BJJ", "7–12", "Gi", "kids", {"trial"}),
+    ("Monday", "5:15 PM", "Teens BJJ", "12–15", "Gi", "kids", {"trial"}),
     ("Monday", "6:30 PM", "Adult BJJ", "", "Gi", "adult", set()),
     # ── Tuesday ──
     ("Tuesday", "6:30 AM", "Adult BJJ", "", "No-Gi", "adult", set()),
-    ("Tuesday", "4:15 PM", "Strength & Conditioning", "all ages", "", "all", set()),
+    ("Tuesday", "4:15 PM", "Strength & Conditioning", "all ages", "", "all", {"trial"}),
     ("Tuesday", "5:15 PM", "Kids Grappling", "7–12", "No-Gi", "kids", {"adv"}),
     ("Tuesday", "5:15 PM", "Teens Grappling", "12–15", "No-Gi", "kids", {"adv"}),
     ("Tuesday", "6:30 PM", "Adult BJJ", "", "No-Gi", "adult", set()),
     # ── Wednesday ──
     ("Wednesday", "6:30 AM", "Adult BJJ", "", "Gi", "adult", set()),
     ("Wednesday", "11:00 AM", "Adult BJJ", "", "No-Gi", "adult", set()),
-    ("Wednesday", "4:45 PM", "Kids BJJ", "3–6", "Gi", "kids", set()),
-    ("Wednesday", "5:15 PM", "Kids BJJ", "7–12", "Gi", "kids", set()),
-    ("Wednesday", "5:15 PM", "Teens BJJ", "12–15", "Gi", "kids", set()),
+    ("Wednesday", "4:45 PM", "Kids BJJ", "3–6", "Gi", "kids", {"trial"}),
+    ("Wednesday", "5:15 PM", "Kids BJJ", "7–12", "Gi", "kids", {"trial"}),
+    ("Wednesday", "5:15 PM", "Teens BJJ", "12–15", "Gi", "kids", {"trial"}),
     ("Wednesday", "6:30 PM", "Adult BJJ", "", "Gi", "adult", set()),
-    ("Wednesday", "7:30 PM", "Youth Wrestling", "7–17", "", "kids", set()),
+    ("Wednesday", "7:30 PM", "Youth Wrestling", "7–17", "", "kids", {"trial"}),
     # ── Thursday ──
     ("Thursday", "6:30 AM", "Adult BJJ", "", "No-Gi", "adult", set()),
-    ("Thursday", "4:15 PM", "Strength & Conditioning", "all ages", "", "all", set()),
+    ("Thursday", "4:15 PM", "Strength & Conditioning", "all ages", "", "all", {"trial"}),
     ("Thursday", "5:15 PM", "Kids Grappling", "7–12", "No-Gi", "kids", {"adv"}),
     ("Thursday", "5:15 PM", "Teens Grappling", "12–15", "No-Gi", "kids", {"adv"}),
     ("Thursday", "6:30 PM", "Adult BJJ", "", "No-Gi", "adult", set()),
-    ("Thursday", "7:30 PM", "Youth Wrestling", "7–17", "", "kids", set()),
+    ("Thursday", "7:30 PM", "Youth Wrestling", "7–17", "", "kids", {"trial"}),
     # ── Friday ──
     ("Friday", "11:00 AM", "Adult BJJ", "", "Gi", "adult", set()),
     ("Friday", "4:45 PM", "Kids BJJ", "3–6", "Gi", "kids", {"trial"}),
@@ -66,8 +73,8 @@ CLASSES = [
     # MMA Conditioning took the 9:00 slot from the Saturday adult No-Gi
     # competition class. Taught by Scott Jones, who came across with
     # Team Legacy. All ages, like Strength & Conditioning, so anybody can book it
-    # straight from the timetable; it also stays on the kids trial list, because
-    # it is one of only two Saturday classes a new child can start in.
+    # straight from the timetable; it is on the kids trial list too, and is the
+    # Saturday class a child younger than seven can start in.
     ("Saturday", "9:00 AM", "MMA Conditioning", "all ages", "", "all", {"trial"}),
     ("Saturday", "10:00 AM", "Kids Grappling", "7–12", "No-Gi", "kids", {"trial"}),
     ("Saturday", "11:00 AM", "Adult & Teens", "", "No-Gi", "adult", set()),
@@ -75,7 +82,7 @@ CLASSES = [
     ("Saturday", "12:00 PM", "Teens Grappling", "12–15", "No-Gi", "kids", {"adv"}),
     # ── Sunday ──
     ("Sunday", "10:30 AM", "Open Mat", "all levels", "", "all", set()),
-    ("Sunday", "1:00 PM", "Youth Wrestling", "7–17", "", "kids", set()),
+    ("Sunday", "1:00 PM", "Youth Wrestling", "7–17", "", "kids", {"trial"}),
 ]
 
 # What the front desk quotes. Every figure is on the front page's pricing grid.

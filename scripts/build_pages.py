@@ -100,7 +100,7 @@ def faq_schema(faqs):
 
 SCHEDULE_FAQS = [
     ("Can I just turn up to a class?",
-     "For a first class, book it. It takes a minute and it means a coach is expecting you and has a loaner gi ready. Adults can book into any class on this timetable. Kids trials run Friday afternoons in the Gi for ages 3 and up, or Saturday morning: MMA Conditioning at 9:00 (all ages) or No-Gi grappling at 10:00 (ages 7 and up)."),
+     "For a first class, book it. It takes a minute and it means a coach is expecting you and has a loaner gi ready. Adults can book into any class on this timetable. Kids can start on any day of the week: pick any kids class that is not marked Advanced, or one of the all-ages classes (strength and conditioning, MMA conditioning)."),
     ("What does ADV mean on the timetable?",
      "Advanced. Those classes need a gray-white belt or higher, or two or more years of wrestling. They move faster and drill at a higher intensity. Every class without that marker is open to a complete beginner, including somebody who has never trained anywhere."),
     ("What is the difference between the Gi and No-Gi classes?",
@@ -146,7 +146,7 @@ def render_schedule():
   <div class="container">
     <p class="section-label">Timetable</p>
     <h1 class="prog-hero__title">Class Schedule</h1>
-    <p class="prog-hero__lead">%(total)d classes a week, seven days, in Fulshear. Adults train from 6:30 in the morning to half past seven at night; kids run from 4:45 PM on weekdays and through Saturday morning. Every class here is bookable, and the first one is free.</p>
+    <p class="prog-hero__lead">%(total)d classes a week, seven days, in Fulshear. Adults train from 6:30 in the morning to half past seven at night; kids run from 4:45 PM on weekdays and through Saturday morning. Every class here is bookable, the first one is free, and a child can start on any day of the week.</p>
     <div class="prog-hero__cta">
       <a data-book-trial href="/#book" class="btn btn--gold">Book a Free Class</a>
       <a href="https://calendar.labyrinth.vision" target="_blank" rel="noopener noreferrer" class="btn btn--ghost">Live Calendar</a>
@@ -199,7 +199,7 @@ def render_schedule():
 <div class="container">
   <div class="prog-close fade-in">
     <h2 class="prog-close__title">PICK ONE AND COME</h2>
-    <p class="prog-close__text">Adults can book into any class above. Kids trials are Friday afternoon in the Gi, or Saturday morning: MMA Conditioning at 9:00 (all ages) or No-Gi grappling at 10:00. It is free either way and nobody will call you afterwards to talk you into anything.</p>
+    <p class="prog-close__text">Adults can book into any class above, and kids can start on any day of the week, in any class not marked Advanced. It is free and nobody will call you afterwards to talk you into anything.</p>
     <div class="prog-hero__cta" style="justify-content:center">
       <a data-book-trial href="/#book" class="btn btn--gold">Book a Free Class</a>
       <a href="tel:2813937983" class="btn btn--ghost">Call %(phone)s</a>
@@ -360,7 +360,7 @@ def render_pricing():
 <div class="container">
   <div class="prog-close fade-in">
     <h2 class="prog-close__title">TRY IT BEFORE YOU PAY</h2>
-    <p class="prog-close__text">The first class is free for everybody: adults into any class on the timetable, kids on a Friday afternoon or Saturday morning. Decide about money afterwards.</p>
+    <p class="prog-close__text">The first class is free for everybody: adults into any class on the timetable, kids on any day of the week. Decide about money afterwards.</p>
     <div class="prog-hero__cta" style="justify-content:center">
       <a data-book-trial href="/#book" class="btn btn--gold">Book a Free Class</a>
       <a href="tel:2813937983" class="btn btn--ghost">Call %(phone)s</a>
@@ -3301,7 +3301,7 @@ def render_coach(c):
 <div class="container">
   <div class="prog-close fade-in">
     <h2 class="prog-close__title">COME AND TRAIN</h2>
-    <p class="prog-close__text">The first class is free: adults into any class on the timetable, kids on a Friday afternoon or a Saturday morning. Turn up in a t-shirt and shorts; we will lend you the rest.</p>
+    <p class="prog-close__text">The first class is free: adults into any class on the timetable, kids on any day of the week. Turn up in a t-shirt and shorts; we will lend you the rest.</p>
     <div class="prog-hero__cta" style="justify-content:center">
       <a data-book-trial href="/#book" class="btn btn--gold">Book a Free Class</a>
       <a href="tel:2813937983" class="btn btn--ghost">Call %(phone)s</a>

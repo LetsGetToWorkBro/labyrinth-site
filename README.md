@@ -96,6 +96,16 @@ Class times are converted to Central with the offset for that specific date,
 because the academy runs through both CST and CDT and a visitor may be browsing
 from anywhere.
 
+### Who can start where
+
+A child who has never trained can start in any kids class that is not an advanced one, on any day of the week. The picker's list
+(`KIDS_TRIAL_CLASSES` in `booking.js`) is the classes flagged `trial` in `scripts/schedule_data.py`: Kids BJJ and Teens BJJ, the Saturday
+No-Gi class, Youth Wrestling, and the all-ages Strength & Conditioning and MMA Conditioning. The advanced grappling classes need a belt or two
+years of wrestling and are not on it, and neither is Open Mat. A tap on an advanced class in the timetable opens the list instead of a form.
+To change who may start where, flag or unflag the class in `schedule_data.py`, make the same change in `booking.js`, and run
+`python3 scripts/build_pages.py` (then `build_programs.py`, `build_areas.py` and `stamp_assets.py` if the copy changed). `site-test.mjs`
+fails (L1i) if the two lists disagree, and (L1t) if a kids class is neither a trial class nor an advanced one.
+
 The endpoint only ever writes. There is nothing secret in this repository, and
 nothing here can read a member's details back out.
 
