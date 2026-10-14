@@ -83,7 +83,7 @@ body{width:1080px;height:${h}px;position:relative;overflow:hidden;background:${B
     <div class="days">${chips}</div>
     <div class="sub">No experience needed. <b>We lend you the gi.</b></div>
     <div class="cta"><div class="btn">Book a free class</div><div class="url">labyrinth.vision<small>${story ? 'Book in a minute' : 'Link in bio'}</small></div></div>
-    <div class="foot"><span>Labyrinth BJJ &middot; Fulshear, TX</span>${story ? '<span>Gi &amp; No-Gi</span>' : '<span class="swipe">Swipe for class times</span>'}</div>
+    <div class="foot"><span>Labyrinth BJJ</span>${story ? '<span>Gi &amp; No-Gi</span>' : '<span class="swipe">Swipe for class times</span>'}</div>
   </div>
 </body></html>`
 }
@@ -123,7 +123,7 @@ body{width:1080px;height:${h}px;position:relative;overflow:hidden;background:${B
     <div class="h">Pick your day</div>
     <div class="list">${rows}</div>
     <div class="cta"><div class="btn">Book a free class</div><div class="url">labyrinth.vision<small>Link in bio</small></div></div>
-    <div class="foot"><span>Labyrinth BJJ &middot; Fulshear, TX</span><span>Ages 3&ndash;15</span></div>
+    <div class="foot"><span>Labyrinth BJJ</span><span>Ages 3&ndash;15</span></div>
   </div>
 </body></html>`
 }

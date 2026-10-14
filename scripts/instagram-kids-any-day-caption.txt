@@ -6,38 +6,36 @@ POST (a two-picture carousel, in this order)
 STORY
   assets/social/kids-any-day-story.png       add a link sticker to https://labyrinth.vision
 
+No street address or town on the pictures or in the caption (the hashtags and Instagram's own location tag carry the area), and one emoji.
 The photographs are from the 2 October 2026 shoot by Israel De Leon (scripts/lightroom-album.py downloads the album).
 Slide 2 is read from scripts/schedule_data.py when scripts/instagram-kids-any-day.mjs runs, so it matches the timetable of the day it was made.
 
 ==================== CAPTION ====================
-Kids can try a free class any day of the week! 🥋
+Kids can try a free class any day of the week 🥋
 
 Every day has a class a new student can start in, so pick the day that works for your family. No experience needed.
 
-🗓 Monday to Sunday (swipe for the times by age)
-👧👦 Ages 3 to 15 in age-matched groups, youth wrestling up to 17
-👕 Wear a t-shirt and shorts. We lend you the gi.
-💛 Free, with no commitment
+Ages 3 to 15, in age-matched groups (youth wrestling goes up to 17). Swipe for the times by age.
+
+Wear a t-shirt and shorts, and we'll lend you the gi. The first class is free, with no commitment.
 
 We're enrolling kids now. If your child has been curious about jiu-jitsu, this is the easiest way to find out.
 
-👉 Book at labyrinth.vision (link in bio), or call or text (281) 393-7983.
-
-📍 Labyrinth BJJ, Fulshear, TX
+Book at labyrinth.vision (link in bio), or call or text (281) 393-7983.
 
 #KidsBJJ #BJJKids #KidsMartialArts #YouthWrestling #BrazilianJiuJitsu #FulshearTX #KatyTX #RichmondTX #Fulshear #LabyrinthBJJ #FreeTrial
 
 ==================== ONLY IF POSTED BEFORE SATURDAY, OCTOBER 17 ====================
-Add this as the last line before the address. (The booking form on the website still offers that Saturday.)
+Add this as its own short paragraph before the booking line. (The booking form on the website still offers that Saturday.)
 
 Heads up: no classes this Saturday, October 17. Our whole team is at JJWL Houston.
 
 ==================== ALT TEXT ====================
 Picture 1:
-A smiling boy carries a girl across his shoulders while a coach laughs behind them on the mats at Labyrinth BJJ in Fulshear, Texas. Text on the picture: Now enrolling, ages 3 to 15. Free class for kids, any day of the week. Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday. No experience needed, we lend you the gi. Book a free class at labyrinth.vision.
+A smiling boy carries a girl across his shoulders while a coach laughs behind them on the mats at Labyrinth BJJ. Text on the picture: Now enrolling, ages 3 to 15. Free class for kids, any day of the week. Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday. No experience needed, we lend you the gi. Book a free class at labyrinth.vision.
 
 Picture 2:
 Kids and coaches high-five in a line before class. Text on the picture: Pick your day. Kids' free first class. Monday: 4:45 PM Kids BJJ 3 to 6; 5:15 PM Kids BJJ 7 to 12 and Teens BJJ 12 to 15. Tuesday: 4:15 PM Strength and Conditioning, all ages. Wednesday: 4:45 PM Kids BJJ 3 to 6; 5:15 PM Kids BJJ 7 to 12 and Teens BJJ 12 to 15; 7:30 PM Youth Wrestling 7 to 17. Thursday: 4:15 PM Strength and Conditioning, all ages; 7:30 PM Youth Wrestling 7 to 17. Friday: 4:45 PM Kids BJJ 3 to 6; 5:15 PM Kids BJJ Comp 7 to 12 and Teens BJJ Comp 12 to 15. Saturday: 9:00 AM MMA Conditioning, all ages; 10:00 AM Kids Grappling 7 to 12. Sunday: 1:00 PM Youth Wrestling 7 to 17. Book a free class at labyrinth.vision.
 
 Story:
-A teenage coach high-fives two young boys at Labyrinth BJJ in Fulshear, Texas. Text on the picture: Now enrolling, ages 3 to 15. Free class for kids, any day of the week. Monday to Sunday. No experience needed, we lend you the gi. Book a free class at labyrinth.vision.
+A teenage coach high-fives two young boys at Labyrinth BJJ. Text on the picture: Now enrolling, ages 3 to 15. Free class for kids, any day of the week. Monday to Sunday. No experience needed, we lend you the gi. Book a free class at labyrinth.vision.
