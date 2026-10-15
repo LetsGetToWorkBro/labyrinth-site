@@ -44,6 +44,14 @@ have crept back in, that canonicals point at URLs which actually serve a 200,
 that each post carries a booking CTA, and (most importantly) that the contact
 form posts to the CRM and shows success **only** when the CRM confirms it saved.
 
+## Replacing a photo under the same name
+
+Pictures are served with `cache-control: max-age=14400` and the HTML with `max-age=0`, so a photo swapped under the same file name stays the old photo on a
+returning visitor's screen for up to four hours (the live file is right; their copy is not). The pictures that are swapped this way, the four homepage program
+photos (`assets/home-*.jpg` and `.webp`) and the two icons `favicon.svg` and `favicon.png`, carry a content hash in their address (`?v=<hash>`), so a changed
+file is a changed URL. After replacing one of them run `python3 scripts/stamp_assets.py`; `site-test.mjs` (L1r) fails if a stamp is stale or missing.
+A picture that is only ever added under a new name needs nothing.
+
 ## Seasonal themes
 
 The homepage dresses for the holiday, by itself, on the academy's clock (Central). `index.html`'s `<head>` holds a table of windows and sets
