@@ -32,8 +32,9 @@ BELT = '\U0001F94B'
 POSTS = {
     'teens': dict(day=(10, 15), when='Thursday, October 15, 2026', earliest='9:00 AM', picker='youth', about="our teen classes",
                   offer="- The offer: a teen's first class is free, on any day of the week, Monday to Sunday. No experience needed. We lend the gi: a t-shirt and shorts is all a teen needs to wear. No commitment. Teens train in groups of their own."),
-    'women': dict(day=(10, 15), when='Thursday, October 15, 2026', earliest='5:30 PM', picker='adult', about="the women and girls who train with us",
-                  offer="- The offer: a first class is free, with no commitment. No experience needed. Our adult classes run in the gi and out of it (Gi and No-Gi classes), in the mornings, at midday and in the evenings, and girls train in our kids and teen classes."),
+    # planned as the women's post; the people in its pictures are girls, with one adult training partner (see photo-posts-captions.txt)
+    'girls': dict(day=(10, 15), when='Thursday, October 15, 2026', earliest='5:30 PM', picker='both', about="the girls who train with us",
+                  offer="- The offer: a girl's first class is free, on any day of the week, Monday to Sunday. No experience needed. We lend the gi: a t-shirt and shorts is all a girl needs to wear. No commitment. Girls train in our kids and teen classes. Women train in our adult classes, which run in the gi and out of it (Gi and No-Gi classes), in the mornings, at midday and in the evenings, and their first class is free too, with no commitment."),
     'kids': dict(day=(10, 16), when='Friday, October 16, 2026', earliest='12:00 PM', picker='youth', about="our kids' classes",
                  offer="- The offer: a child's first class is free, on any day of the week, Monday to Sunday. No experience needed. We lend the gi: a t-shirt and shorts is all a child needs to wear. No commitment. Kids 3 to 12 train in age-matched groups."),
     'adults': dict(day=(10, 16), when='Friday, October 16, 2026', earliest='6:00 PM', picker='adult', about="our adult classes",

@@ -22,7 +22,7 @@
 //        'stack' two wide frames, one above the other inside the card, the second given as "with": { photo, cx }
 //
 // Run: python3 scripts/lightroom-album.py <share link> <folder>        (once for each album in the plan)
-//      node scripts/instagram-photo-posts.mjs --ray <folder> --israel <folder> [--only teens,women] [--out <folder>]
+//      node scripts/instagram-photo-posts.mjs --ray <folder> --israel <folder> [--only teens,girls] [--out <folder>]
 // (needs playwright-core, resolved from the CRM repo when not installed here)
 import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'

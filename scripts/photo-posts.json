@@ -98,30 +98,26 @@
       ]
     },
     {
-      "id": "women",
+      "id": "girls",
       "album": "ray",
       "when": "Thursday, October 15, 2026, this evening",
-      "kicker": "Women and girls on the mat",
+      "note": "Planned as the women's post (id 'women'). The owner pointed out on October 15 that the people in these pictures are teen girls, with one adult training partner who is in six of the nine pictures, so it is the girls' post: the girls come first, and the adult is shown as a training partner (the adult's role is not said, and nobody is named).",
+      "kicker": "Strong and focused",
       "title": [
-        "Strong &",
-        "Focused"
+        "Girls of",
+        "Labyrinth"
       ],
       "closeKicker": "Your first class is free",
       "slides": [
         {
           "photo": 5,
           "cx": 0.55,
-          "note": "two women in a scramble, the wall's lettering above"
-        },
-        {
-          "photo": 15,
-          "cx": 0.45,
-          "note": "two women, tangled and intent"
+          "note": "two girls in a scramble, the wall's lettering above"
         },
         {
           "photo": 7,
           "cx": 0.45,
-          "note": "a photographer sitting on the mat with a big camera"
+          "note": "a girl with glasses sitting on the mat with a big camera"
         },
         {
           "photo": 12,
@@ -133,32 +129,37 @@
             "cx": 0.5,
             "cy": 0.5
           },
-          "note": "two wide frames, one over the other: the girl in red flipping over a pass, and two women rolling with the gym behind"
+          "note": "two wide frames, one over the other: a girl in red passing a girl in black, and the adult and the girl in red rolling with the gym behind"
         },
         {
           "photo": 19,
           "cx": 0.47,
-          "note": "two training partners, the one in red laughing"
+          "note": "the girl in red smiling, the adult across her"
+        },
+        {
+          "photo": 15,
+          "cx": 0.45,
+          "note": "the adult bent over a girl on the mat, a leg in the air"
         },
         {
           "photo": 21,
           "cx": 0.45,
-          "note": "woman in black over a partner in red"
+          "note": "the adult gripping the legs of the girl in red"
         },
         {
           "photo": 29,
           "cx": 0.4,
-          "note": "intense, tight"
+          "note": "the adult curled over a girl in black and gold, intense, tight"
         },
         {
           "photo": 28,
           "cx": 0.42,
-          "note": "two women, the floor a teal"
+          "note": "the adult and a girl in black and gold, the floor a teal"
         },
         {
           "photo": 47,
           "cx": 0.4,
-          "note": "teen girl standing over a girl in guard"
+          "note": "a girl in black and gold standing over the girl in red in guard"
         }
       ]
     },
@@ -440,7 +441,7 @@
         {
           "photo": 9276,
           "cx": 0.5,
-          "note": "two women rolling, the one in red smiling"
+          "note": "two girls rolling, the one in red smiling"
         },
         {
           "photo": 9255,
@@ -465,12 +466,12 @@
         {
           "photo": 9294,
           "cx": 0.48,
-          "note": "a woman in red over a woman in black, wall lettering"
+          "note": "a girl in red over an adult in black, wall lettering"
         },
         {
           "photo": 9350,
           "cx": 0.45,
-          "note": "a woman in black bent over a woman in red"
+          "note": "an adult in black bent over a girl in red"
         },
         {
           "photo": 9275,
@@ -548,7 +549,7 @@
         {
           "photo": 9385,
           "cx": 0.42,
-          "note": "a woman in red, in profile, smiling"
+          "note": "a girl in red, in profile, smiling"
         },
         {
           "photo": 9382,
@@ -573,7 +574,7 @@
         {
           "photo": 9434,
           "cy": 0.55,
-          "note": "a woman in red sitting, hugging her knees"
+          "note": "a girl in red sitting, hugging her knees"
         },
         {
           "photo": 9401,
@@ -583,7 +584,7 @@
         {
           "photo": 9165,
           "cx": 0.5,
-          "note": "a woman in red smiling on the mat"
+          "note": "a girl in red smiling on the mat"
         }
       ]
     },
