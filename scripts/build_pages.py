@@ -929,6 +929,24 @@ def goal_loader():
     return stamp('<script src="/goal.js" defer data-endpoint="%s"></script>' % EVENT["donations_endpoint"])
 
 
+# ── The photographs the "this month" cards are blended into ───────────────────────────────────────────
+#
+# Every card has a real photograph of the people who train here behind its words (assets/strip-<key>.jpg and .webp, cropped
+# for a card; scripts/strip_photos.py says which picture each one is cut from and how to cut it again). The picture is
+# decoration: it has no alt text and is hidden from screen readers, because the words beside it say everything the card says.
+# style.css (.event-strip__photo) fades it into the card's own colour, so the words always sit on a plain patch of the card
+# and the people show through on the other side. The width and height are the file's own (site-test checks them), so the page
+# does not move when the picture arrives. A card that has closed (hidden) never fetches its picture, because it is lazy.
+STRIP_PHOTOS = {"donate": (1200, 440), "jjwl": (720, 480), "pink": (800, 533), "event": (1000, 584), "hyrox": (900, 594), "today": (640, 480)}
+
+
+def strip_photo(key):
+    w, h = STRIP_PHOTOS[key]
+    # Stamped here as well as with the page, like goal_loader(): the homepage's copy of the strip is spliced in, and nothing stamps a splice.
+    return stamp('<span class="event-strip__photo" aria-hidden="true"><picture><source srcset="/assets/strip-%(k)s.webp" type="image/webp">'
+                 '<img src="/assets/strip-%(k)s.jpg" alt="" width="%(w)d" height="%(h)d" loading="lazy" decoding="async"></picture></span>' % {"k": key, "w": w, "h": h})
+
+
 # ── A one-day card at the top of the "this month" strip ──────────────────────────────────────────────
 #
 # A holiday's hours (a day the booking calendar is closed and the sessions are announced by hand) go in the strip as a
@@ -969,6 +987,7 @@ def today_card():
         '\n        <span class="event-strip__session"><b>%s <i>%s</i></b><span>%s</span></span>' % (what, when, note)
         for what, when, note in c["sessions"])
     return """<a class="event-strip__link event-strip__link--today" href="%(maps)s" target="_blank" rel="noopener noreferrer" data-opens="%(opens)s" data-closes="%(closes)s" data-short="%(chip)s">
+      %(photo)s
       <span class="event-strip__icon">%(compass)s</span>
       <span class="event-strip__text">
         <span class="event-strip__eyebrow"><span class="event-strip__pill">Today</span> %(eyebrow)s</span>
@@ -979,7 +998,7 @@ def today_card():
       </span>
       <span class="event-strip__cta">%(cta)s</span>
     </a>
-    """ % {"maps": EVENT["maps_url"], "opens": c["opens_utc"], "closes": c["closes_utc"], "chip": c["chip"], "compass": _compass(30),
+    """ % {"maps": EVENT["maps_url"], "opens": c["opens_utc"], "closes": c["closes_utc"], "chip": c["chip"], "photo": strip_photo("today"), "compass": _compass(30),
            "eyebrow": c["eyebrow"], "title": c["title"], "sessions": sessions, "address": ADDRESS, "phone": PHONE, "cta": c["cta"]}
 
 
@@ -1004,6 +1023,7 @@ JJWL_CARD = {
     "chip": "JJWL Houston",
     "event": "The Nationals South II",
     "venue": "Fort Bend County EpiCenter, Rosenberg, TX",
+    "place": "Rosenberg, TX",
     "url": "https://www.jjworldleague.com/events/nat-south-ii-gi-youth",
     "cta": "Event page",
 }
@@ -1026,15 +1046,16 @@ def jjwl_card():
     d = datetime.date.fromisoformat(c["date"])
     when = d.strftime("%a, %b ") + str(d.day)
     return """<a class="event-strip__link event-strip__link--jjwl" href="%(url)s" target="_blank" rel="noopener noreferrer" data-closes="%(closes)s" data-short="%(chip)s">
+      %(photo)s
       <span class="event-strip__icon">%(medal)s</span>
       <span class="event-strip__text">
-        <span class="event-strip__eyebrow">%(when)s &middot; %(venue)s</span>
+        <span class="event-strip__eyebrow">%(when)s &middot; %(place)s</span>
         <strong>%(title)s</strong>
-        <span>%(event)s from the Jiu-Jitsu World League, with youth and adult gi and no-gi divisions. See the details on JJWL&rsquo;s event page.</span>
+        <span>%(event)s from the Jiu-Jitsu World League.</span>
       </span>
       <span class="event-strip__cta">%(cta)s</span>
     </a>
-    """ % {"url": c["url"], "closes": c["closes_utc"], "chip": c["chip"], "medal": _medal(30), "when": when, "venue": c["venue"],
+    """ % {"url": c["url"], "closes": c["closes_utc"], "chip": c["chip"], "photo": strip_photo("jjwl"), "medal": _medal(30), "when": when, "place": c["place"],
            "title": c["title"], "event": c["event"], "cta": c["cta"]}
 
 
@@ -1058,43 +1079,47 @@ def event_strip():
       <h2 class="event-strip__title" id="tm-title">THIS MONTH AT LABYRINTH</h2>
     </div>
     @@TODAYCARD@@<a class="event-strip__link event-strip__link--donate" href="@@DONATEPATH@@" data-closes="@@DONATECLOSES@@" data-short="Donate" data-nochip>
+      @@PHOTO-donate@@
       <span class="event-strip__icon">@@RIBBON@@</span>
       <span class="event-strip__text">
-        <span class="event-strip__eyebrow" data-goal-not>Matching gift &middot; Rolling for Ribbons</span>
-        <span class="event-strip__eyebrow" data-goal-only>Goal reached &middot; Rolling for Ribbons</span>
+        <span class="event-strip__eyebrow" data-goal-not>Matching gift<span class="event-strip__more"> &middot; Rolling for Ribbons</span></span>
+        <span class="event-strip__eyebrow" data-goal-only>Goal reached<span class="event-strip__more"> &middot; Rolling for Ribbons</span></span>
         <strong data-goal-not>Triple your gift</strong>
         <strong data-goal-only>We hit @@GOAL@@!</strong>
-        <span data-goal-not>Two anonymous donors will each match every dollar we raise, up to @@GOAL@@. Every gift goes directly to a family affected by breast cancer.</span>
-        <span data-goal-only>Both matches are unlocked: @@TOTAL@@ for a family affected by breast cancer. Every gift from here still goes directly to them.</span>
+        <span data-goal-not>Two anonymous donors match every dollar, up to @@GOAL@@.</span>
+        <span data-goal-only>Both matches unlocked: @@TOTAL@@ for a family affected by breast cancer.</span>
       </span>
       <span class="event-strip__cta" data-goal-not>Donate</span>
       <span class="event-strip__cta" data-goal-only>Keep giving</span>
     </a>
     @@JJWLCARD@@<a class="event-strip__link event-strip__link--pink" href="@@PINK@@" data-closes="@@PINKCLOSES@@" data-short="Pink October">
+      @@PHOTO-pink@@
       <span class="event-strip__icon">@@RIBBON@@</span>
       <span class="event-strip__text">
-        <span class="event-strip__eyebrow">All October &middot; Breast cancer awareness</span>
+        <span class="event-strip__eyebrow">Breast cancer awareness</span>
         <strong>Pink October</strong>
-        <span>Moms train free all month, and every woman gets 50% off her first month. No experience needed.</span>
+        <span>Moms train free. Women get 50% off their first month.</span>
       </span>
       <span class="event-strip__cta">See the offers</span>
     </a>
     <a class="event-strip__link event-strip__link--event" href="@@PATH@@" data-closes="@@CLOSES@@" data-start="@@START@@" data-short="Free self defense seminar">
+      @@PHOTO-event@@
       <span class="event-strip__icon">@@RIBBON@@</span>
       <span class="event-strip__text">
-        <span class="event-strip__eyebrow">@@SHORT@@ &middot; @@RANGE@@ &middot; Free</span>
+        <span class="event-strip__eyebrow">@@SHORT@@ &middot; @@TIME@@<span class="event-strip__more"> &middot; Free</span></span>
         <strong>@@NAME@@</strong>
-        <span>A beginner-friendly self defense seminar for women, led by Coach Scott and Professor Tony. For breast cancer awareness.</span>
+        <span>A beginner-friendly self defense seminar for women.</span>
         <span class="event-strip__badge" hidden></span>
       </span>
       <span class="event-strip__cta">RSVP free</span>
     </a>
     <a class="event-strip__link event-strip__link--hyrox" href="/hyrox-youngstars" data-closes="2027-04-02T05:00:00Z" data-short="Kids HYROX race">
+      @@PHOTO-hyrox@@
       <span class="event-strip__icon">@@BOLT@@</span>
       <span class="event-strip__text">
-        <span class="event-strip__eyebrow">Kids 8&ndash;15 &middot; April 3&ndash;4, 2027</span>
+        <span class="event-strip__eyebrow">Kids 8&ndash;15 &middot; Apr 3&ndash;4, 2027</span>
         <strong>HYROX Youngstars</strong>
-        <span>Train with Labyrinth for the kids&rsquo; fitness race in Houston. Join the interest list.</span>
+        <span>Train for the kids&rsquo; fitness race in Houston.</span>
       </span>
       <span class="event-strip__cta">Join the list</span>
     </a>
@@ -1123,6 +1148,8 @@ def event_strip():
   }
 })()</script>""" \
         .replace("@@TODAYCARD@@", today_card()).replace("@@JJWLCARD@@", jjwl_card()) \
+        .replace("@@PHOTO-donate@@", strip_photo("donate")).replace("@@PHOTO-pink@@", strip_photo("pink")) \
+        .replace("@@PHOTO-event@@", strip_photo("event")).replace("@@PHOTO-hyrox@@", strip_photo("hyrox")) \
         .replace("@@RIBBON@@", ribbon(30)).replace("@@BOLT@@", _hyrox_bolt(30)) \
         .replace("@@DONATEPATH@@", DONATE["path"]).replace("@@DONATECLOSES@@", DONATE["closes_utc"]).replace("@@GOAL@@", _money(EVENT["goal"])).replace("@@TOTAL@@", _money(_match_total())) \
         .replace("@@PINK@@", PINK["path"]).replace("@@PINKCLOSES@@", PINK["closes_utc"]) \

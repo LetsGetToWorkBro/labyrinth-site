@@ -5099,9 +5099,12 @@ body {
 }
 
 
-/* "This month at Labyrinth" (scripts/build_pages.py, event_strip): three cards right
-   under the hero. Pink is the awareness color and volt yellow is the kids' HYROX race;
-   each card keeps its own color so they read as three different things. */
+/* "This month at Labyrinth" (scripts/build_pages.py, event_strip): a card for each thing that is going on, right under the hero.
+   Every card has a real photograph of our people behind its words (.event-strip__photo, one per card), faded into the card's own
+   colour: on a phone and in the wide cards the picture is on the right and fades out toward the words, and in the three small cards on
+   a desktop it is the top of the card and fades down into them. The words are kept short on purpose: what it is, when, one line, and
+   the button. Pink is the awareness colour, green the tournament, volt yellow the kids' HYROX race, and each card keeps its own
+   colour so they read as different things. The card is its own stacking context so the picture (z-index -1) sits behind its words. */
 .event-strip { padding: var(--space-12) 0 var(--space-10); position: relative; z-index: 2; }
 .event-strip[hidden] { display: none; }
 .event-strip .container { display: grid; grid-template-columns: 1fr; gap: var(--space-4); }
@@ -5109,11 +5112,16 @@ body {
 .event-strip__kicker { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); }
 .event-strip__title { margin: 6px 0 0; font-family: var(--font-display); font-size: clamp(30px, 5vw, 48px); line-height: 1; letter-spacing: 0.01em; color: var(--text); }
 .event-strip__link {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--space-4);
-  padding: 22px 22px 20px;
+  justify-content: center;
+  gap: 12px;
+  min-height: 196px;
+  padding: 20px 20px 18px;
   border: 1.5px solid var(--awareness-line);
   background: linear-gradient(160deg, rgba(229, 143, 181, 0.16), rgba(229, 143, 181, 0.04));
   border-radius: 18px;
@@ -5123,19 +5131,36 @@ body {
 }
 .event-strip__link[hidden] { display: none; }
 .event-strip__link:hover, .event-strip__link:focus-visible { border-color: var(--awareness); transform: translateY(-3px); box-shadow: 0 14px 40px rgba(229, 143, 181, 0.18); }
-.event-strip__icon { display: flex; flex-shrink: 0; color: var(--awareness); }
-.event-strip__text { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; font-size: 15px; line-height: 1.5; color: var(--text-muted); }
-.event-strip__text strong { color: var(--text); font-family: var(--font-display); font-size: 26px; line-height: 1.1; letter-spacing: 0.01em; }
-.event-strip__eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--awareness); }
-.event-strip__badge { align-self: flex-start; margin-top: 4px; padding: 5px 12px; border-radius: 999px; background: var(--awareness); color: #1a0b12; font-size: 13px; font-weight: 800; }
+/* The photograph: the right part of the card, fading in from the words (--photo-from is where it starts). --focus is the part of the
+   picture that must stay in view when the card is a different shape from the picture (object-position). */
+.event-strip__photo {
+  position: absolute; top: 0; right: 0; bottom: 0; left: var(--photo-from, 44%); z-index: -1; overflow: hidden; pointer-events: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, rgba(0, 0, 0, 0.7) 34%, #000 68%);
+  mask-image: linear-gradient(90deg, transparent 0, rgba(0, 0, 0, 0.7) 34%, #000 68%);
+}
+.event-strip__photo picture { display: block; width: 100%; height: 100%; }
+.event-strip__photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: var(--focus, 50% 40%); filter: brightness(var(--dim, 0.9)); transition: filter 0.3s; }
+.event-strip__link:hover .event-strip__photo img, .event-strip__link:focus-visible .event-strip__photo img { filter: brightness(1.05) saturate(1.1); }
+/* The badge on the card: a round chip at the top right, over the picture. */
+.event-strip__icon {
+  position: absolute; top: 14px; right: 14px; display: flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; border-radius: 50%; color: var(--awareness);
+  background: rgba(8, 8, 10, 0.62); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+}
+.event-strip__icon svg { width: 22px; height: 22px; }
+.event-strip__text { display: flex; flex-direction: column; gap: 4px; max-width: var(--text-max, 58%); min-width: 0; font-size: 14px; line-height: 1.4; color: rgba(255, 255, 255, 0.86); text-shadow: 0 1px 10px rgba(0, 0, 0, 0.55); }
+.event-strip__text strong { color: #fff; font-family: var(--font-display); font-size: 24px; line-height: 1.08; letter-spacing: 0.01em; }
+.event-strip__eyebrow { font-size: 11.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--awareness); }
+.event-strip__badge { order: -1; align-self: flex-start; margin: 0 0 4px; padding: 4px 11px; border-radius: 999px; background: var(--awareness); color: #1a0b12; font-size: 12.5px; font-weight: 800; text-shadow: none; }
 .event-strip__badge[hidden] { display: none; }
 .event-strip__cta {
-  padding: 11px 20px;
+  margin-top: 2px;
+  padding: 9px 16px;
   border-radius: 10px;
   background: var(--awareness);
   color: #0a0a0a;
   font-weight: 700;
-  font-size: 15px;
+  font-size: 14px;
 }
 .event-strip__cta::after { content: " \2192"; }
 
@@ -5144,9 +5169,34 @@ body {
 .event-strip__link--hyrox:hover, .event-strip__link--hyrox:focus-visible { border-color: #e3ff2e; box-shadow: 0 14px 40px rgba(227, 255, 46, 0.14); }
 .event-strip__link--hyrox .event-strip__icon, .event-strip__link--hyrox .event-strip__eyebrow { color: #e3ff2e; }
 .event-strip__link--hyrox .event-strip__cta { background: #e3ff2e; color: #0a0b08; }
+/* On a phone the words get most of the card and the eyebrow is the short one (the part after the dot goes), so each card is a few lines tall. */
+.event-strip__more { display: inline; }
+@media (max-width: 599px) {
+  .event-strip__more { display: none; }
+  .event-strip__link { min-height: 172px; padding: 18px 18px 16px; gap: 10px; --photo-from: 40%; --text-max: 66%; }
+  .event-strip__text strong { font-size: 22px; }
+  .event-strip__icon { top: 12px; right: 12px; width: 36px; height: 36px; }
+  .event-strip__icon svg { width: 20px; height: 20px; }
+  .event-strip__link--donate { --photo-from: 52%; --text-max: 60%; }
+}
+/* Which part of each picture stays in view. */
+.event-strip__link--pink { --focus: 50% 28%; }
+.event-strip__link--event { --focus: 96% 50%; --dim: 0.78; }
+.event-strip__link--hyrox { --focus: 50% 22%; }
+.event-strip__link--jjwl { --focus: 50% 30%; }
+.event-strip__link--donate { --focus: 60% 30%; }
+.event-strip__link--today { --focus: 50% 50%; }
 @media (min-width: 900px) {
   .event-strip .container { grid-template-columns: repeat(3, 1fr); gap: var(--space-5); }
   .event-strip__head { grid-column: 1 / -1; }
+  /* The three small cards: the picture is the top of the card and fades down into the words. */
+  .event-strip__link--pink, .event-strip__link--event, .event-strip__link--hyrox { min-height: 340px; justify-content: flex-end; padding: 24px 24px 22px; }
+  .event-strip__link--pink .event-strip__text, .event-strip__link--event .event-strip__text, .event-strip__link--hyrox .event-strip__text { max-width: none; }
+  .event-strip__link--pink .event-strip__photo, .event-strip__link--event .event-strip__photo, .event-strip__link--hyrox .event-strip__photo {
+    left: 0;
+    -webkit-mask-image: linear-gradient(180deg, #000 0, #000 26%, rgba(0, 0, 0, 0.45) 48%, transparent 76%);
+    mask-image: linear-gradient(180deg, #000 0, #000 26%, rgba(0, 0, 0, 0.45) 48%, transparent 76%);
+  }
 }
 
 /* The line under the hero buttons that jumps to the block above (filled by its script). */
@@ -5210,30 +5260,36 @@ body {
 .nav__mobile a.nav__donate--mobile[hidden] { display: none; }
 .nav__mobile a.nav__donate--mobile span { flex: 1; min-width: 0; line-height: 1.15; }
 
-/* The card: solid pink where the others are tinted, and the full width of the strip. */
+/* The card: solid pink where the others are tinted, and the full width of the strip. Its words are dark on the pink, so the picture
+   starts further over and fades in later than on the other cards, and the words never sit on it. */
 .event-strip__link--donate {
+  --photo-from: 52%; --text-max: 52%;
   background: linear-gradient(135deg, #ee9bc0, #d9709f); border-color: #f3b0cd; color: #1a0b12;
   box-shadow: 0 14px 44px rgba(229, 143, 181, 0.22);
 }
 .event-strip__link--donate:hover, .event-strip__link--donate:focus-visible { border-color: #fff; box-shadow: 0 16px 50px rgba(229, 143, 181, 0.4); }
-.event-strip__link--donate .event-strip__icon, .event-strip__link--donate .event-strip__eyebrow { color: #4a1230; }
-.event-strip__link--donate .event-strip__text { color: #2a0f1c; }
+.event-strip__link--donate .event-strip__icon { color: #fbd3e3; background: rgba(26, 11, 18, 0.72); }
+.event-strip__link--donate .event-strip__eyebrow { color: #4a1230; }
+.event-strip__link--donate .event-strip__text { color: #2a0f1c; text-shadow: none; }
 .event-strip__link--donate .event-strip__text strong { color: #1a0b12; }
 .event-strip__link--donate .event-strip__cta { background: #1a0b12; color: #fbd3e3; }
 @media (min-width: 900px) {
-  .event-strip__link--donate { grid-column: 1 / -1; flex-direction: row; align-items: center; gap: var(--space-6); padding: 24px 28px; }
+  .event-strip__link--donate { grid-column: 1 / -1; --photo-from: 40%; --text-max: 44%; min-height: 216px; padding: 28px 36px; }
   .event-strip__link--donate .event-strip__text strong { font-size: 32px; }
-  .event-strip__link--donate .event-strip__cta { flex-shrink: 0; padding: 14px 28px; font-size: 17px; }
+  .event-strip__link--donate .event-strip__cta { margin-top: 8px; padding: 12px 24px; font-size: 16px; }
 }
 
 /* The one-day card (scripts/build_pages.py: TODAY_CARD, today_card): a holiday's hours, first in the strip and the full width of
    it for that day. Navy and gold with the day in red, in fixed colors so it reads the same under any seasonal theme. It hides
-   itself outside its day (data-opens, data-closes). Setting TODAY_CARD to None in the script takes the card out; these rules can go with it. */
+   itself outside its day (data-opens, data-closes). Setting TODAY_CARD to None in the script takes the card out; these rules can go with it.
+   It has the most words of any card (the hours are the point), so on a phone the picture is only a faint wash behind them. */
 .event-strip__link--today {
+  --text-max: none;
   border-color: rgba(226, 184, 90, 0.6); background: linear-gradient(135deg, #142b62 0%, #0a1530 72%);
   box-shadow: 0 14px 44px rgba(10, 21, 48, 0.6);
 }
 .event-strip__link--today:hover, .event-strip__link--today:focus-visible { border-color: #e2b85a; box-shadow: 0 16px 50px rgba(226, 184, 90, 0.24); }
+.event-strip__link--today .event-strip__photo { left: 0; opacity: 0.3; -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 70%); mask-image: linear-gradient(180deg, transparent 0, #000 70%); }
 .event-strip__link--today .event-strip__icon, .event-strip__link--today .event-strip__eyebrow { color: #e2b85a; }
 .event-strip__link--today .event-strip__text { color: #c9d1e6; }
 .event-strip__link--today .event-strip__text strong { color: #f4f1e8; }
@@ -5245,7 +5301,9 @@ body {
 .event-strip__session i { display: inline-block; margin-left: 4px; color: #e2b85a; font-style: normal; }
 .event-strip__where { color: #a9b5d2; font-size: 14px; }
 @media (min-width: 900px) {
-  .event-strip__link--today { grid-column: 1 / -1; flex-direction: row; align-items: center; gap: var(--space-6); padding: 24px 28px; }
+  .event-strip__link--today { grid-column: 1 / -1; --photo-from: 66%; --text-max: 62%; flex-direction: row; align-items: center; justify-content: flex-start; gap: var(--space-6); padding: 24px 28px; }
+  .event-strip__link--today .event-strip__photo { left: var(--photo-from); opacity: 1; -webkit-mask-image: linear-gradient(90deg, transparent 0, rgba(0, 0, 0, 0.7) 34%, #000 68%); mask-image: linear-gradient(90deg, transparent 0, rgba(0, 0, 0, 0.7) 34%, #000 68%); }
+  .event-strip__link--today .event-strip__text { flex: 1; }
   .event-strip__link--today .event-strip__text strong { font-size: 32px; }
   .event-strip__link--today .event-strip__cta { flex-shrink: 0; padding: 14px 28px; font-size: 17px; }
   .event-strip__sessions { grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -5259,9 +5317,9 @@ body {
 .event-strip__link--jjwl .event-strip__icon, .event-strip__link--jjwl .event-strip__eyebrow { color: #4ade80; }
 .event-strip__link--jjwl .event-strip__cta { background: #22c55e; color: #04140a; }
 @media (min-width: 900px) {
-  .event-strip__link--jjwl { grid-column: 1 / -1; flex-direction: row; align-items: center; gap: var(--space-6); padding: 24px 28px; }
+  .event-strip__link--jjwl { grid-column: 1 / -1; --photo-from: 40%; --text-max: 44%; min-height: 216px; padding: 28px 36px; }
   .event-strip__link--jjwl .event-strip__text strong { font-size: 32px; }
-  .event-strip__link--jjwl .event-strip__cta { flex-shrink: 0; padding: 14px 28px; font-size: 17px; }
+  .event-strip__link--jjwl .event-strip__cta { margin-top: 8px; padding: 12px 24px; font-size: 16px; }
 }
 
 /* ── Goal reached ─────────────────────────────────────────────────────────────────────────────────────

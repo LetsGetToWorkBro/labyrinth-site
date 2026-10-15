@@ -275,6 +275,28 @@
   font-family: var(--font-body);
 }
 
+/* "This class is today. You can book right up until it starts.": only on a class that is later today. */
+.booking-class-info__soon {
+  margin: 6px 0 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--gold, #C8A24C);
+  font-family: var(--font-body);
+}
+
+/* The class started while the form was open: said above the button, in the form's own place. */
+.booking-form__late {
+  margin: 0 0 4px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(200, 162, 76, 0.5);
+  background: rgba(200, 162, 76, 0.08);
+  color: var(--text);
+  font-size: 13.5px;
+  line-height: 1.5;
+  font-family: var(--font-body);
+}
+
 .booking-class-info__next {
   font-size: 13px;
   color: var(--text-muted);
