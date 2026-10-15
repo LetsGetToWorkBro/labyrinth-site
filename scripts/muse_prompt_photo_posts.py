@@ -323,7 +323,7 @@ def run_mutants(p, text):
         ('the bio-link rule removed', sub('Do not touch the Instagram bio link: leave it exactly as it is. ', '', 1)),
         ('the crop rule removed', sub('Keep them at their own portrait shape (4:5): do not crop them to a square. ', '', 1)),
         ('the all-or-nothing rule removed', sub('- If Instagram or Facebook will not take all %d pictures in one post, do not post anything: tell me how many it will take.\n' % p.n, '', 1)),
-        ('a hashtag dropped from a post text', sub(' #BrazilianJiuJitsu', '', 1)),
+        ('a hashtag dropped from a post text', sub(' #KatyTX', '', 1)),
         ('the town named in an alt text', sub(p.alt_lines[0][1][:20], 'In Fulshear, ' + p.alt_lines[0][1][:20], 1)),
         ('a street suite added to the facts', sub('Labyrinth BJJ, Fulshear, TX. Phone', 'Labyrinth BJJ, Suite #400, Fulshear, TX. Phone', 1)),
         ('the offer line changed', sub('first class is free', 'first class is $20', 1)),
