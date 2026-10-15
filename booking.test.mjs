@@ -1221,6 +1221,118 @@ console.log('\nThe optional "How did you hear about us?" menu:')
   await ctx.close()
 }
 
+console.log('\nA class is bookable right up until it starts, and a form still open when it starts is not wasted:')
+{
+  // Thursday, October 15, 2026, a week with no holiday in it. The No-Gi class is at 6:30 PM Central (23:30 UTC, CDT).
+  const T = (hh, mm) => new Date(Date.UTC(2026, 9, 15, hh + 5, mm))
+  /** The page on a clock the test holds, the CRM stubbed, and every body it was sent. */
+  async function openAt(when, { viewport } = {}) {
+    const ctx = await browser.newContext(viewport ? { viewport } : {})
+    const bodies = []
+    await ctx.route('**', route => route.request().url().startsWith(BASE) ? route.continue() : route.abort())
+    await ctx.route('**/functions/v1/book-trial', async route => {
+      bodies.push(JSON.parse(route.request().postData() ?? '{}'))
+      await route.fulfill({ status: 200, contentType: 'application/json', body: '{"ok":true}' })
+    })
+    const page = await ctx.newPage()
+    await page.clock.setFixedTime(when)
+    await page.goto(BASE + '/', { waitUntil: 'domcontentloaded' })
+    await page.waitForTimeout(400)
+    return { page, ctx, bodies }
+  }
+  const fill = async page => {
+    await page.fill('#bookingName', 'Test Person')
+    await page.fill('#bookingEmail', 'test@example.com')
+    await page.fill('#bookingPhone', '2815550000')
+  }
+  const calendar = page => page.evaluate(() => ({
+    checked: document.querySelector('input[name="bookingDate"]:checked')?.id ?? '',
+    today: document.querySelector('.booking-class-info__soon')?.textContent ?? '',
+    late: document.querySelector('.booking-form__late')?.textContent ?? '',
+  }))
+
+  check('the CRM is given the same fifteen minutes as the form (LATE_GRACE_MINUTES in book-trial)',
+    await (await openAt(T(17, 0))).page.evaluate(() => window.LabyrinthBooking.lateGraceMins), 15)
+
+  // 6:25 PM: the form opens on today, and says that it may be booked until the class starts.
+  {
+    const { page, ctx, bodies } = await openAt(T(18, 25))
+    await page.evaluate(() => window.LabyrinthBooking.openForm('Adult BJJ', 'No-Gi', 'Thu', '6:30 PM'))
+    await page.waitForTimeout(250)
+    const c = await calendar(page)
+    check('at 6:25 the class at 6:30 is offered for today', c.checked, 'bookingDate-2026-10-15')
+    check('and the form says it can be booked right up until it starts', c.today, 'This class is today. You can book right up until it starts.')
+
+    // Three minutes after the start: they are on the way, so it is booked as asked.
+    await page.clock.setFixedTime(T(18, 33))
+    await fill(page)
+    await page.click('#bookingSubmitBtn')
+    await page.waitForTimeout(400)
+    check('a form still open three minutes after the start books the class they chose, for the time it started',
+      [bodies.length, bodies[0]?.trialAt], [1, '2026-10-15T18:30:00-05:00'])
+    check('and says they are booked', await page.evaluate(() => document.querySelector('.booking-success h3')?.textContent), 'You’re Booked!')
+    await ctx.close()
+  }
+
+  // Twenty minutes after: nothing is sent, nobody is told they are booked, and the next one is ready.
+  {
+    const { page, ctx, bodies } = await openAt(T(18, 25))
+    await page.evaluate(() => window.LabyrinthBooking.openForm('Adult BJJ', 'No-Gi', 'Thu', '6:30 PM'))
+    await page.waitForTimeout(250)
+    await fill(page)
+    await page.clock.setFixedTime(T(18, 50))
+    await page.click('#bookingSubmitBtn')
+    await page.waitForTimeout(400)
+    const c = await calendar(page)
+    check('twenty minutes after the start nothing is sent', bodies.length, 0)
+    check('the form says the class has started and picks next Thursday',
+      [/already started/.test(c.late), /Thursday, October 22, 2026/.test(c.late), c.checked], [true, true, 'bookingDate-2026-10-22'])
+    check('and is not a success page: the form is still there, with what was typed',
+      await page.evaluate(() => [!!document.querySelector('.booking-success'), document.getElementById('bookingName')?.value, document.querySelector('.booking-form__late')?.getAttribute('role')]), [false, 'Test Person', 'alert'])
+    await page.click('#bookingSubmitBtn')
+    await page.waitForTimeout(400)
+    check('one more tap books next Thursday', [bodies.length, bodies[0]?.trialAt], [1, '2026-10-22T18:30:00-05:00'])
+    await ctx.close()
+  }
+
+  // A later date is never late, and a class that is not today does not claim to be.
+  {
+    const { page, ctx, bodies } = await openAt(T(18, 25))
+    await page.evaluate(() => window.LabyrinthBooking.openForm('Adult BJJ', 'No-Gi', 'Fri', '11:00 AM'))
+    await page.waitForTimeout(250)
+    check('a class that is not today does not say it is', (await calendar(page)).today, '')
+    await page.clock.setFixedTime(T(18, 50))
+    await fill(page)
+    await page.click('#bookingSubmitBtn')
+    await page.waitForTimeout(400)
+    check('and a booking for another day goes whatever the time', [bodies.length, bodies[0]?.trialAt], [1, '2026-10-16T11:00:00-05:00'])
+    await ctx.close()
+  }
+
+  // Every class on both lists, on the academy's own clock: offered today up to its start, next week from the minute after.
+  {
+    const { page, ctx } = await openAt(T(12, 0))
+    const classes = await page.evaluate(() => [...window.LabyrinthBooking.adultClasses, ...window.LabyrinthBooking.kidsTrialClasses].map(c => ({ name: c.name, day: c.day, time: c.time })))
+    const offset = { Mon: 19, Tue: 20, Wed: 21, Thu: 22, Fri: 23, Sat: 24, Sun: 25 }   // October 19 to 25, 2026: no holiday
+    const wrong = []
+    for (const c of classes) {
+      const m = /^(\d{1,2}):(\d{2}) ([AP])M$/.exec(c.time)
+      const hh = (Number(m[1]) % 12) + (m[3] === 'P' ? 12 : 0), mm = Number(m[2])
+      for (const [delta, want] of [[-1, 0], [0, 0], [1, 7]]) {
+        // The class's own start (CDT, UTC-5) plus the delta in minutes, on its day that week.
+        await page.clock.setFixedTime(new Date(Date.UTC(2026, 9, offset[c.day], hh + 5, mm + delta)))
+        const days = await page.evaluate(([day, time]) => {
+          const d = window.LabyrinthBooking.nextDate(day, time), n = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }))
+          return Math.round((new Date(d.getFullYear(), d.getMonth(), d.getDate()) - new Date(n.getFullYear(), n.getMonth(), n.getDate())) / 864e5)
+        }, [c.day, c.time])
+        if (days !== want) wrong.push(`${c.name} ${c.day} ${c.time} at ${delta >= 0 ? '+' : ''}${delta} min: offered in ${days} days, wanted ${want}`)
+      }
+    }
+    check(`all ${classes.length} classes (adult, kids, teens, wrestling, strength, MMA, open mat) are offered today until the minute they start, and next week after it`, wrong, [])
+    await ctx.close()
+  }
+}
+
 await browser.close()
 server.close()
 console.log(failed ? `\n${failed} check(s) failed.` : '\nEvery check passed.')

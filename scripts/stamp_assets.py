@@ -23,8 +23,9 @@ name is the OLD photograph on a returning visitor's screen until their copy
 expires: that is how the new homepage program photos did not show up on the
 owner's phone although the live files were correct byte for byte. So the pictures
 that get replaced in place are stamped too: the four homepage program photographs
-(assets/home-*.jpg and .webp, in <img src> and <source srcset>) and the two icons
-the head names (favicon.svg and favicon.png), which browsers hold on to even
+(assets/home-*.jpg and .webp, in <img src> and <source srcset>), the photographs behind
+the "this month" cards (assets/strip-*, cut again whenever the crop changes) and the two
+icons the head names (favicon.svg and favicon.png), which browsers hold on to even
 longer. Every other picture has a name that belongs to it alone, so it is left
 alone; add a picture here only if it is ever swapped under the same name.
 
@@ -49,8 +50,8 @@ ASSETS = ["base.css", "style.css", "season.css", "programs.css", "booking.css", 
 # Every seasonal theme's two files (season-kit.*, season-columbus.*, season-christmas.* ...) are stamped too, without being listed one by one:
 # index.html's <head> names them in quotes inside a script, which the next pattern finds.
 SEASON_GLOBS = ("season-*.css", "season-*.js")
-# The homepage program photographs, which are replaced in place when the photos change (see the paragraph about pictures above).
-IMAGE_GLOBS = ("assets/home-*.jpg", "assets/home-*.webp")
+# The homepage program photographs and the pictures behind the "this month" cards, which are replaced in place when the photos change (see the paragraph about pictures above).
+IMAGE_GLOBS = ("assets/home-*.jpg", "assets/home-*.webp", "assets/strip-*.jpg", "assets/strip-*.webp")
 
 # href="/style.css"  href="./style.css"  href="../booking.css"  href="blog.css"  href="/favicon.svg"  src="./assets/home-adult-gi.jpg"  srcset="./assets/home-adult-gi.webp"
 # with or without a version already on it. Pictures that are not listed above match too and are put back exactly as they were (see sub() below).

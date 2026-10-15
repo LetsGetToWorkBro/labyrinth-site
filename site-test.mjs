@@ -2166,8 +2166,8 @@ check('L6 tells them to call', ((await page.textContent('#bookingInline .booking
   const at = async (iso, page = jp, q = '') => { await page.clock.setFixedTime(new Date(iso)); await page.goto(URLH + q, { waitUntil: 'load' }); return page.evaluate(read) }
 
   const a = await at('2026-10-14T15:00:00Z')
-  check('L2j on October 14 the strip has a card for the Jiu-Jitsu World League event: JJWL Houston, the Nationals South II, Saturday, October 17, in the Fort Bend County EpiCenter in Rosenberg',
-    a.shown && a.eyebrow === 'Sat, Oct 17 · Fort Bend County EpiCenter, Rosenberg, TX' && a.title === 'JJWL Houston' && /The Nationals South II/.test(a.all) && /Jiu-Jitsu World League/.test(a.all) && /youth and adult gi and no-gi/.test(a.all), JSON.stringify(a))
+  check('L2j on October 14 the strip has a card for the Jiu-Jitsu World League event: JJWL Houston, the Nationals South II, Saturday, October 17, in Rosenberg (the card is short: the day, the town, the name; the venue is on JJWL\'s page)',
+    a.shown && a.eyebrow === 'Sat, Oct 17 · Rosenberg, TX' && a.title === 'JJWL Houston' && /The Nationals South II/.test(a.all) && /Jiu-Jitsu World League/.test(a.all), JSON.stringify(a))
   check('L2j and October 17, 2026 is a Saturday, as the card says', new Date('2026-10-17T12:00:00Z').getUTCDay() === 6 && /^Sat, Oct 17 /.test(a.eyebrow))
   const u = new globalThis.URL(a.href)
   check('L2j it goes to JJWL\'s own page for the event, in a new tab that is told nothing about this site', a.href === JJWL && u.protocol === 'https:' && u.hostname === 'www.jjworldleague.com' && u.pathname === '/events/nat-south-ii-gi-youth'
@@ -2213,6 +2213,97 @@ check('L6 tells them to call', ((await page.textContent('#bookingInline .booking
     check(`L2j on ${label} the card fits: inside the screen and in reading order, top to bottom, with nothing sticking out`, await pp.evaluate(fits))
     await pc.close()
   }
+}
+
+// ── L2k: the "this month" cards: a real photograph blended into each one, and few words ──
+// Every card has a photograph of our people behind its words (assets/strip-<card>.jpg and .webp, cut by scripts/strip_photos.py, faded into the card by .event-strip__photo). It is decoration, so
+// it has no alt text and is hidden from screen readers; it is the size the page says it is, and it is named with the hash of its file. The cards keep their words short (what it is, when, one line
+// and the button: the owner found the strip was too much text). And the words are readable over the picture, which is measured on the pixels, not assumed: swap a brighter photograph in behind
+// white words and the page would still "work", it would just stop being legible, and nothing else here would say so.
+{
+  const URLH = 'http://localhost:4620/'
+  const sha = f => createHash('sha256').update(readFileSync(join(ROOT, f))).digest('hex').slice(0, 8)
+  const home = readFileSync(join(ROOT, 'index.html'), 'utf8')
+  const refs = [...home.matchAll(/(?:src|srcset)="\/(assets\/strip-[a-z]+\.(?:jpg|webp))(\?v=[0-9a-f]+)?"/g)]
+  check('L2k the six card pictures are each named twice (a .webp and a .jpg), with the hash of the very file',
+    refs.length === 12 && refs.every(m => m[2] === '?v=' + sha(m[1])), refs.filter(m => m[2] !== '?v=' + sha(m[1])).map(m => m[1] + (m[2] ?? ' (no version)')).join(', ') || `found ${refs.length}`)
+
+  const scratch = await (await browser.newContext()).newPage()
+  const lumOf = ([r, g, b]) => { const f = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4 }; return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b) }
+  const contrast = (a, b) => (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)
+  // For each card: hide its words, chip and button, photograph what is left (the card's colour and its picture), and read the pixels under every word.
+  const measure = async (pg, card) => {
+    const words = await card.evaluate(a => {
+      const r0 = a.getBoundingClientRect(), out = []
+      for (const e of a.querySelectorAll('.event-strip__text *')) {
+        if (e.closest('.event-strip__badge, .event-strip__pill') || !Array.from(e.childNodes).some(n => n.nodeType === 3 && n.textContent.trim())) continue
+        const r = e.getBoundingClientRect()
+        if (r.width < 1 || r.height < 1) continue
+        out.push({ text: e.textContent.trim().slice(0, 40), color: getComputedStyle(e).color, x: Math.round(r.left - r0.left), y: Math.round(r.top - r0.top), w: Math.round(r.width), h: Math.round(r.height) })
+      }
+      for (const e of a.querySelectorAll('.event-strip__text, .event-strip__cta, .event-strip__icon')) e.style.visibility = 'hidden'
+      return out
+    })
+    const png = (await card.screenshot({ type: 'png' })).toString('base64')
+    await card.evaluate(a => { for (const e of a.querySelectorAll('.event-strip__text, .event-strip__cta, .event-strip__icon')) e.style.visibility = '' })
+    const stats = await scratch.evaluate(async ({ b64, words }) => {
+      const img = new Image(); img.src = 'data:image/png;base64,' + b64; await img.decode()
+      const c = document.createElement('canvas'); c.width = img.width; c.height = img.height
+      const g = c.getContext('2d'); g.drawImage(img, 0, 0)
+      const f = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4 }
+      return words.map(w => {
+        const x = Math.max(0, w.x), y = Math.max(0, w.y), ww = Math.min(w.w, img.width - x), hh = Math.min(w.h, img.height - y)
+        const d = g.getImageData(x, y, ww, hh).data, ls = []
+        for (let i = 0; i < d.length; i += 4) ls.push(0.2126 * f(d[i]) + 0.7152 * f(d[i + 1]) + 0.0722 * f(d[i + 2]))
+        ls.sort((p, q) => p - q)
+        return { lo: ls[Math.floor(ls.length * 0.05)], hi: ls[Math.floor(ls.length * 0.95)] }
+      })
+    }, { b64: png, words })
+    return words.map((w, i) => {
+      const m = w.color.match(/[\d.]+/g).map(Number), alpha = m.length > 3 ? m[3] : 1
+      const mix = bg => alpha * lumOf(m.slice(0, 3)) + (1 - alpha) * bg   // a good-enough blend for words that are 86% white
+      // light words are read against the brightest pixels under them, dark words against the darkest
+      const light = lumOf(m.slice(0, 3)) > 0.4
+      return { text: w.text, ratio: Math.round((light ? contrast(mix(stats[i].hi), stats[i].hi) : contrast(mix(stats[i].lo), stats[i].lo)) * 100) / 100 }
+    })
+  }
+  const FIXED = () => { for (const e of document.querySelectorAll('body *')) { const c = getComputedStyle(e); if (c.position === 'fixed' || (c.position === 'sticky' && e.closest('nav,header'))) e.style.visibility = 'hidden' } }
+
+  for (const [label, w, h, iso] of [['a desktop', 1280, 900, '2026-10-14T15:00:00Z'], ['a tablet', 820, 1000, '2026-10-14T15:00:00Z'], ['a phone', 390, 844, '2026-10-14T15:00:00Z'], ['a phone on Columbus Day', 390, 844, '2026-10-12T15:00:00Z'], ['a desktop on Columbus Day', 1280, 900, '2026-10-12T15:00:00Z']]) {
+    const ctx = await browser.newContext({ viewport: { width: w, height: h } })
+    const pg = await ctx.newPage()
+    await pg.clock.setFixedTime(new Date(iso))
+    await pg.goto(URLH, { waitUntil: 'load' })
+    await pg.locator('#eventStrip').scrollIntoViewIfNeeded()
+    await pg.waitForFunction(() => [...document.querySelectorAll('#eventStrip a.event-strip__link:not([hidden]) img')].every(i => i.complete && i.naturalWidth > 0), null, { timeout: 8000 }).catch(() => {})
+    await pg.evaluate(FIXED)
+    const info = await pg.evaluate(() => [...document.querySelectorAll('#eventStrip a.event-strip__link')].filter(a => !a.hidden).map(a => {
+      const r = a.getBoundingClientRect(), ph = a.querySelector(':scope > .event-strip__photo'), im = ph && ph.querySelector('picture > img'), pr = ph && ph.getBoundingClientRect()
+      const cs = ph && getComputedStyle(ph), say = e => (e.innerText || '').replace(/\s+/g, ' ').trim()
+      const own = [...a.querySelectorAll('.event-strip__text > span:not(.event-strip__eyebrow):not(.event-strip__badge)')].filter(e => getComputedStyle(e).display !== 'none')
+      return {
+        kind: a.className.replace('event-strip__link ', '').replace('event-strip__link--', ''), count: a.querySelectorAll(':scope > .event-strip__photo').length,
+        hidden: !!ph && ph.getAttribute('aria-hidden') === 'true', decorative: !!im && im.getAttribute('alt') === '' && !!ph.querySelector('picture > source[type="image/webp"]'),
+        sized: !!im && im.complete && im.naturalWidth === +im.getAttribute('width') && im.naturalHeight === +im.getAttribute('height'), size: im ? [im.naturalWidth, im.naturalHeight, im.getAttribute('width'), im.getAttribute('height')].join('/') : '',
+        inside: !!pr && pr.left >= r.left - 0.5 && pr.right <= r.right + 0.5 && pr.top >= r.top - 0.5 && pr.bottom <= r.bottom + 0.5 && pr.width >= r.width * 0.3, blended: !!cs && (cs.maskImage !== 'none' || cs.webkitMaskImage !== 'none'),
+        shown: !!ph && cs.display !== 'none' && +cs.opacity > 0 && pr.width > 0, words: say(a).length, line: own.map(say).join(' ').length, height: Math.round(r.height), spans: own.length,
+      }
+    }))
+    check(`L2k on ${label} every card has a real photograph behind its words: decorative (no alt text, hidden from screen readers), the size the page says, inside the card and faded into it`,
+      info.length >= 5 && info.every(c => c.count === 1 && c.hidden && c.decorative && c.sized && c.inside && c.blended && c.shown), JSON.stringify(info.filter(c => !(c.count === 1 && c.hidden && c.decorative && c.sized && c.inside && c.blended && c.shown))))
+    const small = info.filter(c => c.kind !== 'today')
+    check(`L2k on ${label} the cards say little: a short line each (at most 60 characters) and at most 140 characters of words in all${w < 600 ? ', and none is taller than a phone screen can take three of' : ''}`,
+      small.every(c => c.spans === 1 && c.line > 0 && c.line <= 60 && c.words <= 140 && (w >= 600 || c.height <= 270)), JSON.stringify(small))
+    const cards = pg.locator('#eventStrip a.event-strip__link:not([hidden])')
+    const n = await cards.count(), bad = []
+    for (let i = 0; i < n; i++) {
+      const res = await measure(pg, cards.nth(i)), kind = info[i].kind
+      for (const r of res) if (r.ratio < 4.5) bad.push(`${kind}: "${r.text}" ${r.ratio}`)
+    }
+    check(`L2k on ${label} the words on every card are readable over its photograph (at least 4.5 to 1 against the brightest part of the picture under light words, the darkest under dark ones)`, bad.length === 0, bad.join('\n    '))
+    await ctx.close()
+  }
+  await scratch.context().close()
 }
 
 // ── L2s: the seasons, window by window ──

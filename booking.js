@@ -158,6 +158,18 @@
      start time has passed, the same class next week is offered instead. */
   var SAME_DAY_CUTOFF_MINS = 0;
 
+  /* How long after a class starts the form will still book it.
+
+     A form is filled in while the clock runs. Somebody who opened it at 6:25
+     for the 6:30 class and presses Confirm at 6:33 is on the way, and the front
+     desk takes walk-ins, so the booking goes and the CRM keeps the trial (its
+     book-trial function takes the same fifteen minutes: LATE_GRACE_MINUTES
+     there). Before this the CRM dropped the class time from a booking that
+     arrived after the start, recorded an enquiry instead, and the visitor was
+     still told "You're Booked!". Past the fifteen minutes the form says the
+     class has started and moves to the next one (classHasStarted below). */
+  var LATE_GRACE_MINS = 15;
+
   /* Now, on the academy's clock rather than the visitor's.
 
      Every decision below is about Fulshear's day and Fulshear's hour. Somebody
@@ -166,6 +178,20 @@
   function centralNow() {
     var parsed = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Chicago' }));
     return isNaN(parsed) ? new Date() : parsed;
+  }
+
+  /* The instant a class starts: its date and time on the academy's wall clock, with Central's offset for that date. */
+  function classStartMs(dateStr, timeStr) {
+    var iso = toCentralISO(dateStr, timeStr);
+    var ms = iso ? Date.parse(iso) : NaN;
+    return isNaN(ms) ? null : ms;
+  }
+
+  /* Whether it is too late to book this class on this date: more than LATE_GRACE_MINS past its start. Two instants, so it does not
+     matter where the visitor's own clock thinks it is. */
+  function tooLateToBook(dateStr, timeStr) {
+    var ms = classStartMs(dateStr, timeStr);
+    return ms !== null && Date.now() - ms > LATE_GRACE_MINS * 60000;
   }
 
   function minutesOfDay(timeStr) {
@@ -882,6 +908,8 @@
       if (typeLabel) html += '<span class="booking-class-badge__type booking-class-badge__type--' + typeClass + '">' + typeLabel + '</span>';
       html += '</div>';
       html += '<div class="booking-class-info__datetime">' + dayFull + ' at ' + timeStr + '</div>';
+      // Today's class is offered until it starts, and the page says so: nobody should have to wonder whether it is too late to ask.
+      if (ymd(dates[0]) === ymd(centralNow())) html += '<p class="booking-class-info__soon">This class is today. You can book right up until it starts.</p>';
       html += '</div>';
 
       /*
@@ -1001,6 +1029,28 @@
       }
 
       var form = $('Form');
+
+      /* The class started more than LATE_GRACE_MINS ago while the form was open. The next one is chosen, the calendar shows it, and
+         nothing is sent: what was typed stays, so it is one tap to confirm the new day (or a call, if they are coming in now). */
+      var lateEl = null;
+      function classHasStarted() {
+        firstDate = upcomingDayDates(dayAbbr, timeStr, 1)[0] || firstDate;
+        lastDate = new Date(firstDate);
+        lastDate.setDate(firstDate.getDate() + BOOK_AHEAD_DAYS);
+        selected = ymd(firstDate);
+        view = new Date(firstDate.getFullYear(), firstDate.getMonth(), 1);
+        drawCal();
+        if (!lateEl) {
+          lateEl = document.createElement('p');
+          lateEl.className = 'booking-form__late';
+          lateEl.setAttribute('role', 'alert');
+          form.insertBefore(lateEl, $('SubmitBtn'));
+        }
+        lateEl.textContent = 'That class has already started, so the next ' + dayFull + ' is picked: ' + formatDate(firstDate)
+          + '. Press Confirm Booking again to book it, or call or text (281) 393-7983 if you are coming in now.';
+        if (lateEl.scrollIntoView) lateEl.scrollIntoView({ block: 'nearest' });
+      }
+
       form.addEventListener('submit', function (e) {
         e.preventDefault();
         var nameVal = $('Name').value.trim();
@@ -1017,6 +1067,9 @@
         else { $('Phone').classList.remove('is-error'); }
 
         if (!valid) return;
+
+        // The class may have started while this form was being filled in (see LATE_GRACE_MINS): say so rather than book a class that has gone.
+        if (tooLateToBook(chosenDate(), timeStr)) { classHasStarted(); return; }
 
         // The menu is optional extra; if it were ever missing, the booking still goes.
         var heardEl = $('Heard');
@@ -1207,6 +1260,10 @@
     // constant: a regex on SAME_DAY_CUTOFF_MINS would pass with the maths
     // broken.
     nextDate: getNextDayDate,
+    // How long after a class starts a booking is still sent, and the instant a class starts. Exposed so a test can run the late-submit rule
+    // and tie the number to the CRM's (LATE_GRACE_MINUTES in supabase/functions/book-trial).
+    lateGraceMins: LATE_GRACE_MINS,
+    classStart: classStartMs,
     // The dates the form offers. Exposed for the same reason as nextDate: the
     // rule worth pinning is that they are the right weekday, in order, a week
     // apart — which a test can only see by running the arithmetic.
