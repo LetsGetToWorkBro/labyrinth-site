@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Stamp the shared CSS and JS references with a content hash.
+"""Stamp the shared CSS and JS references, and the few pictures that are replaced in place, with a content hash.
 
 The stylesheets are not fingerprinted: every page asks for /style.css, and that
 URL is identical before and after a deploy. Cloudflare Pages serves them with
@@ -18,6 +18,16 @@ URL for a new file, and the HTML that names it is revalidated on every visit,
 so the pair can never be out of step. Cloudflare caches per full URL including
 the query string, so the long max-age keeps working and is now correct.
 
+The same four hours apply to pictures. A photograph replaced under the same file
+name is the OLD photograph on a returning visitor's screen until their copy
+expires: that is how the new homepage program photos did not show up on the
+owner's phone although the live files were correct byte for byte. So the pictures
+that get replaced in place are stamped too: the four homepage program photographs
+(assets/home-*.jpg and .webp, in <img src> and <source srcset>) and the two icons
+the head names (favicon.svg and favicon.png), which browsers hold on to even
+longer. Every other picture has a name that belongs to it alone, so it is left
+alone; add a picture here only if it is ever swapped under the same name.
+
 Idempotent: run it as often as you like. It rewrites whatever version is there,
 including none, to the current one. Generators call stamp() on their output so
 their committed pages match a fresh build; running this file stamps every
@@ -34,16 +44,19 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 # The files whose URLs get a version. Anything not listed here is left alone:
 # third-party URLs, the font CDN, and per-page assets that are already unique.
 ASSETS = ["base.css", "style.css", "season.css", "programs.css", "booking.css", "blog/blog.css",
-          "app.js", "booking.js", "schedule.js", "rsvp.js", "fund.js", "goal.js", "hyrox.js"]
+          "app.js", "booking.js", "schedule.js", "rsvp.js", "fund.js", "goal.js", "hyrox.js",
+          "favicon.svg", "favicon.png"]
 # Every seasonal theme's two files (season-kit.*, season-columbus.*, season-christmas.* ...) are stamped too, without being listed one by one:
 # index.html's <head> names them in quotes inside a script, which the next pattern finds.
 SEASON_GLOBS = ("season-*.css", "season-*.js")
+# The homepage program photographs, which are replaced in place when the photos change (see the paragraph about pictures above).
+IMAGE_GLOBS = ("assets/home-*.jpg", "assets/home-*.webp")
 
-# href="/style.css"  href="./style.css"  href="../booking.css"  href="blog.css"
-# with or without a version already on it.
+# href="/style.css"  href="./style.css"  href="../booking.css"  href="blog.css"  href="/favicon.svg"  src="./assets/home-adult-gi.jpg"  srcset="./assets/home-adult-gi.webp"
+# with or without a version already on it. Pictures that are not listed above match too and are put back exactly as they were (see sub() below).
 _REF = re.compile(
-    r'(?P<attr>\b(?:href|src)=")'
-    r'(?P<path>(?:\.{1,2}/)*/?[A-Za-z0-9_\-./]*?(?P<name>[A-Za-z0-9_\-]+\.(?:css|js)))'
+    r'(?P<attr>\b(?:href|srcset|src)=")'
+    r'(?P<path>(?:\.{1,2}/)*/?[A-Za-z0-9_\-./]*?(?P<name>[A-Za-z0-9_\-]+\.(?:css|js|jpg|webp|svg|png)))'
     r'(?:\?v=[0-9a-f]+)?'
     r'(?P<close>")'
 )
@@ -62,6 +75,8 @@ def versions():
     names = list(ASSETS)
     for pat in SEASON_GLOBS:
         names.extend(sorted(p.name for p in ROOT.glob(pat)))
+    for pat in IMAGE_GLOBS:
+        names.extend(sorted(str(p.relative_to(ROOT)) for p in ROOT.glob(pat)))
     for rel in names:
         p = ROOT / rel
         if not p.exists():

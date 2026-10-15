@@ -4,6 +4,7 @@ import { readFileSync, existsSync, readdirSync } from 'node:fs'
 import { extname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { execFileSync } from 'node:child_process'
+import { createHash } from 'node:crypto'
 import { PACKS, checkPack } from './season-theme-checks.mjs'
 
 // The repository itself, wherever it happens to be checked out. This was a
@@ -912,6 +913,22 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
     check(`L1r ${f} versions every stylesheet it loads`,
       refs.length > 0 && refs.every(r => /\?v=[0-9a-f]{8}"/.test(r)),
       refs.filter(r => !/\?v=/.test(r)).join(', ') || `found ${refs.length}`)
+  }
+
+  // Pictures are cached for the same four hours, so the ones that are replaced under the same name are stamped too: this is how the new homepage photographs
+  // did not show up on the owner's phone although the live files were right. Each reference must carry the hash of the very file it names.
+  const sha = f => createHash('sha256').update(readFileSync(join(ROOT, f))).digest('hex').slice(0, 8)
+  const home = readFileSync(join(ROOT, 'index.html'), 'utf8')
+  const photos = [...home.matchAll(/(?:src|srcset)="\.\/(assets\/home-[a-z-]+\.(?:jpg|webp))(\?v=[0-9a-f]+)?"/g)]
+  check('L1r the four homepage program photographs are named eight times (a .webp and a .jpg each), each with the hash of its file',
+    photos.length === 8 && photos.every(m => m[2] === '?v=' + sha(m[1])),
+    photos.filter(m => m[2] !== '?v=' + sha(m[1])).map(m => m[1] + (m[2] ?? ' (no version)')).join(', ') || `found ${photos.length}`)
+  for (const f of ['index.html', 'programs/kids-bjj-fulshear.html', 'areas/bjj-richmond.html', 'blog/best-bjj-gym-fulshear-tx.html']) {
+    const html = readFileSync(join(ROOT, f), 'utf8')
+    const icons = [...html.matchAll(/<link rel="icon"[^>]*href="[^"]*?(favicon\.(?:svg|png))(\?v=[0-9a-f]+)?"/g)]
+    check(`L1r ${f} names its icons with the hash of the file`,
+      icons.length > 0 && icons.every(m => m[2] === '?v=' + sha(m[1])),
+      icons.filter(m => m[2] !== '?v=' + sha(m[1])).map(m => m[1] + (m[2] ?? ' (no version)')).join(', ') || 'no icon link')
   }
 }
 
