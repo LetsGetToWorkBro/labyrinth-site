@@ -4,9 +4,10 @@ POST (a two-picture carousel, in this order)
   1. assets/social/kids-any-day-feed-1.png   the promise
   2. assets/social/kids-any-day-feed-2.png   "Pick your day": the classes by day and age, with the advanced No-Gi classes marked
 STORY
-  assets/social/kids-any-day-story.png       add a link sticker to https://labyrinth.vision
+  assets/social/kids-any-day-story.png       add a link sticker to https://labyrinth.vision/#book (text BOOK A FREE CLASS)
 
-No street address or town on the pictures or in the caption (the hashtags and Instagram's own location tag carry the area), and one emoji.
+No street address or town on the pictures or in the caption (the hashtags carry the area), and one emoji.
+No "link in bio" anywhere: the bio link points at the donation page during the drive, so the feed post says labyrinth.vision and the story carries a link sticker.
 The photographs are from the 2 October 2026 shoot by Israel De Leon (scripts/lightroom-album.py downloads the album).
 Slide 2 is read from scripts/schedule_data.py when scripts/instagram-kids-any-day.mjs runs (the classes a new child can start in, and the advanced ones), so it matches the timetable of the day it was made.
 
@@ -23,7 +24,7 @@ Wear a t-shirt and shorts, and we'll lend you the gi. The first class is free, w
 
 We're enrolling kids now. If your child has been curious about jiu-jitsu, this is the easiest way to find out.
 
-Book at labyrinth.vision (link in bio), or call or text (281) 393-7983.
+Book at labyrinth.vision, or call or text (281) 393-7983.
 
 #KidsBJJ #BJJKids #KidsMartialArts #YouthWrestling #BrazilianJiuJitsu #FulshearTX #KatyTX #RichmondTX #Fulshear #LabyrinthBJJ #FreeTrial
 
