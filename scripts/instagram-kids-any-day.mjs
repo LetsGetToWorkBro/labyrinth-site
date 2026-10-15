@@ -134,7 +134,7 @@ body{width:1080px;height:${h}px;position:relative;overflow:hidden;background:${B
 </body></html>`
 }
 
-// What slide 2 says, as alt text for Instagram, from the same data (paste into scripts/instagram-kids-any-day-caption.txt)
+// What slide 2 says, as alt text for Instagram, from the same data (paste into scripts/kids-any-day-captions.txt, for Instagram and Facebook)
 const altOf = a => a.replace(/&/g, 'and').replace(/(\d)\u2013(\d+)/g, '$1 to $2')
 console.log('ALT TEXT, picture 2:\n' + altOf(byDay.map(({ day, slots }) => `${day}: ` + slots.map(s =>
   `${s.time} ${s.adv ? `Advanced ${s.style}: ` : ''}${s.names.join(' and ')}`).join('; ') + '.').join(' ')) + '\n')

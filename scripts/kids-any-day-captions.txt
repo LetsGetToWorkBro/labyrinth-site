@@ -1,17 +1,19 @@
-INSTAGRAM: KIDS CAN TRY A FREE CLASS ANY DAY OF THE WEEK (October 2026)
+KIDS CAN TRY A FREE CLASS ANY DAY OF THE WEEK (October 2026): INSTAGRAM AND FACEBOOK
 
-POST (a two-picture carousel, in this order)
+INSTAGRAM POST (a two-picture carousel, in this order)
   1. assets/social/kids-any-day-feed-1.png   the promise
   2. assets/social/kids-any-day-feed-2.png   "Pick your day": the classes by day and age, with the advanced No-Gi classes marked
-STORY
+INSTAGRAM STORY
   assets/social/kids-any-day-story.png       add a link sticker to https://labyrinth.vision/#book (text BOOK A FREE CLASS)
+FACEBOOK POST (the Labyrinth BJJ Page, the same two pictures in the same order; no Facebook story)
 
-No street address or town on the pictures or in the caption (the hashtags carry the area), and one emoji.
+Both platforms, always: a post is made for Instagram and for Facebook together (the owner's rule from October 15, 2026).
+No street address or town on the pictures or in the captions (the hashtags carry the area), and one emoji in each.
 No "link in bio" anywhere: the bio link was set to the donation page for the drive (as of October 11), so the feed post says labyrinth.vision and the story carries a link sticker.
 The photographs are from the 2 October 2026 shoot by Israel De Leon (scripts/lightroom-album.py downloads the album).
 Slide 2 is read from scripts/schedule_data.py when scripts/instagram-kids-any-day.mjs runs (the classes a new child can start in, and the advanced ones), so it matches the timetable of the day it was made.
 
-==================== CAPTION ====================
+==================== INSTAGRAM CAPTION ====================
 Kids can try a free class any day of the week 🥋
 
 Every day has a class a new student can start in, so pick the day that works for your family. No experience needed.
@@ -28,8 +30,26 @@ Book at labyrinth.vision, or call or text (281) 393-7983.
 
 #KidsBJJ #BJJKids #KidsMartialArts #YouthWrestling #BrazilianJiuJitsu #FulshearTX #KatyTX #RichmondTX #Fulshear #LabyrinthBJJ #FreeTrial
 
+==================== FACEBOOK POST TEXT ====================
+Kids can try a free class any day of the week 🥋
+
+Every day has a class a new student can start in, so pick the day that works for your family. No experience needed.
+
+Ages 3 to 15, in age-matched groups (youth wrestling goes up to 17). The second picture has every class by day and age.
+
+Our advanced No-Gi classes are on there too. They need a gray-white belt or 2 years of wrestling, so new students start in the other classes.
+
+Wear a t-shirt and shorts, and we'll lend you the gi. The first class is free, with no commitment.
+
+We're enrolling kids now. If your child has been curious about jiu-jitsu, this is the easiest way to find out.
+
+Book a free class: https://labyrinth.vision/#book
+Questions? Call or text (281) 393-7983.
+
+#KidsBJJ #BJJKids #FulshearTX #KatyTX #BrazilianJiuJitsu
+
 ==================== ONLY IF POSTED BEFORE SATURDAY, OCTOBER 17 ====================
-Add this as its own short paragraph before the booking line. (The booking form on the website still offers that Saturday.)
+Add this as its own short paragraph before the booking line (Instagram: "Book at labyrinth.vision..."; Facebook: "Book a free class: ..."). (The booking form on the website still offers that Saturday.)
 
 Heads up: no classes this Saturday, October 17. Our whole team is at JJWL Houston.
 
