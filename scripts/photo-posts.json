@@ -1,0 +1,325 @@
+{
+  "about": "The photo posts, October 2026: pictures from the 3 October 2026 shoot at the academy, two photographers, shown as they are. Each post is one Instagram carousel and the same pictures as one Facebook post (Instagram's limit is 20 pictures). scripts/instagram-photo-posts.mjs makes the slides from this file; scripts/photo-posts-captions.txt holds what is said with each post and one alt text per slide, in the same order.",
+  "credit": "Photos by Ray and Israel De Leon.",
+  "albums": {
+    "ray": {
+      "label": "Labyrinth 10-03-2026 - Ray",
+      "share": "https://lightroom.adobe.com/shares/14c3aee9382a420b944695d057ea0267",
+      "file": "RFH-{n}.jpg",
+      "numbers": "the number in the file name Labyrinth_RFH-<n>.jpg (one more than the photograph's position in the album)"
+    },
+    "israel": {
+      "label": "Labyrinth 10-03-2026 - Ath",
+      "share": "https://lightroom.adobe.com/shares/c3f32e92c3bc4680998b862238c6c020",
+      "short": "https://adobe.ly/4icLHGF",
+      "file": "DSC0{n}.jpg",
+      "numbers": "the camera's number, DSC0<n>.JPG"
+    }
+  },
+  "posts": [
+    {
+      "id": "teens",
+      "album": "ray",
+      "when": "Thursday, October 15, 2026, now (morning)",
+      "kicker": "Ages 12 to 15",
+      "title": [
+        "Teens of",
+        "Labyrinth"
+      ],
+      "closeKicker": "A teen's first class is free",
+      "slides": [
+        {
+          "photo": 23,
+          "cx": 0.43,
+          "note": "teen grinning in a headlock"
+        },
+        {
+          "photo": 42,
+          "cx": 0.51,
+          "note": "curly-haired teen over a guard, one foot in the air"
+        },
+        {
+          "photo": 44,
+          "cx": 0.55,
+          "note": "girl pinning a boy under the big team logo"
+        },
+        {
+          "photo": 31,
+          "cx": 0.46,
+          "note": "the tangle of legs"
+        },
+        {
+          "photo": 43,
+          "cx": 0.3,
+          "note": "two teens crawling, big team logo"
+        },
+        {
+          "photo": 17,
+          "cx": 0.5,
+          "note": "big teen over a smaller one"
+        },
+        {
+          "photo": 30,
+          "cx": 0.5,
+          "note": "teen grinning on top"
+        },
+        {
+          "photo": 8,
+          "cx": 0.58,
+          "note": "teen bridging over an adult"
+        },
+        {
+          "photo": 27,
+          "cx": 0.36,
+          "note": "two training partners laughing mid-roll"
+        },
+        {
+          "photo": 34,
+          "cx": 0.5,
+          "note": "guard pass"
+        },
+        {
+          "photo": 35,
+          "cx": 0.6,
+          "note": "big teen in a blue shirt, looking aside"
+        },
+        {
+          "photo": 32,
+          "cx": 0.55,
+          "note": "scramble"
+        },
+        {
+          "photo": 37,
+          "cx": 0.52,
+          "note": "teen with a kid across his shoulders"
+        }
+      ]
+    },
+    {
+      "id": "women",
+      "album": "ray",
+      "when": "Thursday, October 15, 2026, this evening",
+      "kicker": "Women and girls on the mat",
+      "title": [
+        "Strong &",
+        "Focused"
+      ],
+      "closeKicker": "Your first class is free",
+      "slides": [
+        {
+          "photo": 5,
+          "cx": 0.55,
+          "note": "two women in a scramble, the wall's lettering above"
+        },
+        {
+          "photo": 15,
+          "cx": 0.45,
+          "note": "two women, tangled and intent"
+        },
+        {
+          "photo": 7,
+          "cx": 0.45,
+          "note": "a photographer sitting on the mat with a big camera"
+        },
+        {
+          "photo": 12,
+          "cx": 0.5,
+          "cy": 0.42,
+          "how": "stack",
+          "with": {
+            "photo": 20,
+            "cx": 0.5,
+            "cy": 0.5
+          },
+          "note": "two wide frames, one over the other: the girl in red flipping over a pass, and two women rolling with the gym behind"
+        },
+        {
+          "photo": 19,
+          "cx": 0.47,
+          "note": "two training partners, the one in red laughing"
+        },
+        {
+          "photo": 21,
+          "cx": 0.45,
+          "note": "woman in black over a partner in red"
+        },
+        {
+          "photo": 29,
+          "cx": 0.4,
+          "note": "intense, tight"
+        },
+        {
+          "photo": 28,
+          "cx": 0.42,
+          "note": "two women, the floor a teal"
+        },
+        {
+          "photo": 47,
+          "cx": 0.4,
+          "note": "teen girl standing over a girl in guard"
+        }
+      ]
+    },
+    {
+      "id": "kids",
+      "album": "ray",
+      "when": "Friday, October 16, 2026, midday",
+      "kicker": "Ages 3 to 12",
+      "title": [
+        "Kids of",
+        "Labyrinth"
+      ],
+      "closeKicker": "Your child's first class is free",
+      "slides": [
+        {
+          "photo": 46,
+          "cx": 0.56,
+          "note": "girl with the top-knot over a girl in guard, the club's lettering behind"
+        },
+        {
+          "photo": 48,
+          "cx": 0.48,
+          "note": "girl with the top-knot and a front headlock"
+        },
+        {
+          "photo": 39,
+          "cx": 0.45,
+          "note": "the wheelbarrow, grinning"
+        },
+        {
+          "photo": 45,
+          "cx": 0.38,
+          "note": "two girls drilling"
+        },
+        {
+          "photo": 38,
+          "cx": 0.62,
+          "note": "kids carrying each other, a coach laughing behind (also in the kids any-day post)"
+        },
+        {
+          "photo": 41,
+          "cx": 0.47,
+          "note": "coach with two kids"
+        },
+        {
+          "photo": 40,
+          "cx": 0.55,
+          "note": "coach and a girl, one kid on the mat"
+        },
+        {
+          "photo": 1,
+          "cx": 0.5,
+          "note": "kids and coaches high-fiving in a line (also in the kids any-day post)"
+        },
+        {
+          "photo": 13,
+          "cy": 0.5,
+          "note": "coach standing behind a kid in blue (a portrait)"
+        },
+        {
+          "photo": 50,
+          "cx": 0.47,
+          "note": "a teen high-fiving two young boys (also in the kids any-day post)"
+        },
+        {
+          "photo": 36,
+          "cx": 0.55,
+          "note": "girl grinning with a kid on her shoulders"
+        }
+      ]
+    },
+    {
+      "id": "adults",
+      "album": "ray",
+      "when": "Friday, October 16, 2026, evening",
+      "kicker": "Gi · No-Gi · Open Mat",
+      "title": [
+        "Adults of",
+        "Labyrinth"
+      ],
+      "closeKicker": "Your first class is free",
+      "slides": [
+        {
+          "photo": 18,
+          "cx": 0.7,
+          "note": "friends against the wall, laughing"
+        },
+        {
+          "photo": 26,
+          "cx": 0.55,
+          "note": "adult in the blue shirt, concentrating"
+        },
+        {
+          "photo": 3,
+          "cx": 0.72,
+          "note": "a coach over a teen"
+        },
+        {
+          "photo": 22,
+          "cx": 0.3,
+          "note": "coach squatting at the edge of the mat"
+        },
+        {
+          "photo": 16,
+          "cx": 0.5,
+          "note": "the kanji on the shirts, rolling"
+        },
+        {
+          "photo": 10,
+          "cx": 0.5,
+          "note": "gray-haired training partner on top"
+        },
+        {
+          "photo": 49,
+          "cx": 0.55,
+          "note": "coach in the gray rash guard, talking to the class"
+        },
+        {
+          "photo": 9,
+          "cx": 0.33,
+          "note": "two rolling"
+        },
+        {
+          "photo": 24,
+          "cx": 0.65,
+          "note": "older man in a hold, grimacing"
+        },
+        {
+          "photo": 25,
+          "cx": 0.42,
+          "note": "coach and a student"
+        },
+        {
+          "photo": 4,
+          "cx": 0.38,
+          "note": "rolling, spectators behind"
+        },
+        {
+          "photo": 11,
+          "cx": 0.36,
+          "note": "man sitting cross-legged"
+        },
+        {
+          "photo": 6,
+          "cx": 0.6,
+          "note": "two men"
+        },
+        {
+          "photo": 14,
+          "cx": 0.5,
+          "note": "a tight shot, the kanji"
+        },
+        {
+          "photo": 33,
+          "cx": 0.45,
+          "note": "two on the floor"
+        },
+        {
+          "photo": 2,
+          "cx": 0.62,
+          "note": "coach smiling at the camera, trees behind"
+        }
+      ]
+    }
+  ]
+}

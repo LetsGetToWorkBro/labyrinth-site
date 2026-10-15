@@ -1,0 +1,108 @@
+THE PHOTO POSTS (October 2026): INSTAGRAM AND FACEBOOK
+
+Pictures from the 3 October 2026 shoot, two photographers, two Lightroom albums (scripts/photo-posts.json says which picture goes where and how it is cropped;
+scripts/instagram-photo-posts.mjs makes the slides). Each post is an Instagram carousel and the same pictures as one Facebook post:
+  assets/social/shoot/<post>-01.jpg … <post>-NN.jpg   1080x1350 (4:5); the first slide is the cover and the last is the close, the ones between are the photographs alone.
+Alt text, one line per slide, is under each post below, in slide order. Instagram's limit is 20 pictures a post.
+
+Both platforms, always: a post is made for Instagram and for Facebook together (the owner's rule from October 15, 2026).
+No street address or town on the pictures or in the captions (the hashtags carry the area), and one emoji in each.
+No "link in bio" anywhere: the bio link was set to the donation page for the drive (as of October 11), so the posts say labyrinth.vision.
+Every post credits both photographers by name in its last line before the hashtags. Their Instagram handles are not known here, so they are credited by name rather than tagged.
+Children are in these pictures: they are for the academy's own marketing, under the photo release in the waiver.
+Alt text names nobody and uses no pronouns for the people in a picture: who is in it is not something these captions say.
+
+SCHEDULE (Central Time; two posts a day, nothing before 9 AM or after 8 PM)
+  teens    Thursday, October 15      now, in the morning
+  women    Thursday, October 15      this evening, around 5:30 PM
+  kids     Friday, October 16        around noon
+  adults   Friday, October 16        in the evening, around 6 PM
+
+==================== HEADS-UP, FOR POSTS THAT GO OUT BEFORE SATURDAY, OCTOBER 17 ====================
+Add this as its own short paragraph before the booking line (Instagram: "Book at labyrinth.vision..."; Facebook: "Book a free class: ..."). The booking form on the website still offers that Saturday.
+
+Heads up: no classes this Saturday, October 17. Our whole team is at JJWL Houston.
+
+==================== teens: INSTAGRAM CAPTION ====================
+Teens of Labyrinth 🥋
+
+Grinning through a headlock. Hauling a little kid across the mat. Scrambling out of trouble and straight into the next round. This is a day in teen class.
+
+Swipe through for more.
+
+Teens train in groups of their own, and a teen's first class is free, on any day of the week. No experience needed, and we lend the gi. Not sure where to start? Call or text us and we'll point you to the right class.
+
+Book at labyrinth.vision, or call or text (281) 393-7983.
+
+Photos by Ray and Israel De Leon.
+
+#TeenBJJ #BJJTeens #BrazilianJiuJitsu #YouthWrestling #Grappling #FulshearTX #KatyTX #RichmondTX #LabyrinthBJJ
+
+==================== teens: FACEBOOK POST TEXT ====================
+Teens of Labyrinth 🥋
+
+Grinning through a headlock. Hauling a little kid across the mat. Scrambling out of trouble and straight into the next round. This is a day in teen class.
+
+Teens train in groups of their own, and a teen's first class is free, on any day of the week. No experience needed, and we lend the gi. Not sure where to start? Call or text us and we'll point you to the right class.
+
+Book a free class: https://labyrinth.vision/#book
+Questions? Call or text (281) 393-7983.
+
+Photos by Ray and Israel De Leon.
+
+#TeenBJJ #BJJTeens #BrazilianJiuJitsu #FulshearTX #KatyTX
+
+==================== teens: ALT TEXT ====================
+Picture 1: A grinning teen holds a training partner in a headlock. Text: Teens of Labyrinth. Ages 12 to 15.
+Picture 2: A teen with curly hair in a white shirt works over a partner on their back, one foot in the air.
+Picture 3: A teen in a black and gold rash guard pins a curly-haired partner, team logo on the wall behind.
+Picture 4: Two teens tangled up in a scramble, one grimacing, a foot in the air.
+Picture 5: Two teens crawl across the mat toward each other under a big team logo.
+Picture 6: A teen in a blue shirt and gray shorts bends over a partner who is face-down on the mat.
+Picture 7: A teen grins while working on top of a partner in a blue shirt.
+Picture 8: A teen in a dark rash guard arches over an adult lying on the mat, team logo on the wall.
+Picture 9: A teen and an adult laugh while rolling together on the mat.
+Picture 10: A teen in a dark shirt leans over a partner in a blue shirt on the mat.
+Picture 11: A teen in a blue shirt sits on the mat holding a partner's leg and looking off to the side.
+Picture 12: A teen in a blue shirt tangled up with a partner, arms and legs everywhere.
+Picture 13: A teen carries a kid across the shoulders. Text: A teen's first class is free. See you on the mat.
+
+==================== women: INSTAGRAM CAPTION ====================
+Strong and focused 🥋
+
+Women and girls on our mats: focus, grit and the occasional big smile. This is what training looks like when everyone in the room wants to be there.
+
+Swipe through for more.
+
+New to jiu-jitsu? No experience is needed, and your first class is free, with no commitment. Our adult classes run in the gi and out of it, in the mornings, at midday and in the evenings, and girls train in our kids and teen classes.
+
+Book at labyrinth.vision, or call or text (281) 393-7983.
+
+Photos by Ray and Israel De Leon.
+
+#WomensBJJ #WomenWhoGrapple #GirlsBJJ #BrazilianJiuJitsu #BJJ #Grappling #FulshearTX #KatyTX #RichmondTX #LabyrinthBJJ
+
+==================== women: FACEBOOK POST TEXT ====================
+Strong and focused 🥋
+
+Women and girls on our mats: focus, grit and the occasional big smile. This is what training looks like when everyone in the room wants to be there.
+
+New to jiu-jitsu? No experience is needed, and your first class is free, with no commitment. Our adult classes run in the gi and out of it, in the mornings, at midday and in the evenings, and girls train in our kids and teen classes.
+
+Book a free class: https://labyrinth.vision/#book
+Questions? Call or text (281) 393-7983.
+
+Photos by Ray and Israel De Leon.
+
+#WomensBJJ #GirlsBJJ #BrazilianJiuJitsu #FulshearTX #KatyTX
+
+==================== women: ALT TEXT ====================
+Picture 1: Two training partners lie close together on the mat. Text: Strong and focused. Women and girls on the mat.
+Picture 2: Two women tangled together, one bent over the other, who is on their back with a leg in the air.
+Picture 3: A photographer sits cross-legged on the mat with a big camera raised.
+Picture 4: Two photos. Top: a girl in red flips over a pass. Bottom: two women roll, the gym behind them.
+Picture 5: Two women roll on the mat, the one in red smiling.
+Picture 6: A woman in black grips the legs of a partner in a red shirt who is lying on the mat.
+Picture 7: Two women locked together on the mat, one with a leg in the air.
+Picture 8: Two women grapple on a teal mat, one tucked under the other.
+Picture 9: A teen leans over a partner on their back, holding their ankles. Text: First class free. See you on the mat.
