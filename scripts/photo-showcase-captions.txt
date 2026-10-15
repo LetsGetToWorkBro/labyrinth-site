@@ -1,0 +1,67 @@
+THE PHOTO SHOWCASE (October 2026): INSTAGRAM AND FACEBOOK
+
+INSTAGRAM POST (a 20-picture carousel, in this order; Instagram's limit is 20)
+FACEBOOK POST (the Labyrinth BJJ Page, the same 20 pictures in the same order; no Facebook story)
+  assets/social/photo-showcase-01.jpg … photo-showcase-20.jpg   1080x1350 (4:5)
+  1  the cover: "This is Labyrinth", Kids, Teens, Adults, Swipe for the pictures
+  2–19  the photographs, with nothing written on them
+  20  the close: "Your first class is free", See you on the mat, Book a free class, labyrinth.vision
+
+Both platforms, always: a post is made for Instagram and for Facebook together (the owner's rule from October 15, 2026).
+No street address or town on the pictures or in the captions (the hashtags carry the area), and one emoji in each.
+No "link in bio" anywhere: the bio link was set to the donation page for the drive (as of October 11), so the post says labyrinth.vision.
+The photographs are from the 2 October 2026 shoot by Israel De Leon, and the post credits him in its last line. His Instagram handle is not known here, so he is credited by name rather than tagged. Drop the line if the credit is not wanted.
+Children are in these pictures: they are for the academy's own marketing, under the photo release in the waiver.
+scripts/instagram-photo-showcase.mjs makes the pictures (scripts/lightroom-album.py downloads the album) and checks that the alt text below has one line per picture, in the same order.
+
+==================== INSTAGRAM CAPTION ====================
+A look inside Labyrinth 🥋
+
+Kids hauling their friends across the mat. Teens chasing a new move. Adults laughing between rounds. This is what a good day on our mats looks like.
+
+Swipe through for more.
+
+Kids, teens and adults are all welcome, and no experience is needed. Your first class is free, with no commitment.
+
+Book at labyrinth.vision, or call or text (281) 393-7983.
+
+Photos by Israel De Leon.
+
+#BrazilianJiuJitsu #BJJ #JiuJitsu #Grappling #KidsBJJ #WomensBJJ #FulshearTX #KatyTX #RichmondTX #LabyrinthBJJ
+
+==================== FACEBOOK POST TEXT ====================
+A look inside Labyrinth 🥋
+
+Kids hauling their friends across the mat. Teens chasing a new move. Adults laughing between rounds. This is what a good day on our mats looks like.
+
+Kids, teens and adults are all welcome, and no experience is needed. Your first class is free, with no commitment.
+
+Book a free class: https://labyrinth.vision/#book
+Questions? Call or text (281) 393-7983.
+
+Photos by Israel De Leon.
+
+#BrazilianJiuJitsu #BJJ #FulshearTX #KatyTX #LabyrinthBJJ
+
+==================== ALT TEXT ====================
+One line per picture, in the order above. No names and no pronouns, since who is in a picture is not something these captions say.
+Picture 1: A young kid stands over a partner on the mat. Text: This is Labyrinth. Kids, teens, adults.
+Picture 2: A grinning teen holds a training partner in a headlock on the mat.
+Picture 3: Two training partners scramble on the mat under the big wall sign.
+Picture 4: A bearded coach in a gray rash guard explains a technique to the class, hands together.
+Picture 5: A teen with curly hair in a white shirt works over a partner on their back, one foot in the air.
+Picture 6: A kid with a top-knot clamps a front headlock on a bent-over partner.
+Picture 7: A gray-haired coach in a black Labyrinth shirt stands in front of the windows, smiling.
+Picture 8: Two teens tangled up in a scramble, one grimacing, a foot in the air.
+Picture 9: Two training partners roll on the mat, the one in red smiling.
+Picture 10: A teen in a white shirt carries a younger kid across the shoulders in front of big windows.
+Picture 11: A teen in a black and gold rash guard pins a curly-haired partner, team logo on the wall behind.
+Picture 12: An adult in a blue shirt leans over a partner in a gray tank top, concentrating.
+Picture 13: Two kids drill on the mat, one bending over the other, who sits back on the floor.
+Picture 14: A teen in a dark rash guard arches over an adult lying on the mat, team logo on the wall.
+Picture 15: A gray-haired coach guides two kids through a drill on the mat while a photographer sits behind.
+Picture 16: A teen leans over a partner on their back, holding their ankles, in the middle of a drill.
+Picture 17: A teen and an adult laugh while rolling together on the mat.
+Picture 18: A coach bends over to help two small kids on the mat, one sitting up, one lying down.
+Picture 19: Two friends sit against the wall laughing, one of them clapping.
+Picture 20: A grinning kid carries another on their shoulders. Text: First class free. See you on the mat.

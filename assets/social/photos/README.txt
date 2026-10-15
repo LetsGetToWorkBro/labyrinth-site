@@ -12,3 +12,4 @@ Used so far:
     kids-lineup-high-fives.jpg   scripts/instagram-kids-any-day.mjs   slide 2
     kids-high-five.jpg           scripts/instagram-kids-any-day.mjs   story
     kids-wheelbarrow-smile.jpg   (spare)
+    (20 more, no copies kept here)   scripts/instagram-photo-showcase.mjs   the photo showcase carousel reads its twenty straight from a download of the album
