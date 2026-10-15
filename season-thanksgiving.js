@@ -96,7 +96,7 @@
     schedule:       ['garland', 'pile:l:corn,gourd', 'tap:pumpkin:r:68:54', 'pile:r:pumpkin,hay', 'acorns:r:3.5:76:30', 'leaves:4:9'],
     testimonials:   ['garland', 'pile:l:wheat,pumpkin', 'pile:r:pie,maple', 'acorns:l:2:90:32', 'tap:acorn:r:46:34', 'leaves:3:10'],
     pricing:        ['garland', 'pile:r:pumpkin,corn,gourd', 'acorns:r:2.5:110:34', 'geese:16', 'leaves:5:11'],
-    contact:        ['garland', 'tap:turkey:l:26:56', 'pile:l:hay,pumpkin,wheat', 'pile:r:corn,pumpkin,gourd', 'acorns:r:4:90:30', 'leaves:4:12']
+    contact:        ['garland', 'tap:turkey:l:26:50', 'pile:l:hay,pumpkin,wheat', 'pile:r:corn,pumpkin,gourd', 'acorns:r:4:90:30', 'leaves:4:12']
   };
   var ITEMS = { pumpkin: ['tg-pumpkin', '0 0 100 90'], gourd: ['tg-gourd', '0 0 60 70'], maple: ['tg-maple', '0 0 100 100'], oak: ['tg-oak', '0 0 60 100'], corn: ['tg-corn', '0 0 50 124'],
     wheat: ['tg-wheat', '0 0 70 130'], hay: ['tg-hay', '0 0 90 64'], pie: ['tg-pie', '0 0 90 64'], acorn: ['tg-acorn', '0 0 40 62'] };

@@ -263,7 +263,7 @@
     schedule:       ['top:lace', 'pile:l:choc,candyP', 'tap:balloons:r:68:54', 'pile:r:roseR,envP', 'pend:r:3.5:76:30:peachc', 'petals:4:9'],
     testimonials:   ['top:bunting', 'pile:l:roseP,roseR', 'pile:r:envC,candyL', 'pend:l:1.4:90:32:bow', 'tap:candy:r:46:34', 'petals:3:10', 'hearts:4:10'],
     pricing:        ['top:curtain', 'bouquet:br', 'pend:r:2.5:110:34:heart', 'arrow:12.6:ltr', 'petals:5:11', 'balloons:l'],
-    contact:        ['top:lights', 'tap:lovearrow:l:26:62', 'pile:l:envP,candyL,roseR', 'pile:r:choc,roseP,candyP', 'pend:r:4:90:30:pinkh', 'petals:4:12']
+    contact:        ['top:lights', 'tap:lovearrow:l:26:56', 'pile:l:envP,candyL,roseR', 'pile:r:choc,roseP,candyP', 'pend:r:4:90:30:pinkh', 'petals:4:12']
   };
   // What a pile can hold: the symbol, its viewBox, its colour and its size class.
   var ITEMS = {

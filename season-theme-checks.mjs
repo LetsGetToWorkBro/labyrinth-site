@@ -27,11 +27,12 @@ export const contrast = (a, b) => { const x = lum(a), y = lum(b); if (x == null 
 
 
 // Any tap decoration (they are buttons you can press) that is on the screen and lies over words people read: the text of the page outside the decoration layers.
-const overText = () => {
+// `tapSel` says which decorations to look at (all of them unless it is given). Text that is not visible (the photo viewer's buttons while it is shut) is not words.
+const overText = (tapSel = '.sk-tap') => {
   const out = []
-  const taps = [...document.querySelectorAll('.sk-tap')].filter(t => getComputedStyle(t).display !== 'none' && t.getBoundingClientRect().width > 0)
+  const taps = [...document.querySelectorAll(tapSel)].filter(t => getComputedStyle(t).display !== 'none' && t.getBoundingClientRect().width > 0)
   if (!taps.length) return out
-  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, { acceptNode: n => (n.nodeValue.trim() && n.parentElement && !n.parentElement.closest('.sk-defs, .sk-hero, .sk-sec, .sk-footer, script, style, noscript, [hidden]') && n.parentElement.offsetParent !== null) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT })
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, { acceptNode: n => (n.nodeValue.trim() && n.parentElement && !n.parentElement.closest('.sk-defs, .sk-hero, .sk-sec, .sk-footer, script, style, noscript, [hidden]') && n.parentElement.offsetParent !== null && getComputedStyle(n.parentElement).visibility !== 'hidden') ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT })
   const rects = []
   for (let n; (n = walker.nextNode());) { const r = document.createRange(); r.selectNodeContents(n); for (const b of r.getClientRects()) if (b.width > 2 && b.height > 2) rects.push({ b, t: n.nodeValue.trim().slice(0, 28) }) }
   for (const t of taps) {
@@ -41,6 +42,23 @@ const overText = () => {
   return out
 }
 
+
+// overText for the decorations of one section (`scope` is its selector), measured at eight points of their animation cycle (they bob and sway, which
+// moves their box by a few pixels), so that whether a pack passes does not depend on the moment the page happened to be measured. Run in the page:
+// it is given overText's source.
+const overTextSweep = async ([src, scope]) => {
+  const over = new Function('return (' + src + ')')()
+  const found = new Set()
+  const anims = document.getAnimations().filter(a => { const t = a.effect && a.effect.target; return t && t.closest && t.closest('.sk-tap') && t.closest(scope) })
+  const lengths = anims.map(a => a.effect.getComputedTiming().duration)
+  for (let i = 0; i < 8; i++) {
+    anims.forEach((a, k) => { a.pause(); a.currentTime = (i / 8) * (typeof lengths[k] === 'number' ? lengths[k] : 0) })
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))
+    for (const x of over(scope + ' .sk-tap')) found.add(x)
+  }
+  anims.forEach(a => a.play())
+  return [...found]
+}
 
 // Every tap decoration that is on the screen can be pressed with a real click: what is under the middle of it is the decoration itself, not the page's content.
 const pressable = () => {
@@ -165,6 +183,20 @@ export async function checkPack({ browser, base, check, name, iso }) {
   check(`${L} every bubble stays on the screen when its decoration is tapped (not cut off at the edge)`, said.every(r => r.inView), JSON.stringify(said.filter(r => !r.inView).map(r => r.cls)))
   check(`${L} nothing sticks out sideways on a desktop screen`, !st.overflow)
   await d.ctx.close()
+
+  // "Your first class" is the booking calendar, and its height changes with every step a visitor takes: a short choice of program, a long list
+  // of classes, a form. A section's decorations are placed by a percentage of its height, so they slide down the margin as the steps change,
+  // and one that keeps off the words at the start can lie over a heading in another step. This section's decorations, in each step, at 1280px.
+  const bk = await open(browser, base, iso ?? PACKS[name])
+  await bk.page.locator('#trialForm').scrollIntoViewIfNeeded()
+  const inSteps = {}
+  const lookAt = async label => { await bk.page.waitForTimeout(350); const o = await bk.page.evaluate(overTextSweep, [overText.toString(), '#contact']); if (o.length) inSteps[label] = o }
+  await bk.page.click('#bookingInline .booking-category-btn[data-category="adult"]'); await lookAt('the adult list')
+  await bk.page.click('#bookingInline .booking-class-row >> nth=3'); await lookAt('the form')
+  await bk.page.click('#bookingInline .booking-back-btn'); await bk.page.click('#bookingInline .booking-back-btn')
+  await bk.page.click('#bookingInline .booking-category-btn[data-category="kids"]'); await lookAt('the kids list')
+  check(`${L} at 1280px no tap decoration lies over any words in any step of the booking calendar (the section grows and shrinks as the steps change)`, Object.keys(inSteps).length === 0, JSON.stringify(inSteps))
+  await bk.ctx.close()
 
   // Tablets: below 1280px the margins are too narrow for decorations in a section, which the kit hides; the hero's must still keep off the words.
   for (const [w, h] of [[1024, 768], [820, 1000]]) {

@@ -284,10 +284,10 @@ button {
   var KIT=["./season-kit.css?v=97367374","./season-kit.js?v=2ff51617"];
   var PACKS={
     columbus:["./season-columbus.css?v=3a6ee446","./season-columbus.js?v=a55c09d7"],
-    thanksgiving:["./season-thanksgiving.css?v=6f5adbfd","./season-thanksgiving.js?v=96438e6c"],
+    thanksgiving:["./season-thanksgiving.css?v=6f5adbfd","./season-thanksgiving.js?v=010b2d89"],
     christmas:["./season-christmas.css?v=f6e9dd59","./season-christmas.js?v=1c026979"],
     newyear:["./season-newyear.css?v=882d1592","./season-newyear.js?v=a64caf26"],
-    valentines:["./season-valentines.css?v=634b7b79","./season-valentines.js?v=41e417a6"],
+    valentines:["./season-valentines.css?v=634b7b79","./season-valentines.js?v=b29fea98"],
     easter:["./season-easter.css?v=03f70ff5","./season-easter.js?v=995f65b8"],
     stpatricks:["./season-stpatricks.css?v=11bdc353","./season-stpatricks.js?v=049c66b4"],
     cinco:["./season-cinco.css?v=43f058cd","./season-cinco.js?v=844dfc32"],
@@ -316,7 +316,7 @@ button {
 })()</script>
 <link rel="stylesheet" href="./style.css?v=37651d3c">
 <link rel="stylesheet" href="./season.css?v=c67a099d">
-<link rel="stylesheet" href="./booking.css?v=c6510875">
+<link rel="stylesheet" href="./booking.css?v=e4bb1222">
 
 <!-- JSON-LD Structured Data -->
 <script type="application/ld+json">
@@ -2201,54 +2201,16 @@ button {
           <li>A willingness to learn</li>
         </ul>
 
-        <!-- Form -->
-        <div class="trial-form" id="trialForm">
-          <h3 class="trial-form__title">Reserve Your Free Class</h3>
-          <form id="contactForm">
-            <div class="form-row">
-              <div class="form-group">
-                <label for="name">Name</label>
-                <input type="text" id="name" name="name" placeholder="Your name" required>
-              </div>
-              <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" placeholder="you@email.com" required>
-              </div>
+        <!-- The booking calendar. booking.js draws the same flow as the popup into #bookingInline (program, class, day on a calendar, details);
+             what is inside it now is what a visitor without JavaScript sees. -->
+        <div class="trial-form trial-form--booking" id="trialForm">
+          <div class="booking-inline" id="bookingInline" role="region" aria-label="Book a free class">
+            <div class="booking-step-header">
+              <h3>Book Your Free Class</h3>
+              <p>Call or text <a href="tel:2813937983">(281) 393-7983</a> and we'll find you a class.</p>
             </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label for="phone">Phone</label>
-                <input type="tel" id="phone" name="phone" placeholder="(281) 555-0000">
-              </div>
-              <div class="form-group">
-                <label for="program">Program Interest</label>
-                <select id="program" name="program">
-                  <option value="">Select a program</option>
-                  <option value="kids-3-6">Kids BJJ (Ages 3–6)</option>
-                  <option value="kids-7-12">Kids BJJ (Ages 7–12)</option>
-                  <option value="teens">Teens BJJ</option>
-                  <option value="adult-gi">Adult BJJ Gi</option>
-                  <option value="adult-nogi">Adult BJJ No-Gi</option>
-                  <option value="competition">Competition Training</option>
-                  <option value="wrestling">Youth Wrestling</option>
-                  <option value="strength-conditioning">Strength &amp; Conditioning (All Ages)</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group form-group--full">
-                <label for="message">Message (optional)</label>
-                <textarea id="message" name="message" placeholder="Any questions or details you'd like to share..."></textarea>
-              </div>
-            </div>
-            <button type="submit" class="btn btn--gold" style="width:100%; margin-top: 8px;">Reserve My Free Class</button>
-          </form>
-
-          <div class="form-success" id="formSuccess">
-            <div class="form-success__icon">🥋</div>
-            <h3 class="form-success__title">You're In!</h3>
-            <p class="form-success__text">We'll reach out within 24 hours to confirm your free class. See you on the mat!</p>
           </div>
+          <p class="trial-form__help">Questions first? Call or text <a href="tel:2813937983">(281) 393-7983</a>.</p>
         </div>
       </div>
 
@@ -2404,8 +2366,8 @@ button {
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
 
 <!-- App JS -->
-<script src="./booking.js?v=856315c5"></script>
-<script src="./app.js?v=857788f5"></script>
+<script src="./booking.js?v=fad90713"></script>
+<script src="./app.js?v=b96a0945"></script>
 <script src="./schedule.js?v=418a5570"></script>
 
 <script data-pplx-inline-edit>

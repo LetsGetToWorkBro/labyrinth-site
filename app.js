@@ -450,77 +450,10 @@
   });
 
 
-  // The CRM call lives in booking.js, beside the booking form that is its main
-  // caller. The contact form below is the other one.
-
-  // ===== FORM HANDLING =====
-  var contactForm = document.getElementById('contactForm');
-  var formSuccess = document.getElementById('formSuccess');
-
-  if (contactForm) {
-    contactForm.addEventListener('submit', function (e) {
-      e.preventDefault();
-
-      /*
-       * This used to hide the form and show "thanks", and do nothing else.
-       * There was no endpoint. Every enquiry made through it was discarded, and
-       * the person was told it had worked. It now goes to the CRM, and the
-       * success message is shown only if the CRM says it saved.
-       */
-      var btn = contactForm.querySelector('button[type="submit"]');
-      var original = btn ? btn.textContent : '';
-      if (btn) { btn.disabled = true; btn.textContent = 'Sending\u2026'; }
-
-      // The <select> holds slugs; the Leads board is read by people.
-      /* These are the CRM's six programmes, not free text. The booking endpoint
-         accepts only its own list and silently substitutes the default for
-         anything else, so 'Strength & Conditioning' was being filed, and
-         emailed, as Adult BJJ. Until the endpoint learns that programme the
-         honest label is the one the class actually sits under, and the slug
-         itself goes in the note so the enquiry is not misread at the desk. */
-      var PROGRAM_LABELS = {
-        'kids-3-6': 'Kids 3-6', 'kids-7-12': 'Kids 7-12', 'teens': 'Teens',
-        'adult-gi': 'Adult BJJ', 'adult-nogi': 'Adult BJJ',
-        'competition': 'Adult BJJ', 'wrestling': 'Wrestling',
-        'strength-conditioning': 'Adult BJJ'
-      };
-      var PROGRAM_ASKED = {
-        'kids-3-6': 'Kids 3-6', 'kids-7-12': 'Kids 7-12', 'teens': 'Teens',
-        'adult-gi': 'Adult Gi', 'adult-nogi': 'Adult No-Gi',
-        'competition': 'Competition team', 'wrestling': 'Wrestling',
-        'strength-conditioning': 'Strength & Conditioning'
-      };
-      var val = function (n) {
-        var el = contactForm.querySelector('[name="' + n + '"]');
-        return el ? el.value : '';
-      };
-
-      LabyrinthCrm.send({
-        name: val('name'),
-        email: val('email'),
-        phone: val('phone'),
-        program: PROGRAM_LABELS[val('program')] || '',
-        note: (function () {
-          // Only worth saying when the two differ, which happens exactly where
-          // the CRM has no matching programme and the label had to be widened.
-          var slug = val('program'), asked = PROGRAM_ASKED[slug];
-          var parts = (asked && asked !== PROGRAM_LABELS[slug]) ? ['Asked about ' + asked] : [];
-          if (val('message')) parts.push(val('message'));
-          return parts.join(', ');
-        })()
-      }).then(function (ok) {
-        if (btn) { btn.disabled = false; btn.textContent = original; }
-        if (ok) {
-          contactForm.style.display = 'none';
-          formSuccess.classList.add('show');
-        } else {
-          // Telling somebody they are booked when nothing was recorded is
-          // worse than telling them to call.
-          alert('Sorry, we could not send that. Please call the academy on (281) 393-7983 and we will book you in.');
-        }
-      });
-    });
-  }
+  // The CRM call lives in booking.js, beside the booking flow that is its caller.
+  // The "Your first class" section is that flow drawn into the page. It was a
+  // contact form that sent a name and a message and booked nothing; there is no
+  // form handler here any more.
 
   // ===== LEAFLET MAP =====
   function initMap() {
