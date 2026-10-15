@@ -25,16 +25,24 @@ SIZE = (1080, 1350)
 BELT = '\U0001F94B'
 
 # What each post stands on besides the pictures: when it goes out, and the offer in the words the caption uses.
-# `youth` posts check the Kids & Teens picker; the others check the adult one.
+# `picker` says which booking list the agent checks before it posts: 'youth' (Kids & Teens), 'adult' (Adult Classes) or 'both'.
 POSTS = {
-    'teens': dict(day=(10, 15), when='Thursday, October 15, 2026', earliest='9:00 AM', youth=True, about="our teen classes",
+    'teens': dict(day=(10, 15), when='Thursday, October 15, 2026', earliest='9:00 AM', picker='youth', about="our teen classes",
                   offer="- The offer: a teen's first class is free, on any day of the week, Monday to Sunday. No experience needed. We lend the gi: a t-shirt and shorts is all a teen needs to wear. No commitment. Teens train in groups of their own."),
-    'women': dict(day=(10, 15), when='Thursday, October 15, 2026', earliest='5:30 PM', youth=False, about="the women and girls who train with us",
+    'women': dict(day=(10, 15), when='Thursday, October 15, 2026', earliest='5:30 PM', picker='adult', about="the women and girls who train with us",
                   offer="- The offer: a first class is free, with no commitment. No experience needed. Our adult classes run in the gi and out of it (Gi and No-Gi classes), in the mornings, at midday and in the evenings, and girls train in our kids and teen classes."),
-    'kids': dict(day=(10, 16), when='Friday, October 16, 2026', earliest='12:00 PM', youth=True, about="our kids' classes",
+    'kids': dict(day=(10, 16), when='Friday, October 16, 2026', earliest='12:00 PM', picker='youth', about="our kids' classes",
                  offer="- The offer: a child's first class is free, on any day of the week, Monday to Sunday. No experience needed. We lend the gi: a t-shirt and shorts is all a child needs to wear. No commitment. Kids 3 to 12 train in age-matched groups."),
-    'adults': dict(day=(10, 16), when='Friday, October 16, 2026', earliest='6:00 PM', youth=False, about="our adult classes",
+    'adults': dict(day=(10, 16), when='Friday, October 16, 2026', earliest='6:00 PM', picker='adult', about="our adult classes",
                    offer="- The offer: a first class is free, with no commitment. No experience needed. We run Gi and No-Gi classes in the mornings, at midday and in the evenings, and an open mat on Sundays."),
+    'young': dict(day=(10, 17), when='Saturday, October 17, 2026', earliest='12:00 PM', picker='youth', about="our kids and teens",
+                  offer="- The offer: a child's first class is free, on any day of the week, Monday to Sunday. No experience needed. We lend the gi: a t-shirt and shorts is all a child needs to wear. No commitment. Kids and teens train in age-matched groups, ages 3 to 15 (youth wrestling goes up to 17)."),
+    'rolling': dict(day=(10, 17), when='Saturday, October 17, 2026', earliest='6:00 PM', picker='adult', about="people training together at our academy",
+                    offer="- The offer: a first class is free, with no commitment. No experience needed. We have loaner gis for trial classes, so nobody needs to buy anything first."),
+    'between': dict(day=(10, 18), when='Sunday, October 18, 2026', earliest='12:00 PM', picker='both', about="the quiet moments between rounds in our classes",
+                    offer="- The offer: a first class is free, with no commitment. No experience needed. Kids, teens and adults all train here."),
+    'start': dict(day=(10, 18), when='Sunday, October 18, 2026', earliest='6:00 PM', picker='both', about="our classes getting started (line-ups and warm-ups)",
+                  offer="- The offer: a first class is free, with no commitment. No experience needed. Kids, teens and adults are all welcome."),
 }
 # Posts that go out before Saturday, October 17 carry the heads-up about that Saturday (the booking form still offers it); later ones do not.
 BEFORE_SATURDAY = (10, 17)
@@ -157,6 +165,8 @@ WHEN YOU ARE DONE, SEND ME
 
 YOUTH_PICKER = 'Tap Kids & Teens: it must show a list headed Kids Trials, with classes under day names. If the Kids Trials list shows only Friday and Saturday, stop and tell me.'
 ADULT_PICKER = 'Tap Adult Classes: it must show a list headed Adult Classes, with classes under day names.'
+BOTH_PICKER = YOUTH_PICKER + ' Then go back and ' + ADULT_PICKER[0].lower() + ADULT_PICKER[1:]
+PICKER = {'youth': YOUTH_PICKER, 'adult': ADULT_PICKER, 'both': BOTH_PICKER}
 BLOCK_HEAD = '===== BLOCK %s: %s (paste everything between this line and the END line, not these lines) ====='
 
 
@@ -178,7 +188,7 @@ def build(pid):
     text = PROMPT
     for key, val in (('TITLE', '%s: AN INSTAGRAM POST AND A FACEBOOK POST (%d PICTURES EACH)' % (p.title, p.n)),
                      ('ABOUT', m['about']), ('EARLIEST', m['earliest']), ('WHEN', m['when']), ('PHONE', PHONE), ('BOOK', BOOK),
-                     ('OFFER', m['offer']), ('PICTURES', pictures), ('STEP1', step1), ('PICKER', YOUTH_PICKER if m['youth'] else ADULT_PICKER),
+                     ('OFFER', m['offer']), ('PICTURES', pictures), ('STEP1', step1), ('PICKER', PICKER[m['picker']]),
                      ('IGREF', igref), ('FBREF', fbref), ('ALTN', altn), ('N', str(p.n))):
         text = text.replace('@@%s@@' % key, val)
     # the owner's blocks go in last, so that a { or an @ inside them can never be mistaken for a placeholder
@@ -274,7 +284,8 @@ def check(p, t):
         need(rule in t, 'the rule is missing: ' + rule)
     need(t.count('Do not mention prices, the Rolling for Ribbons fundraiser, donations') == 1, 'the money rule is missing')
     need(m['offer'] in t, 'the offer line is missing or changed')
-    need(('Kids Trials' in t) == m['youth'], 'the picker check is for the wrong audience')
+    need(('Kids Trials' in t) == (m['picker'] in ('youth', 'both')), 'the picker check is for the wrong audience')
+    need(('headed Adult Classes' in t) == (m['picker'] in ('adult', 'both')), 'the picker check is for the wrong audience')
     need('Adult Classes and Kids & Teens' in t, 'the picker check is missing')
     # the count is said the same way everywhere
     need(t.count(' %d PICTURES:' % p.n) == 2 and '(%d PICTURES EACH)' % p.n in t, 'the picture count is not stated consistently')
@@ -328,7 +339,7 @@ def run_mutants(p, text):
         ('a street suite added to the facts', sub('Labyrinth BJJ, Fulshear, TX. Phone', 'Labyrinth BJJ, Suite #400, Fulshear, TX. Phone', 1)),
         ('the offer line changed', sub('first class is free', 'first class is $20', 1)),
         ('the check of the picker removed', sub('It must open a class picker with two buttons, Adult Classes and Kids & Teens. ', '', 1)),
-        ('the picker check for the wrong audience', sub(YOUTH_PICKER if p.meta['youth'] else ADULT_PICKER, ADULT_PICKER if p.meta['youth'] else YOUTH_PICKER, 1)),
+        ('the picker check for the wrong audience', sub(PICKER[p.meta['picker']], PICKER['adult'] if p.meta['picker'] != 'adult' else PICKER['youth'], 1)),
         ('a claim about the bio link added', sub('leave it exactly as it is.', 'leave it exactly as it is (it points at our donation page).', 1)),
         ('the picture count wrong in one place', sub('A1. INSTAGRAM POST, %d PICTURES' % p.n, 'A1. INSTAGRAM POST, %d PICTURES' % (p.n + 1), 1)),
         ('a caption word changed', sub('Swipe through for more.' if 'Swipe through for more.' in text else 'No experience', 'Swipe through for less.' if 'Swipe through for more.' in text else 'No experience at all', 1)),
