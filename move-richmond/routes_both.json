@@ -1,0 +1,143 @@
+{
+ "_note": "Road miles and minutes with no traffic (OSRM on OpenStreetMap data, 2026-10-15) from each place to the new academy (richmond: 10330 Hidden Lake Ln, street-range point 29.675445,-95.820810) and to the Katy academy (katy: 1806 Avenue D, 29.798309,-95.824537). [miles, minutes]. If the entrance pin moves by more than a quarter mile, measure again.",
+ "Cross Creek Ranch (old academy)": {
+  "richmond": [
+   4.9,
+   11
+  ],
+  "katy": [
+   9.4,
+   18
+  ]
+ },
+ "Fulshear (town centre)": {
+  "richmond": [
+   6.5,
+   13
+  ],
+  "katy": [
+   12.4,
+   19
+  ]
+ },
+ "Tamarron": {
+  "richmond": [
+   6.8,
+   14
+  ],
+  "katy": [
+   6.3,
+   12
+  ]
+ },
+ "Churchill Farms": {
+  "richmond": [
+   5.5,
+   13
+  ],
+  "katy": [
+   6.1,
+   12
+  ]
+ },
+ "Jordan Ranch": {
+  "richmond": [
+   11.1,
+   21
+  ],
+  "katy": [
+   7.9,
+   14
+  ]
+ },
+ "Cinco Ranch": {
+  "richmond": [
+   7.4,
+   15
+  ],
+  "katy": [
+   5.8,
+   11
+  ]
+ },
+ "Katy (centre)": {
+  "richmond": [
+   9.5,
+   20
+  ],
+  "katy": [
+   0.9,
+   2
+  ]
+ },
+ "Brookshire": {
+  "richmond": [
+   13.9,
+   24
+  ],
+  "katy": [
+   9.6,
+   13
+  ]
+ },
+ "Simonton": {
+  "richmond": [
+   10.9,
+   19
+  ],
+  "katy": [
+   16.9,
+   26
+  ]
+ },
+ "Rosenberg": {
+  "richmond": [
+   10.1,
+   17
+  ],
+  "katy": [
+   18.1,
+   31
+  ]
+ },
+ "Richmond (centre)": {
+  "richmond": [
+   13.6,
+   23
+  ],
+  "katy": [
+   18.3,
+   30
+  ]
+ },
+ "Sealy": {
+  "richmond": [
+   27.7,
+   40
+  ],
+  "katy": [
+   23.3,
+   27
+  ]
+ },
+ "Fulshear Lakes": {
+  "richmond": [
+   9.1,
+   18
+  ],
+  "katy": [
+   15.1,
+   24
+  ]
+ },
+ "Cross Creek West": {
+  "richmond": [
+   5.1,
+   11
+  ],
+  "katy": [
+   10.7,
+   17
+  ]
+ }
+}

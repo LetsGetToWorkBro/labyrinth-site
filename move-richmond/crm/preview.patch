@@ -1,0 +1,447 @@
+--- a/docs/AUTOMATIONS.md
++++ b/docs/AUTOMATIONS.md
+@@ -162,8 +162,9 @@
+ follow-up, takes its name, address and booking link from the lead (`academyFor` and `bookUrlFor` in
+ `_shared`), and names `trial_class` instead of the generic program label. Member mail (welcome,
+ payment notices, win-back, birthday) takes the same name and address, the Wharton schedule link, and
+-the "Getting here" paragraph from `members.location`; the building C and Suite #400 directions are
+-Fulshear only. The CRM's pipeline templates do the same (`src/data/locations.ts`).
++the "Getting here" paragraph from `members.location`; for both gyms it gives the address and nothing about
++parking (nobody has said where to park at 10330 Hidden Lake Ln; add a sentence to `arrival()` in `trial-emails.ts` and to
++`gettingHere` in `member-emails.ts` once somebody has looked). The CRM's pipeline templates do the same (`src/data/locations.ts`).
+ Wharton has its own phone, (832) 400-5532 (Fulshear stays (281) 393-7983), in all of that mail and in
+ the pipeline templates; a phone the owner writes for Wharton on the Locations screen wins. Texts to
+ everyone still go out from the one OpenPhone number in `OPENPHONE_FROM`.
+--- a/scripts/automations.test.mjs
++++ b/scripts/automations.test.mjs
+@@ -56,7 +56,7 @@
+ 
+ const TZ = 'America/Chicago'
+ const GYM = { name: 'Labyrinth BJJ', address: '', phone: '', tz: TZ }   // as the settings row stores it
+-const ADDRESS = '6615 West Cross Creek Bend Lane, Suite #400, Fulshear, TX 77441'
++const ADDRESS = '10330 Hidden Lake Ln, Building 1, Richmond, TX 77406'
+ const UNSUB = 'https://x.supabase.co/functions/v1/unsubscribe?t=abc.def'
+ const at = (iso) => new Date(iso)
+ 
+@@ -221,10 +221,10 @@
+ console.log('arrival help and the kids waiver')
+ const adult = trial.renderTrialEmail('confirmation', lead(), GYM, UNSUB).text
+ const kids = trial.renderTrialEmail('confirmation', lead({ program: 'Kids 3-6' }), GYM, UNSUB).text
+-yes('adult: park at the front of building C, Suite #400, no gi needed', /front of building C/.test(adult) && /Suite #400/.test(adult) && /don't need a gi/.test(adult))
++yes('adult: the address, no directions for the old building, no gi needed', adult.includes(`Getting here: we're at ${ADDRESS}`) && !/building C|Suite #400/.test(adult) && /don't need a gi/.test(adult))
+ yes('adult: no waiver line', !/waiver/.test(adult))
+ yes('kids: parent can stay and watch, guardian signs a waiver at the front desk', /stay and watch/.test(kids) && /parent or guardian will sign a short waiver at the front desk/.test(kids))
+-yes('the reminders carry the arrival help too', /building C/.test(trial.renderTrialEmail('reminder_2h', lead(), GYM, UNSUB).text) && /building C/.test(same.text))
++yes('the reminders carry the arrival help too (the address, and what to wear)', [trial.renderTrialEmail('reminder_2h', lead(), GYM, UNSUB).text, same.text].every(t => t.includes(ADDRESS) && /Wear something comfortable/.test(t) && !/building C|Suite #400/.test(t)))
+ 
+ console.log('no_show copy works whether or not they came')
+ const nsm = trial.renderTrialEmail('no_show', lead(), GYM, UNSUB)
+--- a/scripts/booking-existing.test.mjs
++++ b/scripts/booking-existing.test.mjs
+@@ -58,7 +58,7 @@
+   check('the address on file is told, once', mails().map(m => m.to), [['pat@example.test']])
+   const m = mails()[0]
+   yes('and told the booking that is ON FILE (Fulshear, the original class), not what was posted',
+-    /already booked/.test(m.subject) && /Adult Jiu-Jitsu/.test(m.text) && /Fulshear/.test(m.text) && !/Wharton|Kids/.test(m.text + m.subject))
++    /already booked/.test(m.subject) && /Adult Jiu-Jitsu/.test(m.text) && /Hidden Lake/.test(m.text) && !/Wharton|Kids/.test(m.text + m.subject))
+   yes('that it was left alone, and how to change it; with the unsubscribe link', /We haven't changed anything/.test(m.text) && /reply to this email/.test(m.text) && !!m.headers?.['List-Unsubscribe'])
+   check('no new confirmation was claimed, no text was sent', [db.rows('lead_notifications').length, texts().length], [0, 0])
+ }
+--- a/scripts/booking-location-move.test.mjs
++++ b/scripts/booking-location-move.test.mjs
+@@ -51,13 +51,13 @@
+   check('an explicit "fulshear" moves the lead back (location null)', a.row().location, null)
+   check('…the Fulshear class replaces the Wharton one', a.row().trial_class, 'Adult BJJ (Gi)')
+   const m = a.mails()[0], t = a.texts()[0]
+-  yes('…and the confirmation names Fulshear, not Wharton', /West Cross Creek/.test(m.text) && !/Houston St|wharton\.labyrinth/i.test(m.text + m.subject))
++  yes('…and the confirmation names the primary gym (Hidden Lake Ln), not Wharton', /Hidden Lake/.test(m.text) && !/Houston St|wharton\.labyrinth/i.test(m.text + m.subject))
+   yes('…and so does the text', !!t && !/Houston St|wharton\.labyrinth/i.test(JSON.stringify(t)))
+ 
+   const b = await rig([lead()])
+   await b.submit({ ...base })
+   check('the Fulshear site says nothing: its Origin does, so the lead moves back', b.row().location, null)
+-  yes('…and the confirmation is Fulshear\'s', /West Cross Creek/.test(b.mails()[0].text) && !/Houston St/.test(b.mails()[0].text))
++  yes('…and the confirmation is the primary gym\'s', /Hidden Lake/.test(b.mails()[0].text) && !/Houston St/.test(b.mails()[0].text))
+ 
+   const c = await rig([lead()])
+   await c.submit({ ...base }, 'https://www.teamlegacydojo.com')
+--- a/scripts/location-consumers.test.mjs
++++ b/scripts/location-consumers.test.mjs
+@@ -96,7 +96,7 @@
+   check('a gym the owner added: its own name and address in the messages', [k.text.includes('1 Test Way, Katy, TX'), k.text.includes('Labyrinth BJJ Katy Test')], [true, true])
+   check('…its own booking link, and the Fulshear pricing link where it has none', [mail('no_show', lead({ location: 'katy-test' }), third).text.includes('https://k.example.test/book'), mail('attended_5d', lead({ location: 'katy-test' }), third).text.includes(FULSHEAR_PRICING)], [true, true])
+   const unknown = mail('confirmation', lead({ location: 'houston', stage: 'trial_booked' }), third)
+-  check('a location the registry does not have reads as Fulshear, as it does for a hand-typed stranger', [unknown.text.includes('Fulshear'), all(unknown).includes('Katy')], [true, false])
++  check('a location the registry does not have reads as the primary gym, as it does for a hand-typed stranger', [unknown.text.includes('Hidden Lake'), all(unknown).includes('Katy')], [true, false])
+ }
+ 
+ console.log('3. The CRM\'s templates read it too')
+--- a/scripts/member-emails.test.mjs
++++ b/scripts/member-emails.test.mjs
+@@ -46,11 +46,11 @@
+ 
+ const GYM = { name: 'Labyrinth BJJ', address: '', phone: '', tz: 'America/Chicago' }   // as the settings row stores it
+ const UNSUB = 'https://x.supabase.co/u?t=abc'
+-const FULSHEAR = '6615 West Cross Creek Bend Lane, Suite #400, Fulshear, TX 77441'
++const FULSHEAR = '10330 Hidden Lake Ln, Building 1, Richmond, TX 77406'   // the primary gym's id is still 'fulshear'; it is at Hidden Lake Ln since July 2027
+ const WHARTON = '201 N Houston St, Wharton, TX 77488'
+ const WLINK = 'https://wharton.labyrinth.vision/schedule'
+ const FLINK = 'https://labyrinth.vision/schedule'
+-const FULSHEAR_ANY = /Fulshear|West Cross Creek|Suite #400|building C/i
++const FULSHEAR_ANY = /Fulshear|Richmond|West Cross Creek|Hidden Lake|Suite #400|building C/i
+ const h = s => createHash('sha256').update(s).digest('hex').slice(0, 16)
+ const person = (extra = {}) => ({ first_name: 'Emma', kid: false, amountOwed: 399, age: 9, ...extra })
+ const render = (kind, extra) => member.renderMemberEmail(kind, person(extra), GYM, UNSUB)
+@@ -81,12 +81,12 @@
+ // Hashes of the complete rendered output (subject, text, html, timeline label) taken from the code BEFORE
+ // member mail knew about locations. The payment notices are not here: their wording changed on purpose.
+ const GOLDEN = {
+-  'welcome_d0|adult': '55c607846e11497b', 'welcome_d0|kid': 'fb74f419e0ce88c7',
+-  'welcome_d3|adult': '14050526e8cfc8f1', 'welcome_d3|kid': '175680f0a86519e0',
+-  'welcome_d14|adult': '54ff8c2d1e23d0b3', 'welcome_d14|kid': '8779df6f45bcea3a',
+-  'winback_14|adult': '6b60b85706806aba', 'winback_14|kid': '58f5cf73d8dae400',
+-  'winback_30|adult': '2054212039791426', 'winback_30|kid': '441b36baa19ff7e0',
+-  'birthday|adult': '4b47c1e2b87990a0', 'birthday|kid': 'cd5ad32248cc358a',
++  'welcome_d0|adult': '0a861edac0952202', 'welcome_d0|kid': '093e1b5314b4989a',
++  'welcome_d3|adult': '898bba93ebefe85f', 'welcome_d3|kid': 'f1acc1ce637fdc73',
++  'welcome_d14|adult': 'f65d1c2f148a68fc', 'welcome_d14|kid': '9cee0ee05f75c7b7',
++  'winback_14|adult': 'd2166ceba590fbf8', 'winback_14|kid': '68487aeefc40b747',
++  'winback_30|adult': 'd16a1042341807df', 'winback_30|kid': 'afb2d14f0d439f7d',
++  'birthday|adult': '93be2c7880a17e2f', 'birthday|kid': 'd17e61fa436f1f3e',
+ }
+ let n = 0
+ for (const [key, want] of Object.entries(GOLDEN)) {
+@@ -99,7 +99,7 @@
+ }
+ console.log(`  ok    ${n} renderings identical to the pre-location output`)
+ const f3 = render('welcome_d3', {})
+-yes('a Fulshear member is still told to park at the front of building C and come to Suite #400', f3.text.includes('park at the front of building C and come to Suite #400'))
++yes('a member of the primary gym is told where it is, and nothing about parking at the old building', f3.text.includes(`Getting here: we're at ${FULSHEAR}`) && !/building C|Suite #400/.test(f3.text))
+ yes('...and the footer has the Fulshear address', f3.text.includes(FULSHEAR) && f3.html.includes(FULSHEAR))
+ 
+ // ── The payment notices ─────────────────────────────────────────────────────
+--- a/scripts/member-lifecycle.test.mjs
++++ b/scripts/member-lifecycle.test.mjs
+@@ -91,8 +91,8 @@
+   ])
+   // Taken from the code as it was before these fixes, on this same input.
+   check('every email is byte for byte what it was (subject, text, html, headers)', summary.mails, [
+-    'd5e7705f3def0627', '9e0bbd2f6299abdf', '7d72698ed8260e4d', 'ae96c499d5524ce1',
+-    '5ccb35dd5e9dedc8', 'd24144f1449b69b9', '33f74bc218994d4b', '00950e92607823dc',
++    '526217d26286acc8', '1d0ef4b4bcfa73ae', '721399109983a1f3', 'fa1336fc33da701e',
++    'cec501a195d31701', '35e9e267541970fb', '072f51cf8d09c4f1', 'cd58ababb9c0dc0f',
+   ])
+   yes('every email carries its unsubscribe link and the List-Unsubscribe headers',
+     fn.sent.every(s => /Unsubscribe/.test(s.body.html) && s.body.headers['List-Unsubscribe-Post'] === 'List-Unsubscribe=One-Click'))
+@@ -167,10 +167,10 @@
+   const to = a => fn.sent.find(s => s.body.to[0] === a).body
+   const f = to('f1@example.test'), w = to('w1@example.test')
+   yes('Fulshear: no member-app link, says to reply or call, button is tap-to-call, Fulshear footer',
+-    !/crm\.labyrinth\.vision/.test(f.text + f.html) && /reply to this email/.test(f.text) && f.html.includes('href="tel:+12813937983"') && f.text.includes('Suite #400, Fulshear'))
++    !/crm\.labyrinth\.vision/.test(f.text + f.html) && /reply to this email/.test(f.text) && f.html.includes('href="tel:+12813937983"') && f.text.includes('Building 1, Richmond'))
+   yes('Wharton: the same, with Wharton\'s name and address and none of Fulshear\'s',
+     /reply to this email/.test(w.text) && w.text.includes('Labyrinth BJJ Wharton, 201 N Houston St, Wharton, TX 77488')
+-    && !/Fulshear|West Cross Creek|Suite #400|building C/i.test(w.text + w.html))
++    && !/Fulshear|Richmond|West Cross Creek|Hidden Lake|Suite #400|building C/i.test(w.text + w.html))
+ }
+ console.log('welcome, win-back and birthday mail follow members.location')
+ {
+@@ -188,11 +188,11 @@
+   await live(fn)
+   const to = a => fn.sent.find(s => s.body.to[0] === a).body
+   const w3 = to('w3@example.test'), b1 = to('b1@example.test'), wb = to('wb@example.test'), f3 = to('f3@example.test')
+-  const FULSHEAR_ANY = /Fulshear|West Cross Creek|Suite #400|building C/i
++  const FULSHEAR_ANY = /Fulshear|Richmond|West Cross Creek|Hidden Lake|Suite #400|building C/i
+   yes('a Wharton member\'s welcome_d3 gives Wharton\'s address, not building C', w3.text.includes('Getting here: we\'re at 201 N Houston St, Wharton, TX 77488') && !FULSHEAR_ANY.test(w3.text + w3.html))
+   yes('their birthday and win-back footers are Wharton\'s', [b1, wb].every(m => m.text.includes('Labyrinth BJJ Wharton, 201 N Houston St') && !FULSHEAR_ANY.test(m.text + m.html)))
+   yes('their win-back links to the Wharton schedule', wb.text.includes('https://wharton.labyrinth.vision/schedule'))
+-  yes('a Fulshear member\'s welcome_d3 still says building C and Suite #400', f3.text.includes('park at the front of building C and come to Suite #400'))
++  yes('a member of the primary gym is told where it is, and nothing about parking at the old building', f3.text.includes('Getting here: we\'re at 10330 Hidden Lake Ln, Building 1, Richmond, TX 77406') && !/building C|Suite #400/.test(f3.text))
+ }
+ 
+ // ── A5: win-back waits for history, not for 20 rows ─────────────────────────
+--- a/scripts/trial-lifecycle.test.mjs
++++ b/scripts/trial-lifecycle.test.mjs
+@@ -80,8 +80,8 @@
+     // Taken from the code as it was before these fixes, on this same input. The two Wharton lead's
+     // mails (3rd and 5th) were re-taken when Wharton got its own phone line; the rest are unchanged.
+     mails: [
+-      'c3ed88fa4f1905cd', 'bd2dff859f4452f2', 'aadedee491e05d77', 'c8697acf59b86cf0',
+-      '98723ff55e217f0a', '35bfd6d3bdc9a66e', '141fdd1075dc53ec', '0551c4d028c9ec6c',
++      '64bc24d7531f128a', 'd094679244df36c2', 'aadedee491e05d77', '677bebc0051a181f',
++      '98723ff55e217f0a', '1aa918acd0933958', 'ad43bed14f2e1515', '8c671e4f536378cc',
+     ],
+   }
+   check('the tick sent eight, failed none, answered 200', [summary.status, summary.ok, summary.sent, summary.failed], [200, true, 8, 0])
+--- a/scripts/trial-location.test.mjs
++++ b/scripts/trial-location.test.mjs
+@@ -47,13 +47,13 @@
+ }
+ const yes = (label, cond) => check(label, !!cond, true)
+ 
+-const FULSHEAR = '6615 West Cross Creek Bend Lane, Suite #400, Fulshear, TX 77441'
++const FULSHEAR = '10330 Hidden Lake Ln, Building 1, Richmond, TX 77406'   // the primary gym's id is still 'fulshear'; it is at Hidden Lake Ln since July 2027
+ const WHARTON = '201 N Houston St, Wharton, TX 77488'
+ const WLINK = 'https://wharton.labyrinth.vision/schedule'
+ const FLINK = 'https://labyrinth.vision/#book'
+ const WPHONE = '(832) 400-5532'
+ const FPHONE = '(281) 393-7983'
+-const FULSHEAR_ANY = /Fulshear|West Cross Creek|Suite #400|building C/i
++const FULSHEAR_ANY = /Fulshear|Richmond|West Cross Creek|Hidden Lake|Suite #400|building C/i
+ const GYM = { name: 'Labyrinth BJJ', address: '', phone: '', tz: 'America/Chicago' }   // as the settings row stores it
+ const UNSUB = 'https://x.supabase.co/u?t=abc'
+ const NOW = new Date('2026-08-04T15:00:00Z')
+@@ -147,31 +147,31 @@
+ // Hashes of the complete rendered output (subject, text, html, timeline label) taken from the code
+ // BEFORE location support existed, for every kind. Any change to a Fulshear lead's wording fails here.
+ const GOLDEN = {
+- "Adult BJJ|confirmation": "957c9060ca5ff470",
+- "Adult BJJ|reminder_24h": "12ed1613b4ff6c14",
+- "Adult BJJ|reminder_2h": "4458ea830a3c57f1",
+- "Adult BJJ|no_show": "39b216a2a06bed08",
+- "Adult BJJ|attended_thanks": "ca1b6673a1ff879f",
+- "Adult BJJ|attended_2d": "1665b81efc59b60c",
+- "Adult BJJ|attended_5d": "1574029b50dbc581",
+- "Adult BJJ|attended_10d": "0a0e996f0288279a",
+- "Adult BJJ|noshow_2d": "94bddd01fe603d37",
+- "Adult BJJ|noshow_7d": "32ba3da67718e2e6",
+- "Adult BJJ|nudge": "43561ba2e404d3f5",
+- "Kids 3-6|confirmation": "b39e7cf88f383c2e",
+- "Kids 3-6|reminder_24h": "7d488cb57127319d",
+- "Kids 3-6|reminder_2h": "3a53815788993af7",
+- "Kids 3-6|no_show": "39b216a2a06bed08",
+- "Kids 3-6|attended_thanks": "ca1b6673a1ff879f",
+- "Kids 3-6|attended_2d": "1665b81efc59b60c",
+- "Kids 3-6|attended_5d": "1574029b50dbc581",
+- "Kids 3-6|attended_10d": "0a0e996f0288279a",
+- "Kids 3-6|noshow_2d": "94bddd01fe603d37",
+- "Kids 3-6|noshow_7d": "32ba3da67718e2e6",
+- "Kids 3-6|nudge": "43561ba2e404d3f5",
+- "sms|Adult BJJ": "0d923e432d013496",
+- "sms|Kids 3-6": "5dacafdceebef598",
+- "sms|": "3b8720c4c080414f"
++ "Adult BJJ|confirmation": "09552b587a364e6d",
++ "Adult BJJ|reminder_24h": "9875f5e4a3e2a9b2",
++ "Adult BJJ|reminder_2h": "9106da1224fe0fb8",
++ "Adult BJJ|no_show": "c609ad5e43dcf791",
++ "Adult BJJ|attended_thanks": "a31ee9738f1e408a",
++ "Adult BJJ|attended_2d": "d69b6103c6acaffd",
++ "Adult BJJ|attended_5d": "8cd52763d8f42f61",
++ "Adult BJJ|attended_10d": "e6a3a59d01f6931c",
++ "Adult BJJ|noshow_2d": "aab1cd0a12f60853",
++ "Adult BJJ|noshow_7d": "a0b5a30b3c425feb",
++ "Adult BJJ|nudge": "161246bdb6e6124f",
++ "Kids 3-6|confirmation": "ad4e554a266268ad",
++ "Kids 3-6|reminder_24h": "e3427a5f3f9056c5",
++ "Kids 3-6|reminder_2h": "48d765e97154d1b7",
++ "Kids 3-6|no_show": "c609ad5e43dcf791",
++ "Kids 3-6|attended_thanks": "a31ee9738f1e408a",
++ "Kids 3-6|attended_2d": "d69b6103c6acaffd",
++ "Kids 3-6|attended_5d": "8cd52763d8f42f61",
++ "Kids 3-6|attended_10d": "e6a3a59d01f6931c",
++ "Kids 3-6|noshow_2d": "aab1cd0a12f60853",
++ "Kids 3-6|noshow_7d": "a0b5a30b3c425feb",
++ "Kids 3-6|nudge": "161246bdb6e6124f",
++ "sms|Adult BJJ": "e2f14585344caa72",
++ "sms|Kids 3-6": "d194494f3699ef2d",
++ "sms|": "3309e190584126a6"
+ }
+ let n = 0
+ for (const program of ['Adult BJJ', 'Kids 3-6']) {
+@@ -194,7 +194,7 @@
+ }
+ console.log(`  ok    ${n} texts identical to the pre-location output`)
+ const fc = mail('confirmation', lead())
+-yes('a Fulshear confirmation still has the Fulshear address and the parking line', fc.text.includes(FULSHEAR) && fc.text.includes('building C'))
++yes('a confirmation for the primary gym has its address and no directions for the old building', fc.text.includes(FULSHEAR) && fc.text.includes(`Getting here: we're at ${FULSHEAR}`) && !/building C|Suite #400/.test(fc.text))
+ yes('a Fulshear no-show still links to labyrinth.vision/#book', mail('no_show', lead()).text.includes(FLINK))
+ 
+ console.log('a Fulshear lead that did pick a class names it and keeps its own address')
+@@ -235,7 +235,7 @@
+   return t.includes(WHARTON) && t.includes(WLINK)
+ })())
+ yes('inquiry text: in Wharton', pipeline.fillStep(step('inq_reply').sms, crm({ location: 'wharton' })).includes('Labyrinth BJJ in Wharton'))
+-yes('Fulshear lead: still in Fulshear', pipeline.fillStep(step('inq_reply').sms, crm()).includes('Labyrinth BJJ in Fulshear'))
++yes('primary-gym lead: in Richmond', pipeline.fillStep(step('inq_reply').sms, crm()).includes('Labyrinth BJJ in Richmond'))
+ yes('Fulshear lead: still the original link', pipeline.fillStep(step('inq_2d').email, crm()).includes(FLINK))
+ yes('CRM templates: a Wharton lead sees (832) 400-5532 and never the Fulshear number', steps.every(s =>
+   ['subject', 'email', 'sms'].every(f => !pipeline.fillStep(s[f], crm({ location: 'wharton' })).includes(FPHONE))))
+--- a/src/data/locations.ts
++++ b/src/data/locations.ts
+@@ -15,7 +15,13 @@
+ /** The id of the gym whose rows carry a null location. */
+ export const PRIMARY_LOCATION_ID = 'fulshear'
+ 
+-export const FULSHEAR_ADDRESS = '6615 West Cross Creek Bend Lane, Suite #400, Fulshear'
++/**
++ * The primary gym keeps its id ('fulshear') and the constant names built on it, because both are stored in rows and settings. Since July 2027 it is at
++ * Hidden Lake Ln, in Richmond.
++ */
++export const FULSHEAR_ADDRESS = '10330 Hidden Lake Ln, Building 1, Richmond'
++/** Where it was before. A template the owner saved earlier may still say so, and a Wharton lead must never be shown it. */
++export const FORMER_FULSHEAR_ADDRESS = '6615 West Cross Creek Bend Lane, Suite #400, Fulshear'
+ export const WHARTON_ADDRESS = '201 N Houston St, Wharton, TX 77488'
+ export const WHARTON_PHONE = '(832) 400-5532'
+ export const FULSHEAR_PHONE = '(281) 393-7983'
+@@ -44,11 +50,13 @@
+   const bare = (url: string) => url.replace(/^https?:\/\//, '')
+   return text
+     .replaceAll(FULSHEAR_ADDRESS, p.address || WHARTON_ADDRESS)
++    .replaceAll(FORMER_FULSHEAR_ADDRESS, p.address || WHARTON_ADDRESS)
+     .replaceAll(FULSHEAR_PHONE, p.phone || WHARTON_PHONE)
+     .replace(/(https:\/\/)?labyrinth\.vision\/(#book|schedule)/g, (_m, scheme: string | undefined) =>
+       `${scheme ?? ''}${bare(p.bookUrl || WHARTON_SCHEDULE_URL)}`)
+     .replace(/(https:\/\/)?labyrinth\.vision\/pricing/g, (_m, scheme: string | undefined) =>
+       `${scheme ?? ''}${bare(p.pricingUrl || WHARTON_PRICING_URL)}`)
++    .replaceAll('Labyrinth BJJ in Richmond', `Labyrinth BJJ in ${p.name || 'Wharton'}`)
+     .replaceAll('Labyrinth BJJ in Fulshear', `Labyrinth BJJ in ${p.name || 'Wharton'}`)
+ }
+ 
+@@ -76,7 +84,7 @@
+ export const DEFAULT_LOCATIONS: LocationProfile[] = [
+   {
+     id: PRIMARY_LOCATION_ID, name: 'Fulshear',
+-    address: `${FULSHEAR_ADDRESS}, TX 77441`,
++    address: `${FULSHEAR_ADDRESS}, TX 77406`,
+     phone: '(281) 393-7983', email: 'info@labyrinth.vision',
+     siteUrl: 'https://labyrinth.vision', bookUrl: 'https://labyrinth.vision/#book', pricingUrl: FULSHEAR_PRICING_URL,
+     timezone: 'America/Chicago', active: true, accent: '#c9a96a',
+--- a/src/data/pipeline.ts
++++ b/src/data/pipeline.ts
+@@ -41,7 +41,7 @@
+     key: 'inq_reply', funnel: 'inquiry', label: 'Reply and invite them to book', after: 0,
+     subject: 'Your free class at Labyrinth BJJ',
+     email: `Hi {First Name},\n\nThanks for reaching out about {Program} at Labyrinth BJJ. Your first class is free, and you do not need any experience or a gi.\n\nYou can pick a class that fits at https://labyrinth.vision/#book, or just reply with a day that works and we will set it up. We are at ${ADDRESS}.${SIGN}`,
+-    sms: 'Hi {First Name}, it is Labyrinth BJJ in Fulshear. Thanks for your interest in {Program}! Your first class is free. Pick a time at labyrinth.vision/#book or reply with a day that works.',
++    sms: 'Hi {First Name}, it is Labyrinth BJJ in Richmond. Thanks for your interest in {Program}! Your first class is free. Pick a time at labyrinth.vision/#book or reply with a day that works.',
+   },
+   {
+     key: 'inq_2d', funnel: 'inquiry', label: 'Check in: still want to try a class?', after: 2,
+--- a/src/data/seed.ts
++++ b/src/data/seed.ts
+@@ -1030,7 +1030,7 @@
+ 
+       // From labyrinth.vision. Hours are published as
+       // "Mon–Fri 6:30am–9pm · Sat 9am–2pm · Sun 10:30am–2pm".
+-      address: '6615 West Cross Creek Bend Lane, Suite #400, Fulshear, TX 77441',
++      address: '10330 Hidden Lake Ln, Building 1, Richmond, TX 77406',
+       phone: '(281) 393-7983',
+       timeZone: 'Central Time (CT)',
+       logoDataUrl: null,
+--- a/supabase/functions/_shared/automation-core.ts
++++ b/supabase/functions/_shared/automation-core.ts
+@@ -6,7 +6,7 @@
+  * run it under plain node, with a fake `now`, and so trial-lifecycle and
+  * member-lifecycle cannot disagree about what "tomorrow" or "quiet hours" mean.
+  *
+- * The academy is in Fulshear, Texas. Every calendar question below is asked on
++ * The academy is in Richmond, Texas (in Fulshear until July 2027). Every calendar question below is asked on
+  * the academy's clock (America/Chicago), never the UTC date: after 7pm Central
+  * the UTC date is already tomorrow, which is the mistake this repository has
+  * already made twice (see supabase/functions/billing-renewals).
+@@ -15,7 +15,7 @@
+ // ─── Facts the messages state ──────────
+ 
+ export const GYM_NAME = 'Labyrinth BJJ Academy'
+-export const GYM_ADDRESS = '6615 West Cross Creek Bend Lane, Suite #400, Fulshear, TX 77441'
++export const GYM_ADDRESS = '10330 Hidden Lake Ln, Building 1, Richmond, TX 77406'
+ export const GYM_PHONE = '(281) 393-7983'
+ export const BOOK_URL = 'https://labyrinth.vision/#book'
+ export const PRICING_URL = 'https://labyrinth.vision/pricing'
+--- a/supabase/functions/_shared/event-emails.ts
++++ b/supabase/functions/_shared/event-emails.ts
+@@ -181,7 +181,7 @@
+ ${gym.name}
+ ${gym.address}${party}
+ 
+-Park at the front of building C and come to Suite #400. Wear something comfortable you can move in, and bring a water bottle. It's free, and no experience is needed.
++Wear something comfortable you can move in, and bring a water bottle. It's free, and no experience is needed.
+ 
+ ${when === 'day_before' ? 'If you can, arrive ten minutes early so we can get everyone settled. ' : ''}If your plans change, just reply to this email${call} and we'll update the list.
+ 
+--- a/supabase/functions/_shared/member-emails.ts
++++ b/supabase/functions/_shared/member-emails.ts
+@@ -59,10 +59,8 @@
+   const callCta: Cta = { label: `Call ${gym.phone}`, url: telUrl(gym.phone) }
+   const owed = person.amountOwed && person.amountOwed > 0 ? `\nAmount due: $${person.amountOwed.toFixed(2)}\n` : ''
+ 
+-  // The parking and suite directions are for the Fulshear building only.
+-  const gettingHere = wharton
+-    ? `Getting here: we're at ${gym.address}. Arrive about ten minutes early so there's time to check in and warm up.`
+-    : `Getting here: park at the front of building C and come to Suite #400. Arrive about ten minutes early so there's time to check in and warm up.`
++  // Nobody has said where to park or which door to use at 10330 Hidden Lake Ln, so neither gym's message does: each gets its address.
++  const gettingHere = `Getting here: we're at ${gym.address}. Arrive about ten minutes early so there's time to check in and warm up.`
+ 
+   let subject: string, text: string, timelineLabel: string
+   let cta: Cta | undefined
+--- a/supabase/functions/_shared/trial-emails.ts
++++ b/supabase/functions/_shared/trial-emails.ts
+@@ -279,7 +279,7 @@
+ function arrival(program: string, short = false, location?: string | null, address = ''): string {
+   const kids = isYouthProgram(program)
+   const lines = normalizeLocation(location) === 'wharton'
+-    // The parking and suite directions are for the Fulshear building, so Wharton gets the address
++    // Nobody has said where to park or which door to use at 10330 Hidden Lake Ln, so neither gym's message does: each gets the address
+     // (stated again in the message above) and the parts that are true of every class.
+     ? short
+       ? [`Wear something comfortable (a t-shirt and shorts is fine). You don't need a gi.`]
+@@ -288,9 +288,9 @@
+         `What to wear: something comfortable you can move in, like a t-shirt and shorts with no zips or pockets. You don't need a gi. Bring a water bottle, and flip-flops if you have them, for walking off the mat.`,
+       ]
+     : short
+-    ? [`Park at the front of building C and come to Suite #400. Wear something comfortable (a t-shirt and shorts is fine). You don't need a gi.`]
++    ? [`Wear something comfortable (a t-shirt and shorts is fine). You don't need a gi.`]
+     : [
+-      `Getting here: park at the front of building C and come to Suite #400. Come about ten minutes early so we can show you around and get you signed in.`,
++      `Getting here: we're at ${address}. Come about ten minutes early so we can show you around and get you signed in.`,
+       `What to wear: something comfortable you can move in, like a t-shirt and shorts with no zips or pockets. You don't need a gi. Bring a water bottle, and flip-flops if you have them, for walking off the mat.`,
+     ]
+   if (kids) {
+@@ -582,7 +582,6 @@
+   const at = when(lead.trial_at, gym.tz)
+   return {
+     text: `${gym.name}: hi ${first}, you're booked for ${what} on ${at}, ${gym.address}. `
+-      + (normalizeLocation(lead.location) === 'wharton' ? '' : `Park at the front of building C. `)
+       + `Come ten minutes early in a t-shirt and shorts and bring water. `
+       + `Reply STOP to unsubscribe.`,
+     timelineLabel: 'Booking confirmation texted',
+--- a/supabase/functions/billing-renewals/_core.js
++++ b/supabase/functions/billing-renewals/_core.js
+@@ -447,7 +447,7 @@
+       gymName: "Labyrinth BJJ",
+       // From labyrinth.vision. Hours are published as
+       // "Mon–Fri 6:30am–9pm · Sat 9am–2pm · Sun 10:30am–2pm".
+-      address: "6615 West Cross Creek Bend Lane, Suite #400, Fulshear, TX 77441",
++      address: "10330 Hidden Lake Ln, Building 1, Richmond, TX 77406",
+       phone: "(281) 393-7983",
+       timeZone: "Central Time (CT)",
+       logoDataUrl: null,
+@@ -498,7 +498,7 @@
+ // src/data/locations.ts
+ init_define_import_meta_env();
+ var PRIMARY_LOCATION_ID = "fulshear";
+-var FULSHEAR_ADDRESS = "6615 West Cross Creek Bend Lane, Suite #400, Fulshear";
++var FULSHEAR_ADDRESS = "10330 Hidden Lake Ln, Building 1, Richmond";
+ var WHARTON_ADDRESS = "201 N Houston St, Wharton, TX 77488";
+ var WHARTON_PHONE = "(832) 400-5532";
+ var WHARTON_SCHEDULE_URL = "https://wharton.labyrinth.vision/schedule";
+@@ -512,7 +512,7 @@
+   {
+     id: PRIMARY_LOCATION_ID,
+     name: "Fulshear",
+-    address: `${FULSHEAR_ADDRESS}, TX 77441`,
++    address: `${FULSHEAR_ADDRESS}, TX 77406`,
+     phone: "(281) 393-7983",
+     email: "info@labyrinth.vision",
+     siteUrl: "https://labyrinth.vision",
+--- a/supabase/functions/send-message/index.ts
++++ b/supabase/functions/send-message/index.ts
+@@ -109,7 +109,7 @@
+   | { ok: true; id?: string }
+   | { ok: false; error: string; status?: number; retryAfterMs?: number }
+ 
+-const ADDRESS_LINE = '6615 West Cross Creek Bend Lane, Suite #400, Fulshear, TX 77441'
++const ADDRESS_LINE = '10330 Hidden Lake Ln, Building 1, Richmond, TX 77406'
+ 
+ /** `{First Name}` in a subject, body or HTML becomes the recipient's first name ("there" when unknown). */
+ function personalize(text: string, first: string | undefined): string {

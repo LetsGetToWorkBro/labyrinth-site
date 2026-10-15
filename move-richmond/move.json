@@ -1,0 +1,44 @@
+{
+  "about": "The move of the academy from Fulshear to Richmond, TX. Everything the move script needs to know. Nothing in this folder is published: it lives on the working branch only, and apply_move.py edits a separate checkout of main on the day.",
+  "effective_date": "2027-07-01",
+  "effective_date_note": "Tentative. The owner said 'July 1st' on 2026-10-15, so this is July 1, 2027. apply_move.py refuses to run before this date unless --allow-early.",
+  "phone": "(281) 393-7983",
+  "phone_note": "Unchanged by the move.",
+  "old": {
+    "street": "6615 West Cross Creek Bend Lane",
+    "unit": "Suite #400",
+    "city": "Fulshear",
+    "state": "TX",
+    "zip": "77441",
+    "lat": 29.694132,
+    "lng": -95.871867
+  },
+  "new": {
+    "street": "10330 Hidden Lake Ln",
+    "unit": "Building 1",
+    "city": "Richmond",
+    "state": "TX",
+    "zip": "77406",
+    "lat": 29.675445,
+    "lng": -95.82081,
+    "source": "The address is from the owner's lease rider (10330 Hidden Lake Ln - Building 1, Richmond TX 77406), received 2026-10-15.",
+    "coordinates_note": "US Census geocoder, interpolated along the street. Replace with the entrance's own coordinates (drop a pin in Google Maps at the door) before the move, and the map pin, the geo tags and the structured data all follow."
+  },
+  "facts": {
+    "road_miles_from_old_academy": 4.9,
+    "road_minutes_from_old_academy": 11,
+    "straight_line_miles_from_old_academy": 3.2,
+    "route_from_old_academy": "Cross Creek Ranch Boulevard, FM 1093, Canyon Fields Drive, Reese Lake Drive, Fulshear-Gaston Road and Hidden Lake Lane",
+    "source": "OSRM driving routes on OpenStreetMap data, 2026-10-15; see routes.json"
+  },
+  "katy": {
+    "street": "1806 Avenue D",
+    "unit": "Suite 108",
+    "city": "Katy",
+    "state": "TX",
+    "zip": "77493",
+    "lat": 29.798309,
+    "lng": -95.824537,
+    "note": "The other academy. Only its coordinates are used here (routes_both.json)."
+  }
+}
