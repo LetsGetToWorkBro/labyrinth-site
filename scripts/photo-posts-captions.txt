@@ -2,7 +2,9 @@ THE PHOTO POSTS (October 2026): INSTAGRAM AND FACEBOOK
 
 Pictures from the 3 October 2026 shoot, two photographers, two Lightroom albums (scripts/photo-posts.json says which picture goes where and how it is cropped;
 scripts/instagram-photo-posts.mjs makes the slides). Each post is an Instagram carousel and the same pictures as one Facebook post:
-  assets/social/shoot/<post>-01.jpg … <post>-NN.jpg   1080x1350 (4:5); the first slide is the cover and the last is the close, the ones between are the photographs alone.
+  assets/social/photo-posts/<post>-01.jpg … <post>-NN.jpg   1080x1350 (4:5); the first slide is the cover and the last is the close, the ones between are the photographs alone.
+Everything that matters is in the middle 1080x1080 square of each slide, with a blurred copy of the photograph above and below it, because Instagram squared the first post (it cut
+135px off the top and bottom of every picture) and a square crop must lose nothing. (assets/social/shoot/ holds the same pictures under the old names.)
 Alt text, one line per slide, is under each post below, in slide order. Instagram's limit is 20 pictures a post.
 
 Both platforms, always: a post is made for Instagram and for Facebook together (the owner's rule from October 15, 2026).

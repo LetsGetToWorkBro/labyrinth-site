@@ -5,9 +5,10 @@
     python3 scripts/muse_prompt_photo_posts.py all                   every post that is ready (its pictures and captions exist)
     python3 scripts/muse_prompt_photo_posts.py teens --mutate        breaks the finished prompt a few dozen ways and shows the checks catch each
     python3 scripts/muse_prompt_photo_posts.py teens --live          the pictures at labyrinth.vision are the repo's, byte for byte
+    python3 scripts/muse_prompt_photo_posts.py teens --redo          the prompt that first deletes the post that went up with its pictures cut off, then posts the corrected one
 
 Nothing the owner approved is retyped here: the captions, the Facebook text, the alt text and the heads-up paragraph are read from
-scripts/photo-posts-captions.txt, and the pictures' names and count from scripts/photo-posts.json and assets/social/shoot/.
+scripts/photo-posts-captions.txt, and the pictures' names and count from scripts/photo-posts.json and assets/social/photo-posts/.
 What is written here is only the instructions to the agent and the few facts each post stands on.
 """
 import hashlib, json, os, re, struct, subprocess, sys
@@ -16,7 +17,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
 PLAN = json.load(open(os.path.join(HERE, 'photo-posts.json'), encoding='utf-8'))
 CAPS = open(os.path.join(HERE, 'photo-posts-captions.txt'), encoding='utf-8').read()
-SHOOT = os.path.join(REPO, 'assets', 'social', 'shoot')
+SHOOT = os.path.join(REPO, 'assets', 'social', 'photo-posts')
 SITE = 'https://labyrinth.vision'
 BOOK = SITE + '/#book'
 PHONE = '(281) 393-7983'
@@ -45,6 +46,10 @@ POSTS = {
                     offer="- The offer: a first class is free, with no commitment. No experience needed. Kids, teens and adults all train here."),
     'start': dict(day=(10, 18), when='Sunday, October 18, 2026', earliest='6:00 PM', picker='both', about="our classes getting started (line-ups and warm-ups)",
                   offer="- The offer: a first class is free, with no commitment. No experience needed. Kids, teens and adults are all welcome."),
+}
+# A post that went up with its pictures cut off (Instagram squared the carousel): what the agent needs to find it, so that it can delete it before the corrected one goes up.
+REDO = {
+    'teens': dict(when='this morning, Thursday, October 15, 2026', first='Grinning through a headlock.'),
 }
 # Posts that go out before Saturday, October 17 carry the heads-up about that Saturday (the booking form still offers it); later ones do not.
 BEFORE_SATURDAY = (10, 17)
@@ -90,8 +95,9 @@ def block(text, n):
 
 class Post:
     """Everything one prompt is made from, read from the repo."""
-    def __init__(self, pid):
+    def __init__(self, pid, redo=False):
         self.id = pid
+        self.redo = redo
         self.meta = POSTS[pid]
         plan = [p for p in PLAN['posts'] if p['id'] == pid]
         if not plan:
@@ -100,7 +106,7 @@ class Post:
         self.n = len(self.plan['slides'])
         self.title = ' '.join(self.plan['title']).upper()
         self.files = ['%s-%02d.jpg' % (pid, i + 1) for i in range(self.n)]
-        self.urls = ['%s/assets/social/shoot/%s' % (SITE, f) for f in self.files]
+        self.urls = ['%s/assets/social/photo-posts/%s' % (SITE, f) for f in self.files]
         self.variant_a = self.meta['day'] < BEFORE_SATURDAY
         # the owner's wording
         self.ig_b = section('%s: INSTAGRAM CAPTION' % pid)
@@ -115,22 +121,23 @@ class Post:
         self.alt = '\n'.join('%s: %s' % (a, t) for a, t in self.alt_lines)      # "1: …", one line per picture
         for f in self.files:
             p = os.path.join(SHOOT, f)
-            assert os.path.exists(p), '%s is not in assets/social/shoot' % f
+            assert os.path.exists(p), '%s is not in assets/social/photo-posts' % f
             assert jpeg_size(p) == SIZE, '%s is %s, not %s' % (f, jpeg_size(p), SIZE)
 
 
 PROMPT = """@@TITLE@@
 
-I run Labyrinth BJJ in Fulshear, TX. I want @@N@@ photographs of @@ABOUT@@ shared on our social media: one Instagram post (a carousel you swipe through) and one post on our Facebook Page, each with the same @@N@@ pictures in the same order. Please publish them as described below. Everything you need, including all the wording, is in this message. Use only what is written here.
+I run Labyrinth BJJ in Fulshear, TX. I want @@N@@ photographs of @@ABOUT@@ shared on our social media: one Instagram post (a carousel you swipe through) and one post on our Facebook Page, each with the same @@N@@ pictures in the same order. Please publish them as described below. Everything you need, including all the wording, is in this message. Use only what is written here.@@REDO@@
 
 RULES (they apply to everything)
 - Use only the facts and wording below. Do not invent or add prices, times, dates, offers, names or claims. Do not mention prices, the Rolling for Ribbons fundraiser, donations, the matching gift or any totals anywhere in this job.
 - Do not take facts from our website's text. Everything you may rely on is in this message.
 - Do not edit the captions, the post text, the alt text or the pictures. Use them exactly as given. If Instagram or Facebook warns about the wording, do not rewrite it to get past the warning: tell me.
-- Do not add anything of your own to the posts: no extra hashtags, mentions, links, emoji or comments. Do not add music, text, stickers, filters, effects, templates, frames, polls, events or offers to the posts or the pictures, and do not crop the pictures. Do not use Remix, Add Yours, collaborator invites or partnership labels. Do not add a location or a check-in, and do not add a feeling or an activity.
+- Do not add anything of your own to the posts: no extra hashtags, mentions, links, emoji or comments. Do not add music, text, stickers, filters, effects, templates, frames, polls, events or offers to the posts or the pictures, and do not crop, zoom, rotate or resize the pictures (they must stay whole and portrait: see A1). Do not use Remix, Add Yours, collaborator invites or partnership labels. Do not add a location or a check-in, and do not add a feeling or an activity.
 - Do not tag anyone in the pictures and do not invite anyone as a collaborator. The only mentions in this job are the two photographers' Instagram handles, @@H1@@ and @@H2@@, in the last line of each text before the hashtags: leave them exactly as written and add no other mention.
 - Do not boost or promote anything, do not create or edit any ad, and do not spend any money.
 - Do not touch the Instagram bio link: leave it exactly as it is. Do not pin, unpin or edit any existing post, and do not change the Page's cover, profile picture, buttons or About section.
+- @@DELRULE@@
 - Do not reply to comments or messages. Tell me if anything needs an answer (for example somebody asking which class to start in, whether they are old enough, or what it costs).
 - Use the Labyrinth BJJ Instagram account and the Labyrinth BJJ Facebook Page for the Fulshear gym, not the Wharton or Katy ones. Post only where this message says: no personal profiles, no groups, no other accounts or Pages, no Threads, no stories and no reels.
 - Post during the day, Central Time, between 9 AM and 8 PM, and not before @@EARLIEST@@ on @@WHEN@@. If it is outside those hours, or it is earlier than that, or you cannot tell the date or the time, do not post: tell me.
@@ -146,19 +153,21 @@ FACTS
 - Pictures (download these exact files; they are already on the site). Picture 1 is a cover with words on it and picture @@N@@ has words on it; the ones between are photographs alone:
 @@PICTURES@@
   Open each one and check that it is that size and shows what its alt text (BLOCK @@ALTN@@) says. If one does not, stop and tell me.
+  Every picture is portrait, 1080 wide and 1350 tall (4:5). Each one has its photograph in a square in the middle and a soft blurred copy of the photograph above and below it: that is how it is meant to look, and it is what keeps a square crop from cutting anything off. Do not crop, zoom or "fix" it.
 
 BEFORE YOU START
-1. Check today's date and the time in Central Time (see the rule about the date above).@@STEP1@@
+@@STEP0@@1. Check today's date and the time in Central Time (see the rule about the date above).@@STEP1@@
 2. Open @@BOOK@@. It must open a class picker with two buttons, Adult Classes and Kids & Teens. @@PICKER@@ If it opens nothing, stop and tell me. Do not copy any words from the page.
 3. Download the @@N@@ pictures and check them as described under FACTS.
 
 THE POSTS (publish these, in this order, one after the other)
-A1. INSTAGRAM POST, @@N@@ PICTURES: make a new post and select all @@N@@ pictures, picture 1 first and picture @@N@@ last, so that it is one post you can swipe through. Keep them at their own portrait shape (4:5): do not crop them to a square. Add no filters, no music and no location, and tag nobody. Paste the caption exactly (@@IGREF@@). Give each picture its alt text from BLOCK @@ALTN@@: line 1 is the alt text of picture 1, line 2 of picture 2, and so on; paste the text after the number (Advanced settings, then Write alt text; it shows each picture in turn). If you cannot give each picture its own alt text, add what you can and tell me. Make sure sharing to Facebook is OFF and that it is not shared anywhere else. Then share it.
+A1. INSTAGRAM POST, @@N@@ PICTURES: make a new post and select all @@N@@ pictures, picture 1 first and picture @@N@@ last, so that it is one post you can swipe through. KEEP THEM PORTRAIT: Instagram's composer makes a carousel square unless you tell it not to, and a square post cuts the top and bottom off every picture. In the crop step, before you go on, make the preview taller than it is wide, showing the whole picture: on instagram.com click the crop button (two small arrows) at the bottom left of the picture and choose Original, or 4:5 if there is no Original; in the Instagram app tap the small expand button (two arrows) at the bottom left of the first picture until the picture is tall, not square; in any other tool you use to post, choose the original or 4:5 shape. Do not zoom, drag or resize the pictures inside the frame. Check that the preview is portrait before you go on, and again just before you share. If you cannot get a portrait preview, STOP and tell me before you share anything: do not post a square. Add no filters, no music and no location, and tag nobody. Paste the caption exactly (@@IGREF@@). Give each picture its alt text from BLOCK @@ALTN@@: line 1 is the alt text of picture 1, line 2 of picture 2, and so on; paste the text after the number (Advanced settings, then Write alt text; it shows each picture in turn). If you cannot give each picture its own alt text, add what you can and tell me. Make sure sharing to Facebook is OFF and that it is not shared anywhere else. Then share it.
 A2. FACEBOOK POST, @@N@@ PICTURES: on the Labyrinth BJJ Page, make a photo post. Upload all @@N@@ pictures, in the same order. Paste the text exactly (@@FBREF@@): the two handles are plain text on Facebook, so if the composer offers to tag a profile or Page while you paste, do not choose any suggestion. Add the same alt text to each picture (BLOCK @@ALTN@@) if the option is there (it is under Edit on each photo); if you cannot add alt text, post without it and tell me. Make sure the post goes to the Facebook Page only: if the composer offers to post to Instagram as well, turn that OFF. Do not pin it. Then post it.
-After each one is up, open it and check that all @@N@@ pictures are there in the right order, that nothing is cropped, and that the caption or text is complete. On Instagram, check that @@H1@@ and @@H2@@ in the caption are links that open those two accounts: if either is not a link, or opens a different account, tell me and do not change the caption. On Facebook, check that the booking link is clickable and opens the booking picker. Facebook shows a grid of the first few pictures and may trim their edges in the feed: that is normal, but click a picture and check that it opens whole.
+After each one is up, open it and check that all @@N@@ pictures are there in the right order, that nothing is cropped, and that the caption or text is complete. On Instagram the pictures must be portrait (taller than they are wide): picture 1 must show its words and the round logo in full, and picture @@N@@ its gold button and the web address under it in full. If the Instagram post is square, or anything is cut off, delete that post (the one you just made, and nothing else), make it again with the portrait crop, and tell me you did: do not leave a square post up. On Instagram, check that @@H1@@ and @@H2@@ in the caption are links that open those two accounts: if either is not a link, or opens a different account, tell me and do not change the caption. On Facebook, check that the booking link is clickable and opens the booking picker. Facebook shows a grid of the first few pictures and may trim their edges in the feed: that is normal, but click a picture and check that it opens whole.
 
 WHEN YOU ARE DONE, SEND ME
 - The link to the Instagram post and the link to the Facebook post, the time each went up (Central Time), which blocks you used, and whether both handles in the Instagram caption turned into links.
+- Whether the Instagram post came out portrait the first time, or you had to delete it and make it again; and, if you could not get a portrait preview, which tool you were using and what crop choices it offered.@@DELREPORT@@
 - Anything that looked different from what I described, any warning you saw, and anything you were not sure about.
 - Any comment or message that needs an answer from me, copied exactly.
 
@@ -172,8 +181,8 @@ PICKER = {'youth': YOUTH_PICKER, 'adult': ADULT_PICKER, 'both': BOTH_PICKER}
 BLOCK_HEAD = '===== BLOCK %s: %s (paste everything between this line and the END line, not these lines) ====='
 
 
-def build(pid):
-    p = Post(pid)
+def build(pid, redo=False):
+    p = Post(pid, redo)
     m = p.meta
     if p.variant_a:
         step1 = (' Then decide which texts you will use: on Thursday, October 15 or Friday, October 16, 2026, use BLOCK 1 on Instagram and BLOCK 3 on Facebook '
@@ -187,11 +196,28 @@ def build(pid):
         blocks = [('1', 'INSTAGRAM CAPTION', p.ig_b), ('2', 'FACEBOOK POST TEXT', p.fb_b)]
     blocks.append((altn, 'ALT TEXT, ONE LINE PER PICTURE, IN ORDER', p.alt))
     pictures = '\n'.join('    PICTURE %d, %dx%d: %s' % (i + 1, SIZE[0], SIZE[1], u) for i, u in enumerate(p.urls))
+    if redo:
+        r = REDO[pid]
+        redo_para = ('\n\nTHIS REPLACES TWO POSTS THAT WENT UP WRONG. These same photographs were posted %s on Instagram and on our Facebook Page, but the pictures were cropped to a square, '
+                     'so the top and bottom of every picture were cut off. First delete those two posts (step 0 under BEFORE YOU START), then publish the corrected ones as described below.' % r['when'])
+        step0 = ('0. FIRST DELETE THE TWO CUT-OFF POSTS. "%s", with these same photographs, was posted %s on Instagram (one post of %d pictures; under the title line its caption begins "%s") '
+                 'and on the Labyrinth BJJ Facebook Page (the same text). Their pictures are cut off, so they are being replaced. '
+                 'On Instagram, open the Labyrinth BJJ profile and find that one post: the newest post, whose first picture says %s; open its menu (the three dots) and choose Delete. '
+                 'On Facebook, find the same post on the Labyrinth BJJ Page, posted the same morning with the same text, and delete it (the three dots, then Delete post or Move to trash). '
+                 'Delete those two posts and nothing else. If more than one post on either site matches, or you cannot find one, or one of them has comments, do not delete anything on that site: tell me and stop.\n'
+                 % (' '.join(p.plan['title']), r['when'], p.n, r['first'], p.title))
+        delrule = ('The only posts you may delete are the two cut-off posts named in step 0 of BEFORE YOU START and, if one of the new posts comes out square or cut off, that new post (see the check after A2). '
+                   'Do not delete, hide, archive or edit anything else.')
+        delreport = '\n- The two posts you deleted: where each was and when it had been posted.'
+    else:
+        redo_para = step0 = delreport = ''
+        delrule = ('The only post you may delete is one you have just made in this job that came out square or cut off (see the check after A2). '
+                   'Do not delete, hide, archive or edit anything else.')
     text = PROMPT
-    for key, val in (('TITLE', '%s: AN INSTAGRAM POST AND A FACEBOOK POST (%d PICTURES EACH)' % (p.title, p.n)),
+    for key, val in (('TITLE', ('%s: REPLACE THE TWO CUT-OFF POSTS WITH THE CORRECTED ONES (%d PICTURES EACH)' if redo else '%s: AN INSTAGRAM POST AND A FACEBOOK POST (%d PICTURES EACH)') % (p.title, p.n)),
                      ('ABOUT', m['about']), ('EARLIEST', m['earliest']), ('WHEN', m['when']), ('H1', HANDLES[0]), ('H2', HANDLES[1]), ('PHONE', PHONE), ('BOOK', BOOK),
                      ('OFFER', m['offer']), ('PICTURES', pictures), ('STEP1', step1), ('PICKER', PICKER[m['picker']]),
-                     ('IGREF', igref), ('FBREF', fbref), ('ALTN', altn), ('N', str(p.n))):
+                     ('IGREF', igref), ('FBREF', fbref), ('ALTN', altn), ('REDO', redo_para), ('STEP0', step0), ('DELRULE', delrule), ('DELREPORT', delreport), ('N', str(p.n))):
         text = text.replace('@@%s@@' % key, val)
     # the owner's blocks go in last, so that a { or an @ inside them can never be mistaken for a placeholder
     body = '\n\n'.join('%s\n%s\n===== END OF BLOCK %s =====' % (BLOCK_HEAD % (n, title), val, n) for n, title, val in blocks)
@@ -298,9 +324,31 @@ def check(p, t):
                  'Do not reply to comments or messages', 'Post each one ONCE', 'BEFORE you click Share or Post', 'Do not add a location or a check-in',
                  'If it is outside those hours, or it is earlier than that', 'turn that OFF', 'Make sure sharing to Facebook is OFF', 'Do not tag anyone',
                  'leave it exactly as it is', 'Do not add anything of your own to the posts', 'will not take all %d pictures in one post' % p.n,
-                 'Do not use Remix, Add Yours, collaborator invites or partnership labels', 'do not crop the pictures', 'Keep them at their own portrait shape (4:5)'):
+                 'Do not use Remix, Add Yours, collaborator invites or partnership labels', 'do not crop, zoom, rotate or resize the pictures'):
         need(rule in t, 'the rule is missing: ' + rule)
     need(t.count('Do not mention prices, the Rolling for Ribbons fundraiser, donations') == 1, 'the money rule is missing')
+    # the pictures are portrait, are kept portrait, and the result is checked: the first post went up square and lost the foot of every picture
+    for rule in ('KEEP THEM PORTRAIT', 'on instagram.com click the crop button', 'in the Instagram app tap the small expand button', 'choose Original, or 4:5 if there is no Original',
+                 'Do not zoom, drag or resize the pictures inside the frame', 'Check that the preview is portrait before you go on, and again just before you share',
+                 'STOP and tell me before you share anything: do not post a square', 'must show its words and the round logo in full',
+                 'its gold button and the web address under it in full', 'delete that post (the one you just made, and nothing else)', 'do not leave a square post up',
+                 'Every picture is portrait, 1080 wide and 1350 tall (4:5)', 'Whether the Instagram post came out portrait the first time',
+                 '(they must stay whole and portrait: see A1)', 'Do not delete, hide, archive or edit anything else.'):
+        need(t.count(rule) == 1, 'the portrait rule is missing or repeated: ' + rule)
+    need(t.count('KEEP THEM PORTRAIT') == 1 and t.index('KEEP THEM PORTRAIT') > t.index('A1. INSTAGRAM POST') and t.index('KEEP THEM PORTRAIT') < t.index('A2. FACEBOOK POST'), 'the portrait instruction is not in the Instagram step')
+    if p.redo:
+        r = REDO[p.id]
+        need(t.count('0. FIRST DELETE THE TWO CUT-OFF POSTS.') == 1 and t.index('0. FIRST DELETE') < t.index('\n1. Check today'), 'the delete step is missing or not first')
+        need(t.count('THIS REPLACES TWO POSTS THAT WENT UP WRONG.') == 1, 'the redo paragraph is missing')
+        need(r['first'] in p.ig_b and ('caption begins "%s")' % r['first']) in t, 'the post to delete is not named by the first words of the approved caption')
+        need(t.count('Delete those two posts and nothing else.') == 1, 'the limit on what may be deleted is missing')
+        need('do not delete anything on that site: tell me and stop' in t, 'the stop-if-unsure rule for the deleting is missing')
+        need(t.count('The only posts you may delete are the two cut-off posts named in step 0') == 1 and 'The only post you may delete is one' not in t, 'the delete rule is wrong for a redo')
+        need('REPLACE THE TWO CUT-OFF POSTS WITH THE CORRECTED ONES' in t.split('\n')[0], 'the title does not say it is a replacement')
+        need('The two posts you deleted' in t, 'the report of the deleted posts is missing')
+    else:
+        need('FIRST DELETE' not in t and 'THIS REPLACES' not in t and 'The two posts you deleted' not in t, 'a normal post has the redo text in it')
+        need(t.count('The only post you may delete is one you have just made in this job that came out square or cut off') == 1, 'the delete rule is missing')
     need(m['offer'] in t, 'the offer line is missing or changed')
     need(('Kids Trials' in t) == (m['picker'] in ('youth', 'both')), 'the picker check is for the wrong audience')
     need(('headed Adult Classes' in t) == (m['picker'] in ('adult', 'both')), 'the picker check is for the wrong audience')
@@ -362,7 +410,19 @@ def run_mutants(p, text):
         ('the Instagram-to-Facebook toggle instruction removed', sub('Make sure sharing to Facebook is OFF and that it is not shared anywhere else. ', '', 1)),
         ('the Facebook-to-Instagram toggle instruction removed', sub('if the composer offers to post to Instagram as well, turn that OFF. ', '', 1)),
         ('the bio-link rule removed', sub('Do not touch the Instagram bio link: leave it exactly as it is. ', '', 1)),
-        ('the crop rule removed', sub('Keep them at their own portrait shape (4:5): do not crop them to a square. ', '', 1)),
+        ('the portrait instruction removed', sub('KEEP THEM PORTRAIT: ', '', 1)),
+        ('the crop-menu steps removed', sub('on instagram.com click the crop button (two small arrows) at the bottom left of the picture and choose Original, or 4:5 if there is no Original; ', '', 1)),
+        ('the app crop step removed', sub('in the Instagram app tap the small expand button (two arrows) at the bottom left of the first picture until the picture is tall, not square; ', '', 1)),
+        ('the portrait check before sharing removed', sub(' Check that the preview is portrait before you go on, and again just before you share.', '', 1)),
+        ('the stop-rather-than-post-a-square rule removed', sub(' If you cannot get a portrait preview, STOP and tell me before you share anything: do not post a square.', '', 1)),
+        ('the no-zoom rule removed', sub(' Do not zoom, drag or resize the pictures inside the frame.', '', 1)),
+        ('the check of the posted shape removed', sub('On Instagram the pictures must be portrait (taller than they are wide): picture 1 must show its words and the round logo in full, and picture %d its gold button and the web address under it in full. ' % p.n, '', 1)),
+        ('the redo-a-square-post rule removed', sub('If the Instagram post is square, or anything is cut off, delete that post (the one you just made, and nothing else), make it again with the portrait crop, and tell me you did: do not leave a square post up. ', '', 1)),
+        ('the delete permission loosened', sub('Do not delete, hide, archive or edit anything else.', 'Delete whatever you think is a duplicate.', 1)),
+        ('the delete permission removed', sub('- The only post you may delete is one you have just made in this job that came out square or cut off (see the check after A2). Do not delete, hide, archive or edit anything else.\n' if not p.redo else '- The only posts you may delete are the two cut-off posts named in step 0 of BEFORE YOU START and, if one of the new posts comes out square or cut off, that new post (see the check after A2). Do not delete, hide, archive or edit anything else.\n', '', 1)),
+        ('the description of the pictures removed', sub('  Every picture is portrait, 1080 wide and 1350 tall (4:5). Each one has its photograph in a square in the middle and a soft blurred copy of the photograph above and below it: that is how it is meant to look, and it is what keeps a square crop from cutting anything off. Do not crop, zoom or "fix" it.\n', '', 1)),
+        ('the crop rule among the rules removed', sub(' (they must stay whole and portrait: see A1)', '', 1)),
+        ('the report of the shape removed', sub('- Whether the Instagram post came out portrait the first time, or you had to delete it and make it again; and, if you could not get a portrait preview, which tool you were using and what crop choices it offered.\n', '', 1)),
         ('the all-or-nothing rule removed', sub('- If Instagram or Facebook will not take all %d pictures in one post, do not post anything: tell me how many it will take.\n' % p.n, '', 1)),
         ('a hashtag dropped from a post text', sub(' #KatyTX', '', 1)),
         ('the town named in an alt text', sub(p.alt_lines[0][1][:20], 'In Fulshear, ' + p.alt_lines[0][1][:20], 1)),
@@ -374,6 +434,16 @@ def run_mutants(p, text):
         ('the picture count wrong in one place', sub('A1. INSTAGRAM POST, %d PICTURES' % p.n, 'A1. INSTAGRAM POST, %d PICTURES' % (p.n + 1), 1)),
         ('a caption word changed', sub('Swipe through for more.' if 'Swipe through for more.' in text else 'No experience', 'Swipe through for less.' if 'Swipe through for more.' in text else 'No experience at all', 1)),
     ]
+    if p.redo:
+        r = REDO[p.id]
+        M += [
+            ('the delete step removed', sub(text[text.index('0. FIRST DELETE'):text.index('1. Check today')], '', 1)),
+            ('the delete limit removed', sub('Delete those two posts and nothing else. ', '', 1)),
+            ('the stop-if-unsure rule removed', sub(' If more than one post on either site matches, or you cannot find one, or one of them has comments, do not delete anything on that site: tell me and stop.', '', 1)),
+            ('the post to delete named by other words', sub('caption begins "%s")' % r['first'], 'caption begins "Swipe through for more.")', 1)),
+            ('the redo paragraph removed', sub(text[text.index('\n\nTHIS REPLACES'):text.index('\n\nRULES')], '', 1)),
+            ('the report of the deleted posts removed', sub('\n- The two posts you deleted: where each was and when it had been posted.', '', 1)),
+        ]
     if p.variant_a:
         M += [
             ('the Saturday paragraph missing from the Instagram caption', text.replace(HEADS_UP + '\n\n' + IG_BOOKING, IG_BOOKING, 1)),
@@ -413,9 +483,12 @@ def main():
     if not names:
         raise SystemExit(__doc__)
     ids = [x for x in POSTS if any(p['id'] == x for p in PLAN['posts'])] if names == ['all'] else names
+    redo = '--redo' in args
+    if redo and (names == ['all'] or any(x not in REDO for x in ids)):
+        raise SystemExit('--redo is for a post that went up wrong, one of: ' + ', '.join(REDO))
     ok = True
     for pid in ids:
-        p, text = build(pid)
+        p, text = build(pid, redo)
         probs = check(p, text)
         if probs:
             print('%s PROBLEMS:\n  ' % pid + '\n  '.join(probs))
@@ -427,7 +500,7 @@ def main():
             ok &= run_mutants(p, text)
         else:
             os.makedirs(out, exist_ok=True)
-            path = os.path.join(out, 'muse-prompt-%s.txt' % pid)
+            path = os.path.join(out, 'muse-prompt-%s%s.txt' % (pid, '-redo' if redo else ''))
             open(path, 'w', encoding='utf-8').write(text)
             print('wrote %s (%d characters, %d lines, %d pictures); every check passed' % (path, len(text), text.count('\n') + 1, p.n))
     sys.exit(0 if ok else 1)
