@@ -7,7 +7,7 @@ STORY
   assets/social/kids-any-day-story.png       add a link sticker to https://labyrinth.vision/#book (text BOOK A FREE CLASS)
 
 No street address or town on the pictures or in the caption (the hashtags carry the area), and one emoji.
-No "link in bio" anywhere: the bio link points at the donation page during the drive, so the feed post says labyrinth.vision and the story carries a link sticker.
+No "link in bio" anywhere: the bio link was set to the donation page for the drive (as of October 11), so the feed post says labyrinth.vision and the story carries a link sticker.
 The photographs are from the 2 October 2026 shoot by Israel De Leon (scripts/lightroom-album.py downloads the album).
 Slide 2 is read from scripts/schedule_data.py when scripts/instagram-kids-any-day.mjs runs (the classes a new child can start in, and the advanced ones), so it matches the timetable of the day it was made.
 
