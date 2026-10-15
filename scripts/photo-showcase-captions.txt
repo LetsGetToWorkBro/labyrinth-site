@@ -10,7 +10,7 @@ FACEBOOK POST (the Labyrinth BJJ Page, the same 20 pictures in the same order; n
 Both platforms, always: a post is made for Instagram and for Facebook together (the owner's rule from October 15, 2026).
 No street address or town on the pictures or in the captions (the hashtags carry the area), and one emoji in each.
 No "link in bio" anywhere: the bio link was set to the donation page for the drive (as of October 11), so the post says labyrinth.vision.
-The photographs are from the 2 October 2026 shoot by Israel De Leon, and the post credits him in its last line. His Instagram handle is not known here, so he is credited by name rather than tagged. Drop the line if the credit is not wanted.
+The photographs are from the 2 October 2026 shoot by Israel De Leon, and the post credits the photographer by name in its last line. The photographer's Instagram handle is not known here, so the credit is a name rather than a tag. Drop the line if the credit is not wanted.
 Children are in these pictures: they are for the academy's own marketing, under the photo release in the waiver.
 scripts/instagram-photo-showcase.mjs makes the pictures (scripts/lightroom-album.py downloads the album) and checks that the alt text below has one line per picture, in the same order.
 
