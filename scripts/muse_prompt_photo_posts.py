@@ -20,7 +20,9 @@ SHOOT = os.path.join(REPO, 'assets', 'social', 'shoot')
 SITE = 'https://labyrinth.vision'
 BOOK = SITE + '/#book'
 PHONE = '(281) 393-7983'
-CREDIT = PLAN['credit']
+CREDIT_IG = PLAN['credit_instagram']        # the last line before the hashtags, on Instagram: @mentions, no full stop after the handle
+CREDIT_FB = PLAN['credit_facebook']         # and on Facebook, where the handles are plain text
+HANDLES = PLAN['photographers']
 SIZE = (1080, 1350)
 BELT = '\U0001F94B'
 
@@ -126,7 +128,7 @@ RULES (they apply to everything)
 - Do not take facts from our website's text. Everything you may rely on is in this message.
 - Do not edit the captions, the post text, the alt text or the pictures. Use them exactly as given. If Instagram or Facebook warns about the wording, do not rewrite it to get past the warning: tell me.
 - Do not add anything of your own to the posts: no extra hashtags, mentions, links, emoji or comments. Do not add music, text, stickers, filters, effects, templates, frames, polls, events or offers to the posts or the pictures, and do not crop the pictures. Do not use Remix, Add Yours, collaborator invites or partnership labels. Do not add a location or a check-in, and do not add a feeling or an activity.
-- Do not tag anyone, the photographers included: they are credited by name in the text, as written.
+- Do not tag anyone in the pictures and do not invite anyone as a collaborator. The only mentions in this job are the two photographers' Instagram handles, @@H1@@ and @@H2@@, in the last line of each text before the hashtags: leave them exactly as written and add no other mention.
 - Do not boost or promote anything, do not create or edit any ad, and do not spend any money.
 - Do not touch the Instagram bio link: leave it exactly as it is. Do not pin, unpin or edit any existing post, and do not change the Page's cover, profile picture, buttons or About section.
 - Do not reply to comments or messages. Tell me if anything needs an answer (for example somebody asking which class to start in, whether they are old enough, or what it costs).
@@ -139,7 +141,7 @@ RULES (they apply to everything)
 FACTS
 - Labyrinth BJJ, Fulshear, TX. Phone @@PHONE@@, which takes calls and texts.
 @@OFFER@@
-- The photographs were taken at the academy on October 3, 2026 by two photographers, Ray and Israel De Leon, who are credited by name in the last line of each text, before the hashtags.
+- The photographs were taken at the academy by two photographers, Instagram @@H1@@ and @@H2@@, who are credited by those handles in the last line of each text, before the hashtags.
 - The link in the Facebook text: @@BOOK@@ (it opens a class picker straight away). The Instagram caption has no link: it says labyrinth.vision.
 - Pictures (download these exact files; they are already on the site). Picture 1 is a cover with words on it and picture @@N@@ has words on it; the ones between are photographs alone:
 @@PICTURES@@
@@ -152,11 +154,11 @@ BEFORE YOU START
 
 THE POSTS (publish these, in this order, one after the other)
 A1. INSTAGRAM POST, @@N@@ PICTURES: make a new post and select all @@N@@ pictures, picture 1 first and picture @@N@@ last, so that it is one post you can swipe through. Keep them at their own portrait shape (4:5): do not crop them to a square. Add no filters, no music and no location, and tag nobody. Paste the caption exactly (@@IGREF@@). Give each picture its alt text from BLOCK @@ALTN@@: line 1 is the alt text of picture 1, line 2 of picture 2, and so on; paste the text after the number (Advanced settings, then Write alt text; it shows each picture in turn). If you cannot give each picture its own alt text, add what you can and tell me. Make sure sharing to Facebook is OFF and that it is not shared anywhere else. Then share it.
-A2. FACEBOOK POST, @@N@@ PICTURES: on the Labyrinth BJJ Page, make a photo post. Upload all @@N@@ pictures, in the same order. Paste the text exactly (@@FBREF@@). Add the same alt text to each picture (BLOCK @@ALTN@@) if the option is there (it is under Edit on each photo); if you cannot add alt text, post without it and tell me. Make sure the post goes to the Facebook Page only: if the composer offers to post to Instagram as well, turn that OFF. Do not pin it. Then post it.
-After each one is up, open it and check that all @@N@@ pictures are there in the right order, that nothing is cropped, and that the caption or text is complete. On Facebook, check that the link is clickable and opens the booking picker. Facebook shows a grid of the first few pictures and may trim their edges in the feed: that is normal, but click a picture and check that it opens whole.
+A2. FACEBOOK POST, @@N@@ PICTURES: on the Labyrinth BJJ Page, make a photo post. Upload all @@N@@ pictures, in the same order. Paste the text exactly (@@FBREF@@): the two handles are plain text on Facebook, so if the composer offers to tag a profile or Page while you paste, do not choose any suggestion. Add the same alt text to each picture (BLOCK @@ALTN@@) if the option is there (it is under Edit on each photo); if you cannot add alt text, post without it and tell me. Make sure the post goes to the Facebook Page only: if the composer offers to post to Instagram as well, turn that OFF. Do not pin it. Then post it.
+After each one is up, open it and check that all @@N@@ pictures are there in the right order, that nothing is cropped, and that the caption or text is complete. On Instagram, check that @@H1@@ and @@H2@@ in the caption are links that open those two accounts: if either is not a link, or opens a different account, tell me and do not change the caption. On Facebook, check that the booking link is clickable and opens the booking picker. Facebook shows a grid of the first few pictures and may trim their edges in the feed: that is normal, but click a picture and check that it opens whole.
 
 WHEN YOU ARE DONE, SEND ME
-- The link to the Instagram post and the link to the Facebook post, the time each went up (Central Time), and which blocks you used.
+- The link to the Instagram post and the link to the Facebook post, the time each went up (Central Time), which blocks you used, and whether both handles in the Instagram caption turned into links.
 - Anything that looked different from what I described, any warning you saw, and anything you were not sure about.
 - Any comment or message that needs an answer from me, copied exactly.
 
@@ -187,7 +189,7 @@ def build(pid):
     pictures = '\n'.join('    PICTURE %d, %dx%d: %s' % (i + 1, SIZE[0], SIZE[1], u) for i, u in enumerate(p.urls))
     text = PROMPT
     for key, val in (('TITLE', '%s: AN INSTAGRAM POST AND A FACEBOOK POST (%d PICTURES EACH)' % (p.title, p.n)),
-                     ('ABOUT', m['about']), ('EARLIEST', m['earliest']), ('WHEN', m['when']), ('PHONE', PHONE), ('BOOK', BOOK),
+                     ('ABOUT', m['about']), ('EARLIEST', m['earliest']), ('WHEN', m['when']), ('H1', HANDLES[0]), ('H2', HANDLES[1]), ('PHONE', PHONE), ('BOOK', BOOK),
                      ('OFFER', m['offer']), ('PICTURES', pictures), ('STEP1', step1), ('PICKER', PICKER[m['picker']]),
                      ('IGREF', igref), ('FBREF', fbref), ('ALTN', altn), ('N', str(p.n))):
         text = text.replace('@@%s@@' % key, val)
@@ -238,11 +240,27 @@ def check(p, t):
         need(IG_BOOKING in (x or ''), 'an Instagram caption lost its booking line')
     for x in fb_posts:
         need(FB_BOOKING in (x or ''), 'a Facebook text lost its booking link and phone lines')
+    for x in ig_posts:
+        need((x or '').count(CREDIT_IG) == 1 and (x or '').count('Photos by') == 1, 'an Instagram caption does not carry the photographers\' credit exactly once: ' + CREDIT_IG)
+        need((x or '').split('\n\n')[-2].strip() == CREDIT_IG, 'the credit is not the last line before the hashtags')
+    for x in fb_posts:
+        need((x or '').count(CREDIT_FB) == 1 and (x or '').count('Photos by') == 1, 'a Facebook text does not carry the photographers\' credit exactly once: ' + CREDIT_FB)
+        need((x or '').split('\n\n')[-2].strip() == CREDIT_FB, 'the credit is not the last line before the hashtags')
     for x in posts:
-        need((x or '').count(CREDIT) == 1, 'a post text does not carry the photographers\' credit exactly once: ' + CREDIT)
         need(emoji(x or '') == [BELT], 'a post text must have exactly one emoji, the belt')
         need(not re.search(r'Fulshear|Katy|Richmond', re.sub(r'#\w+', '', x or '')), 'a post text names a town outside the hashtags')
         need('bio' not in (x or '').lower(), 'a post text says bio')
+    # the only @mentions anywhere are the two photographers' handles, and only in the post texts
+    mentions = {m.rstrip('.') for m in re.findall(r'@[A-Za-z0-9._]+', t)}
+    need(mentions == set(HANDLES), 'the @mentions are not exactly the two photographers\' handles: %s' % sorted(mentions ^ set(HANDLES)))
+    need('@' not in (altblock or ''), 'an @ in the alt text')
+    for h in HANDLES:
+        need(all(x.count(h) == 1 for x in posts if x), '%s is not in every post text exactly once' % h)
+    need(t.count('Do not tag anyone in the pictures and do not invite anyone as a collaborator') == 1, 'the tagging rule is missing')
+    need(t.count('add no other mention') == 1, 'the rule against other mentions is missing')
+    need('are links that open those two accounts' in t, 'the check that the handles are links is missing')
+    need('do not choose any suggestion' in t, 'the Facebook tag-suggestion rule is missing')
+    need('whether both handles in the Instagram caption turned into links' in t, 'the report of the handle links is missing')
     # the words the owner took out stay out, everywhere
     for bad in ('6615', 'Cross Creek', 'Suite', '77441', 'Bend Lane', 'link in bio', 'Link in bio', 'LINK IN BIO', '\U0001F4CD'):
         need(bad not in t, 'contains %r' % bad)
@@ -316,8 +334,20 @@ def run_mutants(p, text):
         ('an alt text line removed', sub('\n2: ', '\n', 1)),
         ('an alt text line changed', sub(p.alt_lines[2][1][:25], p.alt_lines[2][1][:25] + ' wearing a green belt', 1)),
         ('the alt text block emptied', text.replace(p.alt, '', 1)),
-        ('the credit removed from a post text', sub(CREDIT + '\n\n', '', 1)),
-        ('the credit changed in a post text', sub(CREDIT, 'Photos by Ray.', 1)),
+        ('the credit removed from an Instagram caption', sub(CREDIT_IG + '\n\n', '', 1)),
+        ('the credit removed from a Facebook text', sub(CREDIT_FB + '\n\n', '', 1)),
+        ('the credit changed in an Instagram caption', sub(CREDIT_IG, 'Photos by @rayharkness', 1)),
+        ('the credit changed in a Facebook text', sub(CREDIT_FB, 'Photos by Ray and Israel De Leon.', 1)),
+        ('a handle misspelt', sub(HANDLES[0], '@rayharknes', 1)),
+        ('the second handle misspelt in the rules', sub('and @002.Deleon, in the last line of each text before the hashtags', 'and @002.DeLeon, in the last line of each text before the hashtags', 1)),
+        ('a full stop after the Instagram handle', sub(CREDIT_IG, CREDIT_IG + '.', 1)),
+        ('a third mention added', sub('Photos by @rayharkness', '@labyrinthbjj Photos by @rayharkness', 1)),
+        ('a mention in an alt text', sub(p.alt_lines[1][1][:20], '@rayharkness ' + p.alt_lines[1][1][:20], 1)),
+        ('the handle-link check removed', sub(' On Instagram, check that ' + HANDLES[0] + ' and ' + HANDLES[1] + ' in the caption are links that open those two accounts: if either is not a link, or opens a different account, tell me and do not change the caption.', '', 1)),
+        ('the Facebook tag-suggestion rule removed', sub(', so if the composer offers to tag a profile or Page while you paste, do not choose any suggestion', '', 1)),
+        ('the report of the handle links removed', sub(', and whether both handles in the Instagram caption turned into links', '', 1)),
+        ('the collaborator ban removed', sub(' and do not invite anyone as a collaborator', '', 1)),
+        ('the other-mentions ban removed', sub(' and add no other mention', '', 1)),
         ('a price added', sub('No commitment.', 'No commitment. Membership from $239 a month.', 1) if 'No commitment.' in text else sub('with no commitment.', 'with no commitment. Membership from $239 a month.', 1)),
         ('an Instagram story asked for', sub('Then share it.\n', 'Then share it. Then make an Instagram story of the first picture.\n', 1)),
         ('the stories rule weakened', sub('no stories and no reels', 'no reels', 1)),
@@ -327,7 +357,7 @@ def run_mutants(p, text):
         ('the edit rule removed', sub('- Do not edit the captions, the post text, the alt text or the pictures. Use them exactly as given. If Instagram or Facebook warns about the wording, do not rewrite it to get past the warning: tell me.\n', '', 1)),
         ('the boost rule removed', sub('- Do not boost or promote anything, do not create or edit any ad, and do not spend any money.\n', '', 1)),
         ('the comments rule removed', sub('- Do not reply to comments or messages. Tell me if anything needs an answer (for example somebody asking which class to start in, whether they are old enough, or what it costs).\n', '', 1)),
-        ('the tagging rule removed', sub('- Do not tag anyone, the photographers included: they are credited by name in the text, as written.\n', '', 1)),
+        ('the tagging rule removed', sub([l for l in text.split('\n') if l.startswith('- Do not tag anyone in the pictures')][0] + '\n', '', 1)),
         ('the "add nothing of your own" rule removed', sub('Do not add anything of your own to the posts: no extra hashtags, mentions, links, emoji or comments. ', '', 1)),
         ('the Instagram-to-Facebook toggle instruction removed', sub('Make sure sharing to Facebook is OFF and that it is not shared anywhere else. ', '', 1)),
         ('the Facebook-to-Instagram toggle instruction removed', sub('if the composer offers to post to Instagram as well, turn that OFF. ', '', 1)),

@@ -1,6 +1,8 @@
 {
   "about": "The photo posts, October 2026: pictures from the 3 October 2026 shoot at the academy, two photographers, shown as they are. Each post is one Instagram carousel and the same pictures as one Facebook post (Instagram's limit is 20 pictures). scripts/instagram-photo-posts.mjs makes the slides from this file; scripts/photo-posts-captions.txt holds what is said with each post and one alt text per slide, in the same order.",
-  "credit": "Photos by Ray and Israel De Leon.",
+  "photographers": ["@rayharkness", "@002.Deleon"],
+  "credit_instagram": "Photos by @rayharkness and @002.Deleon",
+  "credit_facebook": "Photos by @rayharkness and @002.Deleon on Instagram.",
   "albums": {
     "ray": {
       "label": "Labyrinth 10-03-2026 - Ray",
