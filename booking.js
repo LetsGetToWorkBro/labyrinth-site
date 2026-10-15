@@ -330,7 +330,11 @@
    */
   var WEEKDAY_INITIALS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
-  function calendarHTML(dayAbbr, view, sel, first, last) {
+  function calendarHTML(dayAbbr, view, sel, first, last, idp) {
+    /* `idp` is the prefix of the booking flow this month belongs to ('booking' for the popup): it names the radio group and prefixes each
+       day's id, so that two flows on one page do not share a group (checking a day in one would uncheck the other's) or an id (a label
+       points at the first element with its id). */
+    idp = idp || 'booking';
     var target = DAY_MAP[dayAbbr];
     var y = view.getFullYear(), mo = view.getMonth();
     var firstOfMonth = new Date(y, mo, 1);
@@ -390,8 +394,8 @@
         html += '<span class="booking-cal__day booking-cal__day--off">' + day + '</span>';
         continue;
       }
-      var id = 'bookingDate-' + key;
-      html += '<input class="booking-cal__radio" type="radio" name="bookingDate" id="' + id + '"'
+      var id = idp + 'Date-' + key;
+      html += '<input class="booking-cal__radio" type="radio" name="' + idp + 'Date" id="' + id + '"'
         + ' value="' + formatDate(d) + '"' + (key === sel ? ' checked' : '') + '>';
       html += '<label class="booking-cal__day booking-cal__day--open" for="' + id + '">'
         + '<span aria-hidden="true">' + day + '</span>'
@@ -449,9 +453,6 @@
   }
   var bookingContent = document.getElementById('bookingContent');
   var bookingCloseBtn = document.getElementById('bookingClose');
-
-  // Store last form data for retry
-  var lastBookingData = null;
 
   var FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])';
   var returnFocusTo = null;
@@ -511,8 +512,6 @@
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     else if (!bookingOverlay.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
   });
-
-  var lastBookingData = null;
 
   // ===== WHERE EACH BOOKING CAME FROM =====
   // Instagram's ad screen counts the people who tapped through to the site, Google's counts clicks, and the CRM counts the people who
@@ -620,8 +619,8 @@
     return '';
   }
 
-  function heardMenuHTML() {
-    var h = '<select class="booking-form__input booking-form__select" id="bookingHeard" name="heard">';
+  function heardMenuHTML(idp) {
+    var h = '<select class="booking-form__input booking-form__select" id="' + (idp || 'booking') + 'Heard" name="heard">';
     h += '<option value="">Choose one</option>';
     HEARD_OPTIONS.forEach(function (o) { h += '<option value="' + o[0] + '">' + o[1] + '</option>'; });
     return h + '</select>';
@@ -720,305 +719,6 @@
       .catch(function () { return false; });
   }
 
-  // ── Render State A: Class Picker ──
-  function showClassPicker() {
-    var html = '<div class="booking-content-enter">';
-    html += '<div class="booking-step-header"><h3>Book Your Free Trial</h3><p>Choose a program to get started</p></div>';
-    html += '<div class="booking-category-btns">';
-    html += '<button class="booking-category-btn" data-category="adult"><span class="booking-category-btn__icon">\uD83E\uDD4B</span><span class="booking-category-btn__label">Adult Classes</span></button>';
-    html += '<button class="booking-category-btn" data-category="kids"><span class="booking-category-btn__icon">\uD83C\uDFC6</span><span class="booking-category-btn__label">Kids & Teens</span></button>';
-    html += '</div></div>';
-    bookingContent.innerHTML = html;
-
-    bookingContent.querySelectorAll('.booking-category-btn').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var cat = btn.getAttribute('data-category');
-        if (cat === 'adult') {
-          showClassList(ADULT_CLASSES, 'Adult Classes');
-        } else {
-          showKidsTrials();
-        }
-      });
-    });
-
-    openBookingModal();
-  }
-
-  // ── Render class list within picker ──
-  function showClassList(classes, title) {
-    var html = '<div class="booking-content-enter">';
-    html += '<button class="booking-back-btn" id="bookingBackBtn">\u2190 Back</button>';
-    html += '<div class="booking-step-header"><h3>' + title + '</h3><p>Select a class to book your trial</p></div>';
-    html += '<div class="booking-class-list">';
-    classes.forEach(function (cls, i) {
-      html += '<div class="booking-class-row" data-idx="' + i + '">';
-      html += '<span class="booking-class-row__day">' + cls.day + '</span>';
-      html += '<span class="booking-class-row__time">' + cls.time + '</span>';
-      html += '<span class="booking-class-row__name">' + cls.name + (cls.type ? ', ' + cls.type : '') + '</span>';
-      html += '<span class="booking-class-row__arrow">\u2192</span>';
-      html += '</div>';
-    });
-    html += '</div></div>';
-    bookingContent.innerHTML = html;
-
-    // Back button
-    var backBtn = document.getElementById('bookingBackBtn');
-    if (backBtn) backBtn.addEventListener('click', function () { showClassPicker(); });
-
-    // Row clicks
-    bookingContent.querySelectorAll('.booking-class-row').forEach(function (row) {
-      row.addEventListener('click', function () {
-        var idx = parseInt(row.getAttribute('data-idx'), 10);
-        var cls = classes[idx];
-        showBookingForm(cls.name, cls.type, cls.day, cls.time);
-      });
-    });
-  }
-
-  // ── Render State B: Booking Form ──
-  function showBookingForm(className, classType, dayAbbr, timeStr, dateKey, tag) {
-    var dates = upcomingDayDates(dayAbbr, timeStr);
-    var dateStr = formatDate(dates[0]);
-    var dayFull = dayAbbrToFull(dayAbbr);
-
-    var typeClass = classType && classType.toLowerCase().replace('-','').replace(' ','') === 'nogi' ? 'nogi' : 'gi';
-    var typeLabel = classType || '';
-
-    var html = '<div class="booking-content-enter">';
-    html += '<div class="booking-class-info">';
-    html += '<div class="booking-class-badge">';
-    html += '<span class="booking-class-badge__name">' + className + '</span>';
-    if (typeLabel) html += '<span class="booking-class-badge__type booking-class-badge__type--' + typeClass + '">' + typeLabel + '</span>';
-    html += '</div>';
-    html += '<div class="booking-class-info__datetime">' + dayFull + ' at ' + timeStr + '</div>';
-    html += '</div>';
-
-    /*
-     * Which one they want.
-     *
-     * This used to be a line of text reading "Next class: <date>", and that
-     * line was the whole booking — a parent who could not make this Friday
-     * could either come on a day that did not suit them or give up, and the
-     * academy never heard which it was. The soonest is still selected when the
-     * form opens, so the fast path is unchanged.
-     */
-    html += '<fieldset class="booking-cal">';
-    html += '<legend class="booking-cal__legend">Which ' + dayFull + '?</legend>';
-    html += '<div class="booking-cal__body" id="bookingCal"></div>';
-    html += '</fieldset>';
-
-    html += '<form class="booking-form" id="bookingForm" autocomplete="on">';
-    html += '<div class="booking-form__group"><label class="booking-form__label" for="bookingName">Full Name</label><input class="booking-form__input" type="text" id="bookingName" name="name" placeholder="Your full name" required autocomplete="name"></div>';
-    html += '<div class="booking-form__group"><label class="booking-form__label" for="bookingEmail">Email</label><input class="booking-form__input" type="email" id="bookingEmail" name="email" placeholder="you@email.com" required autocomplete="email"></div>';
-    html += '<div class="booking-form__group"><label class="booking-form__label" for="bookingPhone">Phone</label><input class="booking-form__input" type="tel" id="bookingPhone" name="phone" placeholder="(281) 555-0000" required autocomplete="tel"></div>';
-    // Optional, and last of the fields so nobody has to decide anything before the three they cannot skip. The answer goes into the
-    // lead's note beside where the visit was worked out to have come from (see WHERE EACH BOOKING CAME FROM).
-    html += '<div class="booking-form__group"><label class="booking-form__label" for="bookingHeard">How did you hear about us? <span class="booking-form__optional">(optional)</span></label>' + heardMenuHTML() + '</div>';
-    // Booking now sends a confirmation text as well as the email, so the form
-    // has to say so before the number is handed over. A person who is told
-    // what a message is for does not report it as spam, and the carriers treat
-    // an unannounced text to a form-filled number as exactly that.
-    html += '<p class="booking-form__consent">We will email and text you to confirm this booking. Reply STOP to any message to opt out.</p>';
-    html += '<button type="submit" class="booking-submit-btn" id="bookingSubmitBtn">Confirm Booking</button>';
-    html += '</form>';
-    html += '</div>';
-
-    bookingContent.innerHTML = html;
-
-    // Store class info for submission
-    var classInfo = {
-      className: className + (typeLabel ? ', ' + typeLabel : ''),
-      crmProgram: crmProgramFor(className, dayAbbr, timeStr),
-      classDay: dayFull,
-      classTime: timeStr,
-      classDate: dateStr,
-      // Which page the booking came from, when it matters (the Pink October calendar).
-      // Goes at the front of the lead's note so the desk sees it first.
-      tag: tag ? String(tag).slice(0, 40) : ''
-    };
-
-    /*
-     * The calendar's state, and the one place it is drawn.
-     *
-     * `selected` is the answer and is kept here rather than read off the DOM,
-     * because paging to another month replaces the grid: a choice living only
-     * in a radio would be lost the moment somebody looked at November and came
-     * back. `view` is only which month is on screen.
-     */
-    var firstDate = upcomingDayDates(dayAbbr, timeStr, 1)[0];
-    var lastDate = new Date(firstDate);
-    lastDate.setDate(firstDate.getDate() + BOOK_AHEAD_DAYS);
-    var selected = ymd(firstDate);
-    var view = new Date(firstDate.getFullYear(), firstDate.getMonth(), 1);
-    /* A page that already knows the day (the Pink October calendar) can say
-       which one. Only honoured when it is a real class day this form would
-       have offered anyway; anything else falls back to the soonest. */
-    if (/^\d{4}-\d{2}-\d{2}$/.test(dateKey || '')) {
-      var wp = dateKey.split('-');
-      var want = new Date(Number(wp[0]), Number(wp[1]) - 1, Number(wp[2]));
-      if (want.getDay() === DAY_MAP[dayAbbr] && dateKey >= ymd(firstDate) && dateKey <= ymd(lastDate) && !isShut(want)) {
-        selected = dateKey;
-        view = new Date(want.getFullYear(), want.getMonth(), 1);
-      }
-    }
-    var calEl = document.getElementById('bookingCal');
-
-    function drawCal() {
-      calEl.innerHTML = calendarHTML(dayAbbr, view, selected, firstDate, lastDate);
-    }
-    drawCal();
-
-    /* One listener on the container, so the handlers survive every redraw.
-       Binding per cell would mean re-binding on each month change, which is
-       how a calendar ends up with a month you can page into but not book. */
-    calEl.addEventListener('click', function (e) {
-      var nav = e.target.closest('[data-cal-move]');
-      if (!nav || nav.disabled) return;
-      view = new Date(view.getFullYear(), view.getMonth() + Number(nav.getAttribute('data-cal-move')), 1);
-      drawCal();
-      /* Keep the keyboard where the person left it: redrawing replaces the
-         button they just pressed, and focus would otherwise fall to the body
-         and drop them at the top of the modal. */
-      var again = calEl.querySelector('[data-cal-move="' + nav.getAttribute('data-cal-move') + '"]');
-      if (again && !again.disabled) again.focus();
-      else {
-        var other = calEl.querySelector('[data-cal-move]:not([disabled])');
-        if (other) other.focus();
-      }
-    });
-
-    calEl.addEventListener('change', function (e) {
-      if (e.target.name !== 'bookingDate') return;
-      selected = e.target.id.replace('bookingDate-', '');
-    });
-
-    /* What the form will send: the chosen day, in the long form the CRM and
-       the confirmation message both already expect. */
-    function chosenDate() {
-      var picked = calEl.querySelector('input[name="bookingDate"]:checked');
-      if (picked) return picked.value;
-      /* Selected, but in a month that is not on screen. Rebuild the string
-         from the key rather than falling back to the soonest date — silently
-         booking a different day than the one showing as chosen is the worst
-         thing this form could do. */
-      var parts = selected.split('-');
-      return formatDate(new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2])));
-    }
-
-    var form = document.getElementById('bookingForm');
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      var nameVal = document.getElementById('bookingName').value.trim();
-      var emailVal = document.getElementById('bookingEmail').value.trim();
-      var phoneVal = document.getElementById('bookingPhone').value.trim();
-
-      // Basic validation
-      var valid = true;
-      if (!nameVal) { document.getElementById('bookingName').classList.add('is-error'); valid = false; }
-      else { document.getElementById('bookingName').classList.remove('is-error'); }
-      if (!emailVal || emailVal.indexOf('@') === -1) { document.getElementById('bookingEmail').classList.add('is-error'); valid = false; }
-      else { document.getElementById('bookingEmail').classList.remove('is-error'); }
-      if (!phoneVal) { document.getElementById('bookingPhone').classList.add('is-error'); valid = false; }
-      else { document.getElementById('bookingPhone').classList.remove('is-error'); }
-
-      if (!valid) return;
-
-      // The menu is optional extra; if it were ever missing, the booking still goes.
-      var heardEl = document.getElementById('bookingHeard');
-      lastBookingData = {
-        name: nameVal,
-        email: emailVal,
-        phone: phoneVal,
-        className: classInfo.className,
-        crmProgram: classInfo.crmProgram,
-        classDay: classInfo.classDay,
-        classTime: classInfo.classTime,
-        classDate: chosenDate(),
-        tag: classInfo.tag,
-        // The label for the slug the menu carries, '' when nothing was chosen; kept here so a retry sends the same answer.
-        heard: heardEl ? heardLabel(heardEl.value) : ''
-      };
-
-      submitBooking(lastBookingData);
-    });
-  }
-
-  // ── Submit booking ──
-  function submitBooking(data) {
-    var submitBtn = document.getElementById('bookingSubmitBtn');
-    if (submitBtn) {
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span class="booking-spinner"></span> Booking...';
-    }
-
-    /*
-     * This used to fire at a Google Apps Script by assigning to an Image src
-     * and then show success 800ms later regardless. The old comment read
-     * "Silent fail, user still sees success". A broken script was therefore
-     * invisible: the visitor was told they were booked and nobody was.
-     *
-     * It now posts to the CRM and reads the reply. showBookingError() already
-     * existed just below and was unreachable, because nothing ever reported a
-     * failure.
-     */
-    sendToCrm({
-      name: data.name,
-      email: data.email,
-      phone: data.phone,
-      program: data.crmProgram,
-      // They picked a real class off the schedule, so the lead arrives already
-      // at "Trial Booked" with the right time, and the confirmation email
-      // names that class instead of promising to be in touch.
-      trialAt: toCentralISO(data.classDate, data.classTime),
-      note: bookingNote(data)
-    }).then(function (ok) {
-      if (ok) {
-        countBooking();
-        showBookingSuccess(data);
-      } else {
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = 'Book My Free Class';
-        }
-        showBookingError();
-      }
-    });
-  }
-
-  // ── Render Success State ──
-  function showBookingSuccess(data) {
-    var html = '<div class="booking-content-enter">';
-    html += '<div class="booking-success">';
-    html += '<div class="booking-success__check"><svg viewBox="0 0 24 24" fill="none" stroke="#C8A24C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>';
-    html += '<h3>You\u2019re Booked!</h3>';
-    html += '<p class="booking-success__detail">We\u2019ll see you on ' + data.classDate + ' at ' + data.classTime + '</p>';
-    html += '<p class="booking-success__email-note">A confirmation will be sent to ' + data.email + '</p>';
-    html += '<button class="booking-success__close-btn" id="bookingSuccessClose">Done</button>';
-    html += '</div></div>';
-    bookingContent.innerHTML = html;
-
-    document.getElementById('bookingSuccessClose').addEventListener('click', closeBookingModal);
-  }
-
-  // ── Render Error State ──
-  function showBookingError() {
-    var html = '<div class="booking-content-enter">';
-    html += '<div class="booking-error">';
-    html += '<div class="booking-error__icon">\u26A0\uFE0F</div>';
-    html += '<h3>Something Went Wrong</h3>';
-    html += '<p>We couldn\u2019t submit your booking. Please try again.</p>';
-    html += '<div class="booking-error__actions">';
-    html += '<button class="booking-retry-btn" id="bookingRetryBtn">Try Again</button>';
-    html += '<button class="booking-success__close-btn" id="bookingErrorClose">Close</button>';
-    html += '</div></div></div>';
-    bookingContent.innerHTML = html;
-
-    document.getElementById('bookingRetryBtn').addEventListener('click', function () {
-      if (lastBookingData) submitBooking(lastBookingData);
-    });
-    document.getElementById('bookingErrorClose').addEventListener('click', closeBookingModal);
-  }
-
   // ── Render State C: Kids trials, every day of the week ──
 
   /* When a class next runs, in words a parent can act on: "today" when there
@@ -1058,61 +758,440 @@
     return days;
   }
 
-  function showKidsTrials() {
-    var html = '<div class="booking-content-enter">';
-    html += '<div class="booking-step-header"><h3>Kids Trials</h3><p>Free, on any day of the week</p></div>';
-    html += '<div class="booking-kidstrial-info">';
-    html += '<div class="booking-kidstrial-info__icon">🥋</div>';
-    html += '<p>Pick a day and a class. Every class here is open to a child who has never trained, and the ages are in the class name. The advanced grappling classes need a gray-white belt or higher, or two years of wrestling, so they are not listed.</p>';
-    html += '</div>';
-    html += '<div class="booking-kidstrial-days">';
-    kidsTrialDays().forEach(function (group) {
-      var dayFull = dayAbbrToFull(group.day);
-      html += '<section class="booking-kidstrial-day" data-day="' + group.day + '">';
-      html += '<h4 class="booking-kidstrial-day__name">' + dayFull + '</h4>';
-      html += '<div class="booking-kidstrial-classes">';
-      group.classes.forEach(function (item) {
-        var cls = item.cls;
-        html += '<div class="booking-kidstrial-class">';
-        html += '<div class="booking-kidstrial-class__info"><span class="booking-kidstrial-class__name">' + cls.name + '</span>';
-        html += '<span class="booking-kidstrial-class__time">' + cls.time + (cls.type ? ', ' + cls.type : '') + '</span>';
-        html += '<span class="booking-kidstrial-class__date">Next: ' + nextLabel(item.next) + '</span></div>';
-        // Sixteen buttons that all say the same thing: the label is what a screen reader has to tell them apart.
-        html += '<button class="booking-kidstrial-class__btn" data-kid-idx="' + item.idx + '" aria-label="Book ' + cls.name + ', ' + dayFull + ' at ' + cls.time + '">Book This Class</button>';
+
+  /**
+   * One booking flow, drawn into one place.
+   *
+   * The popup is one of these. The calendar in the front page's "Your first class" section is another: the same steps, the same
+   * class lists, the same calendar, the same CRM call, drawn into the page instead of a dialog. That section used to be a contact form
+   * (a name, a message, and nothing booked), so somebody who scrolled to it to book had to leave it and find the booking button.
+   *
+   * Two things differ. The popup opens itself when a step is shown; the page copy never does, and instead brings the person with it
+   * when a step is longer or shorter than the one it replaced (the new step's heading is scrolled to and focused). And every id, and the
+   * name of the date group, carries a prefix, so two of these on one page never share one: a label points at the first element with its
+   * id, and checking a day in one radio group would uncheck the other's.
+   */
+  function makeBooker(root, opt) {
+    var inline = !!opt.inline;
+    var P = opt.idPrefix;
+    var lastBookingData = null;
+    var backTo = null; // the page copy's way back from a form to the list the class was picked from
+    var $ = function (id) { return root.querySelector('#' + P + id); };
+
+    function draw(html, quiet) {
+      root.innerHTML = html;
+      if (inline && !quiet) settle();
+    }
+
+    /* A step on the page is not a dialog opening over everything, so the person has to be brought to it. A list is far taller than the
+       picker it replaced and a person who tapped near the foot of one lands in the middle of the next step: scroll the top of the flow
+       into view when it is above the fold (or far below it), and put keyboard and screen reader focus on the new step's heading. Never
+       called for the first drawing, which would pull the page down to this section as it loads. */
+    function settle() {
+      var head = root.querySelector('.booking-step-header h3, .booking-class-info, .booking-success h3, .booking-error h3');
+      var top = root.getBoundingClientRect().top;
+      var bar = document.querySelector('nav.nav, .nav');
+      var clear = bar ? bar.getBoundingClientRect().bottom : 0;
+      if (top < clear + 8 || top > window.innerHeight * 0.6) {
+        var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        root.scrollIntoView({ block: 'start', behavior: calm ? 'auto' : 'smooth' });
+      }
+      if (head) {
+        if (!head.hasAttribute('tabindex')) head.setAttribute('tabindex', '-1');
+        head.focus({ preventScroll: true });
+      }
+    }
+
+    // ── Render State A: Class Picker ──
+    function showClassPicker() { renderPicker(false); }
+    function renderPicker(quiet) {
+      var html = '<div class="booking-content-enter">';
+      html += '<div class="booking-step-header"><h3>Book Your Free Trial</h3><p>Choose a program to get started</p></div>';
+      html += '<div class="booking-category-btns">';
+      html += '<button class="booking-category-btn" data-category="adult"><span class="booking-category-btn__icon">\uD83E\uDD4B</span><span class="booking-category-btn__label">Adult Classes</span></button>';
+      html += '<button class="booking-category-btn" data-category="kids"><span class="booking-category-btn__icon">\uD83C\uDFC6</span><span class="booking-category-btn__label">Kids & Teens</span></button>';
+      html += '</div></div>';
+      draw(html, quiet);
+
+      root.querySelectorAll('.booking-category-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var cat = btn.getAttribute('data-category');
+          if (cat === 'adult') {
+            showClassList(ADULT_CLASSES, 'Adult Classes');
+          } else {
+            showKidsTrials();
+          }
+        });
+      });
+
+      if (!inline) openBookingModal();
+    }
+
+    // ── Render class list within picker ──
+    function showClassList(classes, title) {
+      var html = '<div class="booking-content-enter">';
+      html += '<button class="booking-back-btn" id="' + P + 'BackBtn">\u2190 Back</button>';
+      html += '<div class="booking-step-header"><h3>' + title + '</h3><p>Select a class to book your trial</p></div>';
+      html += '<div class="booking-class-list">';
+      classes.forEach(function (cls, i) {
+        // Reachable from the keyboard: a row is a control, and a div is not one unless it says so.
+        html += '<div class="booking-class-row" data-idx="' + i + '" role="button" tabindex="0">';
+        html += '<span class="booking-class-row__day">' + cls.day + '</span>';
+        html += '<span class="booking-class-row__time">' + cls.time + '</span>';
+        html += '<span class="booking-class-row__name">' + cls.name + (cls.type ? ', ' + cls.type : '') + '</span>';
+        html += '<span class="booking-class-row__arrow">\u2192</span>';
         html += '</div>';
       });
-      html += '</div></section>';
-    });
-    html += '</div></div>';
-    bookingContent.innerHTML = html;
+      html += '</div></div>';
+      draw(html);
 
-    bookingContent.querySelectorAll('.booking-kidstrial-class__btn').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var idx = parseInt(btn.getAttribute('data-kid-idx'), 10);
-        var cls = KIDS_TRIAL_CLASSES[idx];
-        showBookingForm(cls.name, cls.type, cls.day, cls.time);
+      // Back button
+      var backBtn = $('BackBtn');
+      if (backBtn) backBtn.addEventListener('click', function () { showClassPicker(); });
+
+      // Row clicks, and Enter or Space on a row
+      root.querySelectorAll('.booking-class-row').forEach(function (row) {
+        var pick = function () {
+          var idx = parseInt(row.getAttribute('data-idx'), 10);
+          var cls = classes[idx];
+          backTo = function () { showClassList(classes, title); };
+          showBookingForm(cls.name, cls.type, cls.day, cls.time);
+        };
+        row.addEventListener('click', pick);
+        row.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); }
+        });
       });
-    });
+    }
 
-    openBookingModal();
+    // ── Render State B: Booking Form ──
+    function showBookingForm(className, classType, dayAbbr, timeStr, dateKey, tag) {
+      var dates = upcomingDayDates(dayAbbr, timeStr);
+      var dateStr = formatDate(dates[0]);
+      var dayFull = dayAbbrToFull(dayAbbr);
+
+      var typeClass = classType && classType.toLowerCase().replace('-','').replace(' ','') === 'nogi' ? 'nogi' : 'gi';
+      var typeLabel = classType || '';
+
+      var html = '<div class="booking-content-enter">';
+      // The page copy has no close button to go back with, so it has this one; it is not on the popup, which is closed instead.
+      if (inline && backTo) html += '<button type="button" class="booking-back-btn" id="' + P + 'BackBtn">\u2190 Back</button>';
+      html += '<div class="booking-class-info">';
+      html += '<div class="booking-class-badge">';
+      html += '<span class="booking-class-badge__name">' + className + '</span>';
+      if (typeLabel) html += '<span class="booking-class-badge__type booking-class-badge__type--' + typeClass + '">' + typeLabel + '</span>';
+      html += '</div>';
+      html += '<div class="booking-class-info__datetime">' + dayFull + ' at ' + timeStr + '</div>';
+      html += '</div>';
+
+      /*
+       * Which one they want.
+       *
+       * This used to be a line of text reading "Next class: <date>", and that
+       * line was the whole booking — a parent who could not make this Friday
+       * could either come on a day that did not suit them or give up, and the
+       * academy never heard which it was. The soonest is still selected when the
+       * form opens, so the fast path is unchanged.
+       */
+      html += '<fieldset class="booking-cal">';
+      html += '<legend class="booking-cal__legend">Which ' + dayFull + '?</legend>';
+      html += '<div class="booking-cal__body" id="' + P + 'Cal"></div>';
+      html += '</fieldset>';
+
+      html += '<form class="booking-form" id="' + P + 'Form" autocomplete="on">';
+      html += '<div class="booking-form__group"><label class="booking-form__label" for="' + P + 'Name">Full Name</label><input class="booking-form__input" type="text" id="' + P + 'Name" name="name" placeholder="Your full name" required autocomplete="name"></div>';
+      html += '<div class="booking-form__group"><label class="booking-form__label" for="' + P + 'Email">Email</label><input class="booking-form__input" type="email" id="' + P + 'Email" name="email" placeholder="you@email.com" required autocomplete="email"></div>';
+      html += '<div class="booking-form__group"><label class="booking-form__label" for="' + P + 'Phone">Phone</label><input class="booking-form__input" type="tel" id="' + P + 'Phone" name="phone" placeholder="(281) 555-0000" required autocomplete="tel"></div>';
+      // Optional, and last of the fields so nobody has to decide anything before the three they cannot skip. The answer goes into the
+      // lead's note beside where the visit was worked out to have come from (see WHERE EACH BOOKING CAME FROM).
+      html += '<div class="booking-form__group"><label class="booking-form__label" for="' + P + 'Heard">How did you hear about us? <span class="booking-form__optional">(optional)</span></label>' + heardMenuHTML(P) + '</div>';
+      // Booking now sends a confirmation text as well as the email, so the form
+      // has to say so before the number is handed over. A person who is told
+      // what a message is for does not report it as spam, and the carriers treat
+      // an unannounced text to a form-filled number as exactly that.
+      html += '<p class="booking-form__consent">We will email and text you to confirm this booking. Reply STOP to any message to opt out.</p>';
+      html += '<button type="submit" class="booking-submit-btn" id="' + P + 'SubmitBtn">Confirm Booking</button>';
+      html += '</form>';
+      html += '</div>';
+
+      draw(html);
+
+      // Back to the list this class was picked from (the page copy only; see above)
+      var backBtn = $('BackBtn');
+      if (backBtn) backBtn.addEventListener('click', function () { backTo(); });
+
+      // Store class info for submission
+      var classInfo = {
+        className: className + (typeLabel ? ', ' + typeLabel : ''),
+        crmProgram: crmProgramFor(className, dayAbbr, timeStr),
+        classDay: dayFull,
+        classTime: timeStr,
+        classDate: dateStr,
+        // Which page the booking came from, when it matters (the Pink October calendar).
+        // Goes at the front of the lead's note so the desk sees it first.
+        tag: tag ? String(tag).slice(0, 40) : ''
+      };
+
+      /*
+       * The calendar's state, and the one place it is drawn.
+       *
+       * `selected` is the answer and is kept here rather than read off the DOM,
+       * because paging to another month replaces the grid: a choice living only
+       * in a radio would be lost the moment somebody looked at November and came
+       * back. `view` is only which month is on screen.
+       */
+      var firstDate = upcomingDayDates(dayAbbr, timeStr, 1)[0];
+      var lastDate = new Date(firstDate);
+      lastDate.setDate(firstDate.getDate() + BOOK_AHEAD_DAYS);
+      var selected = ymd(firstDate);
+      var view = new Date(firstDate.getFullYear(), firstDate.getMonth(), 1);
+      /* A page that already knows the day (the Pink October calendar) can say
+         which one. Only honoured when it is a real class day this form would
+         have offered anyway; anything else falls back to the soonest. */
+      if (/^\d{4}-\d{2}-\d{2}$/.test(dateKey || '')) {
+        var wp = dateKey.split('-');
+        var want = new Date(Number(wp[0]), Number(wp[1]) - 1, Number(wp[2]));
+        if (want.getDay() === DAY_MAP[dayAbbr] && dateKey >= ymd(firstDate) && dateKey <= ymd(lastDate) && !isShut(want)) {
+          selected = dateKey;
+          view = new Date(want.getFullYear(), want.getMonth(), 1);
+        }
+      }
+      var calEl = $('Cal');
+
+      function drawCal() {
+        calEl.innerHTML = calendarHTML(dayAbbr, view, selected, firstDate, lastDate, P);
+      }
+      drawCal();
+
+      /* One listener on the container, so the handlers survive every redraw.
+         Binding per cell would mean re-binding on each month change, which is
+         how a calendar ends up with a month you can page into but not book. */
+      calEl.addEventListener('click', function (e) {
+        var nav = e.target.closest('[data-cal-move]');
+        if (!nav || nav.disabled) return;
+        view = new Date(view.getFullYear(), view.getMonth() + Number(nav.getAttribute('data-cal-move')), 1);
+        drawCal();
+        /* Keep the keyboard where the person left it: redrawing replaces the
+           button they just pressed, and focus would otherwise fall to the body
+           and drop them at the top of the modal. */
+        var again = calEl.querySelector('[data-cal-move="' + nav.getAttribute('data-cal-move') + '"]');
+        if (again && !again.disabled) again.focus();
+        else {
+          var other = calEl.querySelector('[data-cal-move]:not([disabled])');
+          if (other) other.focus();
+        }
+      });
+
+      calEl.addEventListener('change', function (e) {
+        if (e.target.name !== P + 'Date') return;
+        selected = e.target.id.replace(P + 'Date-', '');
+      });
+
+      /* What the form will send: the chosen day, in the long form the CRM and
+         the confirmation message both already expect. */
+      function chosenDate() {
+        var picked = calEl.querySelector('input[name="' + P + 'Date"]:checked');
+        if (picked) return picked.value;
+        /* Selected, but in a month that is not on screen. Rebuild the string
+           from the key rather than falling back to the soonest date — silently
+           booking a different day than the one showing as chosen is the worst
+           thing this form could do. */
+        var parts = selected.split('-');
+        return formatDate(new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2])));
+      }
+
+      var form = $('Form');
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var nameVal = $('Name').value.trim();
+        var emailVal = $('Email').value.trim();
+        var phoneVal = $('Phone').value.trim();
+
+        // Basic validation
+        var valid = true;
+        if (!nameVal) { $('Name').classList.add('is-error'); valid = false; }
+        else { $('Name').classList.remove('is-error'); }
+        if (!emailVal || emailVal.indexOf('@') === -1) { $('Email').classList.add('is-error'); valid = false; }
+        else { $('Email').classList.remove('is-error'); }
+        if (!phoneVal) { $('Phone').classList.add('is-error'); valid = false; }
+        else { $('Phone').classList.remove('is-error'); }
+
+        if (!valid) return;
+
+        // The menu is optional extra; if it were ever missing, the booking still goes.
+        var heardEl = $('Heard');
+        lastBookingData = {
+          name: nameVal,
+          email: emailVal,
+          phone: phoneVal,
+          className: classInfo.className,
+          crmProgram: classInfo.crmProgram,
+          classDay: classInfo.classDay,
+          classTime: classInfo.classTime,
+          classDate: chosenDate(),
+          tag: classInfo.tag,
+          // The label for the slug the menu carries, '' when nothing was chosen; kept here so a retry sends the same answer.
+          heard: heardEl ? heardLabel(heardEl.value) : ''
+        };
+
+        submitBooking(lastBookingData);
+      });
+    }
+
+    // ── Submit booking ──
+    function submitBooking(data) {
+      var submitBtn = $('SubmitBtn');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="booking-spinner"></span> Booking...';
+      }
+
+      /*
+       * This used to fire at a Google Apps Script by assigning to an Image src
+       * and then show success 800ms later regardless. The old comment read
+       * "Silent fail, user still sees success". A broken script was therefore
+       * invisible: the visitor was told they were booked and nobody was.
+       *
+       * It now posts to the CRM and reads the reply. showBookingError() already
+       * existed just below and was unreachable, because nothing ever reported a
+       * failure.
+       */
+      sendToCrm({
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        program: data.crmProgram,
+        // They picked a real class off the schedule, so the lead arrives already
+        // at "Trial Booked" with the right time, and the confirmation email
+        // names that class instead of promising to be in touch.
+        trialAt: toCentralISO(data.classDate, data.classTime),
+        note: bookingNote(data)
+      }).then(function (ok) {
+        if (ok) {
+          countBooking();
+          showBookingSuccess(data);
+        } else {
+          if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Book My Free Class';
+          }
+          showBookingError();
+        }
+      });
+    }
+
+    // ── Render Success State ──
+    function showBookingSuccess(data) {
+      var html = '<div class="booking-content-enter">';
+      html += '<div class="booking-success">';
+      html += '<div class="booking-success__check"><svg viewBox="0 0 24 24" fill="none" stroke="#C8A24C" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>';
+      html += '<h3>You\u2019re Booked!</h3>';
+      html += '<p class="booking-success__detail">We\u2019ll see you on ' + data.classDate + ' at ' + data.classTime + '</p>';
+      html += '<p class="booking-success__email-note">A confirmation will be sent to ' + data.email + '</p>';
+      // The popup is shut when it is done with; the page copy is shown again from the start, for the next person in the family.
+      html += '<button class="booking-success__close-btn" id="' + P + 'SuccessClose">' + (inline ? 'Book another class' : 'Done') + '</button>';
+      html += '</div></div>';
+      draw(html);
+
+      $('SuccessClose').addEventListener('click', inline ? showClassPicker : closeBookingModal);
+    }
+
+    // ── Render Error State ──
+    function showBookingError() {
+      var html = '<div class="booking-content-enter">';
+      html += '<div class="booking-error">';
+      html += '<div class="booking-error__icon">\u26A0\uFE0F</div>';
+      html += '<h3>Something Went Wrong</h3>';
+      // The front page's old contact form told a visitor whose enquiry failed to call, and this is now the only way in from that page.
+      html += '<p>We couldn\u2019t submit your booking. Please try again, or call or text us on <a href="tel:2813937983">(281) 393-7983</a>.</p>';
+      html += '<div class="booking-error__actions">';
+      html += '<button class="booking-retry-btn" id="' + P + 'RetryBtn">Try Again</button>';
+      html += '<button class="booking-success__close-btn" id="' + P + 'ErrorClose">' + (inline ? 'Start over' : 'Close') + '</button>';
+      html += '</div></div></div>';
+      draw(html);
+
+      $('RetryBtn').addEventListener('click', function () {
+        if (lastBookingData) submitBooking(lastBookingData);
+      });
+      $('ErrorClose').addEventListener('click', inline ? showClassPicker : closeBookingModal);
+    }
+
+
+  // ── Render State C: Kids trials, every day of the week (the list) ──
+    function showKidsTrials() {
+      var html = '<div class="booking-content-enter">';
+      // The page copy has no close button, so it has a way back to the choice of program; the popup is closed instead.
+      if (inline) html += '<button type="button" class="booking-back-btn" id="' + P + 'BackBtn">\u2190 Back</button>';
+      html += '<div class="booking-step-header"><h3>Kids Trials</h3><p>Free, on any day of the week</p></div>';
+      html += '<div class="booking-kidstrial-info">';
+      html += '<div class="booking-kidstrial-info__icon">🥋</div>';
+      html += '<p>Pick a day and a class. Every class here is open to a child who has never trained, and the ages are in the class name. The advanced grappling classes need a gray-white belt or higher, or two years of wrestling, so they are not listed.</p>';
+      html += '</div>';
+      html += '<div class="booking-kidstrial-days">';
+      kidsTrialDays().forEach(function (group) {
+        var dayFull = dayAbbrToFull(group.day);
+        html += '<section class="booking-kidstrial-day" data-day="' + group.day + '">';
+        html += '<h4 class="booking-kidstrial-day__name">' + dayFull + '</h4>';
+        html += '<div class="booking-kidstrial-classes">';
+        group.classes.forEach(function (item) {
+          var cls = item.cls;
+          html += '<div class="booking-kidstrial-class">';
+          html += '<div class="booking-kidstrial-class__info"><span class="booking-kidstrial-class__name">' + cls.name + '</span>';
+          html += '<span class="booking-kidstrial-class__time">' + cls.time + (cls.type ? ', ' + cls.type : '') + '</span>';
+          html += '<span class="booking-kidstrial-class__date">Next: ' + nextLabel(item.next) + '</span></div>';
+          // Sixteen buttons that all say the same thing: the label is what a screen reader has to tell them apart.
+          html += '<button class="booking-kidstrial-class__btn" data-kid-idx="' + item.idx + '" aria-label="Book ' + cls.name + ', ' + dayFull + ' at ' + cls.time + '">Book This Class</button>';
+          html += '</div>';
+        });
+        html += '</div></section>';
+      });
+      html += '</div></div>';
+      draw(html);
+
+      var kidsBack = $('BackBtn');
+      if (kidsBack) kidsBack.addEventListener('click', function () { showClassPicker(); });
+
+      root.querySelectorAll('.booking-kidstrial-class__btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var idx = parseInt(btn.getAttribute('data-kid-idx'), 10);
+          var cls = KIDS_TRIAL_CLASSES[idx];
+          backTo = showKidsTrials;
+          showBookingForm(cls.name, cls.type, cls.day, cls.time);
+        });
+      });
+
+      if (!inline) openBookingModal();
+    }
+
+
+    return {
+      start: function () { renderPicker(true); },
+      showClassPicker: showClassPicker,
+      showClassList: showClassList,
+      showKidsTrials: showKidsTrials,
+      showBookingForm: showBookingForm
+    };
   }
+
+  // The popup.
+  var modal = makeBooker(bookingContent, { inline: false, idPrefix: 'booking' });
 
   /**
    * The CRM endpoint, for anything on the site that captures a lead.
    *
-   * The contact form on the front page uses it too. It is the same Leads
-   * board, so it is exposed separately from the booking modal rather than
-   * being reachable only through it.
+   * The Ennova page's own form uses it too. It is the same Leads board, so it
+   * is exposed separately from the booking modal rather than being reachable
+   * only through it.
    */
   window.LabyrinthCrm = { send: sendToCrm, toCentralISO: toCentralISO };
 
   // ── What the rest of the site may call ──
   window.LabyrinthBooking = {
-    openPicker: showClassPicker,
-    openAdultList: function () { showClassList(ADULT_CLASSES, 'Adult Classes'); openBookingModal(); },
-    openKidsTrials: showKidsTrials,
+    openPicker: modal.showClassPicker,
+    openAdultList: function () { modal.showClassList(ADULT_CLASSES, 'Adult Classes'); openBookingModal(); },
+    openKidsTrials: modal.showKidsTrials,
     openForm: function (name, type, day, time, dateKey, tag) {
-      showBookingForm(name, type, day, time, dateKey, tag);
+      modal.showBookingForm(name, type, day, time, dateKey, tag);
       openBookingModal();
     },
     close: closeBookingModal,
@@ -1155,12 +1234,17 @@
     var el = e.target.closest('[data-book-trial], a[href$="/#book"], a[href="#book"]');
     if (!el) return;
     e.preventDefault();
-    showClassPicker();
+    modal.showClassPicker();
   });
 
   // Someone arriving at labyrinth.vision/#book, from an old blog link, an
   // email, or anywhere else. Should land with the picker already open.
   if (window.location.hash === '#book') {
-    showClassPicker();
+    modal.showClassPicker();
   }
+
+  /* The front page's "Your first class" section: the same flow, drawn into the page. It starts at the choice of program, and
+     stays out of the way until somebody uses it (see makeBooker). Any other page, which has no such section, gets nothing. */
+  var pageStage = document.getElementById('bookingInline');
+  if (pageStage) makeBooker(pageStage, { inline: true, idPrefix: 'trialBooking' }).start();
 })();

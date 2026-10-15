@@ -697,6 +697,13 @@
   margin: 0 0 20px;
 }
 
+.booking-error p a {
+  color: var(--gold);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+}
+
 .booking-error__actions {
   display: flex;
   gap: 10px;
@@ -850,6 +857,64 @@
   }
 }
 
+/* === THE SAME FLOW, ON THE PAGE ===
+
+   The front page's "Your first class" section draws the booking steps into the page instead of a dialog (booking.js, makeBooker). The
+   steps are the popup's, so their own styles are used as they are; what is here is the box they sit in and the few places where the
+   section's running-text styles (.trial__content h3, p) would otherwise reach into them. (When a step is scrolled to, base.css's
+   scroll-padding-top already keeps it clear of the fixed nav.) */
+.trial-form--booking {
+  padding: 28px 24px;
+}
+
+/* A heading is focused when a step appears, for keyboard and screen reader users; it is not a control, so it needs no ring. */
+.booking-inline [tabindex="-1"]:focus {
+  outline: none;
+}
+
+/* The section's running-text rule (.trial__content p: 16px, a 1.65 line height, the muted colour) is heavier than a booking class that
+   styles its paragraph by that class alone, and it sets a line height the popup never had, so inside the page it wins. These put back
+   what the popup gives the same paragraphs. Written against the page's own wrapper so that nothing else on the site is touched. */
+.booking-inline .booking-step-header p,
+.booking-inline .booking-success p,
+.booking-inline .booking-error p {
+  line-height: 1.6;
+}
+
+.booking-inline .booking-step-header p {
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.booking-inline .booking-success__detail {
+  font-size: 15px;
+  color: var(--text);
+}
+
+.booking-inline .booking-success__email-note {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.booking-inline .booking-form__consent {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-faint, #8A8A8A);
+}
+
+.trial-form__help {
+  margin: 20px 0 0;
+  text-align: center;
+  font-size: 14px;
+}
+
+.trial-form__help a,
+.booking-inline .booking-step-header a {
+  color: var(--gold);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 /* === SCROLLBAR === */
 .booking-modal::-webkit-scrollbar {
   width: 6px;
@@ -882,6 +947,10 @@
 
   #bookingContent {
     padding: 28px 20px 36px;
+  }
+
+  .trial-form--booking {
+    padding: 24px 16px;
   }
 
   .booking-step-header h3 {

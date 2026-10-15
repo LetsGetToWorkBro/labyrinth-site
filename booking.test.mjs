@@ -635,6 +635,363 @@ console.log('\nArriving at the front page on #book:')
   await ctx.close()
 }
 
+// ── The front page's own booking calendar ────────────────────────────────────
+//
+// "Your first class" was a contact form: name, email, phone, a program menu and a message, and nothing was booked, so everyone who
+// used it was an enquiry somebody had to chase for a time, while the popup beside it booked people straight onto the schedule. The
+// section is the booking flow now, drawn into the page (makeBooker in booking.js): the same choice of program, list of classes,
+// calendar and details, and the same CRM call, note and Google Ads conversion. What is guarded here is that it really is the same
+// flow, that the two copies on one page stay out of each other's way, and that the section's own text styles do not reach into it.
+console.log('\nThe front page\'s own booking calendar:')
+
+/** The heading of the step the page's own copy is on. */
+const stageHeading = (page) => page.evaluate(() => document.querySelector('#bookingInline h3')?.textContent ?? '')
+/** Fill in the page copy's details form. Its ids carry their own prefix, so they never meet the popup's. */
+async function fillStage(page, { heard } = {}) {
+  await page.fill('#trialBookingName', 'Test Person')
+  await page.fill('#trialBookingEmail', 'test@example.com')
+  await page.fill('#trialBookingPhone', '2815550000')
+  if (heard) await page.selectOption('#trialBookingHeard', heard)
+}
+
+{
+  const { page, ctx, errors } = await open('/index.html')
+  check('the page loads clean', errors, [])
+  check('"Reserve Your Free Class" is not a contact form any more',
+    await page.evaluate(() => document.querySelectorAll('#contact form, #contact select, #contact textarea, #contactForm, #formSuccess').length), 0)
+  check('the section starts at the choice of program, as a labelled region',
+    await page.evaluate(() => { const r = document.getElementById('bookingInline'); return [r.getAttribute('role'), r.getAttribute('aria-label'), r.querySelector('h3')?.textContent] }),
+    ['region', 'Book a free class', 'Book Your Free Trial'])
+  check('with adult classes and kids to choose between',
+    await page.evaluate(() => [...document.querySelectorAll('#bookingInline .booking-category-btn')].map(b => b.dataset.category)), ['adult', 'kids'])
+  check('drawing it on load opens no popup and takes neither the focus nor the scroll',
+    await page.evaluate(() => [!!document.querySelector('.booking-overlay.open'), document.activeElement === document.body, Math.round(window.scrollY)]), [false, true, 0])
+  await ctx.close()
+}
+
+// Booked through the page, it is the booking the popup makes.
+{
+  const url = '/index.html?utm_source=Instagram&utm_campaign=adult-ad'
+  const a = await open(url)
+  await a.page.click('#bookingInline .booking-category-btn[data-category="adult"]')
+  await a.page.waitForTimeout(250)
+  check('the adult classes are listed in the page, and the popup stays shut',
+    [(await a.page.locator('#bookingInline .booking-class-row').count()) > 5, await isOpen(a.page)], [true, false])
+  check('the new step has the keyboard focus, on its heading',
+    await a.page.evaluate(() => document.activeElement?.textContent), 'Adult Classes')
+  await a.page.click('#bookingInline .booking-back-btn')
+  await a.page.waitForTimeout(250)
+  check('Back goes to the choice of program', await stageHeading(a.page), 'Book Your Free Trial')
+  await a.page.click('#bookingInline .booking-category-btn[data-category="adult"]')
+  await a.page.waitForTimeout(250)
+  await a.page.click('#bookingInline .booking-class-row >> nth=0')
+  await a.page.waitForTimeout(250)
+  check('picking a class draws its form in the page, with ids of its own',
+    await a.page.evaluate(() => [!!document.getElementById('trialBookingForm'), !!document.getElementById('bookingForm')]), [true, false])
+  check('and a calendar, with the soonest day of that class chosen',
+    await a.page.evaluate(() => [document.querySelectorAll('#bookingInline .booking-cal__grid').length, document.querySelectorAll('#bookingInline input[name="trialBookingDate"]:checked').length]), [1, 1])
+  await a.page.click('#bookingInline .booking-back-btn')
+  await a.page.waitForTimeout(250)
+  check('Back from the form goes to the list the class came from', await stageHeading(a.page), 'Adult Classes')
+  await a.page.click('#bookingInline .booking-class-row >> nth=0')
+  await a.page.waitForTimeout(250)
+  await fillStage(a.page, { heard: 'instagram' })
+  await a.page.click('#trialBookingSubmitBtn')
+  await a.page.waitForTimeout(500)
+  check('a saved booking says so, in the page', [await stageHeading(a.page), await isOpen(a.page)], ['You’re Booked!', false])
+  check('and is counted as exactly one Google Ads conversion', (await conversions(a.page)).length, 1)
+  const fromPage = a.posted()
+
+  const b = await open(url)
+  await b.page.evaluate(() => window.LabyrinthBooking.openAdultList())
+  await b.page.waitForTimeout(250)
+  await b.page.click('#bookingContent .booking-class-row >> nth=0')
+  await b.page.waitForTimeout(250)
+  await b.page.fill('#bookingName', 'Test Person')
+  await b.page.fill('#bookingEmail', 'test@example.com')
+  await b.page.fill('#bookingPhone', '2815550000')
+  await b.page.selectOption('#bookingHeard', 'instagram')
+  await b.page.click('#bookingSubmitBtn')
+  await b.page.waitForTimeout(500)
+  check('what the page sends is, field for field, what the popup sends for the same class and person', fromPage, b.posted())
+  check('with the class, where the visit came from and what they said, in the note',
+    fromPage.note.endsWith('. Came from: instagram / adult-ad. Heard about us: Instagram.'), true)
+  check('and a program and a time, so the lead arrives as a booked trial',
+    [typeof fromPage.program, /^\d{4}-\d\d-\d\dT\d\d:\d\d/.test(fromPage.trialAt)], ['string', true])
+  check('and neither page had an error', [a.errors, b.errors], [[], []])
+
+  await a.page.click('#trialBookingSuccessClose')
+  await a.page.waitForTimeout(250)
+  check('"Book another class" starts again at the choice of program', await stageHeading(a.page), 'Book Your Free Trial')
+  await a.ctx.close()
+  await b.ctx.close()
+}
+
+// Kids & Teens: the list for every day, a way back, and the right group at the CRM.
+{
+  const { page, ctx, errors, posted } = await open('/index.html')
+  await page.click('#bookingInline .booking-category-btn[data-category="kids"]')
+  await page.waitForTimeout(250)
+  check('the kids list is in the page: a section for each day of the week, sixteen classes, no popup',
+    await page.evaluate(() => [document.querySelectorAll('#bookingInline .booking-kidstrial-day').length,
+      document.querySelectorAll('#bookingInline .booking-kidstrial-class__btn').length, !!document.querySelector('.booking-overlay.open')]), [7, 16, false])
+  await page.click('#bookingInline .booking-back-btn')
+  await page.waitForTimeout(250)
+  check('Back goes to the choice of program', await stageHeading(page), 'Book Your Free Trial')
+  await page.click('#bookingInline .booking-category-btn[data-category="kids"]')
+  await page.waitForTimeout(250)
+  await page.click('#bookingInline .booking-kidstrial-class__btn[data-kid-idx="2"]')
+  await page.waitForTimeout(250)
+  const cls = await page.evaluate(() => window.LabyrinthBooking.kidsTrialClasses[2])
+  check('a class opens its form, naming that class',
+    await page.evaluate(() => document.querySelector('#bookingInline .booking-class-badge__name')?.textContent), cls.name)
+  await page.click('#bookingInline .booking-back-btn')
+  await page.waitForTimeout(250)
+  check('and Back from the form goes to the kids list, not to the start', await stageHeading(page), 'Kids Trials')
+  await page.click('#bookingInline .booking-kidstrial-class__btn[data-kid-idx="2"]')
+  await page.waitForTimeout(250)
+  await fillStage(page)
+  await page.click('#trialBookingSubmitBtn')
+  await page.waitForTimeout(500)
+  const sent = posted()
+  const want = await page.evaluate(c => window.LabyrinthBooking.programFor(c.name, c.day, c.time), cls)
+  check('booked, and filed under the group that class belongs to, with its name in the note',
+    [await stageHeading(page), sent.program, sent.note.includes(cls.name)], ['You’re Booked!', want, true])
+  check('and the page is clean', errors, [])
+  await ctx.close()
+}
+
+// A refusal is not shown as a booking; the person is told how else to get in; trying again sends the same booking.
+{
+  const { page, ctx, errors } = await open('/index.html')
+  const bodies = []
+  let saved = false
+  await page.route('**/functions/v1/book-trial', route => {
+    bodies.push(JSON.parse(route.request().postData() ?? '{}'))
+    return route.fulfill({ status: 200, contentType: 'application/json', body: saved ? '{"ok":true}' : '{"ok":false}' })
+  })
+  await page.click('#bookingInline .booking-category-btn[data-category="adult"]')
+  await page.waitForTimeout(250)
+  await page.click('#bookingInline .booking-class-row >> nth=0')
+  await page.waitForTimeout(250)
+  await fillStage(page)
+  await page.click('#trialBookingSubmitBtn')
+  await page.waitForTimeout(500)
+  check('a booking the CRM refused is not shown as booked',
+    [await stageHeading(page), await page.locator('#bookingInline .booking-success').count()], ['Something Went Wrong', 0])
+  check('and it is not counted', (await conversions(page)).length, 0)
+  check('the person is told to call or text, by a link that dials',
+    await page.evaluate(() => document.querySelector('#bookingInline .booking-error a')?.getAttribute('href')), 'tel:2813937983')
+  saved = true
+  await page.click('#trialBookingRetryBtn')
+  await page.waitForTimeout(500)
+  check('Try Again sends the same booking and, once saved, is booked and counted once',
+    [await stageHeading(page), bodies.length === 2 && JSON.stringify(bodies[0]) === JSON.stringify(bodies[1]), (await conversions(page)).length], ['You’re Booked!', true, 1])
+  // Start over, from a second refusal
+  await page.click('#trialBookingSuccessClose')
+  await page.waitForTimeout(250)
+  saved = false
+  await page.click('#bookingInline .booking-category-btn[data-category="adult"]')
+  await page.waitForTimeout(250)
+  await page.click('#bookingInline .booking-class-row >> nth=1')
+  await page.waitForTimeout(250)
+  await fillStage(page)
+  await page.click('#trialBookingSubmitBtn')
+  await page.waitForTimeout(500)
+  await page.click('#trialBookingErrorClose')
+  await page.waitForTimeout(250)
+  check('"Start over" goes back to the choice of program', await stageHeading(page), 'Book Your Free Trial')
+  check('and the page is clean throughout', errors, [])
+  await ctx.close()
+}
+
+// The keyboard: a class row is a control, so it can be reached and chosen without a mouse.
+{
+  const { page, ctx } = await open('/index.html')
+  await page.click('#bookingInline .booking-category-btn[data-category="adult"]')
+  await page.waitForTimeout(250)
+  check('every class on the list is a control a keyboard can reach, and says so to a screen reader',
+    await page.evaluate(() => [...document.querySelectorAll('#bookingInline .booking-class-row')].every(r => r.getAttribute('role') === 'button' && r.tabIndex === 0)), true)
+  await page.locator('#bookingInline .booking-class-row').first().focus()
+  await page.keyboard.press('Enter')
+  await page.waitForTimeout(250)
+  check('Enter on a class picks it', await page.evaluate(() => !!document.getElementById('trialBookingForm')), true)
+  await page.click('#bookingInline .booking-back-btn')
+  await page.waitForTimeout(250)
+  await page.evaluate(() => { window.__space = null; document.addEventListener('keydown', e => { if (e.key === ' ') window.__space = e.defaultPrevented }) })
+  await page.locator('#bookingInline .booking-class-row').nth(1).focus()
+  await page.keyboard.press('Space')
+  await page.waitForTimeout(250)
+  check('Space picks it too, and does not also scroll the page',
+    await page.evaluate(() => [!!document.getElementById('trialBookingForm'), window.__space]), [true, true])
+  await ctx.close()
+}
+
+// A phone, and the narrowest one: no step is wider than the screen.
+for (const width of [375, 320]) {
+  const { page, ctx, errors } = await open('/index.html', { viewport: { width, height: 700 } })
+  let saved = true
+  await page.route('**/functions/v1/book-trial', route =>
+    route.fulfill({ status: 200, contentType: 'application/json', body: saved ? '{"ok":true}' : '{"ok":false}' }))
+  const seen = []
+  // Not only the page: the card the steps sit in clips what is wider than itself, so a calendar that is too wide for it would not scroll
+  // the page and would still be cut off. Nothing inside the stage may stick out of the card.
+  const measure = async (label) => {
+    await page.waitForTimeout(300)
+    const s = await page.evaluate(() => {
+      const box = document.getElementById('trialForm').getBoundingClientRect()
+      const poking = [...document.querySelectorAll('#bookingInline *')].filter(e => {
+        const r = e.getBoundingClientRect()
+        return r.width > 0 && (r.right > box.right + 0.5 || r.left < box.left - 0.5)
+      }).slice(0, 3).map(e => String(e.className || e.tagName))
+      return { page: document.documentElement.scrollWidth > window.innerWidth, stage: box.left < 0 || box.right > window.innerWidth + 0.5, poking }
+    })
+    if (s.page || s.stage || s.poking.length) seen.push(`${label} ${JSON.stringify(s)}`)
+  }
+  await measure('picker')
+  await page.click('#bookingInline .booking-category-btn[data-category="adult"]')
+  await measure('adult list')
+  await page.click('#bookingInline .booking-class-row >> nth=3')
+  await measure('form')
+  await fillStage(page, { heard: 'instagram' })
+  await page.click('#trialBookingSubmitBtn')
+  await page.waitForTimeout(400)
+  await measure('success')
+  await page.click('#trialBookingSuccessClose')
+  await page.waitForTimeout(250)
+  await page.click('#bookingInline .booking-category-btn[data-category="kids"]')
+  await measure('kids list')
+  await page.click('#bookingInline .booking-kidstrial-class__btn[data-kid-idx="2"]')
+  await measure('kids form')
+  await fillStage(page)
+  saved = false
+  await page.click('#trialBookingSubmitBtn')
+  await page.waitForTimeout(400)
+  await measure('error')
+  check(`at ${width}px wide, no step is wider than the screen or than its box`, seen, [])
+  check(`and the page is clean at ${width}px`, errors, [])
+  await ctx.close()
+}
+
+// The popup and the page copy can both be on the page, and neither disturbs the other.
+{
+  const { page, ctx, errors } = await open('/index.html')
+  await page.click('#bookingInline .booking-category-btn[data-category="adult"]')
+  await page.waitForTimeout(250)
+  await page.click('#bookingInline .booking-class-row >> nth=0')
+  await page.waitForTimeout(250)
+  await page.fill('#trialBookingName', 'Kept In The Page')
+  await page.evaluate(() => window.LabyrinthBooking.openForm('Kids BJJ Comp (7–12)', 'Gi', 'Fri', '5:15 PM'))
+  await page.waitForTimeout(300)
+  const both = await page.evaluate(() => {
+    const ids = [...document.querySelectorAll('[id]')].map(e => e.id)
+    return {
+      dupes: ids.filter((id, i) => ids.indexOf(id) !== i),
+      pageDate: document.querySelectorAll('input[name="trialBookingDate"]:checked').length,
+      popupDate: document.querySelectorAll('input[name="bookingDate"]:checked').length,
+      labels: [...document.querySelectorAll('label[for]')].filter(l => !document.getElementById(l.getAttribute('for'))).length,
+    }
+  })
+  check('with a form showing in both, no id is used twice', both.dupes, [])
+  check('and every label points at a field', both.labels, 0)
+  check('each has its own calendar with its own day chosen', [both.pageDate, both.popupDate], [1, 1])
+  check('the popup\'s form has no Back button, as before: it is closed instead',
+    await page.locator('#bookingContent .booking-back-btn').count(), 0)
+  await page.keyboard.press('Escape')
+  await page.waitForTimeout(250)
+  check('closing the popup leaves what was typed in the page where it was', await page.inputValue('#trialBookingName'), 'Kept In The Page')
+  check('and nothing the popup showed has been drawn into the page',
+    await page.evaluate(() => document.querySelector('#bookingInline .booking-class-badge__name')?.textContent), 'Adult BJJ')
+  check('without errors', errors, [])
+  await ctx.close()
+}
+
+// The section's own text rules (.trial__content p: 16px, a 1.65 line height, the muted colour) are heavier than a booking class that
+// styles a paragraph by that class alone. Every kind of line a booking step has is read in the page and in the popup, in the theme the
+// day brings and in the plain one: they must look the same.
+for (const url of ['/index.html', '/index.html?season=off']) {
+  const { page, ctx } = await open(url)
+  let saved = true
+  await page.route('**/functions/v1/book-trial', route =>
+    route.fulfill({ status: 200, contentType: 'application/json', body: saved ? '{"ok":true}' : '{"ok":false}' }))
+  const SEL = ['.booking-step-header p', '.booking-form__consent', '.booking-success__detail', '.booking-success__email-note', '.booking-error p', '.booking-error a']
+  const looks = (root) => page.evaluate(([root, SEL]) => Object.fromEntries(SEL.flatMap(s => {
+    const el = document.querySelector(root + ' ' + s)
+    if (!el) return []
+    const c = getComputedStyle(el)
+    return [[s, [c.fontSize, c.lineHeight, c.color, c.fontFamily]]]
+  })), [root, SEL])
+  const walk = async (root, idp, kind) => {
+    const seen = {}
+    const add = async () => Object.assign(seen, await looks(root))
+    const toForm = async () => {
+      await page.click(`${root} .booking-category-btn[data-category="adult"]`)
+      await page.waitForTimeout(250)
+      await page.click(`${root} .booking-class-row >> nth=0`)
+      await page.waitForTimeout(250)
+      await page.fill(`#${idp}Name`, 'Test Person')
+      await page.fill(`#${idp}Email`, 'test@example.com')
+      await page.fill(`#${idp}Phone`, '2815550000')
+    }
+    if (kind === 'popup') { await page.evaluate(() => window.LabyrinthBooking.openPicker()); await page.waitForTimeout(300) }
+    await add()
+    await toForm()
+    await add()
+    saved = true
+    await page.click(`#${idp}SubmitBtn`)
+    await page.waitForTimeout(500)
+    await add()
+    if (kind === 'popup') await page.evaluate(() => window.LabyrinthBooking.openPicker())
+    else await page.click('#trialBookingSuccessClose')
+    await page.waitForTimeout(300)
+    await toForm()
+    saved = false
+    await page.click(`#${idp}SubmitBtn`)
+    await page.waitForTimeout(500)
+    await add()
+    return seen
+  }
+  const inPage = await walk('#bookingInline', 'trialBooking', 'page')
+  const inPopup = await walk('#bookingContent', 'booking', 'popup')
+  check(`${url}: all six kinds of line are there to compare`, [Object.keys(inPage), Object.keys(inPopup)], [SEL, SEL])
+  check(`${url}: the page copy sets each in the same size, line height, colour and face as the popup`, inPage, inPopup)
+  await ctx.close()
+}
+
+// A step that is taller than the one it replaced is brought into view, under the fixed nav; one that begins where the person is looking
+// does not move the page. (The page smooth-scrolls, so the test's own scrolling is told to jump, or it would be measured mid-flight.)
+{
+  const { page, ctx } = await open('/index.html', { viewport: { width: 390, height: 700 } })
+  const geometry = () => page.evaluate(() => {
+    const top = document.getElementById('bookingInline').getBoundingClientRect().top
+    const nav = document.querySelector('nav.nav, .nav')
+    return { top: Math.round(top), navBottom: Math.round(nav ? nav.getBoundingClientRect().bottom : 0), y: Math.round(window.scrollY) }
+  })
+  await page.evaluate(() => { const r = document.getElementById('bookingInline'); window.scrollTo({ top: r.getBoundingClientRect().top + window.scrollY - 40, behavior: 'instant' }) })
+  await page.waitForTimeout(300)
+  const before = await geometry()
+  check('the section is scrolled up under the nav to begin with', before.top < before.navBottom, true)
+  await page.click('#bookingInline .booking-category-btn[data-category="adult"]')
+  await page.waitForTimeout(1500)
+  const after = await geometry()
+  check('the list that replaces the picker starts below the nav, not behind it', [after.top >= after.navBottom, after.top <= after.navBottom + 40], [true, true])
+  await page.evaluate(() => { const r = document.getElementById('bookingInline'); window.scrollTo({ top: r.getBoundingClientRect().top + window.scrollY - 150, behavior: 'instant' }) })
+  await page.waitForTimeout(300)
+  const rest = await geometry()
+  await page.click('#bookingInline .booking-back-btn')
+  await page.waitForTimeout(1200)
+  check('a step that begins where the person is looking leaves the page where it is', (await geometry()).y, rest.y)
+  await ctx.close()
+}
+
+// Without JavaScript the section is still useful: it says how to book, with a number that dials, and has no form that nothing would receive.
+{
+  const html = readFileSync(join(ROOT, 'index.html'), 'utf8')
+  const stageHtml = html.match(/<div class="booking-inline" id="bookingInline"[\s\S]*?<\/div>\s*<p class="trial-form__help"[\s\S]*?<\/p>/)?.[0] ?? ''
+  check('the page as served has the number twice, as links that dial', (stageHtml.match(/href="tel:2813937983"/g) || []).length, 2)
+  check('and no field, button or form in the section', /<form|<input|<select|<textarea|<button/.test(stageHtml), false)
+}
+
 // ── Where each booking came from ─────────────────────────────────────────────
 //
 // Instagram counts the people who tapped through, Google counts clicks, and the CRM counts the people who booked, and nothing joined

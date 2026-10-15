@@ -73,7 +73,7 @@ is the model to copy. To change a date, edit the window in the head. To add a ho
 on every `season-*` file's address (it finds them by name), so a changed theme is never served from an old cache.
 
 `node season-theme-test.mjs <name>` checks one season on its own (palette and contrast, twelve different section layers, the foot scene, every tap, nothing
-over any words, phones, reduced motion, previews); `site-test.mjs` runs the same checks for all of them and tests every window edge, Easter for any year, and
+over any words (in each step of the front page's booking calendar too: it changes the height of the section whose decorations are placed by percentages), phones, reduced motion, previews); `site-test.mjs` runs the same checks for all of them and tests every window edge, Easter for any year, and
 the quiet months. `SITE_TEST_NOW=2026-12-10T15:00:00Z node site-test.mjs` (also `nav-fit.test.mjs` and `booking.test.mjs`) runs a whole suite as if it were that day;
 add `SKIP_SEASON_PACKS=1` to `site-test.mjs` to leave out the per-pack checks.
 
@@ -83,14 +83,19 @@ rehearses it for another day.
 
 ## How booking works
 
-Two paths, both in `app.js`, both posting to the CRM's public `book-trial`
-endpoint and both reading the reply:
+One flow, in `booking.js`, posting to the CRM's public `book-trial` endpoint and reading the reply: the visitor picks a program, a real class
+off the schedule (adults, or the kids' trial list) and the day they want on a calendar, and leaves their details. That creates a lead already at
+*Trial Booked* with the correct time, so the confirmation email names the class.
 
-- **The contact form** (`#contact`): a general enquiry. Creates a lead at
-  *New Inquiry*.
-- **The class popup**, the visitor picks a real class off the schedule.
-  Creates a lead already at *Trial Booked* with the correct time, so the
-  confirmation email names the class.
+The same code (`makeBooker`) draws it in two places:
+
+- **The popup**, opened by every "Try a free class" button, a schedule card, `/#book` and a blog post's call to action.
+- **The front page's "Your first class" section** (`#bookingInline`, in `#contact`), where the steps are drawn into the page. It replaced a
+  contact form that sent a name and a message and booked nothing, so nothing on the front page creates a *New Inquiry* lead any more: a
+  question goes by phone or text, (281) 393-7983, which the section says. The page copy's ids start `trialBooking` so both copies can be on one
+  page; its styles are the popup's, plus the few rules in `booking.css` under "THE SAME FLOW, ON THE PAGE" that stop the section's own text
+  styles (`.trial__content p`) reaching into them. Without JavaScript the section is a line with the number to call. `booking.test.mjs` walks
+  it ("The front page's own booking calendar"), including that it looks the same as the popup.
 
 Class times are converted to Central with the offset for that specific date,
 because the academy runs through both CST and CDT and a visitor may be browsing
@@ -158,13 +163,15 @@ neither line, so count from the day it went live.
 
 Worth recording, because both failures were silent:
 
-- The contact form **discarded every submission**. Its handler hid the form and
-  showed "thanks"; there was no endpoint at all.
+- The front page's contact form **discarded every submission**. Its handler hid
+  the form and showed "thanks"; there was no endpoint at all. (It was later made
+  to post to the CRM, as a general enquiry, and has since been replaced by the
+  booking calendar.)
 - The class popup fired at a Google Apps Script via `new Image().src` and showed
   success 800ms later without reading the reply. The old comment read
   `// Silent fail, user still sees success`. A broken script was invisible.
 
-Both now tell the person to call if the booking did not save.
+The booking flow now tells the person to call or text if the booking did not save.
 
 ## SEO notes
 

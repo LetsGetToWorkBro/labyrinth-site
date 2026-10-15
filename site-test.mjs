@@ -1286,38 +1286,47 @@ check('L4 exactly one in-article CTA', ctas.length === 1, 'found ' + ctas.length
 check('L4 CTA opens the booking modal', await cta.getAttribute('data-book-trial') !== null)
 check('L4 CTA still works without JS', (await cta.getAttribute('href')).includes('#book'))
 
-// ── L5: the contact form now POSTs to the CRM and honours the response ──
+// ── L5: the front page's booking calendar POSTs to the CRM and honours the response ──
+// "Your first class" used to be a contact form that sent a name and a message and booked nothing (and before that discarded what it was
+// given). It is the booking flow now, drawn into the page, so what the old checks guarded is checked on the calendar: what reaches the
+// CRM, and success shown only once the CRM says ok. booking.test.mjs walks every step of the flow itself.
 await page.goto('http://localhost:4620/', { waitUntil:'domcontentloaded' })
 let posted = null
 await page.route('**/functions/v1/book-trial', async route => {
   posted = JSON.parse(route.request().postData() || '{}')
   await route.fulfill({ status:200, contentType:'application/json', body: JSON.stringify({ok:true}) })
 })
-await page.fill('#contactForm [name="name"]', 'Site Test')
-await page.fill('#contactForm [name="email"]', 'site-test@example.com')
-await page.fill('#contactForm [name="phone"]', '555-0111')
-await page.selectOption('#contactForm [name="program"]', 'kids-7-12')
-await page.fill('#contactForm [name="message"]', 'from the local test')
-await page.click('#contactForm button[type="submit"]')
+check('L5 the front page has no contact form to fill in', (await page.$('#contactForm')) === null)
+await page.click('#bookingInline .booking-category-btn[data-category="kids"]')
+await page.click('#bookingInline .booking-kidstrial-class__btn >> nth=0')
+await page.fill('#trialBookingName', 'Site Test')
+await page.fill('#trialBookingEmail', 'site-test@example.com')
+await page.fill('#trialBookingPhone', '555-0111')
+await page.click('#trialBookingSubmitBtn')
 await page.waitForTimeout(600)
-check('L5 contact form posts to the CRM', posted !== null)
+check('L5 booking from the page posts to the CRM', posted !== null)
 check('L5 sends the real name', posted?.name === 'Site Test', JSON.stringify(posted))
-check('L5 maps the program slug to a label', posted?.program === 'Kids 7-12', posted?.program)
-check('L5 sends the message as a note', posted?.note === 'from the local test')
-check('L5 shows success only after ok', await page.isHidden('#contactForm'))
+check('L5 files it under one of the CRM\'s programs',
+  ['Kids 3-6','Kids 7-12','Teens','Adult BJJ','Wrestling','MMA Conditioning','Strength & Conditioning'].includes(posted?.program), posted?.program)
+check('L5 books a real class: a time, and the class in the note',
+  /^\d{4}-\d\d-\d\dT\d\d:\d\d/.test(posted?.trialAt || '') && (posted?.note || '').includes('booked from the website'), JSON.stringify(posted))
+check('L5 shows success only after ok',
+  await page.isVisible('#bookingInline .booking-success') && (await page.$('#trialBookingForm')) === null)
 
 // ── L6: a CRM failure must NOT show success ──
 await page.goto('http://localhost:4620/', { waitUntil:'domcontentloaded' })
 await page.route('**/functions/v1/book-trial', route =>
   route.fulfill({ status:500, contentType:'application/json', body: JSON.stringify({error:'nope'}) }))
-let alerted = null
-page.on('dialog', d => { alerted = d.message(); d.dismiss() })
-await page.fill('#contactForm [name="name"]', 'Fail Case')
-await page.fill('#contactForm [name="email"]', 'fail@example.com')
-await page.click('#contactForm button[type="submit"]')
+await page.click('#bookingInline .booking-category-btn[data-category="adult"]')
+await page.click('#bookingInline .booking-class-row >> nth=0')
+await page.fill('#trialBookingName', 'Fail Case')
+await page.fill('#trialBookingEmail', 'fail@example.com')
+await page.fill('#trialBookingPhone', '555-0112')
+await page.click('#trialBookingSubmitBtn')
 await page.waitForTimeout(700)
-check('L6 failure does not fake success', await page.isVisible('#contactForm'))
-check('L6 tells them to call', (alerted||'').includes('call the academy'), JSON.stringify(alerted))
+check('L6 failure does not fake success',
+  await page.isVisible('#bookingInline .booking-error') && (await page.$('#bookingInline .booking-success')) === null)
+check('L6 tells them to call', ((await page.textContent('#bookingInline .booking-error')) || '').includes('(281) 393-7983'))
 
 // ── L1u: the Enigma drop ──
 // The page comes from the CRM as a fragment and is pasted in verbatim
