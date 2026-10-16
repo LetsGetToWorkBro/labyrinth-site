@@ -41,7 +41,7 @@ So the site says "Richmond" where it says where the academy is, keeps saying "Fu
 | `areas_data.py` | The eight area pages, **written** (not find-and-replace) from the measured routes: Richmond (new), Fulshear (new), Tamarron, Cinco Ranch, Rosenberg, Simonton, Brookshire, Sealy. Also the class times they quote and which academy each says is nearer; both are checked on the day. |
 | `blog_neighborhoods.html` | The rewritten body of the neighborhoods guide (`/blog/jiu-jitsu-near-fulshear-neighborhoods`). |
 | `build_listings_prompt.py` | Builds the muse prompt that changes the address on every listing (in place, nothing new created, stops at Google's verification). |
-| `crm/apply_crm.py`, `crm/edits.py` | **The CRM** (the other repository). Exact edits, regenerates the renewal bundle, re-pins the golden hashes, runs the type check and all 80 CRM tests. `crm/preview.patch` is what it produces today. |
+| `crm/apply_crm.py`, `crm/edits.py` | **The CRM** (the other repository). Exact edits, regenerates the renewal bundle and the six Supabase Auth email templates, re-pins the golden hashes, runs the type check and every CRM test. `crm/preview.patch` is what it produces today. |
 | `crm/move-day.sql` | The one row of the CRM's database that holds the address. Generated from `move.json`. |
 | `announcements.md` | Drafts: the email and text to members, the Instagram/Facebook post, the Google post. |
 | `tools/measure_routes.py` | Re-measures every drive if the entrance pin moves. `routes.json`, `routes_both.json`, `places.json` are its data. |
@@ -64,7 +64,7 @@ So the site says "Richmond" where it says where the academy is, keeps saying "Fu
 1. A fresh copy of `main`: `git fetch origin main && git worktree add --detach ../pubtmp-move origin/main && ln -s "$PWD/node_modules" ../pubtmp-move/node_modules`
 2. **Dry run the site:** `python3 move-richmond/apply_move.py --target ../pubtmp-move --deck /tmp/deck.md`. Nine months of changes to the site will have happened since these rules were written. The script says exactly what drifted: `FAIL rule X … NOTHING MATCHED` means the sentence that rule replaced has been reworded (find it, fix the rule in `rules.py`); a `PROBLEM` line says what is wrong. It must end "Dry run clean".
 3. **Prove it:** `--apply --allow-early` on a throw-away worktree, then run all four suites one at a time (`node site-test.mjs`, `node booking.test.mjs`, `node nav-fit.test.mjs`, `node season-theme-test.mjs`) and `node wharton-site/site-test.mjs`.
-4. **Dry run the CRM** (3 to 4 minutes, runs the CRM's own tests): `python3 move-richmond/crm/apply_crm.py --target /path/to/labyrinth-app`. A pair that no longer matches means the CRM changed: read that file and update `crm/edits.py`.
+4. **Dry run the CRM** (about 40 minutes: it runs all of the CRM's own tests, three at a time; `--jobs N` changes that, `--only a,b` runs just those, `--ignore ci-workflow` leaves out the one test that fails on a machine with no PGlite): `python3 move-richmond/crm/apply_crm.py --target /path/to/labyrinth-app --ignore ci-workflow`. A pair that no longer matches means the CRM changed: read that file and update `crm/edits.py`. **The CRM moves every week** (it had 80 tests when this was first written and has 270 now): the old-street scan at the end of the dry run is what finds a new file that names the address, so read its list, not only whether the pairs matched.
 5. **Read the listings prompt:** `python3 move-richmond/build_listings_prompt.py --preview --out /tmp/listings-PREVIEW.txt`.
 6. **Owner, before the day:** make sure the Google account that owns the profile can log in and get a code; have a lease or utility bill in the business's name for the new address (Google may ask for proof); plan to film the short verification video at the new building on the day; take screenshots of the profile, the map pin and today's rankings for "bjj fulshear", "martial arts fulshear", "bjj richmond tx" so the effect can be measured; order the new sign.
 
@@ -98,15 +98,17 @@ python3 move-richmond/build_listings_prompt.py --out /path/to/muse-prompt-listin
 
 Send the prompt to the muse. It edits each listing **in place** (Google first), never creates a new one, and **stops at the verification step** and tells the owner what it asked for: for Google that is almost certainly a short video of the new building, which only the owner can film on a phone at the new address. Do that the same hour. Commit the updated master copies on the working branch.
 
-### 3. The CRM (the other repository; this session cannot push to it)
+### 3. The CRM (the other repository, labyrinth-app)
 
 ```bash
-python3 move-richmond/crm/apply_crm.py --target /path/to/labyrinth-app --apply     # exact edits + bundle + golden hashes + type check + 80 tests, then copies the files in
+python3 move-richmond/crm/apply_crm.py --target /path/to/labyrinth-app --apply     # exact edits + renewal bundle + Auth email templates + golden hashes + type check + every test, then copies the files in
 cd /path/to/labyrinth-app && git add -u && git commit -m "Move to 10330 Hidden Lake Ln, Richmond" && git push     # Cloudflare Pages builds the web app from the repository
-supabase/scripts/deploy.sh functions send-message book-trial trial-lifecycle member-lifecycle event-rsvp
+supabase/scripts/deploy.sh functions send-message book-trial trial-lifecycle member-lifecycle winback-lifecycle event-rsvp agreement-link waiver-link
 ```
 
 Then run `crm/move-day.sql` in the Supabase SQL editor (project `Labyrinth-app`): it changes `settings.data.address`, the one stored copy, which every automated email and text prints before the code's fallback. Look-then-change-then-look, with a WHERE clause that makes it a no-op if already done. Do the SQL and the deploy in the same hour.
+
+**And the six emails Supabase Auth sends itself** (sign-in, invite, password reset...): their templates are saved in the Supabase dashboard, not deployed with the code, and each one's footer carries the postal address. The patch regenerates them (`supabase/email-templates/*.html` and `subjects.json`); paste each into Authentication, Emails as `supabase/email-templates/README.md` says, starting with `recovery.html` (every member-app invite is sent as one). `move-day.sql` lists this as its step 5.
 
 `billing-renewals` is **not** in that list on purpose. Its bundle changed by three address strings and no pricing logic; ship it only if you want the deployed bundle to match the repository, by name (`deploy.sh functions billing-renewals`) and after reading its diff, as `supabase/README.md` says.
 
@@ -133,7 +135,7 @@ In the CRM, once: Locations, first location, set the name to "Richmond" (the CRM
 ## What was proved (2026-10-15, against `main` at eb4eff5)
 
 - Site: 66 files change (65 on `main`, plus the new `areas/bjj-fulshear.html`); dry run clean; applied to a throw-away worktree of `main`, then every suite run one at a time: `site-test.mjs` 695 passed, 0 failed; `booking.test.mjs` 184 checks, all passed; `nav-fit.test.mjs` passed (tightest point 1261px, 24px to spare); `season-theme-test.mjs` 252 passed, 0 failed; `wharton-site/site-test.mjs` 94 passed, 0 failed. The first run found one real problem (the calendar link of the past October 24 seminar had taken the new address), which is why the event pages are now pinned to the old one.
-- CRM (`labyrinth-app` at 090522e): 34 exact edits; type check clean; 80 of 80 tests pass after re-pinning four golden-hash tests (their whole purpose is to fail when a Fulshear lead's mail changes by a byte, and it does change, on purpose, by the address).
+- CRM (`labyrinth-app` at f0241d2, 16 October): 54 exact edits (17 in code, 36 in tests, 1 in the docs) and 37 files changed (those, the regenerated renewal bundle and the six regenerated Auth email templates with their subjects file); no mention of the old street left; type check clean; 272 of 272 tests pass after re-pinning the golden-hash tests (their whole purpose is to fail when a Fulshear lead's mail changes by a byte, and it does change, on purpose, by the address), except `ci-workflow`, which fails on a machine with no PGlite and was left out with `--ignore`. **Correction to the first version of this proof**: it was made against an out-of-date local copy of the CRM (090522e, 397 commits behind the real `main`, 80 tests where there are now 270), so the 34 edits and "80 of 80" said nothing about the files added since. The first dry run against the real `main` found 15 more places that name the old address (and three assertions it breaks) (the Broadcast screen's email footer, the membership agreement's address for cancellations by certified mail, the six Supabase Auth email templates, and test fixtures); all are in `crm/edits.py` now, and the step that has the owner paste the regenerated Auth templates into the Supabase dashboard is in `crm/move-day.sql`.
 - Database: a scan of every text and JSON column found the old street in exactly one place that is not history: `settings.data.address`.
 - Listings: the prompt builds, lints and reads cleanly (`build_listings_prompt.py --preview`).
 - Not proved, because it cannot be until July: that Google accepts the address change without a fight; the entrance pin; parking.

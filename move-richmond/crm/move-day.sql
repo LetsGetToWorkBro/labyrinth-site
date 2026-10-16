@@ -24,3 +24,7 @@ select data ->> 'address' as address from settings where singleton;
 
 -- 4. Then, in the CRM: Locations -> the first location -> Name "Richmond" (optional: the name is what staff see on badges), and check that its
 --    address reads 10330 Hidden Lake Ln, Building 1, Richmond, TX 77406. A saved profile wins over the built-in one, field by field.
+
+-- 5. In Supabase: Authentication -> Emails. Supabase sends the sign-in, invite and password-reset mail itself, from templates saved in the dashboard, and each of the
+--    six carries the postal address in its footer. The patch regenerates them (supabase/email-templates/*.html and subjects.json); paste each file into its
+--    template, as supabase/email-templates/README.md says (start with recovery.html: every member-app invite is sent as one).

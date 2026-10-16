@@ -95,7 +95,9 @@ def regen_member_emails(work, problems):
     f = Path(work) / "scripts/member-emails.test.mjs"
     src = f.read_text(encoding="utf-8")
     a = src.index("const GOLDEN = {")
-    keys = re.findall(r"'([a-z_0-9]+\|(?:adult|kid))':", src[a:a + 1500])
+    # Every pinned kind in the file: GOLDEN (the welcome, win-back and birthday mail) and CARD_NOTICES (the payment notices, whose pinned hash is the
+    # same render with no reason given). A pin this does not know about fails the suite after the move, and the dry run says which.
+    keys = re.findall(r"'([a-z_0-9]+\|(?:adult|kid))': '[0-9a-f]{16}'", src)
     probe = src[:a] + """
 const NEW = {}
 for (const key of %s) {
@@ -164,20 +166,31 @@ def regen_member_lifecycle(work, problems):
 
 
 # ───────────────────────── the checks ─────────────────────────
-def run_tests(work):
-    failed = []
+def run_tests(work, jobs=3, only=None, ignore=()):
+    """Every test the CRM's `npm test` runs (it skips redirect-loop), `jobs` at a time: the suite is 270 files and some open a browser, so one after another
+    it is hours. `only` runs just the named tests (a name with or without .test.mjs), for re-running what failed; `ignore` names tests that fail for a reason
+    that is the machine's, not the move's (ci-workflow, on a machine with no PGlite)."""
+    from concurrent.futures import ThreadPoolExecutor
     tests = sorted(Path(work).glob("scripts/*.test.mjs")) + sorted(Path(work).glob("integrations/website-booking/*.test.mjs"))
-    for t in tests:
-        if "redirect-loop" in t.name:
-            continue
-        r = run(["timeout", "300", "node", str(t.relative_to(work))], work)
-        if r.returncode:
-            failed.append((t.name, [ln for ln in (r.stdout + r.stderr).splitlines() if re.search(r"FAIL|Error|error|expected|got |want ", ln)][:6]))
+    tests = [t for t in tests if "redirect-loop" not in t.name]
+    if only:
+        want = {x.replace(".test.mjs", "") for x in only}
+        tests = [t for t in tests if t.name.replace(".test.mjs", "") in want]
+
+    def one(t):
+        r = run(["timeout", "900", "node", str(t.relative_to(work))], work)
+        if r.returncode and t.name.replace(".test.mjs", "") not in set(ignore):
+            return (t.name, [ln for ln in (r.stdout + r.stderr).splitlines() if re.search(r"FAIL|Error|error|expected|got |want ", ln)][:6])
+        return None
+
+    with ThreadPoolExecutor(max_workers=max(1, jobs)) as ex:
+        failed = [x for x in ex.map(one, tests) if x]
     return len(tests), failed
 
 
 # Lines that may still name the old address: the constant that keeps it on purpose, the tests that assert it is gone, and the import test's invented sample.
-ALLOWED = [re.compile(x) for x in (r"FORMER_FULSHEAR_ADDRESS", r"building C\|Suite #400", r"Suite #400\|building C", r"never the Fulshear address, building C")]
+ALLOWED = [re.compile(x) for x in (r"FORMER_FULSHEAR_ADDRESS", r"building C\|Suite #400", r"Suite #400\|building C", r"never the Fulshear address, building C",
+                                   r"Suite #400\|\\\(281\\\)")]
 ALLOWED_FILES = {"scripts/gymdesk-import.test.mjs"}
 
 
@@ -249,6 +262,10 @@ select data ->> 'address' as address from settings where singleton;
 
 -- 4. Then, in the CRM: Locations -> the first location -> Name "Richmond" (optional: the name is what staff see on badges), and check that its
 --    address reads %(new)s. A saved profile wins over the built-in one, field by field.
+
+-- 5. In Supabase: Authentication -> Emails. Supabase sends the sign-in, invite and password-reset mail itself, from templates saved in the dashboard, and each of the
+--    six carries the postal address in its footer. The patch regenerates them (supabase/email-templates/*.html and subjects.json); paste each file into its
+--    template, as supabase/email-templates/README.md says (start with recovery.html: every member-app invite is sent as one).
 """ % {"day": cfg["effective_date"], "new": new_addr, "old": old_addr}
 
 
@@ -261,6 +278,9 @@ def main():
     ap.add_argument("--patch", help="write the change as a patch (git apply -p1) to this path")
     ap.add_argument("--no-tests", action="store_true", help="skip the type check and the CRM's test suite (not for --apply)")
     ap.add_argument("--keep", action="store_true")
+    ap.add_argument("--jobs", type=int, default=3, help="how many tests run at once (default 3)")
+    ap.add_argument("--only", help="comma-separated test names (trial-waiver,winback): run only these, not the whole suite")
+    ap.add_argument("--ignore", default="", help="comma-separated tests whose failure is the machine's (ci-workflow, where PGlite is not installed)")
     a = ap.parse_args()
     cfg = M.load_config()
     if a.sql:
@@ -293,6 +313,10 @@ def main():
             print("  renewal bundle regenerated: " + (r.stdout.strip().splitlines() or [r.stderr.strip()[:120]])[-1])
             if r.returncode:
                 problems.append("build-renewal-core.mjs failed: " + r.stderr[-300:])
+            r = run(["node", "scripts/auth-email-templates.mjs"], work)
+            print("  Supabase Auth email templates regenerated: " + ((r.stdout.strip().splitlines() or [r.stderr.strip()[:120]])[-1] if r.returncode == 0 else "FAILED"))
+            if r.returncode:
+                problems.append("auth-email-templates.mjs failed: " + r.stderr[-300:])
             for name, fn in (("trial-location", regen_trial_location), ("member-emails", regen_member_emails), ("trial-lifecycle", regen_trial_lifecycle),
                              ("member-lifecycle", regen_member_lifecycle)):
                 k = fn(work, problems)
@@ -309,7 +333,7 @@ def main():
             print("Type check: " + ("clean" if r.returncode == 0 else "FAILED\n" + (r.stdout + r.stderr)[-800:]))
             if r.returncode:
                 problems.append("tsc failed")
-            ntests, failed = run_tests(work)
+            ntests, failed = run_tests(work, a.jobs, [x for x in (a.only or '').split(',') if x], [x for x in a.ignore.split(',') if x])
             print("CRM tests: %d run, %d failed" % (ntests, len(failed)))
             for name, lines in failed:
                 print("   FAILED %s" % name)
@@ -326,7 +350,7 @@ def main():
                 dst = root / rel
                 dst.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(Path(work) / rel, dst)
-            print("\nApplied: %d file(s) are now the post-move versions. Deploy the edge functions that import them, run crm/move-day.sql, and build the app." % len(changed))
+            print("\nApplied: %d file(s) are now the post-move versions. Deploy the edge functions that import them, run crm/move-day.sql, build the app, and paste the regenerated supabase/email-templates into Supabase (Authentication, Emails: supabase/email-templates/README.md), because Supabase sends those six itself and each carries the address." % len(changed))
         elif a.apply:
             print("\nNot changing the checkout: fix the problems above first.")
         else:
