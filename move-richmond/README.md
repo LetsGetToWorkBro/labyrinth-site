@@ -140,6 +140,8 @@ In the CRM, once: Locations, first location, set the name to "Richmond" (the CRM
 - Listings: the prompt builds, lints and reads cleanly (`build_listings_prompt.py --preview`).
 - Not proved, because it cannot be until July: that Google accepts the address change without a fight; the entrance pin; parking.
 
+**Re-checked 16 October 2026, about 03:10 UTC: nothing in the kit had drifted.** The site against `main` at 41dc0fd: dry run clean, 66 files, and the working-branch files and the listings prompt clean (`check.sh`). The CRM against `labyrinth-app` `main` at 38592a7, and again on top of the releases still waiting there (profile photos, the members address, the signed PDFs, the Wallet card): 54 exact edits, 37 files, no mention of the old street left, in both (`apply_crm.py --no-tests`). `crm/preview.patch` was regenerated against 38592a7 in a clean `npm ci` checkout; only two hunk offsets moved (the billing bundle gained two lines that night). The full CRM test run of the patch was not repeated: do it the week before the move, as above.
+
 ## Why these choices (the wording policy, in `rules.py`)
 
 1. Where the site says **where the academy is** (address, footer, location card, "at Labyrinth BJJ in X", schema, a title that names the place the classes are), it says Richmond: that is the postal city, and the Google profile will say it too.

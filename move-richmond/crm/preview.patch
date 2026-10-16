@@ -703,7 +703,7 @@
        phone: "(281) 393-7983",
        timeZone: "Central Time (CT)",
        logoDataUrl: null,
-@@ -499,7 +499,7 @@
+@@ -501,7 +501,7 @@
  // src/data/locations.ts
  init_define_import_meta_env();
  var PRIMARY_LOCATION_ID = "fulshear";
@@ -712,7 +712,7 @@
  var WHARTON_ADDRESS = "201 N Houston St, Wharton, TX 77488";
  var WHARTON_PHONE = "(832) 400-5532";
  var WHARTON_SCHEDULE_URL = "https://wharton.labyrinth.vision/schedule";
-@@ -513,7 +513,7 @@
+@@ -515,7 +515,7 @@
    {
      id: PRIMARY_LOCATION_ID,
      name: "Fulshear",
