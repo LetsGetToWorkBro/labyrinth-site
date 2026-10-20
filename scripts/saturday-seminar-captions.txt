@@ -1,0 +1,61 @@
+THE SATURDAY POST (October 2026): INSTAGRAM AND FACEBOOK
+
+Saturday, October 24, 2026: the academy runs a changed schedule around the Rolling for Ribbons women's self defense seminar. Two pictures, one Instagram carousel, and the
+same two pictures as one Facebook post (scripts/instagram-saturday-seminar.mjs makes them; assets/social/saturday-seminar/saturday-seminar-01.jpg and -02.jpg, 1080x1350 (4:5),
+everything that matters in the middle 1080x1080 square: see scripts/photo-posts-captions.txt for why).
+  Picture 1: the cover. Photograph 62 of the Lightroom album "JJWL Houston 10/17/2026 by Aivizuals" (https://lightroom.adobe.com/shares/bf71694e81744114b32282be1bd48681).
+  Picture 2: the day, in words: 9:00 to 10:00 AM workout, 10:00 to about 10:45 AM open mat, 11:00 AM to 12:30 PM the seminar, the regular Saturday classes off.
+
+The facts are the seminar page's (labyrinth.vision/self-defense-for-women: Saturday, October 24, 11:00 AM to 12:30 PM, free, no experience needed, led by Coach Scott and Professor Tony,
+donations and merch sales go directly to a family affected by breast cancer) and the owner's plan for the rest of the day (October 20, 2026): a workout from 9:00 to 10:00 (the regular
+Saturday MMA Conditioning slot), an open mat from 10:00 to about 10:45, and the regular Saturday classes off. The same plan is in the email to members
+(Muse-prompt-Saturday-seminar-day-email.txt). No dollar amounts and no totals: the seminar page and the donation page carry those.
+
+Both platforms, always: a post is made for Instagram and for Facebook together (the owner's rule from October 15, 2026).
+No street address or town for the academy on the pictures or in the captions (the hashtags carry the area). One emoji in each.
+No "link in bio" anywhere: the Instagram caption says labyrinth.vision/self-defense-for-women, and the Facebook text has the link.
+Credit: the photographer is Aivizuals (the name the Lightroom album gives). Their Instagram handle is not known, so the credit is plain text with no @, and nobody is tagged.
+Alt text names nobody and uses no pronouns for the people in a picture.
+
+WHEN: Wednesday, October 21 or Thursday, October 22, 2026, between 9 AM and 8 PM Central (the JJWL results post goes out first, on Tuesday or Wednesday).
+
+==================== saturday-seminar: INSTAGRAM CAPTION ====================
+Saturday, October 24 is a big one at Labyrinth. 🎗️
+
+Our regular Saturday classes are off so we can host Rolling for Ribbons, a free self defense seminar for women, built on the jiu-jitsu we teach every day. No experience needed. Come on your own, or bring a friend, a sister or mom.
+
+The whole day:
+9:00 to 10:00 AM: Workout
+10:00 to about 10:45 AM: Open mat
+11:00 AM to 12:30 PM: Rolling for Ribbons, led by Coach Scott and Professor Tony
+
+Donations and merch sales at the event go directly to a family affected by breast cancer.
+
+RSVP at labyrinth.vision/self-defense-for-women, or call or text (281) 393-7983.
+
+Photo by Aivizuals
+
+#RollingForRibbons #WomensSelfDefense #BreastCancerAwareness #PinkOctober #BrazilianJiuJitsu #WomensBJJ #SelfDefense #FulshearTX #KatyTX #LabyrinthBJJ
+
+==================== saturday-seminar: FACEBOOK POST TEXT ====================
+Saturday, October 24 is a big one at Labyrinth. 🎗️
+
+Our regular Saturday classes are off so we can host Rolling for Ribbons, a free self defense seminar for women, built on the jiu-jitsu we teach every day. No experience needed. Come on your own, or bring a friend, a sister or mom.
+
+The whole day:
+9:00 to 10:00 AM: Workout
+10:00 to about 10:45 AM: Open mat
+11:00 AM to 12:30 PM: Rolling for Ribbons, led by Coach Scott and Professor Tony
+
+Donations and merch sales at the event go directly to a family affected by breast cancer.
+
+RSVP (free): https://labyrinth.vision/self-defense-for-women
+Questions? Call or text (281) 393-7983.
+
+Photo by Aivizuals.
+
+#RollingForRibbons #WomensSelfDefense #BreastCancerAwareness #FulshearTX #KatyTX
+
+==================== saturday-seminar: ALT TEXT ====================
+Picture 1: A smiling woman with long dark red hair and a smiling man in a black Labyrinth shirt stand close together in front of a Nationals tournament banner. Text: Rolling for Ribbons, free. Women's self defense. Sat, Oct 24, 11 AM.
+Picture 2: A schedule on a dark plum background. Text: This Saturday, Oct 24. The whole day. 9:00 to 10:00 AM, workout. 10:00 to about 10:45 AM, open mat. 11:00 AM to 12:30 PM, Rolling for Ribbons, free women's self defense seminar. Regular Saturday classes are off. RSVP free at labyrinth.vision/self-defense-for-women.
