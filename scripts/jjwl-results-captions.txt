@@ -1,0 +1,54 @@
+THE JJWL HOUSTON RESULTS POST (October 2026): INSTAGRAM AND FACEBOOK
+
+Two pictures from the Lightroom album "JJWL Houston 10/17/2026 by Aivizuals" (https://lightroom.adobe.com/shares/bf71694e81744114b32282be1bd48681, 257 photos).
+scripts/instagram-jjwl-results.mjs makes the slides; assets/social/jjwl-results/jjwl-results-01.jpg and jjwl-results-02.jpg are 1080x1350 (4:5), with everything that
+matters in the middle 1080x1080 square (see scripts/photo-posts-captions.txt for why). Instagram: one carousel of the two pictures. Facebook: the same two pictures as one post.
+
+The result is the owner's (October 20, 2026): Team Labyrinth finished 1st overall in no-gi and 3rd in the gi at JJWL Houston (The Nationals South II, Saturday, October 17).
+Nothing else is claimed: no names, no medal counts, no other places. The second picture's trophy is the one that says 3RD PLACE, GI, YOUTH ACADEMY, which is why the
+caption says "3rd place gi trophy" and nothing about the no-gi result's trophy (none is in the album).
+
+Both platforms, always: a post is made for Instagram and for Facebook together (the owner's rule from October 15, 2026).
+No street address or town for the academy on the pictures or in the captions (the hashtags carry the area); "JJWL Houston" is the tournament's name. One emoji in each.
+No "link in bio" anywhere: the posts say labyrinth.vision.
+Credit: the photographer is Aivizuals (the name the Lightroom album gives). Their Instagram handle is not known, so the credit is plain text with no @, and nobody is tagged.
+The two photographers of the earlier photo posts, @rayharkness and @002.Deleon, did not take these pictures and are not credited here.
+Children are in these pictures: they are for the academy's own marketing, under the photo release in the waiver.
+Alt text names nobody and uses no pronouns for the people in a picture.
+
+WHEN: Tuesday, October 20 or Wednesday, October 21, 2026, between 9 AM and 8 PM Central, alongside the results email (the email says the medals will be talked about on Wednesday).
+
+==================== jjwl-results: INSTAGRAM CAPTION ====================
+1st overall in no-gi. 3rd in the gi. 🏆
+
+That is what Team Labyrinth brought home from JJWL Houston, and we could not be prouder. Whether it was your first tournament or your fiftieth, and whether you went home with a medal or a lesson, you showed up and you represented this team the right way.
+
+To every parent, teammate and coach who cheered, helped and kept the day running: this one belongs to you too.
+
+Swipe for the 3rd place gi trophy.
+
+Want to be part of a team like this? A first class is free, with no commitment and no experience needed. Book at labyrinth.vision, or call or text (281) 393-7983.
+
+Photos by Aivizuals
+
+#JJWL #JJWLHouston #BJJKids #BrazilianJiuJitsu #Grappling #BJJCommunity #FulshearTX #KatyTX #RichmondTX #LabyrinthBJJ
+
+==================== jjwl-results: FACEBOOK POST TEXT ====================
+1st overall in no-gi. 3rd in the gi. 🏆
+
+That is what Team Labyrinth brought home from JJWL Houston, and we could not be prouder. Whether it was your first tournament or your fiftieth, and whether you went home with a medal or a lesson, you showed up and you represented this team the right way.
+
+To every parent, teammate and coach who cheered, helped and kept the day running: this one belongs to you too.
+
+Want to be part of a team like this? A first class is free, with no commitment and no experience needed.
+
+Book a free class: https://labyrinth.vision/#book
+Questions? Call or text (281) 393-7983.
+
+Photos by Aivizuals.
+
+#JJWL #JJWLHouston #BrazilianJiuJitsu #FulshearTX #KatyTX
+
+==================== jjwl-results: ALT TEXT ====================
+Picture 1: Six children in Labyrinth shirts stand together in front of a Nationals banner, three of them holding up gold medals, with two coaches smiling behind them. Text: JJWL Houston, Oct 17. 1st overall in no-gi. 3rd in the gi. Swipe for the trophy.
+Picture 2: A child in a black Labyrinth shirt holds a glass trophy engraved Nationals, 3rd place, gi, youth academy, in a busy event hall.
