@@ -564,33 +564,37 @@
   });
 
   // ===== PROGRAM CARD EXPAND/COLLAPSE =====
+  // The card opens when you click anywhere on it; the "Learn More" line is a real button, which is what a keyboard or a
+  // screen reader reaches, and the panel it opens is inert (out of the tab order and the accessibility tree) while it is shut.
+  function setOpen(card, open, panelSel, toggleSel) {
+    var panel = card.querySelector(panelSel), toggle = card.querySelector(toggleSel);
+    if (panel) {
+      if (open) panel.removeAttribute('inert'); else panel.setAttribute('inert', '');
+    }
+    if (toggle) toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    return toggle;
+  }
+
   document.querySelectorAll('.program-card[data-program]').forEach(function (card) {
+    function setProgramCard(c, open) {
+      c.classList.toggle('program-card--expanded', open);
+      var more = setOpen(c, open, '.program-card__detail', '.program-card__more');
+      if (more) more.textContent = open ? 'Close \u2212' : 'Learn More +';
+    }
     card.addEventListener('click', function (e) {
       // Don't toggle card when clicking links inside expanded area
       if (e.target.closest('a')) return;
       var isExpanded = card.classList.contains('program-card--expanded');
       // Close all other expanded cards
       document.querySelectorAll('.program-card--expanded').forEach(function (c) {
-        c.classList.remove('program-card--expanded');
-        var more = c.querySelector('.program-card__more');
-        if (more) more.textContent = 'Learn More +';
+        setProgramCard(c, false);
       });
-      if (!isExpanded) {
-        card.classList.add('program-card--expanded');
-        var more = card.querySelector('.program-card__more');
-        if (more) more.textContent = 'Close −';
-      }
-    });
-    card.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        card.click();
-      }
+      if (!isExpanded) setProgramCard(card, true);
     });
   });
 
   // ===== ATHLETE CARD EXPAND/COLLAPSE =====
-  document.querySelectorAll('.athlete-card[role="button"]').forEach(function (card) {
+  document.querySelectorAll('.athlete-card[data-athlete]').forEach(function (card) {
     card.addEventListener('click', function (e) {
       // Don't toggle card when clicking links inside expanded area
       if (e.target.closest('a')) return;
@@ -598,15 +602,11 @@
       // Close all other expanded cards
       document.querySelectorAll('.athlete-card--expanded').forEach(function (c) {
         c.classList.remove('athlete-card--expanded');
+        setOpen(c, false, '.athlete-card__expand', '.athlete-card__chevron');
       });
       if (!isExpanded) {
         card.classList.add('athlete-card--expanded');
-      }
-    });
-    card.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        card.click();
+        setOpen(card, true, '.athlete-card__expand', '.athlete-card__chevron');
       }
     });
   });
@@ -705,27 +705,27 @@
       var isActive = card.classList.contains('is-active');
 
       // Close all drawers and deactivate all cards
-      typeCards.forEach(function (c) { c.classList.remove('is-active'); });
+      typeCards.forEach(function (c) {
+        c.classList.remove('is-active');
+        var t = c.querySelector('.type-card__toggle');
+        if (t) t.setAttribute('aria-expanded', 'false');
+      });
       document.querySelectorAll('.type-schedule-drawer').forEach(function (d) {
         d.classList.remove('is-open');
+        d.setAttribute('inert', '');
       });
 
       // If this card was not active, open its drawer
       if (!isActive) {
         card.classList.add('is-active');
         drawer.classList.add('is-open');
+        drawer.removeAttribute('inert');
+        var toggle = card.querySelector('.type-card__toggle');
+        if (toggle) toggle.setAttribute('aria-expanded', 'true');
         // Smooth scroll the drawer into view after animation
         setTimeout(function () {
           drawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }, 100);
-      }
-    });
-
-    // Keyboard support
-    card.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        card.click();
       }
     });
   });
@@ -1511,41 +1511,19 @@
   if (exitDismiss) exitDismiss.addEventListener('click', hideExitPopup);
 
   // --- Google Reviews Carousel ---
-  var GOOGLE_REVIEWS = [
-    { name: 'Heather Bone', text: 'My daughter and husband both have been training here for three years now. Tony is an amazing Professor. Along with Professor Shaun and Jared. They have amazing patience with kids. My daughter has competed in many tournaments and has excelled.', time: '10 months ago' },
-    { name: 'Jay G.', text: 'I cannot say enough positive things about Labyrinth BJJ and the owner Tony, who himself leads the classes. My daughter 11, son 14 and I, 45 years young, started training here at the beginning of 2023. From the moment you step in, you feel the passion.', time: '2 years ago' },
-    { name: 'Justin McAnally', text: 'Incredible gym with an incredible culture. If you are an adult looking to get started this is the place to go. The coaches and more advanced folks are all extremely helpful. This is also the absolute best place if you have kids looking to train.', time: '2 years ago' },
-    { name: 'Israel', text: 'Our daughters started training at Labyrinth Jiu-jitsu about a year ago. We wanted to boost their confidence and get them active. They\'ve come a long way in a year. We\'re so happy with their progress.', time: '2 years ago' },
-    { name: 'Hashir Azam', text: 'Absolutely great experience at Labyrinth! The vibes were awesome from the moment I walked in. Tony was a fantastic instructor, super knowledgeable and welcoming. The mats and facility were clean and well-maintained.', time: '8 months ago' },
-    { name: 'Jesse Lea', text: 'This place is the real deal. The team at Labyrinth places value on learning the art of jiu jitsu correctly allowing children and adults to take pride in their technique. It is a great place for beginners and skilled practitioners alike.', time: '2 years ago' },
-    { name: 'Armand S.', text: 'We\'ve had an outstanding experience at Labyrinth, where our kids 7 and 4, transitioned from Taekwondo. The instructors, led by Professor Tony, are not only highly skilled but also excel in engaging children of all ages.', time: 'a year ago' },
-    { name: 'Jared Vevera', text: 'The training and culture at Labyrinth Brazilian Jiu Jitsu is top notch. I received a warm welcome my first day at the gym and that community has only grown stronger since I\'ve been here.', time: '10 months ago' },
-    { name: 'craig wardman', text: 'I started learning BJJ at Labyrinth just under a year ago. What a fantastic experience it has been so far! Tony and the team are awesome and take the time to make you feel comfortable whilst ensuring you are always learning.', time: '2 years ago' },
-    { name: 'DC', text: 'A little over a year since we started our kids here, and I couldn\'t be happier. I\'ve seen a dramatic change in my kids\' general demeanor, their attitude towards wins and losses, and a giant improvement in their confidence.', time: '2 years ago' },
-    { name: 'Andrew Chaddick', text: 'Great place for kids! Professor Tony, Coach Sean, and Coach Erika do such a good job teaching skills, building confidence and creating quality people. We\'ve been attending for over a year, nothing but good things.', time: '2 years ago' },
-    { name: 'Ricky Manzanares', text: 'Top-notch jiu-jitsu instruction with a friendly and motivating atmosphere. You learn fast and always feel encouraged on and off the mats!', time: '6 months ago' }
-  ];
-
+  // The review cards are written out in index.html, so a reader that does not run
+  // this script (a search or AI crawler, say) still gets every review. All the
+  // carousel does is choose which of them are showing.
   var reviewsGrid = document.getElementById('reviewsGrid');
   var reviewsDots = document.getElementById('reviewsDots');
   var reviewsPrev = document.getElementById('reviewsPrev');
   var reviewsNext = document.getElementById('reviewsNext');
+  var reviewCards = reviewsGrid ? Array.prototype.slice.call(reviewsGrid.querySelectorAll('.testimonial-card')) : [];
 
-  if (reviewsGrid && GOOGLE_REVIEWS.length) {
+  if (reviewsGrid && reviewCards.length) {
     var perPage = window.innerWidth <= 900 ? 1 : 3;
-    var totalPages = Math.ceil(GOOGLE_REVIEWS.length / perPage);
+    var totalPages = Math.ceil(reviewCards.length / perPage);
     var currentPage = 0;
-
-    function renderReviewCard(r) {
-      return '<div class="testimonial-card">' +
-        '<div class="testimonial-card__stars">\u2605\u2605\u2605\u2605\u2605</div>' +
-        '<blockquote class="testimonial-card__quote">\u201c' + r.text + '\u201d</blockquote>' +
-        '<div class="testimonial-card__author">' +
-          '<span class="testimonial-card__name">' + r.name + '</span>' +
-          '<span class="testimonial-card__detail">Google Review \u00b7 ' + r.time + '</span>' +
-        '</div>' +
-      '</div>';
-    }
 
     function renderDots() {
       if (!reviewsDots) return;
@@ -1565,8 +1543,9 @@
     function showPage(page) {
       currentPage = page;
       var start = page * perPage;
-      var slice = GOOGLE_REVIEWS.slice(start, start + perPage);
-      reviewsGrid.innerHTML = slice.map(renderReviewCard).join('');
+      reviewCards.forEach(function (card, i) {
+        card.hidden = i < start || i >= start + perPage;
+      });
       // Update dots
       var dots = reviewsDots ? reviewsDots.querySelectorAll('.testimonials__dot') : [];
       dots.forEach(function (d, i) {
@@ -1611,7 +1590,7 @@
       var newPerPage = window.innerWidth <= 900 ? 1 : 3;
       if (newPerPage !== perPage) {
         perPage = newPerPage;
-        totalPages = Math.ceil(GOOGLE_REVIEWS.length / perPage);
+        totalPages = Math.ceil(reviewCards.length / perPage);
         currentPage = 0;
         renderDots();
         showPage(0);

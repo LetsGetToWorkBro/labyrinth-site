@@ -37,6 +37,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import schedule_data  # noqa: E402
 import schedule_component  # noqa: E402
 import jits_data  # noqa: E402
+import page_dates  # noqa: E402
 from build_programs import NAV, FOOTER, HEAD, TAIL, PHONE, SITE, ADDRESS, jsonld  # noqa: E402
 
 # Every page this file writes goes through stamp() so the shared CSS and JS are
@@ -153,6 +154,7 @@ def render_schedule():
     </div>
     <div class="prog-facts">
 %(facts)s    </div>
+    %(updated)s
   </div>
 </header>
 
@@ -206,7 +208,8 @@ def render_schedule():
     </div>
   </div>
 </div>""" % {"total": c["total"], "facts": facts, "week": week,
-             "faqs": faq_block(SCHEDULE_FAQS), "phone": PHONE},
+             "faqs": faq_block(SCHEDULE_FAQS), "phone": PHONE,
+             "updated": page_dates.shown_html(page_dates.date_of("schedule.html"))},
         """
 <script src="/schedule.js"></script>""", TAIL % {"footer": FOOTER}])
 
@@ -313,6 +316,7 @@ def render_pricing():
       <div class="prog-fact"><div class="prog-fact__label">Family plan</div><div class="prog-fact__value"><em>$399</em>/month</div></div>
       <div class="prog-fact"><div class="prog-fact__label">Contract</div><div class="prog-fact__value">None</div></div>
     </div>
+    """ + page_dates.shown_html(page_dates.date_of("pricing.html")) + """
   </div>
 </header>""",
         group("ADULT MEMBERSHIPS", "Ages 16 and up", P["adult"]),

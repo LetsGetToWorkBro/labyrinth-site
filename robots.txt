@@ -18,6 +18,9 @@ Sitemap: https://labyrinth.vision/sitemap.xml
 # are named explicitly rather than left to the wildcard above, because a
 # blanket Allow is easy to mistake for an oversight and some operators treat
 # an unnamed crawler as unwelcome. We want to be quoted.
+# Meta's three are the ones behind Meta AI and Muse: meta-webindexer builds the
+# index that Meta AI cites and links from, meta-externalfetcher opens a page when
+# a person asks about it, meta-externalagent crawls for Meta's models.
 User-agent: GPTBot
 User-agent: OAI-SearchBot
 User-agent: ChatGPT-User
@@ -28,13 +31,19 @@ User-agent: PerplexityBot
 User-agent: Perplexity-User
 User-agent: Google-Extended
 User-agent: Applebot-Extended
+User-agent: meta-webindexer
+User-agent: meta-externalfetcher
+User-agent: meta-externalagent
 User-agent: Bingbot
 Allow: /
 # Repeated, not inherited: once a crawler matches a named group it ignores the
-# wildcard one entirely, so without these two lines the named bots above would
-# be the only ones allowed into /admin/ and /api/.
+# wildcard one entirely, so without these four lines the named bots above would
+# be the only ones allowed into /admin/, /api/, the email pictures and the
+# Wharton preview.
 Disallow: /admin/
 Disallow: /api/
+Disallow: /assets/email/
+Disallow: /wharton-site/
 
 # A plain-text summary of the academy for language models: hours, prices, ages,
 # class times. See https://llmstxt.org
