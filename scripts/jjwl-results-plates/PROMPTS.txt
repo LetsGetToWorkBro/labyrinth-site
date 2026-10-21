@@ -1,0 +1,16 @@
+The three plates the JJWL Houston results post is laid on (scripts/instagram-jjwl-results.mjs). Made October 21, 2026 with Higgsfield (model gpt_image_2_5,
+quality high, 2k), from text prompts alone: they are materials and atmosphere, with no person in any prompt and no photograph of anyone sent to the generator.
+The photographs of the children are graded on this machine (scripts/jjwl-results-grade.py) and are never altered by a generator.
+
+foil-gold.jpg   "Extreme macro photograph of real 24-karat gold leaf foil, softly crinkled with fine creases, deep amber shadows and bright champagne highlights,
+                flat top-down view filling the whole frame edge to edge, no objects, no text, no logos, no borders, studio lighting, ultra detailed micro-grain" (1:1)
+                Then: crinkle contrast eased by 22% around its local mean, hue moved 3.5 degrees from orange-gold towards yellow-gold, saturation x0.82, brightness lifted a hair;
+                scaled to 1400 px. The numerals and the nameplate are cut from it.
+ribbon.jpg      "A single delicate ribbon of liquid gold smoke curling through pure black space, like Ariadne's thread, long and thin with soft glowing edges, macro
+                ink-in-water photograph, elegant S-curves, a lot of empty black space, no objects, no text, no people" (16:9)
+                Unchanged but for the JPEG. It is laid on with screen blending, so its black does nothing; the slides turn it, scale it and run it behind all three pictures.
+ground.jpg      "Close-up photograph of a matte black basalt stone surface, extremely fine grain, soft raking light from the top left revealing subtle texture, almost black,
+                even tone, no objects, no text, no cracks" (4:5)
+                Only its middle third is kept (the slides show a 3240x1350 field of it).
+
+Two more were made and not used: pale smoke, and gold dust (it read as New Year's Eve glitter, not as a result).

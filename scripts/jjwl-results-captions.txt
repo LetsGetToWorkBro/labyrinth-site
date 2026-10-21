@@ -1,12 +1,18 @@
 THE JJWL HOUSTON RESULTS POST (October 2026): INSTAGRAM AND FACEBOOK
 
-Two pictures from the Lightroom album "JJWL Houston 10/17/2026 by Aivizuals" (https://lightroom.adobe.com/shares/bf71694e81744114b32282be1bd48681, 257 photos).
-scripts/instagram-jjwl-results.mjs makes the slides; assets/social/jjwl-results/jjwl-results-01.jpg and jjwl-results-02.jpg are 1080x1350 (4:5), with everything that
-matters in the middle 1080x1080 square (see scripts/photo-posts-captions.txt for why). Instagram: one carousel of the two pictures. Facebook: the same two pictures as one post.
+Three pictures from the Lightroom album "JJWL Houston 10/17/2026 by Aivizuals" (https://lightroom.adobe.com/shares/bf71694e81744114b32282be1bd48681, 257 photos).
+scripts/instagram-jjwl-results.mjs makes the slides (the look, and why, is in its header): assets/social/jjwl-results/jjwl-results-1-no-gi-first.jpg, jjwl-results-2-team.jpg
+and jjwl-results-3-gi-third.jpg are 1080x1350 (4:5), with everything that matters in the middle 1080x1080 square and the words in the middle 810px (see
+scripts/photo-posts-captions.txt for why). Instagram: one carousel of the three pictures. Facebook: the same three pictures as one post.
+This replaces the first version of the post (two pictures under a bold title: jjwl-results-01.jpg and jjwl-results-02.jpg), which is still on the site only in case
+an earlier prompt that names it is still open.
 
 The result is the owner's (October 20, 2026): Team Labyrinth finished 1st overall in no-gi and 3rd in the gi at JJWL Houston (The Nationals South II, Saturday, October 17).
-Nothing else is claimed: no names, no medal counts, no other places. The second picture's trophy is the one that says 3RD PLACE, GI, YOUTH ACADEMY, which is why the
+Nothing else is claimed: no names, no medal counts, no other places. The third picture's trophy is the one that says 3RD PLACE, GI, YOUTH ACADEMY, which is why the
 caption says "3rd place gi trophy" and nothing about the no-gi result's trophy (none is in the album).
+The words on the pictures say no more than that: picture 1 "No-Gi, First overall, JJWL Houston, October 17" under a gold numeral I; picture 2 "Team Labyrinth, JJWL Houston,
+October 17" under the kanji nameplate from our logo; picture 3 "Gi, Third place" under a gold numeral III, with the team's motto 迷宮を征服せよ ("conquer the labyrinth"),
+which is printed on the team's backpack in picture 2.
 
 Both platforms, always: a post is made for Instagram and for Facebook together (the owner's rule from October 15, 2026).
 No street address or town for the academy on the pictures or in the captions (the hashtags carry the area); "JJWL Houston" is the tournament's name. One emoji in each.
@@ -25,7 +31,7 @@ That is what Team Labyrinth brought home from JJWL Houston, and we could not be 
 
 To every parent, teammate and coach who cheered, helped and kept the day running: this one belongs to you too.
 
-Swipe for the 3rd place gi trophy.
+Swipe for the team and the 3rd place gi trophy.
 
 Want to be part of a team like this? A first class is free, with no commitment and no experience needed. Book at labyrinth.vision, or call or text (281) 393-7983.
 
@@ -50,5 +56,6 @@ Photos by Aivizuals.
 #JJWL #JJWLHouston #BrazilianJiuJitsu #FulshearTX #KatyTX
 
 ==================== jjwl-results: ALT TEXT ====================
-Picture 1: Six children in Labyrinth shirts stand together in front of a Nationals banner, three of them holding up gold medals, with two coaches smiling behind them. Text: JJWL Houston, Oct 17. 1st overall in no-gi. 3rd in the gi. Swipe for the trophy.
-Picture 2: A child in a black Labyrinth shirt holds a glass trophy engraved Nationals, 3rd place, gi, youth academy, in a busy event hall.
+Picture 1: A person in a black Labyrinth shirt with a blonde ponytail, seen from behind, under bright arena lights, with a gold numeral I. Text: No-Gi, First overall, JJWL Houston, October 17.
+Picture 2: Six children stand together in front of a Nationals banner, three of them holding up gold medals, with two adults behind them. Text: Team Labyrinth, JJWL Houston, October 17.
+Picture 3: A child in a black Labyrinth shirt holds a glass trophy engraved Nationals, 3rd place, gi, youth academy, with a gold numeral III. Text: Gi, Third place, and the team motto 迷宮を征服せよ, conquer the labyrinth.
