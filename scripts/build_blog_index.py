@@ -111,6 +111,7 @@ HEAD = """<!DOCTYPE html>
 <noscript><link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=general-sans@300,400,500,600,700&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="blog.css">
 <link rel="stylesheet" href="../booking.css">
+<link rel="stylesheet" href="../chat.css">
 
 <title>Blog: Kids &amp; Adult BJJ in Fulshear, TX | Labyrinth BJJ</title>
 <meta name="description" content="%(description)s">
@@ -170,6 +171,7 @@ FOOT = """
 </div>
 
 <script src="../booking.js"></script>
+<script src="../chat.js" defer></script>
 </body>
 </html>
 """

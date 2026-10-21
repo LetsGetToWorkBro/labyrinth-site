@@ -123,6 +123,7 @@ HEAD = """<!DOCTYPE html>
 <link rel="stylesheet" href="/style.css">
 <link rel="stylesheet" href="/programs.css">
 <link rel="stylesheet" href="/booking.css">
+<link rel="stylesheet" href="/chat.css">
 
 <title>%(title)s</title>
 <meta name="description" content="%(description)s">
@@ -145,6 +146,7 @@ TAIL = """</main>
 
 <script src="/app.js"></script>
 <script src="/booking.js"></script>
+<script src="/chat.js" defer></script>
 </body>
 </html>
 """

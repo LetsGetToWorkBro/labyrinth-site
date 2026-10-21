@@ -10,6 +10,7 @@ Deployed on **Cloudflare Pages**. Bookings land in the CRM at
 ```
 index.html            the whole main site, one page, anchor-linked sections
 app.js                all behaviour: nav, schedule, booking popup, forms
+chat.js  chat.css     the live chat bubble (see "Live chat")
 style.css  base.css   main site styles
 blog/                 13 pages: an index and 12 posts, with blog.css
 review/               review landing page
@@ -201,6 +202,31 @@ Worth recording, because both failures were silent:
   `// Silent fail, user still sees success`. A broken script was invisible.
 
 The booking flow now tells the person to call or text if the booking did not save.
+
+## Live chat
+
+The round gold button at the bottom right of every page that can book opens a chat with the academy (`chat.js`, `chat.css`). The
+visitor gives a name, an email or a phone, and a message; it arrives in the CRM's Messages screen, the academy answers from there, and
+the answer appears in the panel. The CRM side is the public `site-chat` edge function in labyrinth-app; the contract is at the top of
+`chat.js`.
+
+- **What it sends.** Three calls, `start`, `send` and `poll`, each a JSON POST with no key and no header but Content-Type. Nothing at all
+  on a page load unless a chat is stored. With one, it asks every 4 seconds while the panel is open and every 60 while it is closed,
+  never while the tab is hidden, and waits 8, 16, then 30 seconds after failures.
+- **What it keeps.** `localStorage` key `labyrinth.chat.v1`: the chat's token, the visitor's name, and the newest reply they have seen
+  (the number on the bubble counts the replies after it). Never the email or the phone.
+- **Where.** labyrinth.vision and www.labyrinth.vision (and localhost for the tests). The /legacy pages are also served on
+  teamlegacydojo.com, where the function refuses the origin, so there it does nothing.
+- **How pages get it.** The generated pages through `HEAD` and `TAIL` in `scripts/build_programs.py`; `index.html` and the blog posts by
+  hand; `blog/index.html` through `build_blog_index.py`, and `new-posts.py`'s template has it for any post written from now on.
+  `404.html`, `privacy-policy.html` and `/review` have no booking and no chat, and the Wharton site does not have it. `stamp_assets.py`
+  versions both files, and `page_dates.py` does not count the stylesheet's link as a change to a page.
+- **Getting along with the page.** The bubble sits above the phone call/book bar, the seminar's RSVP button and the drop page's basket
+  bar while they show, puts the home page's back-to-top button above itself, and steps aside while the booking popup, the mobile menu,
+  the advanced class notice or the basket sheet is open. On a phone the open panel is the whole screen.
+- **`LabyrinthChat.open()`** opens it, so a link anywhere can say "chat with us".
+
+`node chat.test.mjs` walks all of it with the function mocked; `SHOTS=/some/folder node chat.test.mjs` also saves screenshots.
 
 ## What an assistant reads, and what a keyboard reaches
 

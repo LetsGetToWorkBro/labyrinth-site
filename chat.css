@@ -1,0 +1,434 @@
+/*
+ * The live chat bubble and its panel. chat.js builds the markup and explains the rest; no page carries any of it.
+ *
+ * Loaded by every page that loads booking.js: the pages written by scripts/build_programs.py's HEAD (which
+ * build_pages.py and build_areas.py share), index.html, and the blog. The blog's stylesheet defines its own tokens
+ * and not --surface, --surface-elevated, --text-faint or --red, so every token here carries its value as a fallback.
+ *
+ * Layers: the nav is 100, back-to-top 999, the blog's nav 1000, the phone call/book bar 9999, the booking popup
+ * 10000, the exit popup 10001. The bubble and the panel are 9000: above the page and its bars, under the popups.
+ */
+
+/* ── The page's own floating things, kept clear of the bubble ───────────────── */
+html.lab-chat-on {
+  --lc-size: 56px;   /* the bubble */
+  --lc-edge: 24px;   /* its distance from the right and the bottom of the screen */
+  --lc-gap: 12px;    /* the space it keeps from whatever it sits above */
+}
+@media (max-width: 768px) {
+  html.lab-chat-on { --lc-edge: 16px; }
+}
+@media (max-width: 560px) {
+  html.lab-chat-on { --lc-size: 52px; }
+}
+
+/* The home page's back-to-top button stands on top of the bubble, centered over it, rather than under it.
+   --lab-chat-lift is the height of the bar the bubble is sitting above (chat.js measures it; 0 when none shows). */
+html.lab-chat-on .back-to-top {
+  bottom: 92px;
+  bottom: calc(max(var(--lc-edge, 24px) + env(safe-area-inset-bottom, 0px), var(--lab-chat-lift, 0px) + var(--lc-gap, 12px)) + var(--lc-size, 56px) + var(--lc-gap, 12px));
+  right: calc(var(--lc-edge, 24px) + (var(--lc-size, 56px) - 48px) / 2);
+}
+@media (max-width: 768px) {
+  html.lab-chat-on .back-to-top { right: calc(var(--lc-edge, 16px) + (var(--lc-size, 56px) - 44px) / 2); }
+}
+
+/* While the panel is the whole screen on a phone, the bars that are drawn above everything step out of the way. */
+html.lab-chat-sheet .mobile-cta-bar,
+html.lab-chat-sheet .scroll-progress { visibility: hidden; }
+
+/* ── The widget ────────────────────────────────────────────────────────────── */
+.lab-chat {
+  font-family: var(--font-body, 'General Sans', system-ui, sans-serif);
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--text, #F0F0F0);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+.lab-chat *, .lab-chat *::before, .lab-chat *::after { box-sizing: border-box; }
+/* An author rule that sets display beats the hidden attribute, so the attribute is made to mean what it says. */
+.lab-chat [hidden], .lab-chat--covered { display: none !important; }
+:where(.lab-chat) :where(p, ol, li) { margin: 0; padding: 0; }
+:where(.lab-chat) :where(button, input, textarea) { font: inherit; color: inherit; margin: 0; }
+:where(.lab-chat) svg { display: block; flex: none; }
+
+.lab-chat__sr {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── The bubble ── */
+.lab-chat__bubble {
+  position: fixed;
+  z-index: 9000;
+  right: calc(var(--lc-edge, 24px) + env(safe-area-inset-right, 0px));
+  bottom: 24px;
+  bottom: max(var(--lc-edge, 24px) + env(safe-area-inset-bottom, 0px), var(--lab-chat-lift, 0px) + var(--lc-gap, 12px));
+  width: var(--lc-size, 56px);
+  height: var(--lc-size, 56px);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: var(--gold, #C8A24C);
+  color: #0A0A0A;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: bottom 0.3s var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)), transform 0.2s var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)), background 0.2s ease, box-shadow 0.2s ease;
+}
+.lab-chat__bubble:hover {
+  background: var(--gold-hover, #D4B465);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.5), 0 0 32px rgba(200, 162, 76, 0.18);
+}
+.lab-chat__bubble:active { transform: translateY(0) scale(0.96); }
+.lab-chat__bubble:focus-visible { outline: 2px solid var(--text, #F0F0F0); outline-offset: 3px; }
+.lab-chat__bubble .lab-chat__ico { width: 26px; height: 26px; stroke-width: 2.1; }
+.lab-chat__bubble .lab-chat__ico--down { display: none; }
+.lab-chat__bubble[aria-expanded="true"] .lab-chat__ico--chat { display: none; }
+.lab-chat__bubble[aria-expanded="true"] .lab-chat__ico--down { display: block; }
+
+.lab-chat__badge {
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 11px;
+  border: 2px solid var(--bg, #0A0A0A);
+  background: #C0392B;
+  color: #FFFFFF;
+  font-size: 11.5px;
+  font-weight: 700;
+  line-height: 18px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── The panel: a card above the bubble on a desktop, the whole screen on a phone ── */
+.lab-chat__panel {
+  position: fixed;
+  z-index: 9000;
+  right: calc(var(--lc-edge, 24px) + env(safe-area-inset-right, 0px));
+  bottom: 92px;
+  bottom: calc(max(var(--lc-edge, 24px) + env(safe-area-inset-bottom, 0px), var(--lab-chat-lift, 0px) + var(--lc-gap, 12px)) + var(--lc-size, 56px) + var(--lc-gap, 12px));
+  width: 360px;
+  max-width: calc(100vw - 2 * var(--lc-edge, 24px));
+  height: 540px;
+  max-height: calc(100vh - 108px);
+  max-height: calc(100vh - max(var(--lc-edge, 24px) + env(safe-area-inset-bottom, 0px), var(--lab-chat-lift, 0px) + var(--lc-gap, 12px)) - var(--lc-size, 56px) - var(--lc-gap, 12px) - 16px);
+  max-height: calc(100dvh - max(var(--lc-edge, 24px) + env(safe-area-inset-bottom, 0px), var(--lab-chat-lift, 0px) + var(--lc-gap, 12px)) - var(--lc-size, 56px) - var(--lc-gap, 12px) - 16px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--surface, #141414);
+  border: 1px solid var(--border-strong, rgba(255, 255, 255, 0.14));
+  border-radius: 16px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  transform-origin: bottom right;
+  animation: labChatIn 0.24s var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)) both;
+}
+@keyframes labChatIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+/* A phone held either way up (a landscape phone is wide but short, too short for a card above the bubble). */
+@media (max-width: 560px), (max-height: 480px) {
+  .lab-chat__panel {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: auto;
+    max-width: none;
+    height: auto;
+    max-height: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) 0 env(safe-area-inset-left, 0px);
+    animation-name: labChatUp;
+  }
+  @keyframes labChatUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: none; }
+  }
+}
+
+.lab-chat__head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 12px 14px 18px;
+  border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  background: var(--surface-elevated, #1A1A1A);
+}
+.lab-chat__heading { min-width: 0; flex: 1; }
+.lab-chat__title {
+  font-family: var(--font-display, 'Clash Display', sans-serif);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  color: var(--text, #F0F0F0);
+}
+.lab-chat__sub { margin-top: 2px; font-size: 12.5px; line-height: 1.4; color: var(--text-muted, #8A8A8A); }
+.lab-chat__close {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-muted, #8A8A8A);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.lab-chat__close:hover { background: rgba(255, 255, 255, 0.12); color: var(--text, #F0F0F0); }
+.lab-chat__close:focus-visible { outline: 2px solid var(--gold, #C8A24C); outline-offset: 2px; }
+.lab-chat__close .lab-chat__ico { width: 18px; height: 18px; }
+
+/* ── The start form ── */
+.lab-chat__start {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px 18px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.lab-chat__field { display: flex; flex-direction: column; min-width: 0; }
+.lab-chat__pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.lab-chat__label { margin-bottom: 5px; font-size: 12.5px; font-weight: 500; color: var(--text-muted, #8A8A8A); }
+.lab-chat__input {
+  display: block;
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  background: var(--surface-elevated, #1A1A1A);
+  border: 1px solid var(--border-strong, rgba(255, 255, 255, 0.14));
+  border-radius: 10px;
+  color: var(--text, #F0F0F0);
+  font-size: 15px;
+  line-height: 1.4;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  box-shadow: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.lab-chat__input::placeholder { color: var(--text-muted, #8A8A8A); opacity: 0.8; }
+.lab-chat__input:focus { border-color: var(--gold, #C8A24C); box-shadow: 0 0 0 3px rgba(200, 162, 76, 0.15); }
+.lab-chat__input[aria-invalid="true"] { border-color: var(--red, #E74C3C); box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.15); }
+.lab-chat__input--area { height: auto; min-height: 88px; padding: 10px 12px; resize: vertical; }
+.lab-chat__err { font-size: 12px; line-height: 1.4; color: #F28B82; }
+.lab-chat__err:not(:empty) { margin-top: 5px; }
+.lab-chat__err a { color: inherit; text-decoration: underline; }
+.lab-chat__hint { margin-top: -6px; font-size: 12px; line-height: 1.4; color: var(--text-muted, #8A8A8A); }
+.lab-chat__hint.is-error { color: #F28B82; }
+.lab-chat__notice {
+  padding: 10px 12px;
+  border: 1px solid rgba(200, 162, 76, 0.32);
+  border-radius: 10px;
+  background: rgba(200, 162, 76, 0.08);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text, #F0F0F0);
+}
+.lab-chat__alert {
+  padding: 10px 12px;
+  border: 1px solid rgba(231, 76, 60, 0.4);
+  border-radius: 10px;
+  background: rgba(231, 76, 60, 0.08);
+  font-size: 13px;
+  line-height: 1.45;
+  color: #F1A89F;
+}
+.lab-chat__alert a { color: inherit; text-decoration: underline; font-weight: 600; }
+.lab-chat__hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+.lab-chat__go, .lab-chat__send {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--gold, #C8A24C);
+  color: #0A0A0A;
+  font-family: var(--font-display, 'Clash Display', sans-serif);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+}
+.lab-chat__go { width: 100%; height: 48px; padding: 0 20px; font-size: 15px; }
+.lab-chat__go:hover, .lab-chat__send:hover { background: var(--gold-hover, #D4B465); }
+.lab-chat__go:active, .lab-chat__send:active { transform: scale(0.98); }
+.lab-chat__go:focus-visible, .lab-chat__send:focus-visible { outline: 2px solid var(--text, #F0F0F0); outline-offset: 2px; }
+.lab-chat__go.is-busy, .lab-chat__send.is-busy { opacity: 0.7; cursor: progress; transform: none; }
+.lab-chat__fine { margin-top: -4px; font-size: 12px; line-height: 1.5; text-align: center; color: var(--text-muted, #8A8A8A); }
+.lab-chat__spin {
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  border: 2px solid rgba(10, 10, 10, 0.3);
+  border-top-color: #0A0A0A;
+  border-radius: 50%;
+  animation: labChatSpin 0.6s linear infinite;
+}
+@keyframes labChatSpin { to { transform: rotate(360deg); } }
+
+/* ── The conversation ── */
+.lab-chat__convo { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.lab-chat__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px 14px 12px;
+  background: rgba(0, 0, 0, 0.22);
+}
+.lab-chat__scroll:focus-visible { outline: 2px solid var(--gold, #C8A24C); outline-offset: -2px; }
+.lab-chat__system {
+  max-width: 92%;
+  margin: 0 auto 14px;
+  text-align: center;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--text-muted, #8A8A8A);
+}
+.lab-chat__list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.lab-chat__msg { position: relative; display: flex; flex-direction: column; max-width: 84%; }
+.lab-chat__msg--me { align-self: flex-end; align-items: flex-end; }
+.lab-chat__msg--them { align-self: flex-start; align-items: flex-start; }
+.lab-chat__who {
+  margin: 4px 4px 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--gold, #C8A24C);
+}
+/* A run of replies is labelled once on the screen; each still carries its label for a screen reader. */
+.lab-chat__msg--them + .lab-chat__msg--them > .lab-chat__who {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+.lab-chat__body {
+  padding: 9px 13px;
+  border-radius: 16px;
+  font-size: 14.5px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.lab-chat__msg--me .lab-chat__body {
+  background: var(--gold, #C8A24C);
+  color: #0A0A0A;
+  border-bottom-right-radius: 5px;
+}
+.lab-chat__msg--them .lab-chat__body {
+  background: var(--surface-elevated, #1A1A1A);
+  color: var(--text, #F0F0F0);
+  border: 1px solid var(--border-strong, rgba(255, 255, 255, 0.14));
+  border-bottom-left-radius: 5px;
+}
+.lab-chat__body a { text-decoration: underline; text-underline-offset: 2px; }
+.lab-chat__msg--me .lab-chat__body a { color: #0A0A0A; }
+.lab-chat__msg--them .lab-chat__body a { color: var(--gold, #C8A24C); }
+.lab-chat__body a:focus-visible { outline: 2px solid currentColor; outline-offset: 1px; border-radius: 2px; }
+.lab-chat__time { margin: 3px 5px 0; font-size: 11px; line-height: 1.3; color: var(--text-muted, #8A8A8A); }
+
+.lab-chat__foot {
+  flex: none;
+  padding: 10px 12px 8px;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  background: var(--surface, #141414);
+}
+.lab-chat__status { font-size: 12px; line-height: 1.4; text-align: center; color: var(--text-muted, #8A8A8A); }
+.lab-chat__status:not(:empty) { margin-bottom: 8px; }
+.lab-chat__compose { display: flex; align-items: flex-end; gap: 8px; }
+.lab-chat__text {
+  flex: 1;
+  min-width: 0;
+  height: 44px;
+  min-height: 44px;
+  max-height: 128px;
+  padding: 11px 12px;
+  resize: none;
+  overflow-y: auto;
+}
+.lab-chat__send { flex: none; height: 44px; padding: 0 16px; font-size: 14.5px; }
+.lab-chat__err--compose:not(:empty) { margin-top: 6px; }
+.lab-chat__again {
+  display: flex;
+  justify-content: center;
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--text-muted, #8A8A8A);
+}
+.lab-chat__confirm { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 2px 10px; text-align: center; }
+.lab-chat__ask { color: var(--text, #F0F0F0); }
+.lab-chat__link {
+  padding: 4px 2px;
+  border: 0;
+  background: none;
+  font-size: 12px;
+  color: var(--text-muted, #8A8A8A);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+.lab-chat__link:hover { color: var(--text, #F0F0F0); }
+.lab-chat__link:focus-visible { outline: 2px solid var(--gold, #C8A24C); outline-offset: 2px; border-radius: 3px; }
+.lab-chat__link--yes { color: var(--gold, #C8A24C); font-weight: 600; }
+.lab-chat__link--yes:hover { color: var(--gold-hover, #D4B465); }
+
+/* A touch screen: 16px type in the fields, or iOS zooms the page in when one is tapped. */
+@media (max-width: 560px), (pointer: coarse) {
+  .lab-chat__input { font-size: 16px; }
+}
+@media (max-width: 560px) {
+  .lab-chat__body { font-size: 15.5px; }
+  .lab-chat__start { padding: 16px 16px 20px; }
+}
+@media (max-width: 360px) {
+  .lab-chat__pair { grid-template-columns: 1fr; gap: 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lab-chat__bubble, .lab-chat__panel, .lab-chat__go, .lab-chat__send, .lab-chat__input, .lab-chat__close { transition: none; animation: none; }
+  .lab-chat__bubble:hover { transform: none; }
+  .lab-chat__spin { animation-duration: 1.6s; }
+  html.lab-chat-on .back-to-top { transition: none; }
+}
+
+@media print {
+  .lab-chat { display: none !important; }
+}

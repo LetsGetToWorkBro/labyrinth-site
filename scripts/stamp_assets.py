@@ -44,8 +44,8 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 # The files whose URLs get a version. Anything not listed here is left alone:
 # third-party URLs, the font CDN, and per-page assets that are already unique.
-ASSETS = ["base.css", "style.css", "season.css", "programs.css", "booking.css", "blog/blog.css",
-          "app.js", "booking.js", "schedule.js", "rsvp.js", "fund.js", "goal.js", "hyrox.js",
+ASSETS = ["base.css", "style.css", "season.css", "programs.css", "booking.css", "chat.css", "blog/blog.css",
+          "app.js", "booking.js", "chat.js", "schedule.js", "rsvp.js", "fund.js", "goal.js", "hyrox.js",
           "favicon.svg", "favicon.png"]
 # Every seasonal theme's two files (season-kit.*, season-columbus.*, season-christmas.* ...) are stamped too, without being listed one by one:
 # index.html's <head> names them in quotes inside a script, which the next pattern finds.
