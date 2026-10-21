@@ -330,6 +330,14 @@ def drift_detail(was, now, n=3):
     return "\n".join(out)
 
 
+def without_generated_lists(rel, text):
+    """llms.txt's coach, area and article lists are written out of the pages by scripts/build_llms.py, so they change when the pages do (the area pages are
+    rewritten in the move). That is the generator catching up, not the rules and a generator disagreeing about text they share, so the comparison leaves them out."""
+    if rel != "llms.txt":
+        return text
+    return re.sub(r"^## (Coach pages|Area pages|Articles)\n.*?(?=^## |\Z)", "", text, flags=re.M | re.S)
+
+
 def digest(root, rels):
     return {r: hashlib.sha256((Path(root) / r).read_bytes()).hexdigest() for r in rels if (Path(root) / r).exists()}
 
@@ -642,8 +650,10 @@ def main():
             print("  %-18s exit %d  %s" % (g, c, tail[0][:90] if tail else ""))
             if c:
                 problems.append("%s failed: the generators and the rules disagree about the text they share (read its error above)" % g)
-        for r in [r for r in written if before[r] != digest(work, [r]).get(r)]:
-            problems.append("regenerating changed %s, so a generator and the page the rules edited disagree:\n%s" % (r, drift_detail(before_text[r], (Path(work) / r).read_text(encoding="utf-8"))))
+        for r in written:
+            after_text = (Path(work) / r).read_text(encoding="utf-8")
+            if without_generated_lists(r, before_text[r]) != without_generated_lists(r, after_text):
+                problems.append("regenerating changed %s, so a generator and the page the rules edited disagree:\n%s" % (r, drift_detail(without_generated_lists(r, before_text[r]), without_generated_lists(r, after_text))))
         problems += update_sitemap(work, root, cfg)
         # scripts/page_dates.py owns every page's date (site-test fails if a changed page has not been dated): the pages the move changed get the day of the move
         r = subprocess.run([sys.executable, "scripts/page_dates.py", "--date", cfg["effective_date"]], cwd=work, capture_output=True, text=True)
