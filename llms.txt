@@ -4,12 +4,12 @@
 > academies nationally on jits.gg (#39 of 7,869 as of September 2026). Kids and adult BJJ, a competition team, youth
 > wrestling, and all-ages strength and conditioning. Founded 2021.
 
-Last updated: October 14, 2026
+Last updated: October 20, 2026
 
 This file follows the llms.txt convention (https://llmstxt.org), a plain-text
 summary for language models reading the site. It exists because the answers
-below are otherwise spread across a schedule table, a pricing grid and twenty
-blog posts, and a model skimming the HTML tends to reassemble them wrongly.
+below are otherwise spread across a schedule table, a pricing grid and a blog of
+articles, and a model skimming the HTML tends to reassemble them wrongly.
 Every fact here is also on the pages linked beneath it; if the two ever
 disagree, the page is right and this file is stale.
 
@@ -43,6 +43,12 @@ disagree, the page is right and this file is stale.
 - [Strength and conditioning](https://labyrinth.vision/blog/strength-and-conditioning-for-kids-fulshear):
   all ages in one session, Tuesday and Thursday at 4:15 PM. Included in every
   membership at no extra cost.
+- [Summer camp](https://labyrinth.vision/programs/summer-camp-fulshear):
+  half-day camp for ages 5–15, 12–4 PM, $60 a day, jiu-jitsu and wrestling.
+  Dates for summer 2027 are announced in spring.
+- [Martial arts in Fulshear](https://labyrinth.vision/programs/martial-arts-fulshear):
+  the overview of everything we teach, for kids and adults: Brazilian
+  jiu-jitsu, youth wrestling, MMA conditioning and the competition team.
 - Dry sauna and cold plunge: recovery facility, $60/month add-on.
 - Open mat: Sundays at 10:30 AM, all levels and all affiliations welcome.
 
@@ -65,11 +71,59 @@ Maronge (brown belts), Malik Pickett (wrestling, Texas National Team).
 ## Pages
 
 - [Home](https://labyrinth.vision/): schedule, pricing, coaches, FAQ
+- [Schedule](https://labyrinth.vision/schedule): the weekly timetable of every
+  class, seven days a week
+- [Pricing](https://labyrinth.vision/pricing): memberships, punch cards, private
+  lessons
 - [All programs](https://labyrinth.vision/programs/)
-- [Blog](https://labyrinth.vision/blog/): twenty articles for parents and
-  adult beginners: choosing a gym, what a first class is like, costs, BJJ for
-  children with ADHD, BJJ versus wrestling, starting after forty
+- [Coaches](https://labyrinth.vision/coaches/): who teaches what
+- [Areas we serve](https://labyrinth.vision/areas/): where students drive in
+  from, and which classes suit which drive
+- [Blog](https://labyrinth.vision/blog/): articles for parents and adult
+  beginners: choosing a gym, what a first class is like, costs, BJJ for children
+  with ADHD, BJJ versus wrestling, starting after forty
 - [Full class calendar](https://calendar.labyrinth.vision)
+
+The coach pages, the area pages and every article are listed below, one line each.
+
+## Coach pages
+
+- [Prof. Anthony Curry](https://labyrinth.vision/coaches/anthony-curry): Anthony Curry, founder and head instructor of Labyrinth BJJ in Fulshear, TX. Black belt, 14+ years, and the coach who built one of the top 1% of academies in the country.
+- [Malik Pickett](https://labyrinth.vision/coaches/malik-pickett): Malik Pickett, youth wrestling coach at Labyrinth BJJ in Fulshear, TX. Texas National Team wrestler teaching takedowns to ages 7–17, three sessions a week.
+- [Scott Jones](https://labyrinth.vision/coaches/scott-jones): Scott Jones, 7th dan Taekwondo black belt and BJJ brown belt, coaches MMA Conditioning, an all-ages class, at Labyrinth BJJ in Fulshear, TX. 30+ years teaching.
+- [Prof. Shaun Lawler](https://labyrinth.vision/coaches/shaun-lawler): Shaun Lawler, black belt professor at Labyrinth BJJ in Fulshear, TX. 15+ years on the mats, and the coach who leads the all-ages strength and conditioning class.
+
+## Area pages
+
+- [Jiu-Jitsu for Brookshire](https://labyrinth.vision/areas/bjj-brookshire): Kids and adult Brazilian jiu-jitsu seven miles from Brookshire straight down FM 359. No highway, no Katy traffic. First class free.
+- [Jiu-Jitsu for Cinco Ranch](https://labyrinth.vision/areas/bjj-cinco-ranch): Brazilian jiu-jitsu for Cinco Ranch families. Our Katy academy is likely closer than Fulshear. Here is how to tell which one suits your week.
+- [Jiu-Jitsu for Richmond](https://labyrinth.vision/areas/bjj-richmond): Kids and adult Brazilian jiu-jitsu north of Richmond, up FM 359. Lamar CISD families, evening and Saturday classes. First class free.
+- [Jiu-Jitsu for Rosenberg](https://labyrinth.vision/areas/bjj-rosenberg): Brazilian jiu-jitsu for Rosenberg families, up FM 359 through Richmond. A real drive. Here is how to make one trip a week count.
+- [Jiu-Jitsu for Sealy](https://labyrinth.vision/areas/bjj-sealy): Brazilian jiu-jitsu for Sealy families, about 25 miles east on I-10. A long drive, best done as one Saturday trip. First class free.
+- [Jiu-Jitsu for Simonton](https://labyrinth.vision/areas/bjj-simonton): Kids and adult Brazilian jiu-jitsu a short run east of Simonton along FM 1093. Lamar CISD families welcome. First class free.
+- [Jiu-Jitsu for Tamarron](https://labyrinth.vision/areas/bjj-tamarron): Kids and adult Brazilian jiu-jitsu a short drive from Tamarron, off FM 1463. Every class time works from here. First class free.
+
+## Articles
+
+- [Strength & Conditioning for Kids in Fulshear, TX](https://labyrinth.vision/blog/strength-and-conditioning-for-kids-fulshear): Strength and conditioning for kids in Fulshear, TX: Tuesday and Thursday at 4:15 PM, all ages. Is it safe for children, and what does it do?
+- [Starting Jiu Jitsu at 30, 40 or 50](https://labyrinth.vision/blog/starting-bjj-in-your-30s-40s-50s): What happens when an adult with no combat sports background starts jiu jitsu, the first month, the fears, and why late starters do well.
+- [New to Fulshear? A Parent’s Guide to Getting Kids Active](https://labyrinth.vision/blog/new-to-fulshear-kids-activities): Just moved to Fulshear? A practical guide to finding activities for your kids: how to choose, what to ask, and how to tell a good program from a busy one.
+- [Jiu Jitsu Near Cross Creek Ranch, Jordan Ranch & Tamarron](https://labyrinth.vision/blog/jiu-jitsu-near-fulshear-neighborhoods): Where Labyrinth BJJ is, how to reach us from each Fulshear community, and which class times work around school pickup.
+- [How Much Does Jiu Jitsu Cost in Fulshear?](https://labyrinth.vision/blog/how-much-does-bjj-cost-fulshear): Real Brazilian jiu jitsu prices in Fulshear, TX. What a membership costs, what is included, what is not, and the questions to ask any gym before signing.
+- [Homeschool & After-School Martial Arts in Fulshear](https://labyrinth.vision/blog/homeschool-after-school-martial-arts-fulshear): Daytime and after-school martial arts for homeschool and Lamar CISD families in Fulshear, TX. How jiu jitsu fits PE requirements, socialisation and the school-day schedule.
+- [BJJ or Wrestling for Kids? An Honest Comparison](https://labyrinth.vision/blog/bjj-vs-wrestling-for-kids): Brazilian jiu jitsu and wrestling compared for children. What each teaches, how they differ, and how to choose. Written by a gym that coaches both.
+- [What to Expect at Your First BJJ Class](https://labyrinth.vision/blog/what-to-expect-first-bjj-class): Nervous about your first BJJ class? Here's exactly what to expect when you walk into Labyrinth BJJ: what to wear, how class works, and why there's no reason to be nervous.
+- [What Age Should Kids Start Jiu-Jitsu?](https://labyrinth.vision/blog/what-age-should-kids-start-jiu-jitsu): Wondering what age kids should start Jiu-Jitsu? Our age-by-age guide covers readiness from toddlers to teens. Expert advice from Labyrinth BJJ, top 1% nationally.
+- [Kids Martial Arts Classes in Katy, TX](https://labyrinth.vision/blog/kids-martial-arts-katy-tx): Discover kids martial arts and BJJ classes at Labyrinth BJJ Katy. Programs for ages 3–15, expert coaching, and a welcoming environment for families in the Katy, TX area.
+- [Is BJJ Good for Kids with ADHD?](https://labyrinth.vision/blog/is-bjj-good-for-adhd-kids): How Brazilian jiu-jitsu helps children with ADHD: structured engagement, sensory input and a physical outlet. What Fulshear parents notice first.
+- [How to Choose a BJJ Gym: What to Look For](https://labyrinth.vision/blog/how-to-choose-bjj-gym): A no-nonsense guide to choosing the right BJJ gym, from instructor credentials and class structure to culture, cleanliness, and the red flags you should never ignore.
+- [How BJJ Builds Confidence and Discipline in Children](https://labyrinth.vision/blog/how-bjj-builds-confidence-discipline-children): How BJJ builds confidence and discipline in kids, with Labyrinth's Fulshear class times by age (3 to 15), kids belt steps and what the first weeks look like.
+- [How to Prepare for Your First BJJ Tournament](https://labyrinth.vision/blog/first-bjj-tournament-guide): Preparing for your first Brazilian jiu-jitsu tournament: choosing an event, weight cuts, what to pack, and what actually happens on the day.
+- [BJJ vs Karate for Kids: Which Is Better?](https://labyrinth.vision/blog/bjj-vs-karate-for-kids): BJJ vs karate for kids, a fair, detailed comparison of grappling vs striking martial arts for children. Self-defense, safety, fitness, and more.
+- [BJJ for Women: Why More Women Are Training](https://labyrinth.vision/blog/bjj-for-women): Women are joining Brazilian Jiu-Jitsu in record numbers. Discover why BJJ is the best self-defense and fitness activity for women, and what to expect at your first class.
+- [BJJ Belt System Explained: White to Black](https://labyrinth.vision/blog/bjj-belt-system-explained): The complete guide to the Brazilian Jiu-Jitsu belt system: adult and kids belt progression, stripes, promotion timelines, and what each rank means on and off the mats.
+- [Best BJJ Gym in Fulshear, TX](https://labyrinth.vision/blog/best-bjj-gym-fulshear-tx): Why Labyrinth BJJ is the top-ranked Brazilian Jiu-Jitsu academy in Fulshear, Texas: top 1% nationally on jits.gg, with 3 black belt instructors and programs for all ages.
+- [10 Benefits of Brazilian Jiu-Jitsu for Kids](https://labyrinth.vision/blog/benefits-of-bjj-for-kids): Discover the top 10 benefits of Brazilian Jiu-Jitsu for kids, from confidence and discipline to self-defense and fitness. Written by one of the top 1% of BJJ academies in the country.
 
 ## Notes for anyone answering questions about us
 
