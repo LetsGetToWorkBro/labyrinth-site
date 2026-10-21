@@ -32,10 +32,11 @@ html,body{margin:0;background:#000}
 .ribbon{position:absolute;left:0;top:0;transform-origin:0 0}
 .thread{mix-blend-mode:screen;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 150px,#000 2290px,transparent 2480px);mask-image:linear-gradient(90deg,transparent 0,#000 150px,#000 2290px,transparent 2480px)}
 
-/* the plate: the photograph, a little smaller than the slide, melting into the black on three sides */
-.plate{position:absolute;left:108px;top:270px;width:864px;height:1080px;
-  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 110px,#000 calc(100% - 110px),transparent 100%),linear-gradient(180deg,transparent 0,#000 150px);
-  -webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent 0,#000 110px,#000 calc(100% - 110px),transparent 100%),linear-gradient(180deg,transparent 0,#000 150px);mask-composite:intersect}
+/* the plate: the photograph, smaller than the slide (--s of its width, centred), melting into the black on all four sides. Its size is set so that what matters in
+   the picture stays inside the middle square, y 135 to 1215: the children's shoes in the second, the whole trophy in the third. */
+.plate{--s:.8;--fb:90px;position:absolute;left:calc(540px - 540px * var(--s));top:270px;width:calc(1080px * var(--s));height:calc(1350px * var(--s));
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 110px,#000 calc(100% - 110px),transparent 100%),linear-gradient(180deg,transparent 0,#000 150px,#000 calc(100% - var(--fb)),transparent 100%);
+  -webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent 0,#000 110px,#000 calc(100% - 110px),transparent 100%),linear-gradient(180deg,transparent 0,#000 150px,#000 calc(100% - var(--fb)),transparent 100%);mask-composite:intersect}
 .plate img{display:block;width:100%;height:100%}
 /* whoever stands at the edges of a picture fades into the dark first */
 .plate::after{content:"";position:absolute;inset:0;background:var(--extra,linear-gradient(transparent,transparent)),linear-gradient(90deg,rgba(6,5,4,var(--sl,.4)) 0,rgba(6,5,4,0) var(--slw,30%),rgba(6,5,4,0) calc(100% - var(--srw,30%)),rgba(6,5,4,var(--sr,.5)) 100%)}
@@ -71,9 +72,9 @@ html,body{margin:0;background:#000}
   </div>
 
   <div class="layer">
-    <div class="at"><div class="plate" style="top:312px;--sl:.3;--sr:.5"><img src="/work/cover.png" alt=""></div></div>
-    <div class="at"><div class="plate" style="--sl:.78;--slw:34%;--sr:.78;--srw:34%"><img src="/work/team.png" alt=""></div></div>
-    <div class="at"><div class="plate" style="--sl:.94;--slw:52%;--sr:.9;--srw:44%;--extra:radial-gradient(ellipse 190px 150px at 235px 105px,rgba(6,5,4,.95),rgba(6,5,4,.8) 55%,rgba(6,5,4,0) 100%),radial-gradient(ellipse 120px 110px at 700px 270px,rgba(6,5,4,.8),rgba(6,5,4,0) 100%)"><img src="/work/trophy.png" alt=""></div></div>
+    <div class="at"><div class="plate" style="--s:.78;top:300px;--sl:.3;--sr:.5"><img src="/work/cover.png" alt=""></div></div>
+    <div class="at"><div class="plate" style="--s:.76;--sl:.78;--slw:34%;--sr:.78;--srw:34%"><img src="/work/team.png" alt=""></div></div>
+    <div class="at"><div class="plate" style="--s:.72;top:277px;--fb:56px;--sl:.94;--slw:52%;--sr:.9;--srw:44%;--extra:radial-gradient(ellipse 171px 135px at 229px 73px,rgba(6,5,4,.95),rgba(6,5,4,.8) 55%,rgba(6,5,4,0) 100%),radial-gradient(ellipse 108px 99px at 657px 263px,rgba(6,5,4,.8),rgba(6,5,4,0) 100%)"><img src="/work/trophy.png" alt=""></div></div>
   </div>
 
   <div class="layer">
