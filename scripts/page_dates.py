@@ -6,7 +6,7 @@
     python3 scripts/page_dates.py --touch pricing.html schedule.html
                                                    "I checked it and it is still right": move those dates to today
     python3 scripts/page_dates.py --date 2027-07-01
-                                                   use that day instead of today (the move kit does)
+                                                   use that day instead of today (for a change made ahead of its day)
 
 Why. sitemap.xml named a lastmod for every page, typed by hand, and most of them
 had not moved since July and August while the pages kept changing. Google keeps

@@ -233,7 +233,7 @@ python3 scripts/page_dates.py         # pages that changed get today's date (Cen
 
 `site-test.mjs` (L1ai) fails, and says what to run, if a page has changed and its date has not. `python3 scripts/page_dates.py --touch pricing.html schedule.html`
 moves a date to today when you have checked the page against the real prices or timetable and it is still right (`schedule-check.mjs` checks the timetable).
-`--date YYYY-MM-DD` is what the Richmond move kit uses.
+`--date YYYY-MM-DD` dates a change as of that day instead of today, for one made ahead of its day (the move to Richmond is one).
 
 ## SEO notes
 
