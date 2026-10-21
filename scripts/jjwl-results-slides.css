@@ -1,7 +1,4 @@
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><title>JJWL Houston results: the three slides as one 3240x1350 picture</title>
-<!-- scripts/instagram-jjwl-results.mjs serves this page, with the graded photographs and the brand masks under /work/, and cuts it into three 1080x1350 slides. -->
-<style>
+/* The look of the JJWL Houston results post (scripts/instagram-jjwl-results.mjs writes the page this styles and cuts it into 1080x1350 slides). */
 @font-face{font-family:"Corm";src:url(/scripts/fonts/cormorant-garamond-latin-600-normal.woff2) format("woff2");font-weight:600}
 @font-face{font-family:"Jost";src:url(/scripts/fonts/jost-latin-400-normal.woff2) format("woff2");font-weight:400}
 @font-face{font-family:"Jost";src:url(/scripts/fonts/jost-latin-500-normal.woff2) format("woff2");font-weight:500}
@@ -14,14 +11,14 @@
 :root{--bone:#ece4d2;--ink:#060504;--gold:rgba(214,176,98,.92);--base:417px}
 *{box-sizing:border-box}
 html,body{margin:0;background:#000}
-#pano{position:relative;width:3240px;height:1350px;overflow:hidden;background:var(--ink)}
+#pano{position:relative;height:1350px;overflow:hidden;background:var(--ink)}
 .layer{position:absolute;inset:0}
 .at{position:absolute;top:0;width:1080px;height:1350px;overflow:hidden}
-.at:nth-child(1){left:0}.at:nth-child(2){left:1080px}.at:nth-child(3){left:2160px}
 .abs{position:absolute}
 
 /* the ground: warm black with the faintest stone grain */
-.ground{background:var(--ink) url(/scripts/jjwl-results-plates/ground.jpg) center/3240px 1350px no-repeat}
+.ground{background:var(--ink)}
+.ground .tile{position:absolute;top:0;width:3240px;height:1350px;background:url(/scripts/jjwl-results-plates/ground.jpg) 0 0/3240px 1350px}   /* every other tile turned over, so the stone has no seam */
 .ground::after{content:"";position:absolute;inset:0;background:rgba(6,5,4,.78)}
 
 /* the maze mark without its lettering, ghosted into the black round each masthead */
@@ -30,7 +27,9 @@ html,body{margin:0;background:#000}
 /* the thread: Higgsfield's smoke ribbon, one piece across the whole swipe, behind the plates. The blend is on the layer, not on the image: a mask on the layer
    would otherwise cut the image off from what is under it, and its black would cover the ground. */
 .ribbon{position:absolute;left:0;top:0;transform-origin:0 0}
-.thread{mix-blend-mode:screen;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 150px,#000 2290px,transparent 2480px);mask-image:linear-gradient(90deg,transparent 0,#000 150px,#000 2290px,transparent 2480px)}
+.thread{mix-blend-mode:screen;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 150px,#000 var(--end1),transparent var(--end2));mask-image:linear-gradient(90deg,transparent 0,#000 150px,#000 var(--end1),transparent var(--end2))}
+/* each piece of ribbon fades in and out along its own length, so the pieces run into one another */
+.ribbon{-webkit-mask-image:linear-gradient(130deg,transparent 15%,#000 24%,#000 84%,transparent 92%);mask-image:linear-gradient(130deg,transparent 15%,#000 24%,#000 84%,transparent 92%)}
 
 /* the plate: the photograph, smaller than the slide (--s of its width, centred), melting into the black on all four sides. Its size is set so that what matters in
    the picture stays inside the middle square, y 135 to 1215: the children's shoes in the second, the whole trophy in the third. */
@@ -56,43 +55,3 @@ html,body{margin:0;background:#000}
 .tb .s{display:block;width:64px;height:2px;margin:20px 0 18px auto;background:var(--gold)}
 .tb .b{font-weight:400;font-size:27px;line-height:1.45;letter-spacing:.3em;margin-right:-.3em;opacity:.76}
 .tb .j{font-family:"Noto Sans JP","Jost",sans-serif;font-weight:500;letter-spacing:.18em;margin-right:-.18em;opacity:.84}
-</style></head>
-<body>
-<div id="pano">
-  <div class="layer ground"></div>
-
-  <div class="layer" style="pointer-events:none">
-    <i class="maze" style="--x:-252px;--y:-153px"></i>
-    <i class="maze" style="--x:840px;--y:-159px"></i>
-    <i class="maze" style="--x:2030px;--y:-153px"></i>
-  </div>
-
-  <div class="layer thread" style="pointer-events:none">
-    <img class="ribbon" src="/scripts/jjwl-results-plates/ribbon.jpg" width="2688" height="1520" alt="" style="opacity:.9;transform:translate(-560px,720px) rotate(-38deg) scale(1.3)">
-  </div>
-
-  <div class="layer">
-    <div class="at"><div class="plate" style="--s:.78;top:300px;--sl:.3;--sr:.5"><img src="/work/cover.png" alt=""></div></div>
-    <div class="at"><div class="plate" style="--s:.76;--sl:.78;--slw:34%;--sr:.78;--srw:34%"><img src="/work/team.png" alt=""></div></div>
-    <div class="at"><div class="plate" style="--s:.72;top:277px;--fb:56px;--sl:.94;--slw:52%;--sr:.9;--srw:44%;--extra:radial-gradient(ellipse 171px 135px at 229px 73px,rgba(6,5,4,.95),rgba(6,5,4,.8) 55%,rgba(6,5,4,0) 100%),radial-gradient(ellipse 108px 99px at 657px 263px,rgba(6,5,4,.8),rgba(6,5,4,0) 100%)"><img src="/work/trophy.png" alt=""></div></div>
-  </div>
-
-  <div class="layer">
-    <div class="at">
-      <div class="abs lit" style="left:119px;top:177px"><div class="num foil" style="--fx:-120px;--fy:-80px">I</div></div>
-      <div class="ledge"></div>
-      <div class="tb"><div class="a">No-Gi<br>First overall</div><i class="s"></i><div class="b">JJWL Houston<br>October 17</div></div>
-    </div>
-    <div class="at">
-      <div class="abs lit" style="left:135px;top:166px"><div class="plaque"></div></div>
-      <div class="ledge"></div>
-      <div class="tb"><div class="a">Team<br>Labyrinth</div><i class="s"></i><div class="b">JJWL Houston<br>October 17</div></div>
-    </div>
-    <div class="at">
-      <div class="abs lit" style="left:119px;top:176px"><div class="num foil" style="--fx:-600px;--fy:-300px">III</div></div>
-      <div class="ledge"></div>
-      <div class="tb"><div class="a">Gi<br>Third place</div><i class="s"></i><div class="b j">迷宮を征服せよ</div></div>
-    </div>
-  </div>
-</div>
-</body></html>
