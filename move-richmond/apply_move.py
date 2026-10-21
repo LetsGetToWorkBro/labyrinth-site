@@ -303,7 +303,8 @@ def install_blog_posts(tree, cfg):
 
 # ───────────────────────── regenerate ─────────────────────────
 # new-posts.py is NOT run: its posts have been edited by hand since. build_wharton.py is run to prove the Wharton site does not change.
-GENERATORS = ["build_pages.py", "build_programs.py", "build_areas.py", "build_blog_index.py", "build_wharton.py"]
+# build_llms.py comes after the generators whose pages it lists (the area pages and the articles change in the move), so llms.txt names them as they will be.
+GENERATORS = ["build_pages.py", "build_programs.py", "build_areas.py", "build_blog_index.py", "build_llms.py", "build_wharton.py"]
 
 
 def regenerate(root):

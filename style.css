@@ -786,6 +786,18 @@ body {
 
 .section-subtitle__link:hover { border-bottom-color: var(--gold); }
 
+/* The pages the program cards lead to, always on the page. A shut card keeps its own links out of reach (they are inert, so Tab does not walk through
+   hidden text), which also takes them out of the accessibility tree that screen readers and assistants such as Meta's Muse read: without these, the
+   home page had no link a reader of that tree could follow to the kids, adult, competition or wrestling page. */
+.programs__pages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-6);
+  margin-top: var(--space-3);
+  font-size: 17px;
+  line-height: 1.65;
+}
+
 /* Program card trial button (styled button instead of hyperlink) */
 .program-card__trial-btn {
   display: inline-block;

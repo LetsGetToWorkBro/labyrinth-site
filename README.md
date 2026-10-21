@@ -204,7 +204,7 @@ The booking flow now tells the person to call or text if the booking did not sav
 
 ## What an assistant reads, and what a keyboard reaches
 
-Assistants such as Meta's Muse read a page through its served HTML and its accessibility tree, not the way a person sees it. Four things are kept true for them,
+Assistants such as Meta's Muse read a page through its served HTML and its accessibility tree, not the way a person sees it. Six things are kept true for them,
 and `site-test.mjs` (L1ai) fails if one stops being:
 
 - **The Google reviews are in `index.html`** (`#reviewsGrid`), written out, not built by a script. `app.js` only chooses which are showing (three at a time, one
@@ -214,8 +214,16 @@ and `site-test.mjs` (L1ai) fails if one stops being:
   panel's links are neither in the tab order nor in the accessibility tree. Clicking anywhere on the card still opens it. Never put a link or a button inside
   `role="button"`: a screen reader flattens everything inside into one long name, and the keyboard cannot use what is inside. The athlete cards are written by
   `scripts/jits_data.py` and spliced into the page by `scripts/build_pages.py`.
+- **Every program page has a link on the home page that is in the accessibility tree with every card shut.** A shut card's own links ("Full details on youth
+  wrestling") are inert, so they are not in the tree; the row of five links under the "Find your path" heading (`nav.programs__pages`) is what a reader of the
+  tree finds instead, together with "See all programs" and "Martial arts in Fulshear". Before that row, the home page showed such a reader two of the six program
+  pages: the kids, adult, competition team and youth wrestling pages were in the HTML and the sitemap but had no link it could follow. If you add a program page,
+  add it to that row; the test asks the browser, not the HTML, which links are in the tree.
 - **`robots.txt` names the crawlers behind the assistants**, Meta's three among them (`meta-webindexer`, `meta-externalfetcher`, `meta-externalagent`), and repeats
   the wildcard group's four `Disallow` lines, because a crawler that matches a named group ignores the `*` group entirely.
+- **`llms.txt` names every coach page, area page and article**, written out of the pages by `python3 scripts/build_llms.py` (title and the page's own description, one
+  line each), so a new post is in it the next time that runs and the test fails until it has. The prose above those lists (prices, ages, times) is written by hand.
+  After changing it, run `python3 scripts/page_dates.py` as for any page.
 - **`llms.txt` and the pages that state prices and times say when they were last right** (next section).
 
 ## Page dates

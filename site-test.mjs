@@ -1280,6 +1280,28 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   await page.keyboard.press('Escape')
 }
 
+// The links of a page that are in Chromium's accessibility tree, which is what a screen reader and an assistant such as Meta's Muse read. An <a> that is
+// inert, hidden or inside a role=button is in the HTML but not in that tree. Returns [{ href, name }].
+async function axLinks(p) {
+  const cdp = await p.context().newCDPSession(p)
+  await cdp.send('DOM.enable'); await cdp.send('Accessibility.enable')
+  const doc = await cdp.send('DOM.getDocument', { depth: -1 })
+  const { nodeIds } = await cdp.send('DOM.querySelectorAll', { nodeId: doc.root.nodeId, selector: 'a[href]' })
+  const out = []
+  for (const nodeId of nodeIds) {
+    const d = await cdp.send('DOM.describeNode', { nodeId })
+    const attrs = d.node.attributes || []
+    const href = attrs[attrs.indexOf('href') + 1] || ''
+    try {
+      const { nodes } = await cdp.send('Accessibility.getPartialAXTree', { nodeId, fetchRelatives: false })
+      const n = nodes[0]
+      if (n && !n.ignored && n.role?.value === 'link' && n.name?.value) out.push({ href: href.replace(/^https?:\/\/[^/]+/, ''), name: n.name.value })
+    } catch { /* a node with no accessibility object is not in the tree */ }
+  }
+  await cdp.detach()
+  return out
+}
+
 // ── L1ai: what an assistant reads, and what a keyboard reaches ──
 // Assistants such as Meta's Muse read a page through its served HTML and its accessibility tree. The Google reviews
 // were written into the page by app.js, so none of them were in the HTML. The cards that open were <div role="button">
@@ -1347,6 +1369,19 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   }
   check('L1ai llms.txt says when it was last updated', /^Last updated: [A-Z][a-z]+ \d{1,2}, \d{4}$/m.test(readFileSync(join(ROOT,'llms.txt'),'utf8')))
 
+  // llms.txt is the first thing many assistants read. It linked one article, called the blog "twenty articles" when it had nineteen, and left out two program
+  // pages and every coach and area page, so a reader that began there found most of the site missing. The lists are written out of the pages
+  // (scripts/build_llms.py); this fails when a page is added or changed and the lists were not rebuilt, and when any program, coach, area or article page in the
+  // sitemap is not linked from llms.txt.
+  let llmsWhy = ''
+  try { execFileSync('python3', [join(ROOT,'scripts/build_llms.py'), '--check'], { cwd: ROOT, stdio: 'pipe' }) } catch (e) { llmsWhy = (String(e.stdout) + String(e.stderr)).trim() || 'exit ' + e.status }
+  check('L1ai llms.txt lists the coach pages, area pages and articles as they are now (scripts/build_llms.py --check)', llmsWhy === '', llmsWhy)
+  const llms = readFileSync(join(ROOT,'llms.txt'),'utf8')
+  const wanted = [...sitemap.matchAll(/<loc>https:\/\/labyrinth\.vision(\/(?:programs|coaches|areas|blog)\/[^<]+)<\/loc>/g)].map(m => m[1])
+  const unlisted = wanted.filter(p => !llms.includes('(https://labyrinth.vision' + p + ')'))
+  check(`L1ai llms.txt links every one of the ${wanted.length} program, coach, area and article pages in the sitemap, and says no count of articles that could go stale`,
+    wanted.length >= 36 && unlisted.length === 0 && !/\b(twenty|nineteen|\d+) (blog posts|articles)\b/i.test(llms), JSON.stringify(unlisted))
+
   // the cards that open: a real button each, nothing interactive inside a button, closed panels out of reach, and the keyboard works
   const kp = await (await browser.newContext({ viewport: { width: 1280, height: 900 } })).newPage()
   await kp.goto('http://localhost:4620/', { waitUntil: 'networkidle' })
@@ -1407,6 +1442,20 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   await kp.click('[data-program="wrestling"] .program-card__title')
   const mouse = await kp.evaluate(() => [...document.querySelectorAll('.program-card--expanded')].map(c => c.dataset.program))
   check('L1ai clicking anywhere on a program card still opens it, and opening one shuts the one before', mouse.length === 1 && mouse[0] === 'wrestling', JSON.stringify(mouse))
+
+  // What a reader of the accessibility tree finds on the home page with every card shut. A shut card keeps its own links out of the tree (they are inert), which
+  // is why the kids, adult, competition and youth wrestling pages had no link in it at all until the row under the programs heading: such a reader saw two of
+  // the six program pages and could not tell the pages existed.
+  await kp.goto('http://localhost:4620/', { waitUntil: 'networkidle' })
+  const tree = await axLinks(kp)
+  const inTree = href => tree.some(l => l.href === href || l.href === href + '/')
+  const programPages = ['kids-bjj-fulshear', 'adult-bjj-fulshear', 'youth-wrestling-fulshear', 'bjj-competition-team', 'summer-camp-fulshear', 'martial-arts-fulshear'].map(x => '/programs/' + x)
+  const absent = [...programPages, '/programs', '/blog', '/coaches', '/areas'].filter(h => !inTree(h))
+  check('L1ai with every card shut, the home page has a named link in its accessibility tree to each of the 6 program pages, the programs index, the blog, the coaches and the areas',
+    absent.length === 0, JSON.stringify({ absent, linksInTree: tree.length }))
+  const rowNames = await kp.$$eval('nav.programs__pages a', as => as.map(a => a.textContent.trim()))
+  check('L1ai the row of program links says which pages they are in words a person and an assistant can use ("Kids BJJ", "Youth wrestling" ...)',
+    rowNames.join('|') === 'Kids BJJ|Adult BJJ|Youth wrestling|Competition team|Summer camp', rowNames.join('|'))
   await kp.context().close()
 
   // the drop page's basket bar is hidden until something is added, but its two buttons are never empty in the HTML
