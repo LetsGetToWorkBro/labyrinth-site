@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """The picture side of the JJWL Houston results post (scripts/instagram-jjwl-results.mjs runs this; see the header there).
 
-    python3 scripts/jjwl-results-grade.py photo <album photo.jpg> <out.png> cover|team|trophy
-        one photograph, graded to a warm silver print (1080x1350, 4:5)
+    python3 scripts/jjwl-results-grade.py photo <album photo.jpg> <out.png> cover|team|trophy|arena|hall ['{"cy": 0.5, ...}']
+        one photograph, graded to a warm silver print (1080x1350, 4:5); the optional JSON replaces any of the preset's settings
     python3 scripts/jjwl-results-grade.py masks <out folder>
         the brand marks as masks the slides cut gold foil with: the vertical kanji nameplate and the maze mark without its lettering
     python3 scripts/jjwl-results-grade.py finish <slide.png> <slide.jpg>
@@ -16,6 +16,7 @@ light is laid on the subject and the room falls away round it, but the lamps and
 little halation; the blacks are real blacks. Nobody is altered: this is light and colour only, and no picture of a person is sent to any image generator.
 Everything is float32, so nothing bands; the grain goes on after the resize, so it is the size of real grain.
 """
+import json
 import os
 import sys
 
@@ -185,8 +186,16 @@ PRESETS = {
 }
 
 
-def grade_photo(src, out, preset):
-    p = PRESETS[preset]
+# the rest of the swipe: "arena" is a dark hall under its lamps (like the cover), "hall" a bright one (like the team). Each picture says where its
+# own subject is (spot) and which part of the photograph the 4:5 window shows (cy); anything else it names replaces these.
+PRESETS["arena"] = dict(PRESETS["cover"], cy=0.2, spot=(0.50, 0.55, 0.60, 0.58, 0.05), dodge=0.45, denoise=2)
+PRESETS["hall"] = dict(PRESETS["team"], cy=0.5, spot=(0.50, 0.52, 0.52, 0.50, 0.05), dodge=0.60)
+
+
+def grade_photo(src, out, preset, overrides=None):
+    p = dict(PRESETS[preset])
+    for k, v in (overrides or {}).items():
+        p[k] = dict(p[k], **v) if isinstance(v, dict) and isinstance(p.get(k), dict) else v
     raw = cv2.imread(src)
     if raw is None:
         sys.exit("cannot read " + src)
@@ -258,8 +267,8 @@ def finish(src, out):
 
 if __name__ == "__main__":
     cmd, args = (sys.argv[1] if len(sys.argv) > 1 else ""), sys.argv[2:]
-    if cmd == "photo" and len(args) == 3 and args[2] in PRESETS:
-        grade_photo(*args)
+    if cmd == "photo" and len(args) in (3, 4) and args[2] in PRESETS:
+        grade_photo(args[0], args[1], args[2], json.loads(args[3]) if len(args) == 4 else None)
     elif cmd == "masks" and len(args) == 1:
         brand_masks(args[0])
     elif cmd == "finish" and len(args) == 2:
