@@ -687,6 +687,23 @@ body {
   color: var(--gold);
   margin-top: var(--space-3);
   transition: color var(--transition-fast);
+  /* it is a real <button> (the card is not): take back what a browser gives buttons */
+  background: none;
+  border: 0;
+  padding: 0;
+  font-family: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.program-card__more:focus-visible,
+.type-card__toggle:focus-visible,
+.athlete-card__chevron:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 4px;
+  border-radius: 4px;
 }
 
 .program-card__detail {
@@ -963,9 +980,15 @@ body {
   opacity: 0;
   transition: opacity var(--transition-fast);
   pointer-events: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  font-family: inherit;
+  line-height: inherit;
 }
 .type-card:hover .type-card__toggle,
-.type-card.is-active .type-card__toggle {
+.type-card.is-active .type-card__toggle,
+.type-card__toggle:focus-visible {
   opacity: 1;
 }
 .type-card.is-active .type-card__toggle {
@@ -1348,6 +1371,12 @@ body {
   font-size: 14px;
   color: var(--text-muted);
   transition: transform 0.3s ease;
+  background: none;
+  border: 0;
+  padding: 0;
+  font-family: inherit;
+  line-height: inherit;
+  cursor: pointer;
 }
 
 .athlete-card--expanded .athlete-card__chevron {
@@ -3995,6 +4024,12 @@ body {
   display: flex;
   flex-direction: column;
   gap: 16px;
+}
+
+/* app.js hides the reviews that are not on the current page; every review is in
+   the HTML, and the display above would otherwise win over the hidden attribute. */
+.testimonial-card[hidden] {
+  display: none;
 }
 
 .testimonial-card:hover {

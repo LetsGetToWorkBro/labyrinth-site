@@ -1280,6 +1280,142 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   await page.keyboard.press('Escape')
 }
 
+// ── L1ai: what an assistant reads, and what a keyboard reaches ──
+// Assistants such as Meta's Muse read a page through its served HTML and its accessibility tree. The Google reviews
+// were written into the page by app.js, so none of them were in the HTML. The cards that open were <div role="button">
+// with links inside, which a screen reader flattens into one long button name, whose links a keyboard could not use
+// (the card swallowed Enter), and whose closed panels stayed in the tab order. robots.txt did not name Meta's crawlers,
+// and nothing said when the prices and the timetable were last right.
+{
+  // the reviews are in the page as served, and the carousel only chooses which are showing
+  const served = await (await fetch('http://localhost:4620/')).text()
+  const names = [...served.matchAll(/<div class="testimonial-card">[\s\S]*?<span class="testimonial-card__name">([^<]+)<\/span>/g)].map(m => m[1])
+  const quotes = [...served.matchAll(/<blockquote class="testimonial-card__quote">([^<]+)<\/blockquote>/g)].map(m => m[1])
+  check('L1ai the homepage HTML carries all 12 Google reviews, not a script', names.length === 12 && new Set(names).size === 12
+    && quotes.length === 12 && quotes.every(q => q.length > 100) && !/GOOGLE_REVIEWS/.test(readFileSync(join(ROOT,'app.js'),'utf8')),
+    `${names.length} cards, ${quotes.length} quotes`)
+  for (const [label, w, per] of [['desktop', 1280, 3], ['phone', 390, 1]]) {
+    const ctx = await browser.newContext({ viewport: { width: w, height: 900 } })
+    const rp = await ctx.newPage()
+    // the carousel turns by itself every 8 seconds; hold it still so the test is the only thing turning it
+    await rp.addInitScript(() => { const real = window.setInterval; window.setInterval = (fn, ms, ...a) => (ms === 8000 ? 0 : real(fn, ms, ...a)) })
+    await rp.goto('http://localhost:4620/', { waitUntil: 'networkidle' })
+    const showing = () => rp.evaluate(() => {
+      const cards = [...document.querySelectorAll('#reviewsGrid .testimonial-card')]
+      return { all: cards.length, shown: cards.filter(c => c.getClientRects().length).map(c => c.querySelector('.testimonial-card__name').textContent) }
+    })
+    const seen = new Set(), pages = []
+    let st = await showing()
+    for (let i = 0; i < 12 / per; i++) {
+      pages.push(st.shown.join('|')); st.shown.forEach(n => seen.add(n))
+      await rp.click('#reviewsNext')
+      st = await showing()
+    }
+    check(`L1ai reviews on a ${label}: ${per} showing of 12, the rest really hidden, the arrow pages through all of them and round again`,
+      st.all === 12 && seen.size === 12 && pages.every(x => x.split('|').length === per) && st.shown.join('|') === pages[0],
+      JSON.stringify({ all: st.all, seen: seen.size, pages }))
+    await ctx.close()
+  }
+
+  // robots.txt: Meta's three crawlers are named, welcome, and kept out of exactly what everybody else is kept out of
+  const groups = []
+  let cur = null
+  for (const raw of readFileSync(join(ROOT,'robots.txt'),'utf8').split('\n')) {
+    const m = raw.replace(/#.*/, '').trim().match(/^([A-Za-z-]+):\s*(.*)$/)
+    if (!m) continue
+    if (/^user-agent$/i.test(m[1])) { if (!cur || cur.rules.length) groups.push(cur = { agents: [], rules: [] }); cur.agents.push(m[2].toLowerCase()) }
+    else if (cur) cur.rules.push([m[1].toLowerCase(), m[2]])
+  }
+  const kept = g => g.rules.filter(r => r[0] === 'disallow').map(r => r[1]).sort().join(' ')
+  const wildcard = groups.find(g => g.agents.includes('*'))
+  const metaGroups = ['meta-webindexer', 'meta-externalfetcher', 'meta-externalagent'].map(ua => groups.find(g => g.agents.includes(ua)))
+  check("L1ai robots.txt names Meta's crawlers (webindexer, externalfetcher, externalagent), allows them, and shuts them out of what * is shut out of",
+    metaGroups.every(g => g && g.rules.some(r => r[0] === 'allow' && r[1] === '/')) && !!wildcard
+    && groups.every(g => kept(g) === kept(wildcard)) && kept(wildcard) === '/admin/ /api/ /assets/email/ /wharton-site/',
+    groups.map(g => g.agents[0] + ': ' + kept(g)).join(' ; '))
+
+  // every page says when it last changed, from one file, and the pages that state prices and times print it
+  let datesWhy = ''
+  try { execFileSync('python3', [join(ROOT,'scripts/page_dates.py'), '--check'], { cwd: ROOT, stdio: 'pipe' }) } catch (e) { datesWhy = (String(e.stdout) + String(e.stderr)).trim() || 'exit ' + e.status }
+  check('L1ai page_dates.json, sitemap.xml and the printed "Last updated" lines agree with what is in each page', datesWhy === '', datesWhy)
+  const sitemap = readFileSync(join(ROOT,'sitemap.xml'),'utf8')
+  const lastmod = loc => (sitemap.match(new RegExp('<loc>' + loc.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '</loc>\\s*<lastmod>([^<]+)</lastmod>')) || [])[1]
+  for (const [file, loc] of [['pricing.html', 'https://labyrinth.vision/pricing'], ['schedule.html', 'https://labyrinth.vision/schedule']]) {
+    const m = readFileSync(join(ROOT, file),'utf8').match(/<time datetime="(\d{4}-\d\d-\d\d)">([A-Z][a-z]+ \d{1,2}, \d{4})<\/time>/)
+    check(`L1ai ${file} prints the day it last changed, in words and in a <time>, and it is the day the sitemap gives`,
+      !!m && m[1] === lastmod(loc) && new Date(m[2] + ' UTC').toISOString().slice(0, 10) === m[1], m ? m[0] : 'no <time>')
+  }
+  check('L1ai llms.txt says when it was last updated', /^Last updated: [A-Z][a-z]+ \d{1,2}, \d{4}$/m.test(readFileSync(join(ROOT,'llms.txt'),'utf8')))
+
+  // the cards that open: a real button each, nothing interactive inside a button, closed panels out of reach, and the keyboard works
+  const kp = await (await browser.newContext({ viewport: { width: 1280, height: 900 } })).newPage()
+  await kp.goto('http://localhost:4620/', { waitUntil: 'networkidle' })
+  const nested = await kp.evaluate(() => document.querySelectorAll('[role="button"] a, [role="button"] button').length)
+  check('L1ai nothing interactive sits inside a role=button', nested === 0, nested + ' nested')
+  const shape = await kp.evaluate(() => [...document.querySelectorAll('.program-card__more, .type-card__toggle, .athlete-card__chevron')].map(b => {
+    const panel = document.getElementById(b.getAttribute('aria-controls'))
+    return { id: b.id || b.className, tag: b.tagName, expanded: b.getAttribute('aria-expanded'), named: !!(b.getAttribute('aria-label') || b.getAttribute('aria-labelledby') || b.textContent.trim()),
+             panel: !!panel, inert: !!panel && panel.hasAttribute('inert'), cardIsButton: !!b.closest('[role="button"]') }
+  }))
+  check('L1ai the 17 cards that open (7 programs, 4 schedules, 6 athletes) each have a named <button> that says it is closed and points at a panel kept out of reach while it is',
+    shape.length === 17 && shape.every(x => x.tag === 'BUTTON' && x.expanded === 'false' && x.named && x.panel && x.inert && !x.cardIsButton),
+    JSON.stringify(shape.filter(x => !(x.tag === 'BUTTON' && x.expanded === 'false' && x.named && x.panel && x.inert && !x.cardIsButton))))
+
+  const state = id => kp.evaluate(([b, panel, card, cls]) => ({
+    expanded: document.getElementById(b)?.getAttribute('aria-expanded') ?? document.querySelector(b)?.getAttribute('aria-expanded'),
+    inert: document.getElementById(panel).hasAttribute('inert'),
+    open: document.querySelector(card).classList.contains(cls) }), id)
+  // programs: Enter opens, Space closes, the label follows, and Tab from a shut card does not land in its hidden links
+  await kp.focus('#pc-youth-bjj-more')
+  await kp.keyboard.press('Enter')
+  const pOpen = await state(['pc-youth-bjj-more', 'pc-youth-bjj-detail', '[data-program="youth-bjj"]', 'program-card--expanded'])
+  const pLabel = await kp.textContent('#pc-youth-bjj-more')
+  await kp.keyboard.press('Space')
+  const pShut = await state(['pc-youth-bjj-more', 'pc-youth-bjj-detail', '[data-program="youth-bjj"]', 'program-card--expanded'])
+  await kp.keyboard.press('Tab')
+  const tabbedInto = await kp.evaluate(() => !!document.activeElement.closest('.program-card__detail'))
+  check('L1ai a program card opens on Enter and shuts on Space from its button, says so, and a shut card keeps Tab out of its links',
+    pOpen.expanded === 'true' && !pOpen.inert && pOpen.open && /Close/.test(pLabel) && pShut.expanded === 'false' && pShut.inert && !pShut.open && !tabbedInto,
+    JSON.stringify({ pOpen, pLabel, pShut, tabbedInto }))
+  // and a link inside an open card still works from the keyboard (the card used to swallow Enter)
+  await kp.click('[data-program="youth-bjj"] .program-card__title')
+  await kp.focus('[data-program="youth-bjj"] .program-card__page-link')
+  let followed = true
+  try { await Promise.all([kp.waitForURL('**/programs/kids-bjj-fulshear', { timeout: 5000 }), kp.keyboard.press('Enter')]) } catch { followed = false }
+  check('L1ai Enter on "Full details" inside an open card follows the link', followed, kp.url())
+  await kp.goto('http://localhost:4620/', { waitUntil: 'networkidle' })
+  // schedule type cards
+  await kp.focus('#tc-adult-gi-toggle')
+  await kp.keyboard.press('Enter')
+  const tOpen = await state(['tc-adult-gi-toggle', 'drawer-adult-gi', '.type-card[data-schedule="adult-gi"]', 'is-active'])
+  const tDrawerOpen = await kp.evaluate(() => document.getElementById('drawer-adult-gi').classList.contains('is-open'))
+  await kp.keyboard.press('Enter')
+  const tShut = await state(['tc-adult-gi-toggle', 'drawer-adult-gi', '.type-card[data-schedule="adult-gi"]', 'is-active'])
+  check('L1ai a schedule card opens its drawer from its button on Enter and shuts it on Enter, and the drawer is out of reach while shut',
+    tOpen.expanded === 'true' && !tOpen.inert && tOpen.open && tDrawerOpen && tShut.expanded === 'false' && tShut.inert && !tShut.open, JSON.stringify({ tOpen, tShut }))
+  // athletes
+  const ath = '[data-athlete="lincoln-davaul"]'
+  await kp.focus(ath + ' .athlete-card__chevron')
+  await kp.keyboard.press('Enter')
+  const aOpen = await state([ath + ' .athlete-card__chevron', 'athlete-lincoln-davaul', ath, 'athlete-card--expanded'])
+  await kp.keyboard.press('Enter')
+  const aShut = await state([ath + ' .athlete-card__chevron', 'athlete-lincoln-davaul', ath, 'athlete-card--expanded'])
+  check('L1ai an athlete card opens and shuts from its button, and its stats link is out of reach while it is shut',
+    aOpen.expanded === 'true' && !aOpen.inert && aOpen.open && aShut.expanded === 'false' && aShut.inert && !aShut.open, JSON.stringify({ aOpen, aShut }))
+  // and the mouse still works anywhere on a card, one open at a time
+  await kp.click('[data-program="adult-bjj"] .program-card__title')
+  await kp.click('[data-program="wrestling"] .program-card__title')
+  const mouse = await kp.evaluate(() => [...document.querySelectorAll('.program-card--expanded')].map(c => c.dataset.program))
+  check('L1ai clicking anywhere on a program card still opens it, and opening one shuts the one before', mouse.length === 1 && mouse[0] === 'wrestling', JSON.stringify(mouse))
+  await kp.context().close()
+
+  // the drop page's basket bar is hidden until something is added, but its two buttons are never empty in the HTML
+  for (const f of ['drop.html', 'scripts/drop-fragment.html']) {
+    const d = readFileSync(join(ROOT, f), 'utf8')
+    check(`L1ai ${f}: the basket bar's buttons have words before the script fills them`, />Your basket<\/button>/.test(d) && />Review<\/button>/.test(d))
+  }
+}
+
 // ── L2: no .html blog links survive ──
 await page.goto('http://localhost:4620/blog/', { waitUntil:'domcontentloaded' })
 const dotHtml = await page.$$eval('a[href]', as => as.map(a=>a.getAttribute('href')).filter(h=>h && /[a-z0-9-]+\.html/.test(h)))
@@ -2451,6 +2587,8 @@ check('L6 tells them to call', ((await page.textContent('#bookingInline .booking
   for (const f of pages) {
     const visible = readFileSync(join(ROOT,f),'utf8')
       .replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<!--[\s\S]*?-->/g,' ')
+      // a Google review is the customer's own words, kept as they wrote them (one reviewer writes "whilst"); the rest of the page is the academy's
+      .replace(/<blockquote class="testimonial-card__quote">[\s\S]*?<\/blockquote>/g,' ')
       .replace(/<[^>]+>/g,' ')
     for (const m of visible.matchAll(BRITISH)) offenders.push(`${f}: ${m[0]}`)
   }

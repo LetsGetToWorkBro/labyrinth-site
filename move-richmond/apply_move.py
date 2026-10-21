@@ -644,6 +644,10 @@ def main():
         for r in [r for r in written if before[r] != digest(work, [r]).get(r)]:
             problems.append("regenerating changed %s, so a generator and the page the rules edited disagree:\n%s" % (r, drift_detail(before_text[r], (Path(work) / r).read_text(encoding="utf-8"))))
         problems += update_sitemap(work, root, cfg)
+        # scripts/page_dates.py owns every page's date (site-test fails if a changed page has not been dated): the pages the move changed get the day of the move
+        r = subprocess.run([sys.executable, "scripts/page_dates.py", "--date", cfg["effective_date"]], cwd=work, capture_output=True, text=True)
+        if r.returncode:
+            problems.append("scripts/page_dates.py failed: " + (r.stdout + r.stderr).strip()[-300:])
 
         final = Tree(work)
         changed = changed_files(work, root)

@@ -119,6 +119,13 @@
 
 .prog-fact { background: var(--surface); padding: var(--space-6); }
 
+/* The day the page last changed: scripts/page_dates.py writes it, under the prices or the timetable it vouches for. */
+.prog-hero__updated {
+  margin: var(--space-4) 0 0;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
 .prog-fact__label {
   font-size: 0.6875rem;
   letter-spacing: 0.14em;

@@ -19,6 +19,7 @@ _redirects            301s for the old site's URLs
 sitemap.xml           submitted to Google Search Console
 season*.css, season*.js   the seasonal homepage themes (see "Seasonal themes")
 site-test.mjs         link, SEO and booking tests (see below)
+scripts/page_dates.py the day each page last changed: sitemap.xml and the "Last updated" lines (see "Page dates")
 ```
 
 ## Running it locally
@@ -200,6 +201,39 @@ Worth recording, because both failures were silent:
   `// Silent fail, user still sees success`. A broken script was invisible.
 
 The booking flow now tells the person to call or text if the booking did not save.
+
+## What an assistant reads, and what a keyboard reaches
+
+Assistants such as Meta's Muse read a page through its served HTML and its accessibility tree, not the way a person sees it. Four things are kept true for them,
+and `site-test.mjs` (L1ai) fails if one stops being:
+
+- **The Google reviews are in `index.html`** (`#reviewsGrid`), written out, not built by a script. `app.js` only chooses which are showing (three at a time, one
+  on a phone). To add or change a review, edit it there and nowhere else.
+- **A card that opens is a card plus a real button.** The seven program cards, the four Gi / No-Gi schedule cards and the six athlete cards each have a
+  `<button aria-expanded aria-controls>` (the "Learn More" line, the "View Schedule" corner, the chevron) and a panel that is `inert` until it is open, so a closed
+  panel's links are neither in the tab order nor in the accessibility tree. Clicking anywhere on the card still opens it. Never put a link or a button inside
+  `role="button"`: a screen reader flattens everything inside into one long name, and the keyboard cannot use what is inside. The athlete cards are written by
+  `scripts/jits_data.py` and spliced into the page by `scripts/build_pages.py`.
+- **`robots.txt` names the crawlers behind the assistants**, Meta's three among them (`meta-webindexer`, `meta-externalfetcher`, `meta-externalagent`), and repeats
+  the wildcard group's four `Disallow` lines, because a crawler that matches a named group ignores the `*` group entirely.
+- **`llms.txt` and the pages that state prices and times say when they were last right** (next section).
+
+## Page dates
+
+`sitemap.xml`'s `lastmod`, the "Last updated" line under the heading of /pricing and /schedule, and the same line in `llms.txt` all come from one file,
+`scripts/page_dates.json`: for each page, the day its content last changed and a fingerprint of that content. What counts as a change is what a reader or a
+crawler takes from the page (the words, where the links go, what the pictures are said to show, the description, the structured data), not a new `?v=` stamp, a
+reworked class name or an edited script. After changing any page:
+
+```bash
+python3 scripts/build_pages.py        # if it is a generated page (also build_programs.py, build_areas.py, build_blog_index.py)
+python3 scripts/stamp_assets.py
+python3 scripts/page_dates.py         # pages that changed get today's date (Central time); sitemap.xml and the printed lines follow
+```
+
+`site-test.mjs` (L1ai) fails, and says what to run, if a page has changed and its date has not. `python3 scripts/page_dates.py --touch pricing.html schedule.html`
+moves a date to today when you have checked the page against the real prices or timetable and it is still right (`schedule-check.mjs` checks the timetable).
+`--date YYYY-MM-DD` is what the Richmond move kit uses.
 
 ## SEO notes
 

@@ -4,6 +4,8 @@
 > academies nationally on jits.gg (#39 of 7,869 as of September 2026). Kids and adult BJJ, a competition team, youth
 > wrestling, and all-ages strength and conditioning. Founded 2021.
 
+Last updated: October 14, 2026
+
 This file follows the llms.txt convention (https://llmstxt.org), a plain-text
 summary for language models reading the site. It exists because the answers
 below are otherwise spread across a schedule table, a pricing grid and twenty
