@@ -238,7 +238,7 @@ PROGRAMS = [
             ("Unlimited", "$249", "/mo", "Every kids and teens class, including competition and youth wrestling.", True),
             ("Family plan", "$399", "/mo", "Unlimited for two members, kids and adults, +$60/mo per extra member.", False),
         ],
-        "prices_note": "Youth wrestling is included in all three at no extra cost, so a kids membership covers both mats. Month to month with no long-term contract: cancel any time before your next billing date. Paid In Full for six months: Kids $1,249, Adults $999.",
+        "prices_note": "Youth wrestling is included in all three at no extra cost, so a kids membership covers both mats. The monthly memberships are month to month with no long-term contract: cancel any time before your next billing date. Paid In Full for six months: Kids $1,249, Adults $999.",
         "faqs": [
             ("What is the youngest age you take?",
              "Three. Our Little Grapplers class is built for ages 3–6 and runs at 4:45 PM on Mondays, Wednesdays and Fridays. At that age the class is mostly coordination, listening and safe falling, delivered as games: the jiu-jitsu underneath it is real, but a three-year-old experiences it as play."),
