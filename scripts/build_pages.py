@@ -218,7 +218,7 @@ def render_schedule():
 
 PRICING_FAQS = [
     ("Is there a joining fee or a contract?",
-     "No joining fee, and no long-term contract. Everything is month-to-month with 30 days notice to cancel. Ask about the six and twelve month paid-in-full discounts if you would rather pay up front for a lower rate."),
+     "No joining fee, and no long-term contract. Everything is month-to-month, and you can cancel any time before your next billing date. Ask about the six and twelve month paid-in-full discounts if you would rather pay up front for a lower rate."),
     ("Why do kids memberships cost more than adult ones?",
      "Because the kids classes are smaller and more heavily staffed. A room of eight-year-olds needs a coach watching every pair, and the age groups are separated rather than combined, which means more classes on the timetable serving fewer children each."),
     ("What is actually included?",
@@ -228,7 +228,7 @@ PRICING_FAQS = [
     ("What if I can only train twice a week?",
      "Then the 8-class membership is built for you, and two classes a week is genuinely enough to improve steadily. You can move between plans month to month, so start there and change if you find yourself wanting more."),
     ("Can a family train on one membership?",
-     "The family plan covers two members on unlimited classes at $399 a month, with additional members at $80 each. It works across kids and adults, so a parent training alongside a child is the normal case rather than an exception."),
+     "The family plan covers two members on unlimited classes at $399 a month, with additional members at $60 each. It works across kids and adults, so a parent training alongside a child is the normal case rather than an exception."),
 ]
 
 

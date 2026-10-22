@@ -105,18 +105,17 @@ PRICING = {
     ],
     "family": [
         ("Family Plan", "$399", "/mo", ["Unlimited classes for 2 members",
-                                        "+$80/mo per additional member",
+                                        "+$60/mo per additional member",
                                         "Kids and adult classes", "Month-to-month"], True),
     ],
     "extras": [
         ("5-Class Punch Card", "$160", "", "Adults only. Never expires."),
-        ("3-Class Punch Card", "$100", "", "Adults only. Never expires."),
         ("Sauna, Cold Plunge & Gym", "$60", "/mo", "Nearly 24/7 access with smart scheduling."),
         ("Private Lessons", "$60–$120", "/hr", "One-to-one with an instructor."),
         ("Summer Camp", "$60", "/day", "Ages 5–15, 12:00–4:00 PM. Next running summer 2027."),
     ],
     "note": ("All memberships are month-to-month with no long-term contract. "
-             "30 days notice to cancel. Ask about 6 and 12-month paid-in-full discounts. "
+             "Cancel any time before your next billing date. Ask about 6 and 12-month paid-in-full discounts. "
              "Your first class is free."),
 }
 
