@@ -218,7 +218,7 @@ def render_schedule():
 
 PRICING_FAQS = [
     ("Is there a joining fee or a contract?",
-     "No joining fee, and no long-term contract. Everything is month-to-month, and you can cancel any time before your next billing date. Ask about the six and twelve month paid-in-full discounts if you would rather pay up front for a lower rate."),
+     "No joining fee, and no long-term contract. Everything is month-to-month, and you can cancel any time before your next billing date. If you would rather pay up front for a lower rate, there is Paid In Full for six months: Kids $1,249, Adults $999."),
     ("Why do kids memberships cost more than adult ones?",
      "Because the kids classes are smaller and more heavily staffed. A room of eight-year-olds needs a coach watching every pair, and the age groups are separated rather than combined, which means more classes on the timetable serving fewer children each."),
     ("What is actually included?",
@@ -249,13 +249,13 @@ def render_pricing():
     P = schedule_data.PRICING
 
     offers = []
-    for group in ("adult", "kids", "family"):
+    for group in ("adult", "kids", "wrestling", "family", "paid_in_full"):
         for name, amount, per, feats, _ in P[group]:
             offers.append({
                 "@type": "Offer",
-                "name": "%s: %s" % ({"adult": "Adult", "kids": "Kids & Teens",
-                                      "family": "Family"}[group], name),
-                "price": amount.lstrip("$"),
+                "name": "%s: %s" % ({"adult": "Adult", "kids": "Kids & Teens", "wrestling": "Wrestling",
+                                      "family": "Family", "paid_in_full": "Paid In Full"}[group], name),
+                "price": amount.lstrip("$").replace(",", ""),
                 "priceCurrency": "USD",
                 "url": url,
                 "availability": "https://schema.org/InStock",
@@ -321,12 +321,14 @@ def render_pricing():
 </header>""",
         group("ADULT MEMBERSHIPS", "Ages 16 and up", P["adult"]),
         group("KIDS &amp; TEENS", "Ages 3–15", P["kids"]),
-        group("FAMILY", "Two or more in the household", P["family"]), """
+        group("WRESTLING", "Ages 7–17", P["wrestling"]),
+        group("FAMILY", "Two or more in the household", P["family"]),
+        group("PAID IN FULL", "Pay up front", P["paid_in_full"]), """
 <section class="prog-section">
   <div class="container">
     <div class="fade-in">
       <p class="section-label">Everything else</p>
-      <h2 class="section-title section-title--lg">PUNCH CARDS &amp; ADD-ONS</h2>
+      <h2 class="section-title section-title--lg">PUNCH CARD &amp; ADD-ONS</h2>
     </div>
     <div class="price-extras stagger">
 %(extras)s
@@ -622,7 +624,7 @@ def lineage_html(c):
 
 SUPPORT_FAQS = [
     ("How do I pause, change or cancel my membership?",
-     "Email <a href=\"mailto:support@labyrinth.vision\">support@labyrinth.vision</a> or call (281) 393-7983 and tell us what you need. Holds for travel, injury and deployment are routine and we would rather you paused than quit. We will confirm anything that changes what you pay in writing before it takes effect."),
+     "To pause or change your membership, email <a href=\"mailto:support@labyrinth.vision\">support@labyrinth.vision</a> or call (281) 393-7983 and tell us what you need. Holds for travel, injury and deployment are routine and we would rather you paused than quit. To cancel, tell us in writing: an email to <a href=\"mailto:support@labyrinth.vision\">support@labyrinth.vision</a>, a message in the member app, or a signed note at the front desk. A phone call is fine for questions, but a cancellation needs to be in writing. A cancellation received before your next billing date stops the next charge. We will confirm anything that changes what you pay in writing before it takes effect."),
     ("Something looks wrong on my bill.",
      "Send us the date and the amount and we will look it up the same day. Billing runs through our membership system rather than the front desk, so an email with the detail in it gets sorted faster than a conversation on the mat."),
     ("My child left something at the academy.",
@@ -2500,7 +2502,7 @@ ENNOVA_FAQS = [
     ("What counts as proof of residency?",
      "A lease, a utility bill, a package label, a resident portal screenshot, or the card itself if one was mailed to you. A photo on your phone at the front desk is fine. We are checking that you live there, not building a file: we look, we check you off the list, and we do not keep a copy."),
     ("What exactly do I save?",
-     "The enrollment fee comes off entirely and your first month is half price. After that you are on the ordinary month-to-month rate with no contract, and you can stop whenever you like."),
+     "Your first month is half price. After that you are on the ordinary month-to-month rate with no contract, and you can stop whenever you like."),
     ("Do I have to decide on the day?",
      "No. Your first class is free whether or not you take the offer, and it is free for anybody, neighbor or not. Come and train first. The rate is there when you are ready."),
     ("Can my child use it and can I use it too?",
@@ -2515,7 +2517,7 @@ def render_ennova():
     url = SITE + "/ennova"
     head = HEAD % {
         "title": "Ennova Resident Offer | Labyrinth BJJ Fulshear",
-        "description": "A neighbor rate for Ennova Fulshear residents: no enrollment fee and half off your first month at Labyrinth BJJ.",
+        "description": "A neighbor rate for Ennova Fulshear residents: half off your first month at Labyrinth BJJ.",
         "url": url,
         "og_title": "Ennova Resident Offer | Labyrinth BJJ",
         "image": SITE + "/assets/og-image.jpg",
@@ -2543,7 +2545,7 @@ def render_ennova():
       Neighborly Rate &middot; Ennova Fulshear
     </div>
 
-    <h1 class="hero__title"><span class="hero__h1-seo">Ennova Fulshear resident offer at Labyrinth BJJ</span> <span class="hero__h1-visual">$0 ENROLLMENT. <span>50%% OFF MONTH ONE.</span></span></h1>
+    <h1 class="hero__title"><span class="hero__h1-seo">Ennova Fulshear resident offer at Labyrinth BJJ</span> <span class="hero__h1-visual"><span>50%% OFF MONTH ONE.</span></span></h1>
 
     <p class="hero__subtitle">For people who live at Ennova Fulshear. Our head instructor lives there too, which is the whole reason this exists.</p>
 
@@ -2553,11 +2555,7 @@ def render_ennova():
       <a href="sms:+12813937983?&amp;body=ENNOVA" class="btn btn--ghost">Text ENNOVA to 281-393-7983</a>
     </div>
 
-    <div class="hero__stats stagger">
-      <div class="hero__stat">
-        <div class="hero__stat-value">$0</div>
-        <div class="hero__stat-label">Enrollment</div>
-      </div>
+    <div class="hero__stats stagger" style="grid-template-columns:repeat(3,1fr)">
       <div class="hero__stat">
         <div class="hero__stat-value">50%%</div>
         <div class="hero__stat-label">Off month one</div>
@@ -2689,7 +2687,6 @@ def render_ennova():
 
         <h3>What you save</h3>
         <ul>
-          <li>The enrollment fee, in full</li>
           <li>Half of your first month</li>
           <li>Nothing after that: ordinary month-to-month rate, no contract</li>
         </ul>
@@ -2802,7 +2799,7 @@ def render_ennova():
     crm.send({
       name: v('ennovaName'), email: v('ennovaEmail'), phone: v('ennovaPhone'),
       program: CRM[slug] || 'Adult BJJ',
-      note: 'ENNOVA RESIDENT OFFER ($0 enrollment + 50%% first month). Unit: '
+      note: 'ENNOVA RESIDENT OFFER (50%% off first month). Unit: '
         + v('ennovaUnit') + '. Interested in ' + (ASKED[slug] || slug)
         + '. Confirmed current resident on the form; check proof at the desk.'
     }).then(function (sent) {

@@ -385,7 +385,9 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
 {
   await page.route('**/spreadsheets/**', route => route.fulfill({
     status: 200, contentType: 'text/csv',
-    body: 'Key,Value\nNational Rank,3\nState Rank,2\nGold Medals,999\nTotal Wins,888\n'
+    // Numbers neither page states, and short enough that no thousands separator could hide one. They were 999 and 888 until the
+    // front page began quoting the $999 Adult Paid In Full plan.
+    body: 'Key,Value\nNational Rank,3\nState Rank,2\nGold Medals,917\nTotal Wins,731\n'
   }))
 
   await page.goto('http://localhost:4620/ennova', { waitUntil: 'networkidle' })
@@ -395,7 +397,7 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
     sub: document.querySelector('.hero__subtitle')?.textContent || ''
   }))
   check('L1q the offer page keeps its own headline',
-    offer.h1.includes('$0 ENROLLMENT') && !/RANKED #/.test(offer.h1), offer.h1)
+    offer.h1.includes('50% OFF MONTH ONE') && !/RANKED #/.test(offer.h1), offer.h1)
   check('L1q the offer page keeps its own subtitle',
     offer.sub.includes('Ennova') && !/gold medals/.test(offer.sub), offer.sub)
 
@@ -408,7 +410,7 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   }))
   check('L1q the front page headline is the one it was built with',
     home.h1.includes('TOP 1% IN THE NATION') && !/#3|#2 IN TEXAS/.test(home.h1), home.h1)
-  check('L1q no sheet number reaches the page', !/\b(999|888)\b/.test(home.all))
+  check('L1q no sheet number reaches the page', !/\b(917|731)\b/.test(home.all))
   await page.unroute('**/spreadsheets/**')
 }
 

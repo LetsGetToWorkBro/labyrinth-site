@@ -238,7 +238,7 @@ PROGRAMS = [
             ("Unlimited", "$249", "/mo", "Every kids and teens class, including competition and youth wrestling.", True),
             ("Family plan", "$399", "/mo", "Unlimited for two members, kids and adults, +$60/mo per extra member.", False),
         ],
-        "prices_note": "Youth wrestling is included in all three at no extra cost, so a kids membership covers both mats. Month to month with no long-term contract: cancel any time before your next billing date. Ask about the six and twelve month paid-in-full discounts.",
+        "prices_note": "Youth wrestling is included in all three at no extra cost, so a kids membership covers both mats. Month to month with no long-term contract: cancel any time before your next billing date. Paid In Full for six months: Kids $1,249, Adults $999.",
         "faqs": [
             ("What is the youngest age you take?",
              "Three. Our Little Grapplers class is built for ages 3–6 and runs at 4:45 PM on Mondays, Wednesdays and Fridays. At that age the class is mostly coordination, listening and safe falling, delivered as games: the jiu-jitsu underneath it is real, but a three-year-old experiences it as play."),
@@ -543,8 +543,9 @@ PROGRAMS = [
             ("8 classes", "$239", "/mo", "Eight classes a month across BJJ and wrestling, in any combination.", False),
             ("Unlimited", "$249", "/mo", "Every kids and teens class on the timetable, wrestling and BJJ alike.", True),
             ("Family plan", "$399", "/mo", "Unlimited for two members, kids or adults, +$60/mo per extra member.", False),
+            ("Wrestling Club", "$140", "/mo", "Wrestling only, for a child who does not train jiu-jitsu.", False),
         ],
-        "prices_note": "Wrestling is included in any kids or teens membership at no extra charge. There is no separate wrestling fee and no minimum number of sessions. A child on the 8-class plan can spend all eight on wrestling, all eight on jiu-jitsu, or any mix of the two. Month to month, cancel any time before your next billing date, and the first class is free. See all <a href=\"/#pricing\">membership options</a>.",
+        "prices_note": "Wrestling is included in any kids or teens membership at no extra charge. There is no wrestling fee on top of a membership and no minimum number of sessions. A child on the 8-class plan can spend all eight on wrestling, all eight on jiu-jitsu, or any mix of the two. Month to month, cancel any time before your next billing date, and the first class is free. See all <a href=\"/#pricing\">membership options</a>.",
         "faqs": [
             ("Does my child need wrestling experience to start?",
              "None at all. Most children in the room started with none. The first few weeks are stance, motion, level changes and safe falling. The same place every wrestler begins, taught without a season already in progress."),

@@ -85,7 +85,7 @@ CLASSES = [
     ("Sunday", "1:00 PM", "Youth Wrestling", "7–17", "", "kids", {"trial"}),
 ]
 
-# What the front desk quotes. Every figure is on the front page's pricing grid.
+# What the front desk quotes, every figure of it on /pricing.
 PRICING = {
     "adult": [
         ("8 Classes", "$179", "/mo", ["8 classes per month", "Gi, No-Gi and competition classes",
@@ -103,10 +103,17 @@ PRICING = {
                                       "Youth wrestling included", "Competition classes",
                                       "Belt progression tracking", "Month-to-month"], True),
     ],
+    "wrestling": [
+        ("Wrestling Club", "$140", "/mo", ["Wrestling classes only", "Month-to-month"], False),
+    ],
     "family": [
         ("Family Plan", "$399", "/mo", ["Unlimited classes for 2 members",
                                         "+$60/mo per additional member",
                                         "Kids and adult classes", "Month-to-month"], True),
+    ],
+    "paid_in_full": [
+        ("Adults", "$999", "/6 mo", ["Six months, paid in full"], False),
+        ("Kids", "$1,249", "/6 mo", ["Six months, paid in full"], False),
     ],
     "extras": [
         ("5-Class Punch Card", "$160", "", "Adults only. Never expires."),
@@ -115,7 +122,7 @@ PRICING = {
         ("Summer Camp", "$60", "/day", "Ages 5–15, 12:00–4:00 PM. Next running summer 2027."),
     ],
     "note": ("All memberships are month-to-month with no long-term contract. "
-             "Cancel any time before your next billing date. Ask about 6 and 12-month paid-in-full discounts. "
+             "Cancel any time before your next billing date. Paid In Full for six months: Kids $1,249, Adults $999. "
              "Your first class is free."),
 }
 

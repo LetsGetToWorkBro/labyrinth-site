@@ -16,11 +16,11 @@
 <link rel="stylesheet" href="/chat.css?v=927c6ee4">
 
 <title>Ennova Resident Offer | Labyrinth BJJ Fulshear</title>
-<meta name="description" content="A neighbor rate for Ennova Fulshear residents: no enrollment fee and half off your first month at Labyrinth BJJ.">
+<meta name="description" content="A neighbor rate for Ennova Fulshear residents: half off your first month at Labyrinth BJJ.">
 <meta name="robots" content="noindex, follow">
 <link rel="canonical" href="https://labyrinth.vision/ennova">
 <meta property="og:title" content="Ennova Resident Offer | Labyrinth BJJ">
-<meta property="og:description" content="A neighbor rate for Ennova Fulshear residents: no enrollment fee and half off your first month at Labyrinth BJJ.">
+<meta property="og:description" content="A neighbor rate for Ennova Fulshear residents: half off your first month at Labyrinth BJJ.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://labyrinth.vision/ennova">
 <meta property="og:site_name" content="Labyrinth BJJ">
@@ -89,7 +89,7 @@
       Neighborly Rate &middot; Ennova Fulshear
     </div>
 
-    <h1 class="hero__title"><span class="hero__h1-seo">Ennova Fulshear resident offer at Labyrinth BJJ</span> <span class="hero__h1-visual">$0 ENROLLMENT. <span>50% OFF MONTH ONE.</span></span></h1>
+    <h1 class="hero__title"><span class="hero__h1-seo">Ennova Fulshear resident offer at Labyrinth BJJ</span> <span class="hero__h1-visual"><span>50% OFF MONTH ONE.</span></span></h1>
 
     <p class="hero__subtitle">For people who live at Ennova Fulshear. Our head instructor lives there too, which is the whole reason this exists.</p>
 
@@ -99,11 +99,7 @@
       <a href="sms:+12813937983?&amp;body=ENNOVA" class="btn btn--ghost">Text ENNOVA to 281-393-7983</a>
     </div>
 
-    <div class="hero__stats stagger">
-      <div class="hero__stat">
-        <div class="hero__stat-value">$0</div>
-        <div class="hero__stat-label">Enrollment</div>
-      </div>
+    <div class="hero__stats stagger" style="grid-template-columns:repeat(3,1fr)">
       <div class="hero__stat">
         <div class="hero__stat-value">50%</div>
         <div class="hero__stat-label">Off month one</div>
@@ -235,7 +231,6 @@
 
         <h3>What you save</h3>
         <ul>
-          <li>The enrollment fee, in full</li>
           <li>Half of your first month</li>
           <li>Nothing after that: ordinary month-to-month rate, no contract</li>
         </ul>
@@ -320,7 +315,7 @@
           <span>What exactly do I save?</span>
           <svg class="faq-item__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
-        <div class="faq-item__answer"><p>The enrollment fee comes off entirely and your first month is half price. After that you are on the ordinary month-to-month rate with no contract, and you can stop whenever you like.</p></div>
+        <div class="faq-item__answer"><p>Your first month is half price. After that you are on the ordinary month-to-month rate with no contract, and you can stop whenever you like.</p></div>
       </div>
       <div class="faq-item">
         <button class="faq-item__question" aria-expanded="false">
@@ -389,7 +384,7 @@
     crm.send({
       name: v('ennovaName'), email: v('ennovaEmail'), phone: v('ennovaPhone'),
       program: CRM[slug] || 'Adult BJJ',
-      note: 'ENNOVA RESIDENT OFFER ($0 enrollment + 50% first month). Unit: '
+      note: 'ENNOVA RESIDENT OFFER (50% off first month). Unit: '
         + v('ennovaUnit') + '. Interested in ' + (ASKED[slug] || slug)
         + '. Confirmed current resident on the form; check proof at the desk.'
     }).then(function (sent) {
