@@ -121,7 +121,7 @@ PRICING = {
         ("Private Lessons", "$60–$120", "/hr", "One-to-one with an instructor."),
         ("Summer Camp", "$60", "/day", "Ages 5–15, 12:00–4:00 PM. Next running summer 2027."),
     ],
-    "note": ("All memberships are month-to-month with no long-term contract. "
+    "note": ("The monthly memberships are month-to-month with no long-term contract. "
              "Cancel any time before your next billing date. Paid In Full for six months: Kids $1,249, Adults $999. "
              "Your first class is free."),
 }

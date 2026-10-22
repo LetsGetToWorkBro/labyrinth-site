@@ -218,7 +218,7 @@ def render_schedule():
 
 PRICING_FAQS = [
     ("Is there a joining fee or a contract?",
-     "No joining fee, and no long-term contract. Everything is month-to-month, and you can cancel any time before your next billing date. If you would rather pay up front for a lower rate, there is Paid In Full for six months: Kids $1,249, Adults $999."),
+     "No joining fee, and no long-term contract. The monthly memberships are month-to-month, and you can cancel any time before your next billing date. If you would rather pay up front for a lower rate, there is Paid In Full for six months: Kids $1,249, Adults $999."),
     ("Why do kids memberships cost more than adult ones?",
      "Because the kids classes are smaller and more heavily staffed. A room of eight-year-olds needs a coach watching every pair, and the age groups are separated rather than combined, which means more classes on the timetable serving fewer children each."),
     ("What is actually included?",
@@ -527,7 +527,7 @@ COACHES = [
             ("Does my child need wrestling experience to train with him?",
              "None. Most of the children in the room started with none. The first weeks are stance, motion, level changes and safe falling. The same place every wrestler begins, taught without a season already in progress."),
             ("Does my child have to do jiu-jitsu as well?",
-             "No. Wrestling is included in any kids or teens membership and children are welcome to do only that. Plenty of our wrestlers also wrestle for their schools and use these sessions as off-season mat time."),
+             "No. Wrestling is included in any kids or teens membership, and a child who only wrestles can join the Wrestling Club ($140 a month) instead. Plenty of our wrestlers also wrestle for their schools and use these sessions as off-season mat time."),
         ],
     },
 ]
