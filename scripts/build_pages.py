@@ -960,10 +960,19 @@ def strip_photo(key):
 # on the page that stops being true tonight. It hides itself outside its day like every other card: data-opens is
 # midnight Central at the start of the day, data-closes midnight Central at the end of it (CDT, UTC-5). It carries the
 # hours and the address in the card, and links to the directions, because the calendar cannot book that day.
-# TO RETIRE IT: set TODAY_CARD to None and run this script (the card, its entry in the hero chip and nothing else go).
-# TO REUSE IT: replace the facts; "sessions" is a list of (what, when, note), and nothing here knows the holiday.
+# TO RETIRE ONE: take its entry out of TODAY_CARDS and run this script (the card, its entry in the hero chip and nothing else go).
+# TO REUSE ONE: replace the facts; "sessions" is a list of (what, when, note), and nothing here knows the holiday.
+#
+# There can be more than one, each with its own day: only the one whose day it is shows, and the others are hidden by the same
+# dates (data-opens, data-closes). Columbus Day's stays, because site-test pins how a day's card looks on the day. A day that runs
+# differently (scripts/schedule_data.py, SPECIAL_DAYS) gets its card from _special_card below, so the plan on the card, on the
+# schedule and in the booking calendar is one list; it also leaves with the day, because a special day that is over is not built.
+#
+# A card may also say (all optional, and without them it is the holiday card above): "href" and "cta" for where it sends people (the
+# default is the directions, in a new tab), "foot" for the line under the sessions (the default is the address and the phone), and
+# "tone": "pink" for the plum and pink of the women's seminar in place of navy and gold.
 
-TODAY_CARD = {
+COLUMBUS_CARD = {
     "opens_utc": "2026-10-12T05:00:00Z",
     "closes_utc": "2026-10-13T05:00:00Z",
     "eyebrow": "Columbus Day &middot; Monday, October 12",
@@ -977,6 +986,37 @@ TODAY_CARD = {
 }
 
 
+def _central_midnight_utc(day):
+    """Midnight at the start of `day` (a date) on the academy's clock, as the UTC instant the strip's script compares with."""
+    import datetime
+    from zoneinfo import ZoneInfo
+    return (datetime.datetime(day.year, day.month, day.day, tzinfo=ZoneInfo("America/Chicago"))
+            .astimezone(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"))
+
+
+def _special_card(s):
+    """The one-day card for a day that runs differently (schedule_data.SPECIAL_DAYS): its plan, what is off, and where to sign up.
+    It opens at midnight Central that morning and closes at midnight Central that night."""
+    import datetime
+    d = datetime.date.fromisoformat(s["date"])
+    return {
+        "opens_utc": _central_midnight_utc(d),
+        "closes_utc": _central_midnight_utc(d + datetime.timedelta(days=1)),
+        "eyebrow": "%s &middot; a different %s" % (schedule_component._long_date(s["date"]), schedule_data._weekday(s["date"])),
+        "title": html.escape(s["title"]),
+        "chip": "A different %s today" % schedule_data._weekday(s["date"]),
+        "sessions": [(html.escape(what), html.escape(when), html.escape(note)) for when, what, note in s["plan"]],
+        "foot": "Off today: %s. Questions? Call or text %s." % (html.escape(schedule_data.off_sentence(s)), PHONE),
+        "href": s["link"][0],
+        "cta": html.escape(s["link"][1]),
+        "tone": "pink",
+        "icon": "ribbon",
+    }
+
+
+TODAY_CARDS = [COLUMBUS_CARD] + [_special_card(s) for s in schedule_data.special_days()]
+
+
 def _compass(size=30):
     """A compass rose for the one-day card; colored by CSS like the ribbon."""
     return ('<svg class="compass" width="%d" height="%d" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" '
@@ -984,15 +1024,16 @@ def _compass(size=30):
             '<path d="M12 4.5l2.2 5.3 5.3 2.2-5.3 2.2L12 19.5l-2.2-5.3L4.5 12l5.3-2.2z" fill="currentColor" fill-opacity=".22"/></svg>') % (size, size)
 
 
-def today_card():
-    """The one-day card (see TODAY_CARD), or nothing once it has been retired."""
-    c = TODAY_CARD
-    if not c:
-        return ""
+def _one_day_card(c):
     sessions = "".join(
         '\n        <span class="event-strip__session"><b>%s <i>%s</i></b><span>%s</span></span>' % (what, when, note)
         for what, when, note in c["sessions"])
-    return """<a class="event-strip__link event-strip__link--today" href="%(maps)s" target="_blank" rel="noopener noreferrer" data-opens="%(opens)s" data-closes="%(closes)s" data-short="%(chip)s">
+    if "href" in c:
+        link = 'href="%s"' % c["href"]
+    else:
+        link = 'href="%s" target="_blank" rel="noopener noreferrer"' % EVENT["maps_url"]
+    where = c["foot"] if "foot" in c else "Labyrinth BJJ, %s. Questions? Call or text %s." % (ADDRESS, PHONE)
+    return """<a class="event-strip__link event-strip__link--today%(tone)s" %(link)s data-opens="%(opens)s" data-closes="%(closes)s" data-short="%(chip)s">
       %(photo)s
       <span class="event-strip__icon">%(compass)s</span>
       <span class="event-strip__text">
@@ -1000,12 +1041,19 @@ def today_card():
         <strong>%(title)s</strong>
         <span class="event-strip__sessions">%(sessions)s
         </span>
-        <span class="event-strip__where">Labyrinth BJJ, %(address)s. Questions? Call or text %(phone)s.</span>
+        <span class="event-strip__where">%(where)s</span>
       </span>
       <span class="event-strip__cta">%(cta)s</span>
     </a>
-    """ % {"maps": EVENT["maps_url"], "opens": c["opens_utc"], "closes": c["closes_utc"], "chip": c["chip"], "photo": strip_photo("today"), "compass": _compass(30),
-           "eyebrow": c["eyebrow"], "title": c["title"], "sessions": sessions, "address": ADDRESS, "phone": PHONE, "cta": c["cta"]}
+    """ % {"tone": (" event-strip__link--today-%s" % c["tone"]) if c.get("tone") else "", "link": link,
+           "opens": c["opens_utc"], "closes": c["closes_utc"], "chip": c["chip"], "photo": strip_photo("today"),
+           "compass": ribbon(30) if c.get("icon") == "ribbon" else _compass(30),
+           "eyebrow": c["eyebrow"], "title": c["title"], "sessions": sessions, "where": where, "cta": c["cta"]}
+
+
+def today_card():
+    """The one-day cards (see TODAY_CARDS), or nothing once they have all been retired."""
+    return "".join(_one_day_card(c) for c in TODAY_CARDS)
 
 
 # ── The Jiu-Jitsu World League card in the "this month" strip ─────────────────────────────────────────
@@ -1069,7 +1117,7 @@ def event_strip():
     """The homepage's "This month at Labyrinth" block: the donation drive, Pink
     October, the free self defense seminar and the kids' HYROX list, as cards right
     under the hero, a tournament card (see JJWL_CARD) after the donation card, and
-    on a holiday the day's hours as a card above them (see TODAY_CARD). Each card
+    on a holiday or a day that runs differently the day's hours as a card above them (see TODAY_CARDS). Each card
     hides itself after its own last day, and the whole block after the last of
     them, so nobody is invited to something that has gone.
     The same script fills the seminar's "N days to go" badge and the hero chip (the
@@ -2031,10 +2079,15 @@ def render_pink_october():
   var todayKey = key(+p.year, +p.month - 1, +p.day), nowMins = (parseInt(p.hour, 10) % 24) * 60 + parseInt(p.minute, 10);
   var selected = null;
 
+  // A class that does not run on a day that runs differently (scripts/schedule_data.py: SPECIAL_DAYS; booking.js knows the same list).
+  function offOn(k, b) {
+    var B = window.LabyrinthBooking, pr = k.split('-');
+    return !!(B && B.classOff && B.classOff(new Date(+pr[0], +pr[1] - 1, +pr[2]), b.getAttribute('data-time')));
+  }
   function classesOn(k, wd) {
     var w = weeks[DOW[wd]]; if (!w) return [];
     return [].slice.call(w.querySelectorAll('.pick__time')).filter(function(b){
-      return k !== todayKey || parseInt(b.getAttribute('data-mins'), 10) > nowMins;
+      return !offOn(k, b) && (k !== todayKey || parseInt(b.getAttribute('data-mins'), 10) > nowMins);
     });
   }
   function shutOn(d) { var B = window.LabyrinthBooking; return B && B.shutReason ? B.shutReason(d) : null; }

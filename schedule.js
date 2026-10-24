@@ -10,6 +10,9 @@
  *   - a "Today" marker, on the academy's clock rather than the visitor's
  *   - booking: the whole card opens the form for that class, or, for a kids
  *     class a new child cannot trial into, the classes they can
+ *   - a day that runs differently (scripts/schedule_data.py, SPECIAL_DAYS): the
+ *     plan above the week is marked "Today" on the day, and the plan and the
+ *     "Off" words on the classes it switches off go once the day has passed
  *
  * Loaded on the front page and on /schedule. Everything is scoped to [data-sc]
  * so a page could carry two without them fighting.
@@ -31,6 +34,44 @@
     return JS_DAY[new Date().getDay()];
   }
 
+  /* Fulshear's date as YYYY-MM-DD, for the same reason. 'en-CA' is the one locale that writes it that way. */
+  function academyDate() {
+    try {
+      var s = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Chicago', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
+      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+    } catch (e) { /* an old browser without time zones: the device's date will do */ }
+    var d = new Date(), p = function (n) { return (n < 10 ? '0' : '') + n; };
+    return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate());
+  }
+
+  /* A day that runs differently. The markup carries the plan (data-special="YYYY-MM-DD") and marks each class it switches off
+     (data-off="YYYY-MM-DD"), complete without this file. This only keeps the words true: "Today" on the day, dimmed classes on the
+     day, and once the day is over, none of it. A page that is open all night turns itself off at midnight on the next paint. */
+  function specials(root) {
+    var today = academyDate();
+    root.querySelectorAll('[data-special]').forEach(function (box) {
+      var date = box.getAttribute('data-special');
+      var over = today > date;
+      box.hidden = over;
+      var pill = box.querySelector('.sc__special-pill');
+      if (pill) pill.hidden = today !== date;
+      box.classList.toggle('is-today', today === date);
+    });
+    root.querySelectorAll('[data-off]').forEach(function (card) {
+      var date = card.getAttribute('data-off');
+      var tag = card.querySelector('.sc__tag--off');
+      if (today > date) {
+        card.removeAttribute('data-off');
+        if (tag) tag.remove();
+        card.setAttribute('aria-label', card.getAttribute('aria-label').replace(/, no class on [A-Z][a-z]{2} \d+$/, ''));
+        card.classList.remove('is-off');
+        return;
+      }
+      card.classList.toggle('is-off', today === date);
+      if (tag && today === date) tag.textContent = 'Off today';
+    });
+  }
+
   /* One day at a time below this width. Seven columns fit a laptop; on a phone
      they are seven slivers, and stacking them was the 3,000-pixel scroll. */
   var narrow = window.matchMedia ? window.matchMedia('(max-width: 1023px)') : { matches: false };
@@ -47,6 +88,7 @@
 
     root.classList.add('sc--js');
     if (picker) picker.hidden = false;
+    specials(root);
 
     // Today, marked everywhere it appears.
     cols.forEach(function (col) {
@@ -154,5 +196,5 @@
   else start();
 
   // For the test suite: the day this page considers "today".
-  window.LabyrinthSchedule = { academyDay: academyDay };
+  window.LabyrinthSchedule = { academyDay: academyDay, academyDate: academyDate };
 })();

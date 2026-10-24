@@ -5065,6 +5065,81 @@ body {
   align-self: center;
 }
 
+/* ── A day that runs differently (scripts/schedule_data.py: SPECIAL_DAYS) ──
+   The plan above the week, in the pink of the event it is usually for, and the classes it switches off. The markup is complete
+   without JavaScript; schedule.js adds "Today" and takes the whole thing away once the day has passed. */
+.sc__special {
+  margin: 0 0 18px;
+  padding: 18px 20px;
+  border: 1px solid var(--awareness-line);
+  border-left: 4px solid var(--awareness);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--awareness-soft), rgba(255, 255, 255, 0.02));
+}
+.sc__special-kicker {
+  margin: 0 0 6px;
+  font: 700 12px/1.3 var(--font-body);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--awareness);
+}
+.sc__special-pill {
+  display: inline-block;
+  margin-right: 8px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #C8283A;
+  color: #fff;
+  letter-spacing: 0.06em;
+}
+.sc__special-title {
+  margin: 0 0 12px;
+  font: 400 24px/1.15 var(--font-display);
+  letter-spacing: 0.01em;
+  color: var(--text);
+}
+.sc__special-plan {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+}
+.sc__special-plan li {
+  display: grid;
+  grid-template-columns: 11.5rem 1fr;
+  gap: 2px 14px;
+  align-items: baseline;
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
+  background: var(--surface-elevated);
+}
+.sc__special-time { font: 700 13.5px/1.35 var(--font-body); color: var(--awareness); }
+.sc__special-what { font: 600 15px/1.35 var(--font-body); color: var(--text); }
+.sc__special-note { grid-column: 2; font: 400 13.5px/1.45 var(--font-body); color: var(--text-muted); }
+.sc__special-off { margin: 0 0 14px; font: 400 14px/1.55 var(--font-body); color: var(--text-muted); }
+.sc__special-off strong { color: var(--text); font-weight: 600; }
+.sc__special-link {
+  display: inline-block;
+  padding: 11px 18px;
+  border-radius: 10px;
+  background: var(--awareness);
+  color: #1A0B12;
+  font: 700 14px/1 var(--font-body);
+  text-decoration: none;
+}
+.sc__special-link::after { content: " \2192"; }
+.sc__special-link:hover, .sc__special-link:focus-visible { background: var(--awareness-hover); }
+.sc__special-link:focus-visible { outline: 2px solid var(--awareness); outline-offset: 2px; }
+.sc__tag--off { background: rgba(229, 143, 181, 0.16); color: #F3B3CE; }
+.sc__class.is-off { opacity: 0.6; }
+@media (max-width: 599px) {
+  .sc__special { padding: 16px 16px; }
+  .sc__special-title { font-size: 21px; }
+  .sc__special-plan li { grid-template-columns: 1fr; }
+  .sc__special-note { grid-column: 1; }
+}
+
 .sc__foot {
   margin: 18px 0 0;
   font: 400 13.5px/1.6 var(--font-body);
@@ -5355,6 +5430,23 @@ body {
   .event-strip__link--today .event-strip__cta { flex-shrink: 0; padding: 14px 28px; font-size: 17px; }
   .event-strip__sessions { grid-template-columns: 1fr 1fr; gap: 14px; }
 }
+
+/* The one-day card for a day that runs differently (TODAY_CARDS, _special_card): the plum and pink of the women's seminar it is usually
+   about, in fixed colors like the rest, in place of the holiday card's navy and gold. */
+.event-strip__link--today-pink {
+  border-color: rgba(229, 143, 181, 0.55); background: linear-gradient(135deg, #3a1428 0%, #1a0b12 72%);
+  box-shadow: 0 14px 44px rgba(26, 11, 18, 0.6);
+}
+.event-strip__link--today-pink:hover, .event-strip__link--today-pink:focus-visible { border-color: #E58FB5; box-shadow: 0 16px 50px rgba(229, 143, 181, 0.24); }
+.event-strip__link--today-pink .event-strip__icon, .event-strip__link--today-pink .event-strip__eyebrow { color: #E58FB5; }
+.event-strip__link--today-pink .event-strip__text { color: #ecd8e2; }
+.event-strip__link--today-pink .event-strip__text strong { color: #fff; }
+.event-strip__link--today-pink .event-strip__cta { background: #E58FB5; color: #1a0b12; }
+.event-strip__link--today-pink .event-strip__session { border-left-color: #E58FB5; background: rgba(251, 211, 227, 0.08); }
+.event-strip__link--today-pink .event-strip__session b { color: #fff; }
+.event-strip__link--today-pink .event-strip__session i { color: #E58FB5; }
+.event-strip__link--today-pink .event-strip__where { color: #d9bccb; }
+@media (min-width: 1100px) { .event-strip__link--today-pink .event-strip__sessions { grid-template-columns: repeat(3, 1fr); } }
 
 /* The Jiu-Jitsu World League card (scripts/build_pages.py: JJWL_CARD, jjwl_card): the full width of the strip, right under the donation card,
    until the event is over (data-closes). Green, the color the tournament list gives JJWL, in fixed colors so it reads the same under any

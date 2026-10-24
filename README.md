@@ -252,6 +252,23 @@ and `site-test.mjs` (L1ai) fails if one stops being:
   After changing it, run `python3 scripts/page_dates.py` as for any page.
 - **`llms.txt` and the pages that state prices and times say when they were last right** (next section).
 
+## A day that runs differently
+
+A seminar, a holiday or a tournament weekend changes one date, not the week. `SPECIAL_DAYS` in `scripts/schedule_data.py` holds each one (the date, a title, the plan as
+(time, what, note) rows, and the start times of that weekday's regular classes that do not run), and everything that shows the week reads it:
+
+- `/schedule` and the front page show the plan above the week, and each class that is off says "Off Oct 24" (`scripts/schedule_component.py`). `schedule.js` says "Today" on the day,
+  dims the classes, and takes all of it away once the day has passed, on the academy's clock.
+- The front page leads with a one-day card for it (`TODAY_CARDS` in `scripts/build_pages.py`, made by `_special_card`), open from midnight Central that morning to midnight that night.
+- The Pink October calendar leaves the off classes out of that date.
+- The booking calendar skips that date for those classes, says why under the grid, and still offers the others (`CLASS_OFF` in `booking.js`: the browser's copy, which `site-test.mjs`
+  L1i holds against `SPECIAL_DAYS`).
+
+A day that is over is not built, and `site-test.mjs` (L1i) fails, saying what to run, if a page still carries one. The clean-up is
+`python3 scripts/build_pages.py && python3 scripts/stamp_assets.py && python3 scripts/page_dates.py`, then deleting its entry in `SPECIAL_DAYS` and its line in `CLASS_OFF`
+(L2m is written from whatever is in `SPECIAL_DAYS`, so it needs no edit). It does not change the CRM: the member app, the kiosk, the stream portal's timetable and the stream's
+nightly schedule on the gym Mac all read the CRM's weekly `classes`, which has no change for a single date.
+
 ## Page dates
 
 `sitemap.xml`'s `lastmod`, the "Last updated" line under the heading of /pricing and /schedule, and the same line in `llms.txt` all come from one file,

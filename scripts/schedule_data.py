@@ -85,6 +85,100 @@ CLASSES = [
     ("Sunday", "1:00 PM", "Youth Wrestling", "7–17", "", "kids", {"trial"}),
 ]
 
+# ── A day that runs differently ─────────────────────────────────────────────
+#
+# A seminar, a holiday, a tournament weekend: one date on which some of the week's classes do not run and something else
+# does. The week above never changes for it (it is the same week next Saturday), so the change lives here, with its date,
+# and is read by everything that shows the week:
+#
+#   • the schedule component (on /schedule and the front page) shows the day's plan above the week and marks the classes
+#     that are off on that date, until the day is over (schedule_component.py, schedule.js);
+#   • the Pink October class picker leaves those classes out of that date (build_pages.py, _pink_picker);
+#   • the booking calendar skips that date for those classes, and still offers the others (booking.js, CLASS_OFF, which
+#     site-test checks against this list: it is the browser's copy, like the week itself);
+#   • the front page's one-day card carries the plan (build_pages.py, TODAY_CARDS).
+#
+# "off" is the start times of that weekday's regular classes that do not run; each must be a real class on that weekday
+# (site-test and the schedule component both refuse one that is not). Nothing here needs taking out afterwards for the page
+# to be right: the browser stops showing a day once it has passed, and build_pages.py leaves out a day that is over. TO
+# RETIRE ONE EARLY, or to clean the source up, delete its entry here and its CLASS_OFF line in booking.js, and run
+# build_pages.py (the card goes with TODAY_CARDS' entry for the date).
+
+SPECIAL_DAYS = [
+    {
+        "date": "2026-10-24",
+        "reason": "Rolling for Ribbons day",
+        "title": "Workout, open mat, then Rolling for Ribbons",
+        "plan": [
+            ("9:00 to 10:00 AM", "Workout: MMA Conditioning", "Same as every Saturday. All ages."),
+            ("10:00 to about 10:45 AM", "Open mat", "Drill, roll and warm up. All members welcome."),
+            ("11:00 AM to 12:30 PM", "Rolling for Ribbons", "Our free women\u2019s self defense seminar. No experience needed."),
+        ],
+        "off": ["10:00 AM", "11:00 AM", "12:00 PM"],
+        "link": ("/self-defense-for-women#rsvp", "RSVP for the seminar"),
+    },
+]
+
+
+def _weekday(date):
+    import datetime
+    return DAYS[datetime.date.fromisoformat(date).weekday()]
+
+
+def academy_today():
+    """Today's date on the academy's clock (Fulshear, Central), not the build machine's."""
+    import datetime
+    from zoneinfo import ZoneInfo
+    return datetime.datetime.now(ZoneInfo("America/Chicago")).date().isoformat()
+
+
+def special_days(today=None):
+    """The special days that are not over yet, soonest first. A day that has passed is left out, so a page built after it
+    carries nothing of it. Raises if an entry names a class time the weekday does not have."""
+    today = today or academy_today()
+    out = []
+    for s in SPECIAL_DAYS:
+        times = {c[1] for c in for_day(_weekday(s["date"]))}
+        for t in s["off"]:
+            if t not in times:
+                raise ValueError("%s: %s has no class at %s" % (s["date"], _weekday(s["date"]), t))
+        if s["date"] >= today:
+            out.append(s)
+    return sorted(out, key=lambda s: s["date"])
+
+
+def off_on(day, time, today=None):
+    """The date of a special day on which this regular class (a weekday and a start time) does not run, or None."""
+    for s in special_days(today):
+        if _weekday(s["date"]) == day and time in s["off"]:
+            return s["date"]
+    return None
+
+
+def off_classes(special):
+    """The regular classes a special day switches off, by start time: [(time, ["Kids Grappling"]), …], for words."""
+    day = _weekday(special["date"])
+    out = []
+    for t in special["off"]:
+        names = []
+        for c in for_day(day):
+            if c[1] == t and c[2] not in names:
+                names.append(c[2])
+        out.append((t, names))
+    return out
+
+
+def off_sentence(special):
+    """'Kids Grappling (10:00 AM), Adult & Teens (11:00 AM), and Kids Grappling and Teens Grappling (12:00 PM)' —
+    the classes that do not run, in the words the Saturday email used."""
+    parts = []
+    for t, names in off_classes(special):
+        parts.append("%s (%s)" % (" and ".join(names), t))
+    if len(parts) > 1:
+        return ", ".join(parts[:-1]) + ", and " + parts[-1]
+    return parts[0]
+
+
 # What the front desk quotes, every figure of it on /pricing.
 PRICING = {
     "adult": [

@@ -283,6 +283,18 @@
      the only edit needed to take a date off the calendar. */
   var CLOSED_DATES = [];
 
+  /* A day that runs differently: on these dates some of that weekday's classes do not run and the rest do (a seminar takes the late
+     morning, the early workout still happens). Keyed by date; `times` are the start times that are off, written as the timetable
+     writes them, and `why` is what the calendar says. This is the browser's copy of scripts/schedule_data.py's SPECIAL_DAYS, and
+     site-test fails if the two disagree. A date that has passed does nothing, so nothing has to be taken out afterwards. */
+  var CLASS_OFF = {
+    '2026-10-24': { why: 'Rolling for Ribbons day', times: ['10:00 AM', '11:00 AM', '12:00 PM'] }
+  };
+  function classOffReason(d, timeStr) {
+    var o = CLASS_OFF[ymd(d)];
+    return o && timeStr && o.times.indexOf(timeStr) !== -1 ? o.why : null;
+  }
+
   /* Built once per page rather than per cell: the calendar asks this question
      about thirty times per month drawn, and the answer for a given year does
      not change while somebody is looking at it. */
@@ -318,7 +330,7 @@
     for (var i = 0; out.length < n && i < Math.ceil(BOOK_AHEAD_DAYS / 7) + 4; i++) {
       var d = new Date(first);
       d.setDate(first.getDate() + i * 7);
-      if (!isShut(d)) out.push(d);
+      if (!isShut(d) && !classOffReason(d, timeStr)) out.push(d);
     }
     return out;
   }
@@ -356,7 +368,7 @@
    */
   var WEEKDAY_INITIALS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 
-  function calendarHTML(dayAbbr, view, sel, first, last, idp) {
+  function calendarHTML(dayAbbr, view, sel, first, last, idp, timeStr) {
     /* `idp` is the prefix of the booking flow this month belongs to ('booking' for the popup): it names the radio group and prefixes each
        day's id, so that two flows on one page do not share a group (checking a day in one would uncheck the other's) or an id (a label
        points at the first element with its id). */
@@ -396,7 +408,8 @@
        a two-digit number is easy to miss on a phone and says nothing about
        why — "Closed Nov 26 — Thanksgiving" is the sentence that stops somebody
        ringing the desk to ask whether the calendar is broken. */
-    var shutSeen = [];
+    var shutSeen = [], offSeen = [];
+    var soonest = timeStr ? getNextDayDate(dayAbbr, timeStr) : first;
 
     for (var day = 1; day <= daysInMonth; day++) {
       var d = new Date(y, mo, day);
@@ -416,6 +429,15 @@
           + ' title="Closed — ' + why + '">' + day + '</span>';
         continue;
       }
+      /* This class does not run that day, though the academy is open: drawn like a closed day, and said in words under the grid. It is called out
+         from the first day the class would otherwise have run, which is before the first day it is offered, because that is what it was skipped for. */
+      var offWhy = isClassDay && key >= ymd(soonest) && key <= ymd(last) ? classOffReason(d, timeStr) : null;
+      if (offWhy) {
+        offSeen.push(MONTH_NAMES[mo].slice(0, 3) + ' ' + day + ' \u2014 ' + offWhy);
+        html += '<span class="booking-cal__day booking-cal__day--shut"'
+          + ' title="No class \u2014 ' + offWhy + '">' + day + '</span>';
+        continue;
+      }
       if (!isClassDay || !inRange) {
         html += '<span class="booking-cal__day booking-cal__day--off">' + day + '</span>';
         continue;
@@ -430,6 +452,9 @@
     html += '</div>';
     if (shutSeen.length) {
       html += '<p class="booking-cal__note">Closed ' + shutSeen.join('; ') + '</p>';
+    }
+    if (offSeen.length) {
+      html += '<p class="booking-cal__note">No class ' + offSeen.join('; ') + '</p>';
     }
     return html;
   }
@@ -979,7 +1004,7 @@
       if (/^\d{4}-\d{2}-\d{2}$/.test(dateKey || '')) {
         var wp = dateKey.split('-');
         var want = new Date(Number(wp[0]), Number(wp[1]) - 1, Number(wp[2]));
-        if (want.getDay() === DAY_MAP[dayAbbr] && dateKey >= ymd(firstDate) && dateKey <= ymd(lastDate) && !isShut(want)) {
+        if (want.getDay() === DAY_MAP[dayAbbr] && dateKey >= ymd(firstDate) && dateKey <= ymd(lastDate) && !isShut(want) && !classOffReason(want, timeStr)) {
           selected = dateKey;
           view = new Date(want.getFullYear(), want.getMonth(), 1);
         }
@@ -987,7 +1012,7 @@
       var calEl = $('Cal');
 
       function drawCal() {
-        calEl.innerHTML = calendarHTML(dayAbbr, view, selected, firstDate, lastDate, P);
+        calEl.innerHTML = calendarHTML(dayAbbr, view, selected, firstDate, lastDate, P, timeStr);
       }
       drawCal();
 
@@ -1276,7 +1301,11 @@
     // For pages that draw their own month: whether the academy is shut that
     // day, and the holiday's name if so.
     isShut: isShut,
-    shutReason: shutReason
+    shutReason: shutReason,
+    // The same for one class: why it does not run on that date although the academy is open (see CLASS_OFF), or null. `classOffDates` is the
+    // table itself, so the test can hold it against schedule_data.py.
+    classOff: classOffReason,
+    classOffDates: CLASS_OFF
   };
 
   /**
