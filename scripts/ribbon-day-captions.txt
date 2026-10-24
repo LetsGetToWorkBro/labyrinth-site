@@ -1,0 +1,67 @@
+THE SATURDAY MORNING REMINDER POST (October 24, 2026): INSTAGRAM AND FACEBOOK
+
+Saturday, October 24, 2026, the morning of the day: Rolling for Ribbons, the free women's self defense seminar, is at 11:00 AM, and the regular Saturday classes are off. Two pictures,
+one Instagram carousel, and the same two pictures as one Facebook post; and one Instagram story (scripts/instagram-ribbon-day.mjs makes them; assets/social/ribbon-day/ribbon-day-01.jpg
+and -02.jpg are 1080x1350 (4:5) with everything that matters in the middle 1080x1080 square, see scripts/photo-posts-captions.txt for why; ribbon-day-story.jpg is 1080x1920 with its
+words between y 250 and y 1580).
+  Picture 1: the cover: a big 11 AM in rose foil, "Today, Sat, Oct 24, Rolling for Ribbons", a photograph of two women rolling, "Free women's self defense", "No regular classes today".
+             The photograph is photograph 18 ("Labyrinth_RFH-19") of Ray Harkness's album (@rayharkness), graded to a plum-and-bone print (scripts/ribbon-day-grade.py).
+  Picture 2: the whole day, in words: 9 workout (9:00 to 10:00 AM), 10 open mat (10:00 to about 10:45 AM), 11 Rolling for Ribbons (11:00 AM to 12:30 PM), no regular classes today,
+             free women's self defense, no experience needed, and the RSVP address. No photograph.
+  Story:     both of them in one picture (the same words, the same photograph).
+
+The facts are the seminar page's (labyrinth.vision/self-defense-for-women: Saturday, October 24, 11:00 AM to 12:30 PM, free, no experience needed, led by Coach Scott and Professor Tony,
+a friend, a sister or mom welcome, donations and merch sales go directly to a family affected by breast cancer) and the owner's plan for the day (scripts/schedule_data.py: SPECIAL_DAYS):
+a workout from 9:00 to 10:00 (the regular Saturday MMA Conditioning slot), an open mat from 10:00 to about 10:45, the seminar from 11:00 to 12:30, the regular Saturday classes off.
+The same plan is in the email to members (Muse-prompt-Saturday-morning-reminder-email.txt). No dollar amounts and no totals: the seminar page and the donation page carry those.
+
+Both platforms, always: a post is made for Instagram and for Facebook together (the owner's rule from October 15, 2026).
+No street address or town for the academy on the pictures or in the captions (the hashtags carry the area). One emoji in each.
+No "link in bio" anywhere: the Instagram caption says labyrinth.vision/self-defense-for-women, and the Facebook text has the link. The story has the same words on the picture, and nothing added to it.
+Credit: the photographer is Ray Harkness, @rayharkness: in the Instagram caption it is an @mention (no photo tags and no collaborator invites), in the Facebook text plain text that says "on Instagram".
+The Instagram line has no full stop after the handle, because a full stop straight after a handle can be read as part of it.
+Alt text names nobody and uses no pronouns for the people in a picture.
+
+WHEN: Saturday, October 24, 2026, between 6:00 AM and 10:30 AM Central, as early as it can be (the workout is at 9:00, and the email to members goes out between 8:00 and 8:45).
+
+==================== ribbon-day: INSTAGRAM CAPTION ====================
+Today at 11. 🎗️
+
+Rolling for Ribbons, our free self defense seminar for women, is today, Saturday, October 24, from 11:00 AM to 12:30 PM. No experience needed. Come on your own, or bring a friend, a sister or mom.
+
+No regular Saturday classes today. The whole day:
+9:00 to 10:00 AM: Workout
+10:00 to about 10:45 AM: Open mat
+11:00 AM to 12:30 PM: Rolling for Ribbons, led by Coach Scott and Professor Tony
+
+Not signed up yet? RSVP at labyrinth.vision/self-defense-for-women, or call or text (281) 393-7983.
+
+Donations and merch sales at the event go directly to a family affected by breast cancer.
+
+Photo by @rayharkness
+
+#RollingForRibbons #WomensSelfDefense #BreastCancerAwareness #PinkOctober #BrazilianJiuJitsu #WomensBJJ #SelfDefense #FulshearTX #KatyTX #LabyrinthBJJ
+
+==================== ribbon-day: FACEBOOK POST TEXT ====================
+Today at 11. 🎗️
+
+Rolling for Ribbons, our free self defense seminar for women, is today, Saturday, October 24, from 11:00 AM to 12:30 PM. No experience needed. Come on your own, or bring a friend, a sister or mom.
+
+No regular Saturday classes today. The whole day:
+9:00 to 10:00 AM: Workout
+10:00 to about 10:45 AM: Open mat
+11:00 AM to 12:30 PM: Rolling for Ribbons, led by Coach Scott and Professor Tony
+
+Not signed up yet? RSVP (free): https://labyrinth.vision/self-defense-for-women
+Questions? Call or text (281) 393-7983.
+
+Donations and merch sales at the event go directly to a family affected by breast cancer.
+
+Photo by @rayharkness on Instagram.
+
+#RollingForRibbons #WomensSelfDefense #BreastCancerAwareness #FulshearTX #KatyTX
+
+==================== ribbon-day: ALT TEXT ====================
+Picture 1: Two women roll on a mat, one smiling, in a dark plum picture with a pink satin ribbon curling behind. Text: 11 AM. Today, Sat, Oct 24. Rolling for Ribbons. Free women's self defense. No regular classes today.
+Picture 2: A schedule on a dark plum background, with a pink satin ribbon along the left edge. Text: The whole day, Saturday, October 24. 9, Workout, 9:00 to 10:00 AM. 10, Open mat, 10:00 to about 10:45 AM. 11, Rolling for Ribbons, 11:00 AM to 12:30 PM. No regular classes today. Free women's self defense. No experience needed. labyrinth.vision/self-defense-for-women.
+Story: Two women roll on a mat beneath a big pink 11 AM, in a dark plum picture with a pink satin ribbon. Text: Today, Sat, Oct 24. Rolling for Ribbons. Free women's self defense. 9, Workout, 9:00 to 10:00 AM. 10, Open mat, 10:00 to about 10:45 AM. 11, Rolling for Ribbons, 11:00 AM to 12:30 PM. No regular classes today. labyrinth.vision/self-defense-for-women.
