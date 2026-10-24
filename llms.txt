@@ -4,7 +4,7 @@
 > academies nationally on jits.gg (#39 of 7,869 as of September 2026). Kids and adult BJJ, a competition team, youth
 > wrestling, and all-ages strength and conditioning. Founded 2021.
 
-Last updated: October 20, 2026
+Last updated: October 22, 2026
 
 This file follows the llms.txt convention (https://llmstxt.org), a plain-text
 summary for language models reading the site. It exists because the answers
@@ -54,12 +54,14 @@ disagree, the page is right and this file is stale.
 
 ## Membership
 
-Month to month, no long-term contract, 30 days notice to cancel.
+Monthly memberships are month to month with no long-term contract: cancel any time before your next billing date.
 
 - Adults: $179/mo for 8 classes, $189/mo for 12, $199/mo unlimited
 - Kids and teens: $239/mo for 8 classes, $249/mo unlimited
-- Family plan: $399/mo for two members, +$80/mo per additional member
-- Adult punch cards: $160 for 5 classes, $100 for 3, never expire
+- Wrestling Club: $140/mo, wrestling only, ages 7–17
+- Family plan: $399/mo for two members, +$60/mo per additional member
+- Paid In Full for six months: Adults $999, Kids $1,249
+- Adult punch cards: $160 for 5 classes, never expire
 - Private lessons: $60–$120 per hour
 
 ## Coaching

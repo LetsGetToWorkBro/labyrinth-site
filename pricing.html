@@ -10,9 +10,10 @@
 <link rel="preload" as="style" href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=general-sans@300,400,500,600,700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=general-sans@300,400,500,600,700&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="/base.css?v=04502d32">
-<link rel="stylesheet" href="/style.css?v=fa537b64">
+<link rel="stylesheet" href="/style.css?v=2f63836f">
 <link rel="stylesheet" href="/programs.css?v=3b402d19">
 <link rel="stylesheet" href="/booking.css?v=e7d23cd6">
+<link rel="stylesheet" href="/chat.css?v=927c6ee4">
 
 <title>Membership Prices: Fulshear, TX | Labyrinth BJJ</title>
 <meta name="description" content="What jiu-jitsu costs in Fulshear, TX. Adults from $179/mo, kids from $239/mo, family plan $399/mo. Month to month, no contract, first class free.">
@@ -54,7 +55,7 @@
       "name": "Is there a joining fee or a contract?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "No joining fee, and no long-term contract. Everything is month-to-month with 30 days notice to cancel. Ask about the six and twelve month paid-in-full discounts if you would rather pay up front for a lower rate."
+        "text": "No joining fee, and no long-term contract. The monthly memberships are month-to-month, and you can cancel any time before your next billing date. If you would rather pay up front for a lower rate, there is Paid In Full for six months: Kids $1,249, Adults $999."
       }
     },
     {
@@ -94,7 +95,7 @@
       "name": "Can a family train on one membership?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "The family plan covers two members on unlimited classes at $399 a month, with additional members at $80 each. It works across kids and adults, so a parent training alongside a child is the normal case rather than an exception."
+        "text": "The family plan covers two members on unlimited classes at $399 a month, with additional members at $60 each. It works across kids and adults, so a parent training alongside a child is the normal case rather than an exception."
       }
     }
   ]
@@ -158,12 +159,39 @@
     },
     {
       "@type": "Offer",
+      "name": "Wrestling: Wrestling Club",
+      "price": "140",
+      "priceCurrency": "USD",
+      "url": "https://labyrinth.vision/pricing",
+      "availability": "https://schema.org/InStock",
+      "description": "Wrestling classes only; Month-to-month"
+    },
+    {
+      "@type": "Offer",
       "name": "Family: Family Plan",
       "price": "399",
       "priceCurrency": "USD",
       "url": "https://labyrinth.vision/pricing",
       "availability": "https://schema.org/InStock",
-      "description": "Unlimited classes for 2 members; +$80/mo per additional member; Kids and adult classes; Month-to-month"
+      "description": "Unlimited classes for 2 members; +$60/mo per additional member; Kids and adult classes; Month-to-month"
+    },
+    {
+      "@type": "Offer",
+      "name": "Paid In Full: Adults",
+      "price": "999",
+      "priceCurrency": "USD",
+      "url": "https://labyrinth.vision/pricing",
+      "availability": "https://schema.org/InStock",
+      "description": "Six months, paid in full"
+    },
+    {
+      "@type": "Offer",
+      "name": "Paid In Full: Kids",
+      "price": "1249",
+      "priceCurrency": "USD",
+      "url": "https://labyrinth.vision/pricing",
+      "availability": "https://schema.org/InStock",
+      "description": "Six months, paid in full"
     }
   ]
 }
@@ -236,7 +264,7 @@
       <div class="prog-fact"><div class="prog-fact__label">Family plan</div><div class="prog-fact__value"><em>$399</em>/month</div></div>
       <div class="prog-fact"><div class="prog-fact__label">Contract</div><div class="prog-fact__value">None</div></div>
     </div>
-    <!-- updated --><p class="prog-hero__updated">Last updated <time datetime="2026-10-14">October 14, 2026</time></p><!-- /updated -->
+    <!-- updated --><p class="prog-hero__updated">Last updated <time datetime="2026-10-22">October 22, 2026</time></p><!-- /updated -->
   </div>
 </header>
 
@@ -324,6 +352,26 @@
 <section class="prog-section">
   <div class="container">
     <div class="fade-in">
+      <p class="section-label">Ages 7–17</p>
+      <h2 class="section-title section-title--lg">WRESTLING</h2>
+    </div>
+    <div class="price-grid stagger">
+      <div class="price-card">
+        <h3 class="price-card__name">Wrestling Club</h3>
+        <div class="price-card__amount">$140<span>/mo</span></div>
+        <ul class="price-card__list">
+          <li>Wrestling classes only</li>
+          <li>Month-to-month</li>
+        </ul>
+        <a data-book-trial href="/#book" class="price-card__btn">Start Free</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="prog-section">
+  <div class="container">
+    <div class="fade-in">
       <p class="section-label">Two or more in the household</p>
       <h2 class="section-title section-title--lg">FAMILY</h2>
     </div>
@@ -333,7 +381,7 @@
         <div class="price-card__amount">$399<span>/mo</span></div>
         <ul class="price-card__list">
           <li>Unlimited classes for 2 members</li>
-          <li>+$80/mo per additional member</li>
+          <li>+$60/mo per additional member</li>
           <li>Kids and adult classes</li>
           <li>Month-to-month</li>
         </ul>
@@ -346,18 +394,40 @@
 <section class="prog-section">
   <div class="container">
     <div class="fade-in">
+      <p class="section-label">Pay up front</p>
+      <h2 class="section-title section-title--lg">PAID IN FULL</h2>
+    </div>
+    <div class="price-grid stagger">
+      <div class="price-card">
+        <h3 class="price-card__name">Adults</h3>
+        <div class="price-card__amount">$999<span>/6 mo</span></div>
+        <ul class="price-card__list">
+          <li>Six months, paid in full</li>
+        </ul>
+        <a data-book-trial href="/#book" class="price-card__btn">Start Free</a>
+      </div>
+      <div class="price-card">
+        <h3 class="price-card__name">Kids</h3>
+        <div class="price-card__amount">$1,249<span>/6 mo</span></div>
+        <ul class="price-card__list">
+          <li>Six months, paid in full</li>
+        </ul>
+        <a data-book-trial href="/#book" class="price-card__btn">Start Free</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="prog-section">
+  <div class="container">
+    <div class="fade-in">
       <p class="section-label">Everything else</p>
-      <h2 class="section-title section-title--lg">PUNCH CARDS &amp; ADD-ONS</h2>
+      <h2 class="section-title section-title--lg">PUNCH CARD &amp; ADD-ONS</h2>
     </div>
     <div class="price-extras stagger">
       <div class="price-extra">
         <div class="price-extra__name">5-Class Punch Card</div>
         <div class="price-extra__amount">$160<span></span></div>
-        <p class="price-extra__note">Adults only. Never expires.</p>
-      </div>
-      <div class="price-extra">
-        <div class="price-extra__name">3-Class Punch Card</div>
-        <div class="price-extra__amount">$100<span></span></div>
         <p class="price-extra__note">Adults only. Never expires.</p>
       </div>
       <div class="price-extra">
@@ -376,7 +446,7 @@
         <p class="price-extra__note">Ages 5–15, 12:00–4:00 PM. Next running summer 2027.</p>
       </div>
     </div>
-    <p class="prog-week__note fade-in">All memberships are month-to-month with no long-term contract. 30 days notice to cancel. Ask about 6 and 12-month paid-in-full discounts. Your first class is free.</p>
+    <p class="prog-week__note fade-in">The monthly memberships are month-to-month with no long-term contract. Cancel any time before your next billing date. Paid In Full for six months: Kids $1,249, Adults $999. Your first class is free.</p>
   </div>
 </section>
 
@@ -406,7 +476,7 @@
           <span>Is there a joining fee or a contract?</span>
           <svg class="faq-item__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
-        <div class="faq-item__answer"><p>No joining fee, and no long-term contract. Everything is month-to-month with 30 days notice to cancel. Ask about the six and twelve month paid-in-full discounts if you would rather pay up front for a lower rate.</p></div>
+        <div class="faq-item__answer"><p>No joining fee, and no long-term contract. The monthly memberships are month-to-month, and you can cancel any time before your next billing date. If you would rather pay up front for a lower rate, there is Paid In Full for six months: Kids $1,249, Adults $999.</p></div>
       </div>
       <div class="faq-item">
         <button class="faq-item__question" aria-expanded="false">
@@ -441,7 +511,7 @@
           <span>Can a family train on one membership?</span>
           <svg class="faq-item__icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
-        <div class="faq-item__answer"><p>The family plan covers two members on unlimited classes at $399 a month, with additional members at $80 each. It works across kids and adults, so a parent training alongside a child is the normal case rather than an exception.</p></div>
+        <div class="faq-item__answer"><p>The family plan covers two members on unlimited classes at $399 a month, with additional members at $60 each. It works across kids and adults, so a parent training alongside a child is the normal case rather than an exception.</p></div>
       </div>
     </div>
   </div>
@@ -468,6 +538,7 @@
 </footer>
 
 <script src="/app.js?v=1cecb519"></script>
-<script src="/booking.js?v=f665989b"></script>
+<script src="/booking.js?v=43a13ab5"></script>
+<script src="/chat.js?v=fa3c1a38" defer></script>
 </body>
 </html>

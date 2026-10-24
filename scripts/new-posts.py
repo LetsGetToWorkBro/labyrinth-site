@@ -74,6 +74,7 @@ def page(slug, title, description, og_description, subtitle, read, hero, hero_al
 <noscript><link href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&f[]=general-sans@300,400,500,600,700&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="blog.css">
 <link rel="stylesheet" href="../booking.css">
+<link rel="stylesheet" href="../chat.css">
 
 <title>{title} | Labyrinth BJJ</title>
 <meta name="description" content="{description}">
@@ -198,6 +199,7 @@ def page(slug, title, description, og_description, subtitle, read, hero, hero_al
 </script>
 
 <script src="../booking.js"></script>
+<script src="../chat.js" defer></script>
 
 </body>
 </html>

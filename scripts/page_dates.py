@@ -53,6 +53,10 @@ SITE = "https://labyrinth.vision"
 EXTRA = ["llms.txt"]
 
 STAMP = re.compile(r"\?v=[0-9a-f]{8}")
+# The live chat's stylesheet is linked from nearly every page and says nothing about any of them. Its href would count as
+# "where the links go" and re-date fifty unchanged pages (and the "Last updated" lines on /pricing and /schedule), so it
+# is left out, like a ?v= stamp. Its script needs nothing: scripts never count.
+CHAT_CSS = re.compile(r'<link rel="stylesheet" href="(?:\.{1,2}/|/)?chat\.css">\n?')
 SHOWN_HTML = re.compile(r"<!-- updated -->.*?<!-- /updated -->", re.S)
 SHOWN_TEXT = re.compile(r"^Last updated: .*$", re.M)
 ENTRY = re.compile(r"(<loc>(%s[^<]*)</loc>\s*<lastmod>)([^<]*)(</lastmod>)" % re.escape(SITE))
@@ -97,7 +101,7 @@ def readable(rel, text):
     the description and the structured data. Not the markup around them, scripts, styles or comments."""
     if not rel.endswith(".html"):
         return re.sub(r"\s+", " ", SHOWN_TEXT.sub("", text))
-    text = SHOWN_HTML.sub("", STAMP.sub("", text))
+    text = CHAT_CSS.sub("", SHOWN_HTML.sub("", STAMP.sub("", text)))
     parts = [re.findall(r'<script type="application/ld\+json">(.*?)</script>', text, re.S),
              re.findall(r'<meta name="description" content="([^"]*)"', text),
              re.findall(r'\balt="([^"]*)"', text),

@@ -60,10 +60,14 @@ def _booking(name, ages, aud, flags):
 TRIAL_HINT = "Beginner trials"
 
 
-def _card(day, time, name, ages, style, aud, flags):
+def _card(day, time, name, ages, style, aud, flags, off=None):
+    """One class. `off` is the date of a special day (schedule_data.SPECIAL_DAYS) on which it does not run: the card says so, and
+    schedule.js dims it on that day and takes the words away once the day has passed."""
     mode, book_name = _booking(name, ages, aud, flags)
     tone = {"Gi": "gi", "No-Gi": "nogi"}.get(style, "other")
     tags = []
+    if off:
+        tags.append('<span class="sc__tag sc__tag--off">Off %s</span>' % _short_date(off))
     if "comp" in flags:
         tags.append('<span class="sc__tag sc__tag--comp">Competition</span>')
     if "adv" in flags:
@@ -76,10 +80,12 @@ def _card(day, time, name, ages, style, aud, flags):
     age_html = ('<span class="sc__ages">%s</span>' % html.escape(ages)) if ages else ""
     label = "%s, %s at %s%s" % (
         name, day, time, (", ages " + ages) if ages and _has_age_range(ages) else "")
+    if off:
+        label += ", no class on " + _short_date(off)
     return (
         '<li><button type="button" class="sc__class sc__class--%(tone)s"'
         ' data-aud="%(aud)s" data-book="%(mode)s" data-name="%(bname)s" data-type="%(style)s"'
-        ' data-day="%(short)s" data-time="%(time)s" aria-label="%(label)s">'
+        ' data-day="%(short)s" data-time="%(time)s"%(off_attr)s aria-label="%(label)s">'
         # Gi / No-Gi in words beside the time, not as a chip on its own row:
         # the colored edge already says it to most people, and the words are
         # for everybody the color does not reach.
@@ -90,17 +96,57 @@ def _card(day, time, name, ages, style, aud, flags):
     ) % {
         "tone": tone, "aud": aud, "mode": mode, "bname": html.escape(book_name, quote=True),
         "style": html.escape(style, quote=True), "short": SHORT[day], "time": time,
+        "off_attr": (' data-off="%s"' % off) if off else "",
         "style_html": ('<span class="sc__style">%s</span>' % style) if style else "",
         "label": html.escape("Book " + label, quote=True), "name": html.escape(name),
         "ages": age_html, "tags": "".join(tags),
     }
 
 
+def _short_date(date):
+    """'2026-10-24' -> 'Oct 24'."""
+    import datetime
+    d = datetime.date.fromisoformat(date)
+    return d.strftime("%b ") + str(d.day)
+
+
+def _long_date(date):
+    """'2026-10-24' -> 'Saturday, October 24'."""
+    import datetime
+    d = datetime.date.fromisoformat(date)
+    return d.strftime("%A, %B ") + str(d.day)
+
+
+def _special(uid, s):
+    """The plan for a day that runs differently (schedule_data.SPECIAL_DAYS), above the week.
+
+    Complete in the HTML, so a reader without JavaScript (or an assistant reading the page) gets it. schedule.js marks it
+    "Today" on the day and hides it, with the "Off" words on the classes it switches off, once the day has passed."""
+    sid = "%s-special-%s" % (uid, s["date"])
+    plan = "\n".join(
+        '        <li><span class="sc__special-time">%s</span><span class="sc__special-what">%s</span>'
+        '<span class="sc__special-note">%s</span></li>' % (html.escape(when), html.escape(what), html.escape(note))
+        for when, what, note in s["plan"])
+    href, label = s["link"]
+    return (
+        '    <aside class="sc__special" data-special="%(date)s" aria-labelledby="%(sid)s">\n'
+        '      <p class="sc__special-kicker"><span class="sc__special-pill" hidden>Today</span>%(when)s &middot; a different %(weekday)s</p>\n'
+        '      <h3 class="sc__special-title" id="%(sid)s">%(title)s</h3>\n'
+        '      <ol class="sc__special-plan">\n%(plan)s\n      </ol>\n'
+        '      <p class="sc__special-off"><strong>Off this %(weekday)s:</strong> %(off)s. '
+        'The rest of the week is as shown below.</p>\n'
+        '      <a class="sc__special-link" href="%(href)s">%(label)s</a>\n'
+        '    </aside>\n'
+    ) % {"date": s["date"], "sid": sid, "when": _long_date(s["date"]), "weekday": schedule_data._weekday(s["date"]),
+         "title": html.escape(s["title"]), "plan": plan, "off": html.escape(schedule_data.off_sentence(s)),
+         "href": html.escape(href, quote=True), "label": html.escape(label)}
+
+
 def render(uid="sc"):
     """The component. `uid` keeps ids unique if a page ever carries two."""
     cols = []
     for day in schedule_data.DAYS:
-        cards = "\n          ".join(_card(*c) for c in schedule_data.for_day(day))
+        cards = "\n          ".join(_card(*c, off=schedule_data.off_on(c[0], c[1])) for c in schedule_data.for_day(day))
         cols.append(
             '      <section class="sc__col" data-sc-col="%(s)s" aria-labelledby="%(u)s-%(s)s">\n'
             '        <h3 class="sc__day" id="%(u)s-%(s)s"><span class="sc__day-full">%(d)s</span>'
@@ -113,8 +159,9 @@ def render(uid="sc"):
         '<button type="button" class="sc__pick" data-sc-pick="%s" aria-pressed="false">%s</button>'
         % (SHORT[d], SHORT[d]) for d in schedule_data.DAYS)
 
+    specials = "".join(_special(uid, s) for s in schedule_data.special_days())
     return """<div class="sc" data-sc>
-    <div class="sc__bar">
+%(specials)s    <div class="sc__bar">
       <div class="sc__filters" role="group" aria-label="Show classes for">
         <button type="button" class="sc__filter is-active" data-sc-filter="all" aria-pressed="true">All classes</button>
         <button type="button" class="sc__filter" data-sc-filter="adult" aria-pressed="false">Adults</button>
@@ -132,7 +179,7 @@ def render(uid="sc"):
 %(cols)s
     </div>
     <p class="sc__foot">Tap any class to book it. The first class is free. <strong>Advanced</strong> classes need a gray-white belt or higher, or two years of wrestling; everything else is open to beginners. Closures and tournament weekends are on the <a href="https://calendar.labyrinth.vision" target="_blank" rel="noopener noreferrer">live calendar</a>.</p>
-  </div>""" % {"days": day_buttons, "cols": "\n".join(cols)}
+  </div>""" % {"days": day_buttons, "cols": "\n".join(cols), "specials": specials}
 
 
 

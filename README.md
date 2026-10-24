@@ -10,6 +10,7 @@ Deployed on **Cloudflare Pages**. Bookings land in the CRM at
 ```
 index.html            the whole main site, one page, anchor-linked sections
 app.js                all behaviour: nav, schedule, booking popup, forms
+chat.js  chat.css     the live chat bubble (see "Live chat")
 style.css  base.css   main site styles
 blog/                 13 pages: an index and 12 posts, with blog.css
 review/               review landing page
@@ -202,6 +203,31 @@ Worth recording, because both failures were silent:
 
 The booking flow now tells the person to call or text if the booking did not save.
 
+## Live chat
+
+The round gold button at the bottom right of every page that can book opens a chat with the academy (`chat.js`, `chat.css`). The
+visitor gives a name, an email or a phone, and a message; it arrives in the CRM's Messages screen, the academy answers from there, and
+the answer appears in the panel. The CRM side is the public `site-chat` edge function in labyrinth-app; the contract is at the top of
+`chat.js`.
+
+- **What it sends.** Three calls, `start`, `send` and `poll`, each a JSON POST with no key and no header but Content-Type. Nothing at all
+  on a page load unless a chat is stored. With one, it asks every 4 seconds while the panel is open and every 60 while it is closed,
+  never while the tab is hidden, and waits 8, 16, then 30 seconds after failures.
+- **What it keeps.** `localStorage` key `labyrinth.chat.v1`: the chat's token, the visitor's name, and the newest reply they have seen
+  (the number on the bubble counts the replies after it). Never the email or the phone.
+- **Where.** labyrinth.vision and www.labyrinth.vision (and localhost for the tests). The /legacy pages are also served on
+  teamlegacydojo.com, where the function refuses the origin, so there it does nothing.
+- **How pages get it.** The generated pages through `HEAD` and `TAIL` in `scripts/build_programs.py`; `index.html` and the blog posts by
+  hand; `blog/index.html` through `build_blog_index.py`, and `new-posts.py`'s template has it for any post written from now on.
+  `404.html`, `privacy-policy.html` and `/review` have no booking and no chat, and the Wharton site does not have it. `stamp_assets.py`
+  versions both files, and `page_dates.py` does not count the stylesheet's link as a change to a page.
+- **Getting along with the page.** The bubble sits above the phone call/book bar, the seminar's RSVP button and the drop page's basket
+  bar while they show, puts the home page's back-to-top button above itself, and steps aside while the booking popup, the mobile menu,
+  the advanced class notice or the basket sheet is open. On a phone the open panel is the whole screen.
+- **`LabyrinthChat.open()`** opens it, so a link anywhere can say "chat with us".
+
+`node chat.test.mjs` walks all of it with the function mocked; `SHOTS=/some/folder node chat.test.mjs` also saves screenshots.
+
 ## What an assistant reads, and what a keyboard reaches
 
 Assistants such as Meta's Muse read a page through its served HTML and its accessibility tree, not the way a person sees it. Six things are kept true for them,
@@ -225,6 +251,23 @@ and `site-test.mjs` (L1ai) fails if one stops being:
   line each), so a new post is in it the next time that runs and the test fails until it has. The prose above those lists (prices, ages, times) is written by hand.
   After changing it, run `python3 scripts/page_dates.py` as for any page.
 - **`llms.txt` and the pages that state prices and times say when they were last right** (next section).
+
+## A day that runs differently
+
+A seminar, a holiday or a tournament weekend changes one date, not the week. `SPECIAL_DAYS` in `scripts/schedule_data.py` holds each one (the date, a title, the plan as
+(time, what, note) rows, and the start times of that weekday's regular classes that do not run), and everything that shows the week reads it:
+
+- `/schedule` and the front page show the plan above the week, and each class that is off says "Off Oct 24" (`scripts/schedule_component.py`). `schedule.js` says "Today" on the day,
+  dims the classes, and takes all of it away once the day has passed, on the academy's clock.
+- The front page leads with a one-day card for it (`TODAY_CARDS` in `scripts/build_pages.py`, made by `_special_card`), open from midnight Central that morning to midnight that night.
+- The Pink October calendar leaves the off classes out of that date.
+- The booking calendar skips that date for those classes, says why under the grid, and still offers the others (`CLASS_OFF` in `booking.js`: the browser's copy, which `site-test.mjs`
+  L1i holds against `SPECIAL_DAYS`).
+
+A day that is over is not built, and `site-test.mjs` (L1i) fails, saying what to run, if a page still carries one. The clean-up is
+`python3 scripts/build_pages.py && python3 scripts/stamp_assets.py && python3 scripts/page_dates.py`, then deleting its entry in `SPECIAL_DAYS` and its line in `CLASS_OFF`
+(L2m is written from whatever is in `SPECIAL_DAYS`, so it needs no edit). It does not change the CRM: the member app, the kiosk, the stream portal's timetable and the stream's
+nightly schedule on the gym Mac all read the CRM's weekly `classes`, which has no change for a single date.
 
 ## Page dates
 

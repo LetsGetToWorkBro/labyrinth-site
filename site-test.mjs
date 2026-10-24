@@ -172,6 +172,28 @@ compare('kids trials',
 check('L1i schedule_data.py and booking.js agree on the timetable',
   drift.length === 0, '\n    ' + drift.join('\n    '))
 
+// ── L1i (days): a day that runs differently ──
+// scripts/schedule_data.py's SPECIAL_DAYS is the source, like the week above it. booking.js keeps its own copy (CLASS_OFF), so the two are held together here; and a day that is over must not
+// still be on the pages (the browser stops showing it, but a reader without JavaScript and an assistant read the HTML), which is what the build leaves out and this checks.
+const SPECIAL_DAYS_PY = JSON.parse(execFileSync('python3', ['-c', `
+import sys; sys.path.insert(0, 'scripts')
+import json, schedule_data as s, schedule_component as c
+print(json.dumps({'today': s.academy_today(), 'days': [{
+    'date': d['date'], 'reason': d['reason'], 'title': d['title'], 'plan': d['plan'], 'off': d['off'], 'link': d['link'], 'offSentence': s.off_sentence(d),
+    'weekday': s._weekday(d['date']), 'long': c._long_date(d['date']), 'short': c._short_date(d['date'])} for d in s.SPECIAL_DAYS]}))`], { cwd: ROOT }).toString())
+{
+  const body = (bookingJs.match(/var CLASS_OFF = \{([\s\S]*?)\n  \};/) || [])[1] ?? ''
+  const js = {}
+  for (const m of body.matchAll(/'(\d{4}-\d{2}-\d{2})': \{ why: '([^']*)', times: \[([^\]]*)\] \}/g)) js[m[1]] = { why: m[2], times: [...m[3].matchAll(/'([^']*)'/g)].map(x => x[1]) }
+  const py = Object.fromEntries(SPECIAL_DAYS_PY.days.map(d => [d.date, { why: d.reason, times: d.off }]))
+  check('L1i the days that run differently (schedule_data.py SPECIAL_DAYS) and booking.js CLASS_OFF agree: the same dates, the same reason, the same classes off',
+    JSON.stringify(js) === JSON.stringify(py), JSON.stringify({ booking_js: js, schedule_data: py }))
+  const carried = ['index.html', 'schedule.html'].flatMap(f => [...readFileSync(join(ROOT, f), 'utf8').matchAll(/data-(?:special|off)="(\d{4}-\d{2}-\d{2})"/g)].map(m => [f, m[1]]))
+  const over = [...new Set(carried.filter(([, d]) => d < SPECIAL_DAYS_PY.today).map(([f, d]) => f + ' ' + d))]
+  check('L1i no day that runs differently is over and still on the pages (it is ' + SPECIAL_DAYS_PY.today + ')', over.length === 0,
+    over.join(', ') + ': it is past, so the page should not carry it. Run: python3 scripts/build_pages.py && python3 scripts/stamp_assets.py && python3 scripts/page_dates.py (and take its entry out of SPECIAL_DAYS and CLASS_OFF when you next touch them)')
+}
+
 // ── L1j: every bookable class maps to a programme the CRM will accept ──
 // The booking endpoint validates `program` against its own list and
 // replaces anything else with the default, without saying so. That is why
@@ -385,7 +407,9 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
 {
   await page.route('**/spreadsheets/**', route => route.fulfill({
     status: 200, contentType: 'text/csv',
-    body: 'Key,Value\nNational Rank,3\nState Rank,2\nGold Medals,999\nTotal Wins,888\n'
+    // Numbers neither page states, and short enough that no thousands separator could hide one. They were 999 and 888 until the
+    // front page began quoting the $999 Adult Paid In Full plan.
+    body: 'Key,Value\nNational Rank,3\nState Rank,2\nGold Medals,917\nTotal Wins,731\n'
   }))
 
   await page.goto('http://localhost:4620/ennova', { waitUntil: 'networkidle' })
@@ -395,7 +419,7 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
     sub: document.querySelector('.hero__subtitle')?.textContent || ''
   }))
   check('L1q the offer page keeps its own headline',
-    offer.h1.includes('$0 ENROLLMENT') && !/RANKED #/.test(offer.h1), offer.h1)
+    offer.h1.includes('50% OFF MONTH ONE') && !/RANKED #/.test(offer.h1), offer.h1)
   check('L1q the offer page keeps its own subtitle',
     offer.sub.includes('Ennova') && !/gold medals/.test(offer.sub), offer.sub)
 
@@ -408,7 +432,7 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   }))
   check('L1q the front page headline is the one it was built with',
     home.h1.includes('TOP 1% IN THE NATION') && !/#3|#2 IN TEXAS/.test(home.h1), home.h1)
-  check('L1q no sheet number reaches the page', !/\b(999|888)\b/.test(home.all))
+  check('L1q no sheet number reaches the page', !/\b(917|731)\b/.test(home.all))
   await page.unroute('**/spreadsheets/**')
 }
 
@@ -693,8 +717,8 @@ check('L1i schedule_data.py and booking.js agree on the timetable',
   check('L1x the homepage links to the event page before the event',
     (await rp.locator('a.event-strip__link[href="/self-defense-for-women"]').count()) === 1
       && await rp.isVisible('#eventStrip'))
-  check('L1x each October strip link carries a pink ribbon and a pink button (the HYROX row has its own volt look, the donation card is solid pink with a dark button, a holiday\'s one-day card is navy and gold, and the Jiu-Jitsu World League card is green)',
-    (await rp.locator('#eventStrip svg.ribbon').count()) === 3
+  check('L1x each October strip link carries a pink ribbon and a pink button (the HYROX row has its own volt look, the donation card is solid pink with a dark button, a holiday\'s one-day card is navy and gold, a day that runs differently has its own plum one-day card with a ribbon of its own, and the Jiu-Jitsu World League card is green)',
+    (await rp.locator('#eventStrip .event-strip__link:not(.event-strip__link--today) svg.ribbon').count()) === 3
       && await rp.evaluate(() => [...document.querySelectorAll('.event-strip__link:not(.event-strip__link--hyrox):not(.event-strip__link--donate):not(.event-strip__link--today):not(.event-strip__link--jjwl) .event-strip__icon')].every(i => getComputedStyle(i).color === 'rgb(229, 143, 181)')
         && [...document.querySelectorAll('.event-strip__link:not(.event-strip__link--hyrox):not(.event-strip__link--donate):not(.event-strip__link--today):not(.event-strip__link--jjwl) .event-strip__cta')].every(c => getComputedStyle(c).backgroundColor === 'rgb(229, 143, 181)')))
   check('L1x the strip names the event, the date and the cause',
@@ -2142,7 +2166,7 @@ check('L6 tells them to call', ((await page.textContent('#bookingInline .booking
   await mp.goto(URLH, { waitUntil: 'load' })
   check('L2h on a phone nothing sticks out sideways and the cards stack',
     !(await mp.evaluate(() => document.documentElement.scrollWidth > innerWidth)) &&
-    (await mp.evaluate(() => { const c = [...document.querySelectorAll('#eventStrip a.event-strip__link')]; return c[1].getBoundingClientRect().top > c[0].getBoundingClientRect().bottom })))
+    (await mp.evaluate(() => { const c = [...document.querySelectorAll('#eventStrip a.event-strip__link')].filter(a => a.offsetParent !== null); return c.length > 1 && c[1].getBoundingClientRect().top > c[0].getBoundingClientRect().bottom })))
 
   const rm = await (await browser.newContext({ reducedMotion: 'reduce' })).newPage()
   await rm.clock.setFixedTime(new Date('2026-10-14T15:00:00Z'))
@@ -2302,7 +2326,7 @@ check('L6 tells them to call', ((await page.textContent('#bookingInline .booking
   await mp.waitForTimeout(250)
   check('L2c on a phone nothing sticks out sideways and the cards stack',
     !(await mp.evaluate(() => document.documentElement.scrollWidth > innerWidth)) &&
-    (await mp.evaluate(() => { const c = [...document.querySelectorAll('#eventStrip a.event-strip__link')]; return c[1].getBoundingClientRect().top > c[0].getBoundingClientRect().bottom })))
+    (await mp.evaluate(() => { const c = [...document.querySelectorAll('#eventStrip a.event-strip__link')].filter(a => a.offsetParent !== null); return c.length > 1 && c[1].getBoundingClientRect().top > c[0].getBoundingClientRect().bottom })))
   // Everything in the day's card stays inside it, in the order a person reads it: the day, the title, the two sessions, the address, the button.
   // The strip and the card are on the screen (a line that will not wrap makes the whole strip wider than the phone, and the page hides the overflow, so the page's own width says nothing).
   const stays = () => {
@@ -2400,6 +2424,164 @@ check('L6 tells them to call', ((await page.textContent('#bookingInline .booking
   }
 }
 
+// ── L2m: a day that runs differently (scripts/schedule_data.py: SPECIAL_DAYS) ──
+// Saturday, October 24, 2026: the workout at 9:00, an open mat at 10:00, and Rolling for Ribbons at 11:00, with the regular 10:00, 11:00 and 12:00 classes off. The plan is shown above the week
+// on /schedule and the front page, the classes it switches off say so, the front page leads with a card for the day, and the Pink October calendar leaves the off classes out. Every check here
+// is written from the entry itself, so the next day that runs differently is held to the same things. It is shown from now until the day is over and then not at all, by the browser (the
+// academy's clock) and by the build (a day that is over is not built), so each case pins its own clock.
+for (const sd of SPECIAL_DAYS_PY.days) {
+  const URLH = 'http://localhost:4620'
+  const norm = s => (s ?? '').replace(/\s+/g, ' ').trim()
+  const DAY = sd.weekday.slice(0, 3)
+  const at = async (iso, path, opts = {}) => {
+    const c = await browser.newContext({ viewport: { width: 1280, height: 900 }, ...opts })
+    const p = await c.newPage()
+    if (opts.javaScriptEnabled !== false) await p.clock.setFixedTime(new Date(iso))
+    await p.goto(URLH + path, { waitUntil: 'load' })
+    await p.waitForTimeout(250)
+    return { c, p }
+  }
+  const before = new Date(Date.parse(sd.date + 'T17:00:00Z') - 2 * 864e5).toISOString()   // noon Central, two days ahead
+  const during = sd.date + 'T14:30:00Z'                                                       // 9:30 AM Central on the day
+  const after = new Date(Date.parse(sd.date + 'T15:00:00Z') + 864e5).toISOString()          // 10:00 AM Central the next day
+  const plan = sd.plan.map(([when, what, note]) => ({ when, what, note }))
+  const offCount = await (async () => { const { c, p } = await at(during, '/schedule', { javaScriptEnabled: false }); const n = await p.locator('.sc__class[data-off="' + sd.date + '"]').count(); await c.close(); return n })()
+
+  // Without JavaScript: the whole plan, in words, and the classes marked, because that is what a crawler and an assistant read.
+  for (const path of ['/schedule', '/']) {
+    const { c, p } = await at(during, path, { javaScriptEnabled: false })
+    const box = await p.evaluate(date => { const a = document.querySelector('[data-sc] .sc__special[data-special="' + date + '"]'); return a ? { text: a.textContent.replace(/\s+/g, ' ').trim(), href: a.querySelector('a.sc__special-link')?.getAttribute('href'), link: a.querySelector('a.sc__special-link')?.textContent.trim(), times: [...a.querySelectorAll('.sc__special-time')].map(e => e.textContent.trim()), whats: [...a.querySelectorAll('.sc__special-what')].map(e => e.textContent.trim()), notes: [...a.querySelectorAll('.sc__special-note')].map(e => e.textContent.trim()), title: a.querySelector('.sc__special-title')?.textContent.trim(), shown: a.getBoundingClientRect().height > 0 } : null }, sd.date)
+    check('L2m ' + sd.date + ' without JavaScript, ' + (path === '/' ? 'the front page' : '/schedule') + ' carries the plan above the week: the day, the title, each part with its time and its words, and what is off',
+      !!box && box.shown && box.title === sd.title && JSON.stringify(box.times) === JSON.stringify(plan.map(x => x.when)) && JSON.stringify(box.whats) === JSON.stringify(plan.map(x => x.what))
+        && JSON.stringify(box.notes) === JSON.stringify(plan.map(x => x.note)) && box.text.includes(sd.long) && box.text.includes('a different ' + sd.weekday)
+        && box.text.includes('Off this ' + sd.weekday + ': ' + sd.offSentence + '.') && box.href === sd.link[0] && box.link === sd.link[1], JSON.stringify(box))
+    await c.close()
+  }
+  check('L2m ' + sd.date + ' the classes it switches off are marked in the week itself, in the HTML: ' + sd.off.join(', '), offCount >= sd.off.length, 'marked: ' + offCount)
+  {
+    const { c, p } = await at(during, '/schedule', { javaScriptEnabled: false })
+    const marked = await p.evaluate(date => [...document.querySelectorAll('.sc__class[data-off="' + date + '"]')].map(b => b.getAttribute('data-time')), sd.date)
+    const unmarked = await p.evaluate(day => [...document.querySelectorAll('.sc__class:not([data-off])')].filter(b => b.getAttribute('data-day') === day).map(b => b.getAttribute('data-time')), DAY)
+    const times = [...new Set(marked)]
+    check('L2m ' + sd.date + ' exactly the classes in the entry are marked (by start time), and the others on that weekday are not', JSON.stringify(times.sort()) === JSON.stringify([...sd.off].sort()) && !unmarked.some(t => sd.off.includes(t)), JSON.stringify({ marked, unmarked }))
+    await c.close()
+  }
+
+  // With JavaScript: three states, by the academy's clock.
+  const state = day => {
+    const a = document.querySelector('[data-sc] .sc__special'), cards = [...document.querySelectorAll('.sc__class[data-day="' + day + '"]')]
+    const sat = document.querySelector('[data-sc-col="' + day + '"]')
+    return {
+      shown: !!a && a.getBoundingClientRect().height > 0 && getComputedStyle(a).display !== 'none', hiddenAttr: !!a && a.hidden,
+      pill: !!a && (() => { const x = a.querySelector('.sc__special-pill'); return x && getComputedStyle(x).display !== 'none' && x.getBoundingClientRect().height > 0 ? x.textContent.trim() : '' })(),
+      offCards: cards.filter(b => b.hasAttribute('data-off')).length, dim: cards.filter(b => b.classList.contains('is-off')).length,
+      tags: [...document.querySelectorAll('.sc__tag--off')].map(e => e.textContent.trim()),
+      labels: cards.map(b => b.getAttribute('aria-label')).filter(l => /no class on/.test(l)).length,
+      today: !!sat && sat.classList.contains('is-today'),
+    }
+  }
+  {
+    const { c, p } = await at(before, '/schedule')
+    const s = await p.evaluate(state, DAY)
+    check('L2m ' + sd.date + ' two days ahead the plan is there, not yet marked Today, and the classes say "Off ' + sd.short + '" without being dimmed',
+      s.shown && s.pill === '' && s.offCards === offCount && s.dim === 0 && s.tags.length === offCount && s.tags.every(x => x === 'Off ' + sd.short) && !s.today, JSON.stringify(s))
+    await c.close()
+  }
+  {
+    const { c, p } = await at(during, '/schedule')
+    const s = await p.evaluate(state, DAY)
+    check('L2m ' + sd.date + ' on the day it says Today, the classes that are off say "Off today" and are dimmed, and the others are as they were',
+      s.shown && s.pill === 'Today' && s.offCards === offCount && s.dim === offCount && s.tags.length === offCount && s.tags.every(x => x === 'Off today') && s.today, JSON.stringify(s))
+    const open = await p.evaluate(day => { const b = [...document.querySelectorAll('.sc__class[data-day="' + day + '"]:not([data-off])')]; return b.map(x => [x.getAttribute('data-time'), getComputedStyle(x).opacity]) }, DAY)
+    check('L2m ' + sd.date + ' the class that does run is not dimmed', open.length >= 1 && open.every(([, o]) => o === '1'), JSON.stringify(open))
+    await c.close()
+    const h = await at(during, '/')
+    check('L2m ' + sd.date + ' the front page\'s week says the same, on the day', await h.p.evaluate(state, DAY).then(x => x.shown && x.pill === 'Today' && x.dim === offCount), '')
+    await h.c.close()
+  }
+  {
+    const { c, p } = await at(after, '/schedule')
+    const s = await p.evaluate(state, DAY)
+    check('L2m ' + sd.date + ' the day after, none of it is left: the plan is gone, and the classes carry no "Off" words, no dimming and no mention of it in what a screen reader says',
+      !s.shown && s.hiddenAttr && s.offCards === 0 && s.dim === 0 && s.tags.length === 0 && s.labels === 0, JSON.stringify(s))
+    await c.close()
+  }
+
+  // The front page's card for the day: first in the strip, in the pink of the event, the same plan in the same words.
+  const cardState = () => {
+    const all = [...document.querySelectorAll('#eventStrip a.event-strip__link--today-pink')]
+    const a = all.find(x => !x.hidden && x.offsetParent !== null && x.getBoundingClientRect().height > 0), t = (el, s) => (el.querySelector(s)?.textContent ?? '').replace(/\s+/g, ' ').trim()
+    const chip = document.getElementById('heroChip')
+    return {
+      count: all.length, shown: !!a,
+      first: !!a && [...document.querySelectorAll('#eventStrip a.event-strip__link')].find(x => !x.hidden) === a,
+      eyebrow: a ? t(a, '.event-strip__eyebrow') : '', title: a ? t(a, 'strong') : '', where: a ? t(a, '.event-strip__where') : '', cta: a ? t(a, '.event-strip__cta') : '',
+      sessions: a ? [...a.querySelectorAll('.event-strip__session')].map(s => ({ b: t(s, 'b'), note: t(s, 'span') })) : [],
+      href: a ? a.getAttribute('href') : '', target: a ? (a.getAttribute('target') ?? '') : '', ctaBg: a ? getComputedStyle(a.querySelector('.event-strip__cta')).backgroundColor : '',
+      pill: a ? getComputedStyle(a.querySelector('.event-strip__pill')).backgroundColor : '', columbus: [...document.querySelectorAll('a.event-strip__link--today:not(.event-strip__link--today-pink)')].some(x => !x.hidden && x.offsetParent !== null),
+      chip: chip && !chip.hidden ? t(chip, 'span') : '', opens: all[0]?.getAttribute('data-opens'), closes: all[0]?.getAttribute('data-closes'),
+    }
+  }
+  {
+    const { c, p } = await at(during, '/')
+    const k = await p.evaluate(cardState)
+    check('L2m ' + sd.date + ' the first card of "this month" is the day\'s: Today, ' + sd.long + ', a different ' + sd.weekday + ', its title, and each part with its time and its words',
+      k.shown && k.first && k.eyebrow === 'Today ' + sd.long + ' · a different ' + sd.weekday && k.title === sd.title
+        && JSON.stringify(k.sessions) === JSON.stringify(plan.map(x => ({ b: x.what + ' ' + x.when, note: x.note }))), JSON.stringify(k))
+    check('L2m ' + sd.date + ' it says what is off and gives the number to call or text, and its button goes to the sign-up in the same tab',
+      k.where === 'Off today: ' + sd.offSentence + '. Questions? Call or text (281) 393-7983.' && k.cta === sd.link[1] && k.href === sd.link[0] && k.target === '', JSON.stringify(k))
+    check('L2m ' + sd.date + ' it is pink with a red Today tag, the last day\'s navy-and-gold card is not shown, and the line under the hero buttons names it first',
+      k.ctaBg === 'rgb(229, 143, 181)' && k.pill === 'rgb(200, 40, 58)' && !k.columbus && /^This month: A different \w+ today · /.test(k.chip), JSON.stringify(k))
+    check('L2m ' + sd.date + ' it names no price, offer or claim nobody gave, and uses no dash',
+      !/\$|price|cost|discount|% off|trial|black belt|champion|national/i.test(k.eyebrow + k.title + k.where + JSON.stringify(k.sessions)) && !/[–—]/.test(k.eyebrow + k.title + k.where + JSON.stringify(k.sessions)), JSON.stringify(k))
+    await c.close()
+  }
+  {
+    // Midnight Central to midnight Central, and gone from the pages after.
+    const { c, p } = await at(during, '/')
+    const k0 = await p.evaluate(cardState)
+    const o = Date.parse(k0.opens), cl = Date.parse(k0.closes)
+    const seen = {}
+    for (const [name, ms] of [['before', o - 1000], ['opens', o], ['late', cl - 1000], ['closes', cl + 1000]]) {
+      await p.clock.setFixedTime(new Date(ms)); await p.reload({ waitUntil: 'load' }); await p.waitForTimeout(200)
+      seen[name] = (await p.evaluate(cardState)).shown
+    }
+    check('L2m ' + sd.date + ' the card opens at midnight Central that morning and is gone the second after midnight Central that night', seen.before === false && seen.opens === true && seen.late === true && seen.closes === false, JSON.stringify(seen))
+    await c.close()
+    const a = await at(after, '/')
+    const ka = await a.p.evaluate(cardState)
+    check('L2m ' + sd.date + ' the day after there is no card for it and the hero line does not mention it', !ka.shown && !/different/i.test(ka.chip), JSON.stringify(ka))
+    await a.c.close()
+  }
+  for (const [w, h] of [[390, 844], [320, 640]]) {
+    const { c, p } = await at(during, '/', { viewport: { width: w, height: h } })
+    const fits = await p.evaluate(() => {
+      const a = [...document.querySelectorAll('#eventStrip a.event-strip__link--today-pink')].find(x => !x.hidden), r = a.getBoundingClientRect()
+      const y = s => a.querySelector(s).getBoundingClientRect().top
+      return document.documentElement.scrollWidth <= innerWidth
+        && [...a.querySelectorAll('*')].every(e => { const b = e.getBoundingClientRect(); return b.width === 0 || (b.left >= r.left - 0.5 && b.right <= r.right + 0.5 && e.scrollWidth <= e.clientWidth + 1) })
+        && y('.event-strip__eyebrow') < y('strong') && y('strong') < y('.event-strip__session') && y('.event-strip__session') < y('.event-strip__where') && y('.event-strip__where') < y('.event-strip__cta')
+    })
+    check('L2m ' + sd.date + ' on a ' + w + ' px phone the day\'s card fits: nothing sticks out sideways, and it reads top to bottom', fits)
+    await c.close()
+  }
+
+  // The Pink October calendar: a woman choosing a first class for that day is not offered a class that is off.
+  {
+    const { c, p } = await at(sd.date + 'T13:00:00Z', '/pink-october')
+    await p.waitForFunction(() => window.LabyrinthBooking && window.LabyrinthBooking.classOff, null, { timeout: 5000 }).catch(() => {})
+    await p.evaluate(() => window.dispatchEvent(new Event('load')))
+    await p.waitForTimeout(150)
+    const hasDate = await p.locator('[data-pick-date="' + sd.date + '"]').count()
+    let listed = [], event = 0
+    if (hasDate) { await p.click('[data-pick-date="' + sd.date + '"]'); listed = await p.$$eval('#pick-panel .pick__time', bs => bs.map(b => b.dataset.time)); event = await p.locator('#pick-panel a.pick__event').count() }
+    const all = await p.$$eval('.pick__week[data-pick-day="' + sd.weekday.slice(0, 3) + '"] .pick__time', bs => bs.map(b => b.dataset.time))
+    check('L2m ' + sd.date + ' the Pink October calendar offers that day only the classes that run: ' + all.filter(t => !sd.off.includes(t)).join(', '),
+      hasDate === 1 && JSON.stringify(listed) === JSON.stringify(all.filter(t => !sd.off.includes(t))) && all.some(t => sd.off.includes(t)), JSON.stringify({ hasDate, listed, all, event }))
+    await c.close()
+  }
+}
+
 // ── L2k: the "this month" cards: a real photograph blended into each one, and few words ──
 // Every card has a photograph of our people behind its words (assets/strip-<card>.jpg and .webp, cut by scripts/strip_photos.py, faded into the card by .event-strip__photo). It is decoration, so
 // it has no alt text and is hidden from screen readers; it is the size the page says it is, and it is named with the hash of its file. The cards keep their words short (what it is, when, one line
@@ -2410,8 +2592,9 @@ check('L6 tells them to call', ((await page.textContent('#bookingInline .booking
   const sha = f => createHash('sha256').update(readFileSync(join(ROOT, f))).digest('hex').slice(0, 8)
   const home = readFileSync(join(ROOT, 'index.html'), 'utf8')
   const refs = [...home.matchAll(/(?:src|srcset)="\/(assets\/strip-[a-z]+\.(?:jpg|webp))(\?v=[0-9a-f]+)?"/g)]
+  // The one-day cards (a holiday, a day that runs differently) all use the one picture assets/strip-today, so it is counted once however many of those cards the page holds.
   check('L2k the six card pictures are each named twice (a .webp and a .jpg), with the hash of the very file',
-    refs.length === 12 && refs.every(m => m[2] === '?v=' + sha(m[1])), refs.filter(m => m[2] !== '?v=' + sha(m[1])).map(m => m[1] + (m[2] ?? ' (no version)')).join(', ') || `found ${refs.length}`)
+    new Set(refs.map(m => m[1])).size === 12 && refs.every(m => m[2] === '?v=' + sha(m[1])), refs.filter(m => m[2] !== '?v=' + sha(m[1])).map(m => m[1] + (m[2] ?? ' (no version)')).join(', ') || `found ${new Set(refs.map(m => m[1])).size} different pictures in ${refs.length} places`)
 
   const scratch = await (await browser.newContext()).newPage()
   const lumOf = ([r, g, b]) => { const f = v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4 }; return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b) }

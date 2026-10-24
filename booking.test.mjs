@@ -450,6 +450,87 @@ console.log('\nHolidays are not offered:')
   await ctx.close()
 }
 
+// ── A day that runs differently ──────────────────────────────────────────────
+//
+// Saturday, October 24, 2026 is the Rolling for Ribbons seminar: the 9:00 workout still runs, an open mat follows, the seminar takes the 11:00 hour, and the regular 10:00, 11:00 and 12:00
+// classes are off (scripts/schedule_data.py SPECIAL_DAYS; booking.js CLASS_OFF). Nobody may book a trial into a class that is not running that day, and the workout, which is running, stays
+// bookable. The academy is open, so this is not a closed day: it is the classes that are off, drawn and explained like one. This runs at 8:00 AM Central that Saturday, whatever day the
+// suite is run on.
+console.log('\nA day that runs differently (Saturday, October 24, 2026):')
+{
+  const { page, ctx } = await open('/index.html')
+  await ctx.clock.setFixedTime(new Date('2026-10-24T13:00:00Z'))
+  const dates = await page.evaluate(() => {
+    const p = n => (n < 10 ? '0' : '') + n
+    const ymd = d => d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate())
+    const B = window.LabyrinthBooking
+    const first = (day, t) => ymd(B.upcomingDates(day, t)[0])
+    return {
+      workout: first('Sat', '9:00 AM'), kids: first('Sat', '10:00 AM'), adult: first('Sat', '11:00 AM'), noon: first('Sat', '12:00 PM'), sunday: first('Sun', '10:30 AM'),
+      why: ['9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM'].map(t => B.classOff(new Date(2026, 9, 24), t)),
+      nextSaturday: B.classOff(new Date(2026, 9, 31), '11:00 AM'), noTime: B.classOff(new Date(2026, 9, 24)), table: B.classOffDates,
+    }
+  })
+  check('the 9:00 workout is still offered that morning; the 10:00, 11:00 and 12:00 classes are offered a week on, and Sunday is untouched',
+    [dates.workout, dates.kids, dates.adult, dates.noon, dates.sunday], ['2026-10-24', '2026-10-31', '2026-10-31', '2026-10-31', '2026-10-25'])
+  check('the reason is given for the classes that are off, and for them only',
+    [dates.why, dates.nextSaturday, dates.noTime], [[null, 'Rolling for Ribbons day', 'Rolling for Ribbons day', 'Rolling for Ribbons day'], null, null])
+  check('the table is exposed for the test of its agreement with scripts/schedule_data.py',
+    dates.table, { '2026-10-24': { why: 'Rolling for Ribbons day', times: ['10:00 AM', '11:00 AM', '12:00 PM'] } })
+
+  // The calendar of a class that is off: the day is drawn, not a control, and the words under the grid say why.
+  await page.evaluate(() => window.LabyrinthBooking.openForm('Adult & Teens', 'No-Gi', 'Sat', '11:00 AM'))
+  await page.waitForTimeout(300)
+  const off = await page.evaluate(() => ({
+    month: document.querySelector('.booking-cal__month')?.textContent.trim(),
+    checked: document.querySelector('input[name="bookingDate"]:checked')?.id,
+    shut: [...document.querySelectorAll('.booking-cal__day--shut')].map(e => [e.textContent.trim(), e.getAttribute('title')]),
+    controls: [...document.querySelectorAll('input[name="bookingDate"]')].map(r => r.id.replace('bookingDate-', '')),
+    notes: [...document.querySelectorAll('.booking-cal__note')].map(e => e.textContent.trim()),
+  }))
+  check('the 11:00 class opens on the Saturday after, not on the day it is off', [off.month, off.checked], ['October 2026', 'bookingDate-2026-10-31'])
+  check('October 24 is drawn but is not a control, and says why when it is looked at',
+    [off.shut, off.controls.includes('2026-10-24'), off.controls.includes('2026-10-31')], [[['24', 'No class — Rolling for Ribbons day']], false, true])
+  check('and the reason is spelled out under the calendar, as it is for a holiday',
+    off.notes, ['No class Oct 24 — Rolling for Ribbons day'])
+  await page.evaluate(() => window.LabyrinthBooking.close())
+
+  // A page that already knows the day (the Pink October calendar) may ask for it: it is not honoured for a class that is off.
+  await page.evaluate(() => window.LabyrinthBooking.openForm('Adult & Teens', 'No-Gi', 'Sat', '11:00 AM', '2026-10-24'))
+  await page.waitForTimeout(300)
+  check('a calendar asking for the day a class is off gets the next one instead',
+    await page.evaluate(() => document.querySelector('input[name="bookingDate"]:checked')?.id), 'bookingDate-2026-10-31')
+  await page.evaluate(() => window.LabyrinthBooking.close())
+
+  // The workout, which is running, can be booked that very morning, and its calendar has nothing to explain.
+  await page.evaluate(() => window.LabyrinthBooking.openForm('MMA Conditioning', '', 'Sat', '9:00 AM'))
+  await page.waitForTimeout(300)
+  const work = await page.evaluate(() => ({
+    checked: document.querySelector('input[name="bookingDate"]:checked')?.id,
+    shut: document.querySelectorAll('.booking-cal__day--shut').length, notes: document.querySelectorAll('.booking-cal__note').length,
+  }))
+  check('the 9:00 workout opens on October 24 itself, with no day crossed out and nothing to explain', work, { checked: 'bookingDate-2026-10-24', shut: 0, notes: 0 })
+  await page.evaluate(() => window.LabyrinthBooking.close())
+
+  // The kids trial list says the same: the 10:00 class is a week away, the workout is today.
+  await page.evaluate(() => window.LabyrinthBooking.openKidsTrials())
+  await page.waitForSelector('.booking-kidstrial-class__btn')
+  const sat = await page.evaluate(() => [...document.querySelectorAll('.booking-kidstrial-day[data-day="Sat"] .booking-kidstrial-class')]
+    .map(r => `${r.querySelector('.booking-kidstrial-class__name')?.textContent} ${r.querySelector('.booking-kidstrial-class__date')?.textContent}`))
+  check('the kids trial list has the workout today and the 10:00 class on October 31', sat, ['MMA Conditioning (all ages) Next: today', 'Kids Grappling (7–12) Next: Oct 31'])
+  await page.evaluate(() => window.LabyrinthBooking.close())
+
+  // Once the day has passed it does nothing: on the Sunday every Saturday class is offered the Saturday after (October 31), as any week.
+  await ctx.clock.setFixedTime(new Date('2026-10-25T15:00:00Z'))
+  const after = await page.evaluate(() => {
+    const p = n => (n < 10 ? '0' : '') + n
+    const ymd = d => d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate())
+    return ['9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM'].map(t => ymd(window.LabyrinthBooking.upcomingDates('Sat', t)[0]))
+  })
+  check('the day after, every Saturday class is offered on October 31', after, ['2026-10-31', '2026-10-31', '2026-10-31', '2026-10-31'])
+  await ctx.close()
+}
+
 // ── Kids can try a class on any day of the week ──────────────────────────────
 //
 // Kids trials were Friday afternoon and Saturday morning, and the picker was
