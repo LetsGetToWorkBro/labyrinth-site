@@ -1,0 +1,91 @@
+/* The look of the Saturday morning reminder post, October 24, 2026 (scripts/instagram-ribbon-day.mjs serves the two pages this styles and cuts them into the
+   feed's two 1080x1350 slides and the 1080x1920 story). Plum-black, bone and rose; the numerals are cut from rose foil; one satin ribbon runs behind the swipe. */
+@font-face{font-family:"DMS";src:url(/scripts/fonts/dm-serif-display-latin-400-normal.woff2) format("woff2");font-weight:400}
+@font-face{font-family:"Jost";src:url(/scripts/fonts/jost-latin-500-normal.woff2) format("woff2");font-weight:500}
+:root{--bone:#f3e6e2;--ink:#12060d;--rose:#e58fb5;--rose-d:#c2477f}
+*{box-sizing:border-box}
+html,body{margin:0;background:#000}
+.layer{position:absolute;inset:0}
+.at{position:absolute;overflow:hidden}
+
+/* the ground: dark plum stone (a Higgsfield plate), with a faint wine glow where the light falls */
+.ground{background:var(--ink) url(/scripts/ribbon-day-plates/ground.jpg) center/cover}
+.ground::after{content:"";position:absolute;inset:0;background:radial-gradient(900px 720px at var(--gx,55%) var(--gy,60%),rgba(120,28,74,.30),rgba(120,28,74,0) 72%),rgba(18,6,13,.70)}
+
+/* the maze mark without its lettering, ghosted into the dark behind the words */
+.maze{position:absolute;width:var(--d,900px);height:var(--d,900px);left:var(--x,0);top:var(--y,0);background:rgba(229,143,181,var(--o,.08));-webkit-mask:url(/work/brand/seal-maze-ring.png) center/100% 100% no-repeat;mask:url(/work/brand/seal-maze-ring.png) center/100% 100% no-repeat}
+
+/* the thread: Higgsfield's satin ribbon, laid on with screen blending so that its black does nothing; one piece, behind everything, across the seam between the slides */
+.thread{position:absolute;mix-blend-mode:screen;transform-origin:0 0}
+.thread img{display:block;width:100%;height:auto}
+
+/* the plate: the photograph melting into the dark on all four sides */
+.plate{position:absolute;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 var(--mx,120px),#000 calc(100% - var(--mx,120px)),transparent 100%),linear-gradient(180deg,transparent 0,#000 var(--mt,150px),#000 calc(100% - var(--mb,170px)),transparent 100%);-webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent 0,#000 var(--mx,120px),#000 calc(100% - var(--mx,120px)),transparent 100%),linear-gradient(180deg,transparent 0,#000 var(--mt,150px),#000 calc(100% - var(--mb,170px)),transparent 100%);mask-composite:intersect}
+.plate img{display:block;width:100%;height:100%;object-fit:cover}
+/* the wall and the stool in the photograph's top left corner go into the dark first */
+.plate-shade{position:absolute;inset:0;background:radial-gradient(ellipse 52% 46% at 0% 0%,rgba(18,6,13,.96),rgba(18,6,13,0) 100%)}
+
+/* rose foil, cut to a shape (the numerals, and the awareness ribbon) */
+.foil{background:url(/scripts/ribbon-day-plates/foil-rose.jpg) var(--fx,0) var(--fy,0)/1100px auto;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+.lit{filter:drop-shadow(0 1px 0 rgba(0,0,0,.6)) drop-shadow(0 12px 20px rgba(0,0,0,.5)) drop-shadow(0 0 34px rgba(229,143,181,.20))}
+.num{font-family:"DMS",serif;font-weight:400;line-height:1.05;padding:.05em .02em;white-space:nowrap}
+.icon{position:absolute;background:url(/scripts/ribbon-day-plates/foil-rose.jpg) var(--fx,0) var(--fy,0)/900px auto;-webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7' fill='none' stroke='white' stroke-width='2.3' stroke-linecap='round' stroke-linejoin='round'/></svg>") center/contain no-repeat;mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 14C8 11 7.5 9 7.5 6.8 7.5 4.6 9.5 3 12 3s4.5 1.6 4.5 3.8C16.5 9 16 11 12 14zM12 14 8 21M12 14l4 7' fill='none' stroke='white' stroke-width='2.3' stroke-linecap='round' stroke-linejoin='round'/></svg>") center/contain no-repeat}
+
+/* the words: small capitals spaced wide, in bone */
+.caps{font-family:"Jost",sans-serif;text-transform:uppercase;color:var(--bone);text-shadow:0 0 16px rgba(18,6,13,.95)}
+.hair{position:absolute;height:1px;background:linear-gradient(90deg,rgba(229,143,181,.55),rgba(229,143,181,.08))}
+.hot{position:absolute;background:linear-gradient(90deg,rgba(229,143,181,.20),rgba(229,143,181,.05));border-left:3px solid var(--rose)}
+
+/* ========== the feed: two slides laid side by side as one 2160x1350 picture ========== */
+#pano{position:relative;width:2160px;height:1350px;overflow:hidden;background:var(--ink)}
+
+/* slide 1: today at eleven. The numeral is the hero; the words stand to its right; what is not on today stands under the picture. */
+.s1 .hero{position:absolute;left:127px;top:100px;display:flex;align-items:baseline;gap:26px}
+.s1 .hero .num{font-size:430px}
+.s1 .hero .am{font-family:"Jost",sans-serif;font-weight:500;font-size:46px;letter-spacing:.3em;color:var(--bone);text-transform:uppercase;text-shadow:0 0 16px rgba(18,6,13,.95)}
+.s1 .tb{position:absolute;left:630px;top:164px;width:330px;text-align:left}
+.s1 .tb .a{font-weight:500;font-size:46px;line-height:1.2;letter-spacing:.3em}
+.s1 .tb .s{display:block;width:64px;height:2px;margin:18px 0;background:var(--rose)}
+.s1 .tb .b{font-weight:500;font-size:32px;line-height:1.46;letter-spacing:.22em;opacity:.9}
+.s1 .foot{position:absolute;left:135px;right:135px;top:1066px;text-align:center}
+.s1 .foot .f1{font-weight:500;font-size:31px;letter-spacing:.26em;margin-right:-.26em;opacity:.94}
+.s1 .foot .s{display:block;width:64px;height:2px;margin:20px auto;background:var(--rose)}
+.s1 .foot .f2{font-weight:500;font-size:34px;letter-spacing:.28em;margin-right:-.28em;color:var(--rose)}
+
+/* slide 2: the whole day. Three rows, one numeral each; the seminar's row stands in a rose panel. */
+.s2 .hd{position:absolute;left:200px;top:140px}
+.s2 .hd .a{font-weight:500;font-size:42px;letter-spacing:.3em}
+.s2 .hd .s{display:block;width:64px;height:2px;margin:18px 0 16px;background:var(--rose)}
+.s2 .hd .b{font-weight:500;font-size:31px;letter-spacing:.24em;opacity:.88}
+.s2 .row{position:absolute;left:200px;width:745px}
+.s2 .row .num{position:absolute;left:0;top:-34px;font-size:205px}
+.s2 .row .tx{position:absolute;left:228px;top:2px;width:560px}
+.s2 .row .l1{font-weight:500;font-size:43px;letter-spacing:.2em;line-height:1.2}
+.s2 .row .l2{font-weight:500;font-size:29px;letter-spacing:.17em;opacity:.9;margin-top:14px;line-height:1.35}
+.s2 .hair{left:200px;width:745px}
+.s2 .hot{left:182px;width:778px}
+.s2 .icon{left:842px;top:738px;width:96px;height:96px;--fx:-300px;--fy:-400px}
+.s2 .foot{position:absolute;left:200px;width:745px;top:918px}
+.s2 .foot .f1{font-weight:500;font-size:33px;letter-spacing:.26em;color:var(--rose)}
+.s2 .foot .f2{font-weight:500;font-size:30px;letter-spacing:.18em;opacity:.92;margin-top:18px;line-height:1.5}
+.s2 .foot .url{font-family:"Jost",sans-serif;text-transform:none;font-weight:500;font-size:34px;letter-spacing:.04em;margin-top:20px;color:var(--bone)}
+
+/* ========== the story: one 1080x1920 picture; the words stay between y 250 and y 1580 (the top and the bottom of a story are covered by the app) ========== */
+#story{position:relative;width:1080px;height:1920px;overflow:hidden;background:var(--ink)}
+#story .hero{position:absolute;left:127px;top:196px;display:flex;align-items:baseline;gap:26px}
+#story .hero .num{font-size:430px}
+#story .hero .am{font-family:"Jost",sans-serif;font-weight:500;font-size:46px;letter-spacing:.3em;color:var(--bone);text-transform:uppercase;text-shadow:0 0 16px rgba(18,6,13,.95)}
+#story .tb{position:absolute;left:630px;top:257px;width:330px;text-align:left}
+#story .tb .a{font-weight:500;font-size:46px;line-height:1.2;letter-spacing:.3em}
+#story .tb .s{display:block;width:64px;height:2px;margin:18px 0;background:var(--rose)}
+#story .tb .b{font-weight:500;font-size:32px;line-height:1.46;letter-spacing:.22em;opacity:.9}
+#story .f1{position:absolute;left:135px;right:135px;top:1082px;text-align:center;font-weight:500;font-size:31px;letter-spacing:.26em;margin-right:-.26em;opacity:.94}
+#story .hair{left:135px;width:810px}
+#story .hot{left:119px;width:842px}
+#story .row{position:absolute;left:135px;width:810px;height:92px}
+#story .row .num{position:absolute;left:0;top:-20px;font-size:112px}
+#story .row .l1{position:absolute;left:150px;top:2px;font-weight:500;font-size:37px;letter-spacing:.2em;line-height:1.2;white-space:nowrap}
+#story .row .l2{position:absolute;left:150px;top:50px;font-weight:500;font-size:28px;letter-spacing:.16em;opacity:.9;white-space:nowrap}
+#story .icon{left:850px;width:84px;height:84px;--fx:-300px;--fy:-400px}
+#story .notice{position:absolute;left:135px;right:135px;text-align:center;font-weight:500;font-size:33px;letter-spacing:.28em;margin-right:-.28em;color:var(--rose)}
+#story .url{position:absolute;left:135px;right:135px;text-align:center;font-family:"Jost",sans-serif;font-weight:500;font-size:33px;letter-spacing:.04em;color:var(--bone);text-shadow:0 0 16px rgba(18,6,13,.95)}

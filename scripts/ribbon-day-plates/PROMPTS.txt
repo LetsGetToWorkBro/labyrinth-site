@@ -1,0 +1,20 @@
+The plates the Saturday morning reminder post (October 24, 2026) is laid on (scripts/instagram-ribbon-day.mjs). Made October 24, 2026 with Higgsfield (model gpt_image_2_5,
+quality high, 2k), from text prompts alone: they are materials and atmosphere, with no person in any prompt and no photograph of anyone sent to the generator.
+The photograph of the two women (women-18.jpg) is graded on this machine (scripts/ribbon-day-grade.py, "photo") and is never altered by a generator.
+
+ribbon.jpg      "A single long ribbon of rose-pink satin floating and curling through pure black space, glossy satin sheen with soft highlights along its folds, elegant S-curves,
+                thin and delicate, soft rim light, a lot of empty black space, macro studio photograph, no objects, no text, no people" (16:9, 2688x1520)
+                Then: python3 scripts/ribbon-day-grade.py ribbon <plate.png> ribbon.jpg   (its pink pulled to the brand's rose, hue 337 degrees, saturation x0.8).
+                It is laid on with screen blending, so its black does nothing; the slides scale it to 3,600 px wide and run it behind both slides and across the seam between them.
+foil-rose.jpg   "Extreme macro photograph of metallic rose pink foil, softly crinkled with fine creases, deep raspberry shadows and bright pale pink-silver highlights, flat top-down
+                view filling the whole frame edge to edge, no objects, no text, no logos, no borders, studio lighting, ultra detailed micro-grain" (1:1, 2048x2048)
+                Then: python3 scripts/ribbon-day-grade.py foil <plate.png> foil-rose.jpg   (a gradient map from the plate's light to plum, rose, blush and champagne: the creases
+                are the plate's, the colours the brand's), scaled to 1100 px. The numerals and the awareness ribbon are cut from it.
+ground.jpg      "Close-up photograph of a matte dark plum-black basalt stone surface, extremely fine grain, soft raking light from the top left revealing subtle texture, almost black
+                with a faint wine-red tint, even tone, no objects, no text, no cracks" (4:5, 1792x2240)
+                Unchanged but for the JPEG; the page darkens it further and lays a faint wine glow on it.
+women-18.jpg   Photograph 18 of Ray Harkness's album "Labyrinth_RFH" (file Labyrinth_RFH-19.jpg, @rayharkness): two of our women training. python3 scripts/ribbon-day-grade.py photo
+                <album photo> women-18.jpg   (1620 px wide: the event colours of the room put to sleep, skin and the rose of a shirt kept, greys leaning to plum in the shadows and to
+                bone in the lights, a pool of light on the pair, a little halation, the same grain as the JJWL post). Nobody is altered.
+
+Also made and not used: a wide dusty-rose ribbon with one loose loop (ribbon-b), a tall ribbon in a long vertical spiral (ribbon-c), a copper-gold foil (it read as copper, not rose).
