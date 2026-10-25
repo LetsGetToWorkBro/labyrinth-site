@@ -62,3 +62,8 @@
 # explicitly as 301s. A permanent redirect is what tells Google to move the
 # indexing to the new URL, which a 308 does not do as clearly.
 /blog/:slug.html                /blog/:slug         301
+
+# The Katy academy split off in October 2026 and rebranded, so the old Katy kids
+# post is retired. Its standing goes to the Fulshear kids program page, which is
+# where Katy families land now anyway.
+/blog/kids-martial-arts-katy-tx   /programs/kids-bjj-fulshear   301
