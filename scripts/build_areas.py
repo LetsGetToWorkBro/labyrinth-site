@@ -14,8 +14,7 @@ to answer the same question differently, and it does, because the honest answer
 genuinely differs by where you live:
 
   - the road you would actually take, and which direction
-  - which of the two Labyrinth academies is nearer you, which for Cinco Ranch
-    is not this one
+  - how far the one Labyrinth academy, in Fulshear, really is from you
   - which classes survive that commute on a Tuesday in November. A Sealy
     family is not making a 4:45 PM weekday class and saying otherwise wastes
     their evening
@@ -98,7 +97,7 @@ AREAS = [
             ("How far is Labyrinth BJJ from Tamarron?",
              "A few miles. You come out of Tamarron onto FM 1463 and over to Fulshear without touching a highway, and we are inside Cross Creek Ranch on Cross Creek Bend Lane. For most of Tamarron it is a short enough drive that it does not decide anything."),
             ("Should I train in Fulshear or in Katy?",
-             "From Tamarron it is genuinely close. We run a Katy academy too, with Coach Jared Vevera as head coach, so ring us and describe your week. We would rather you trained consistently at the nearer one than heroically at the further one for six weeks and then stopped."),
+             "Fulshear. Labyrinth's only academy is in Fulshear, a few miles from Tamarron, so ring us and describe your week. We would rather you trained consistently than heroically somewhere further away for six weeks and then stopped."),
         ],
     },
     {
@@ -187,26 +186,26 @@ AREAS = [
         "place": "Cinco Ranch",
         "region": "Katy, TX",
         "title": "Brazilian Jiu-Jitsu for Cinco Ranch, TX | Labyrinth BJJ",
-        "description": "Brazilian jiu-jitsu for Cinco Ranch families. Our Katy academy is likely closer than Fulshear. Here is how to tell which one suits your week.",
-        "eyebrow": "Katy · read this one first",
-        "lead": "Honestly: our Katy academy is probably the one you want. Cinco Ranch is east of the Grand Parkway, and driving west to Fulshear on FM 1093 at six in the evening is a worse hour than it needs to be.",
+        "description": "Brazilian jiu-jitsu for Cinco Ranch families, ten to twelve miles west on FM 1093 in Fulshear. How to make the drive work, and which class times suit it best.",
+        "eyebrow": "East of the Grand Parkway",
+        "lead": "Honestly: Fulshear is a drive from Cinco Ranch. Ten to twelve miles west on FM 1093, and at six in the evening that road is busy. Here is how our Cinco Ranch families make it work, and the class times that make it easy.",
         "distance": "Around ten to twelve miles to Fulshear",
         "route": "FM 1093 / Westheimer Parkway west",
         "district": "Katy ISD",
-        "which": "katy",
+        "which": "fulshear",
         "body": [
-            "We run two academies. This one is in Fulshear, inside Cross Creek Ranch. The other is <strong>Labyrinth BJJ Katy</strong>, at 1806 Avenue D, with Coach Jared Vevera (a black belt of fourteen years) as its head coach. From most of Cinco Ranch, Katy is the shorter drive and the one we would point you at.",
-            "The Fulshear academy is still worth knowing about, because it is where the competition team trains and where the full seven-day timetable runs. Plenty of Cinco Ranch families do the trip west for a specific class (a Saturday competition session, or the all-ages strength and conditioning on a Tuesday) and train in Katy the rest of the week.",
-            "If you are on the western edge of Cinco Ranch, near the Grand Parkway, the two are close enough that it comes down to which room you like. Go to both. They are free to try.",
+            "We are in Fulshear, inside Cross Creek Ranch. It is our only academy, and it is where the full seven-day timetable and the competition team run. From most of Cinco Ranch the drive is ten to twelve miles west on FM 1093 / Westheimer Parkway.",
+            "Plenty of Cinco Ranch families make the trip for a specific class (a Saturday competition session, or the all-ages strength and conditioning on a Tuesday) and build the week around one or two journeys rather than five.",
+            "If you are on the western edge of Cinco Ranch, near the Grand Parkway, the drive is at its shortest. Come and try a class free, and time the run at the hour you would actually do it. That tells you more than any map.",
         ],
         "timing": "If you are coming to Fulshear from Cinco Ranch, avoid the westbound evening run. The 6:30 AM adult classes and the whole of Saturday are the times when FM 1093 is not the deciding factor.",
         "faqs": [
-            ("Should Cinco Ranch families train in Katy or Fulshear?",
-             "Katy, for most of Cinco Ranch. Our Katy academy is at 1806 Avenue D with Coach Jared Vevera as head coach, and it is the shorter drive from east of the Grand Parkway. We would rather tell you that than have you commit to a westbound FM 1093 run at six in the evening and quietly stop in a month."),
+            ("How do Cinco Ranch families make the drive work?",
+             "Most come once or twice a week and pick their times around FM 1093. The 6:30 AM adult classes, the midday classes and the whole of Saturday avoid the westbound evening run. Saturday is the easy one: kids train from 9:00 AM to noon and adults at 11:00, so a family can train on one journey."),
             ("Why would I drive to Fulshear at all?",
-             "The Fulshear academy runs the full seven-day timetable and is where the competition team trains, so some Cinco Ranch families come west for a specific session (the Saturday competition classes, or the all-ages strength and conditioning on Tuesday and Thursday) and train in Katy the rest of the week."),
-            ("Is the first class free at both?",
-             "Yes. Try either, or both. Adults can book into any class on the Fulshear timetable, and kids can start on any day of the week."),
+             "Because it is the full program in one room: seven days a week, kids and adult Gi and No-Gi, youth wrestling, strength and conditioning, and the competition team. Some families come west for one specific session a week and train closer to home the rest of the week."),
+            ("Is the first class free?",
+             "Yes. Adults can book into any class on the timetable, and kids can start on any day of the week."),
         ],
     },
     {
@@ -309,9 +308,7 @@ def render(a):
         for l, v in [("From %s" % place, a["distance"]), ("Route", a["route"]),
                      ("Schools", a["district"]), ("First class", "<em>Free</em>")])
 
-    nearer = ("Our <a href=\"https://labyrinthbjjkaty.com\">Katy academy</a> is likely the nearer of the two."
-              if a["which"] == "katy" else
-              "The Fulshear academy is the nearer of our two for %s." % place)
+    nearer = "The academy is in Fulshear, inside Cross Creek Ranch."
 
     parts = [head, NAV, """
 <div class="container">
@@ -347,7 +344,7 @@ def render(a):
     </div>
     <div class="prog-prose fade-in">
 %(body)s
-      <p><strong>Where we actually are.</strong> There is one Labyrinth academy in Fulshear (%(address)s, inside Cross Creek Ranch on Cross Creek Bend Lane) and a second in Katy. We do not have a location in %(place)s. %(nearer)s</p>
+      <p><strong>Where we actually are.</strong> There is one Labyrinth academy, in Fulshear (%(address)s, inside Cross Creek Ranch on Cross Creek Bend Lane). We do not have a location in %(place)s. %(nearer)s</p>
       <h3>Which classes work from here</h3>
       <p>%(timing)s</p>
     </div>
