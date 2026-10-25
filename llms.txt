@@ -4,7 +4,7 @@
 > academies nationally on jits.gg (#39 of 7,869 as of September 2026). Kids and adult BJJ, a competition team, youth
 > wrestling, and all-ages strength and conditioning. Founded 2021.
 
-Last updated: October 22, 2026
+Last updated: October 25, 2026
 
 This file follows the llms.txt convention (https://llmstxt.org), a plain-text
 summary for language models reading the site. It exists because the answers
@@ -21,10 +21,9 @@ disagree, the page is right and this file is stale.
 - **Booking**: first class is free for everybody; adults may trial any class on
   the timetable, children on any day of the week (any kids class that is not
   advanced, or an all-ages class)
-- **Second location**: Labyrinth BJJ Katy, 1806 Avenue D Suite 108, Katy, TX
-  77493: separate site at https://labyrinthbjjkaty.com
 - **Areas served**: Fulshear, Katy, Cinco Ranch, Richmond, Rosenberg,
-  Brookshire, Simonton, west Houston
+  Brookshire, Simonton, west Houston. One academy, in Fulshear; a second
+  location opens in Wharton on February 1, 2027.
 
 ## Programs
 
@@ -67,8 +66,9 @@ Monthly memberships are month to month with no long-term contract: cancel any ti
 ## Coaching
 
 Prof. Anthony Curry (founder, black belt), Prof. Shaun Lawler (black belt),
-Jared Vevera (black belt, head coach at Katy), Christian Solano and Jake
-Maronge (brown belts), Malik Pickett (wrestling, Texas National Team).
+Scott Jones (7th dan Taekwondo, BJJ brown belt, MMA Conditioning), Christian
+Solano and Jake Maronge (brown belts), Malik Pickett (wrestling,
+Texas National Team).
 
 ## Pages
 
@@ -98,7 +98,7 @@ The coach pages, the area pages and every article are listed below, one line eac
 ## Area pages
 
 - [Jiu-Jitsu for Brookshire](https://labyrinth.vision/areas/bjj-brookshire): Kids and adult Brazilian jiu-jitsu seven miles from Brookshire straight down FM 359. No highway, no Katy traffic. First class free.
-- [Jiu-Jitsu for Cinco Ranch](https://labyrinth.vision/areas/bjj-cinco-ranch): Brazilian jiu-jitsu for Cinco Ranch families. Our Katy academy is likely closer than Fulshear. Here is how to tell which one suits your week.
+- [Jiu-Jitsu for Cinco Ranch](https://labyrinth.vision/areas/bjj-cinco-ranch): Brazilian jiu-jitsu for Cinco Ranch families, ten to twelve miles west on FM 1093 in Fulshear. How to make the drive work, and which class times suit it best.
 - [Jiu-Jitsu for Richmond](https://labyrinth.vision/areas/bjj-richmond): Kids and adult Brazilian jiu-jitsu north of Richmond, up FM 359. Lamar CISD families, evening and Saturday classes. First class free.
 - [Jiu-Jitsu for Rosenberg](https://labyrinth.vision/areas/bjj-rosenberg): Brazilian jiu-jitsu for Rosenberg families, up FM 359 through Richmond. A real drive. Here is how to make one trip a week count.
 - [Jiu-Jitsu for Sealy](https://labyrinth.vision/areas/bjj-sealy): Brazilian jiu-jitsu for Sealy families, about 25 miles east on I-10. A long drive, best done as one Saturday trip. First class free.
@@ -124,7 +124,7 @@ The coach pages, the area pages and every article are listed below, one line eac
 - [BJJ vs Karate for Kids: Which Is Better?](https://labyrinth.vision/blog/bjj-vs-karate-for-kids): BJJ vs karate for kids, a fair, detailed comparison of grappling vs striking martial arts for children. Self-defense, safety, fitness, and more.
 - [BJJ for Women: Why More Women Are Training](https://labyrinth.vision/blog/bjj-for-women): Women are joining Brazilian Jiu-Jitsu in record numbers. Discover why BJJ is the best self-defense and fitness activity for women, and what to expect at your first class.
 - [BJJ Belt System Explained: White to Black](https://labyrinth.vision/blog/bjj-belt-system-explained): The complete guide to the Brazilian Jiu-Jitsu belt system: adult and kids belt progression, stripes, promotion timelines, and what each rank means on and off the mats.
-- [Best BJJ Gym in Fulshear, TX](https://labyrinth.vision/blog/best-bjj-gym-fulshear-tx): Why Labyrinth BJJ is the top-ranked Brazilian Jiu-Jitsu academy in Fulshear, Texas: top 1% nationally on jits.gg, with 3 black belt instructors and programs for all ages.
+- [Best BJJ Gym in Fulshear, TX](https://labyrinth.vision/blog/best-bjj-gym-fulshear-tx): Why Labyrinth BJJ is the top-ranked Brazilian Jiu-Jitsu academy in Fulshear, Texas: top 1% nationally on jits.gg, with two black belt instructors and programs for all ages.
 - [10 Benefits of Brazilian Jiu-Jitsu for Kids](https://labyrinth.vision/blog/benefits-of-bjj-for-kids): Discover the top 10 benefits of Brazilian Jiu-Jitsu for kids, from confidence and discipline to self-defense and fitness. Written by one of the top 1% of BJJ academies in the country.
 
 ## Notes for anyone answering questions about us
