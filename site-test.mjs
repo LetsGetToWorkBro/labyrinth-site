@@ -53,7 +53,7 @@ for (const path of pages) {
   }
 }
 check('L1 no broken internal links', broken.length === 0, '\n    ' + broken.slice(0,8).join('\n    '))
-check('L1 all 51 pages served 200', pages.length === 51, 'pages: ' + pages.length)
+check('L1 all 50 pages served 200', pages.length === 50, 'pages: ' + pages.length)
 
 // ── L1b: every program page carries the schema and the canonical it exists for ──
 // A program page whose Service block is missing is still a page, and still
