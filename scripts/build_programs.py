@@ -273,7 +273,7 @@ PROGRAMS = [
         "eyebrow": "All levels · Gi & No-Gi",
         "image": "adult-gi",
         "image_alt": "Adult Brazilian jiu-jitsu class at Labyrinth BJJ in Fulshear, TX",
-        "lead": "Seventeen classes a week across mornings, middays and evenings: Gi and No-Gi, beginner to black belt. Your first class is free, any class on the timetable.",
+        "lead": "Adult Brazilian jiu-jitsu in Fulshear: Gi and No-Gi training for complete beginners through black belts, seventeen classes a week across mornings, middays and evenings. Your first class is free, any class on the timetable.",
         "service_desc": "Adult Brazilian jiu-jitsu classes in Fulshear, TX. Gi and No-Gi training seven days a week for all levels, from complete beginner to competitor, with morning, midday and evening class times.",
         "facts": [
             ("Levels", "Complete beginner to black belt"),
@@ -304,9 +304,10 @@ PROGRAMS = [
             "You will be given a loaner gi if it is a Gi day, shown where to change, and introduced to whoever is nearest. The class starts with a warm-up you can scale down, moves to a technique broken into pieces, and then drilling: you and one partner, taking turns, no resistance. That part is not intimidating and it is most of the class.",
             "At the end there is live training. On a first day you will usually be paired with an experienced person who has been asked to look after you, which means you will lose comfortably and safely for five minutes and learn more in those five minutes than in the previous forty. You can also sit it out. Nobody will mention it.",
             "You will be worse at this than you expect for about three months, and then something clicks. Everybody goes through it. The people who quit almost always quit in week three, which is exactly when it is about to start making sense.",
+            "&ldquo;Incredible gym with an incredible culture. If you are an adult looking to get started this is the place to go. The coaches and more advanced folks are all extremely helpful.&rdquo; That is Justin McAnally, an adult student, in his Google review of the academy.",
         ],
-        "coaches": ["tony", "shaun", "jared", "christian", "jake"],
-        "coaches_note": "Three black belts and two brown belts teaching across the week.",
+        "coaches": ["tony", "shaun", "christian", "jake"],
+        "coaches_note": "Two black belts and two brown belts teaching across the week.",
         "prices": [
             ("8 classes", "$179", "/mo", "Eight classes a month. Gi, No-Gi and competition classes, plus open mat.", False),
             ("12 classes", "$189", "/mo", "Twelve a month: the middle option most people settle on.", False),
@@ -381,7 +382,7 @@ PROGRAMS = [
             "There is a conditioning element, because matches are decided late far more often than people expect. Our <a href=\"/blog/strength-and-conditioning-for-kids-fulshear\">strength and conditioning class</a> on Tuesdays and Thursdays exists partly for this reason, and it is open to every member at no extra cost.",
             "What competition training is not is a commitment to enter anything. Plenty of people train in these classes for the intensity and never register for a tournament, and that is a completely normal way to use them. Nobody is signed up to an event without asking.",
         ],
-        "coaches": ["tony", "shaun", "jared"],
+        "coaches": ["tony", "shaun"],
         "coaches_note": "Corner work at tournaments is done by the same coaches who run the classes.",
         "prices": [
             ("Adult unlimited", "$199", "/mo", "Every adult class including competition training and open mat.", True),
@@ -578,8 +579,6 @@ COACHES = {
              "Founder of Labyrinth BJJ. Built the academy from the ground up into one of the top 1% of teams in the country."),
     "shaun": ("Prof. Shaun Lawler", "Professor", "Black Belt &middot; 15+ Yrs", "black", "coach-shaun",
               "Deep competition experience and technical precision. Develops athletes at every level from beginner to elite competitor."),
-    "jared": ("Jared Vevera", "Head Coach: Katy", "Black Belt &middot; 14+ Yrs", "black", "coach-jared",
-              "Over 14 years of training, bringing world-class technique and leadership to both academies."),
     "christian": ("Christian Solano", "Instructor", "Brown Belt &middot; 10+ Yrs", "brown", "coach-christian",
                   "Over a decade of training forged into sharp no-gi technique."),
     "jake": ("Jake Maronge", "Instructor", "Brown Belt &middot; 9 Yrs", "brown", "coach-jake",
@@ -753,7 +752,7 @@ def render(p):
     # id="statsGrid" is load-bearing, not decoration: app.js observes that exact
     # id to fire the count-up, so without it the cards render a permanent 0.
     if p.get("stats"):
-        parts.append(section("Competition stats", "THE NUMBERS", "Verified from jits.gg, the largest grappling results database there is.",
+        parts.append(section("Competition stats", "THE NUMBERS", "Verified from <a href=\"https://jits.gg/academy/labyrinth-bjj-4377\" target=\"_blank\" rel=\"noopener noreferrer\">jits.gg</a>, the largest grappling results database there is.",
                              inner="""  <div class="stats-grid stagger" id="statsGrid">
     """ + jits_data.stats_grid() + """
   </div>"""))
@@ -1037,7 +1036,6 @@ MARTIAL_ARTS = {
          "Labyrinth BJJ is at " + ADDRESS + ", telephone " + PHONE + ". We serve Fulshear, Katy, Cinco Ranch, Richmond and the west Houston area."),
     ],
     "reading": [
-        ("kids-martial-arts-katy-tx", "Kids Martial Arts Classes in Katy, TX"),
         ("bjj-vs-karate-for-kids", "BJJ vs Karate for Kids: Which Is Better?"),
         ("benefits-of-bjj-for-kids", "10 Benefits of Brazilian Jiu-Jitsu for Kids"),
     ],

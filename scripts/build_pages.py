@@ -300,6 +300,17 @@ def render_pricing():
         <p class="price-extra__note">%s</p>
       </div>""" % (n, a, p, note) for n, a, p, note in P["extras"])
 
+    table_rows = []
+    for gkey, label in (("adult", "Adult"), ("kids", "Kids & Teens"), ("wrestling", "Wrestling"),
+                         ("family", "Family"), ("paid_in_full", "Paid In Full")):
+        for name, amount, per, feats, _ in P[gkey]:
+            table_rows.append("        <tr><th scope=\"row\">%s: %s</th><td>%s%s</td><td>%s</td></tr>"
+                              % (label, name, amount, per, "; ".join(feats)))
+    for name, amount, per, note in P["extras"]:
+        table_rows.append("        <tr><th scope=\"row\">%s</th><td>%s%s</td><td>%s</td></tr>"
+                          % (name, amount, per, note))
+    table_html = "\n".join(table_rows)
+
     return "\n".join([head, NAV, crumbs([("Pricing", "/pricing")]), """
 <header class="prog-hero">
   <div class="container">
@@ -340,6 +351,26 @@ def render_pricing():
 <section class="prog-section">
   <div class="container">
     <div class="fade-in">
+      <p class="section-label">One view</p>
+      <h2 class="section-title section-title--lg">ALL PRICES IN ONE TABLE</h2>
+    </div>
+    <div class="price-table-wrap fade-in">
+      <table class="price-table">
+        <thead>
+          <tr><th scope="col">Plan</th><th scope="col">Price</th><th scope="col">What it includes</th></tr>
+        </thead>
+        <tbody>
+%(table)s
+        </tbody>
+      </table>
+    </div>
+    <p class="prog-week__note fade-in">Every membership is month to month with no long-term contract, and your first class is free.</p>
+  </div>
+</section>
+
+<section class="prog-section">
+  <div class="container">
+    <div class="fade-in">
       <p class="section-label">Straight answers</p>
       <h2 class="section-title section-title--lg">WHAT YOU ARE ACTUALLY PAYING FOR</h2>
     </div>
@@ -372,7 +403,7 @@ def render_pricing():
       <a href="tel:2813937983" class="btn btn--ghost">Call %(phone)s</a>
     </div>
   </div>
-</div>""" % {"extras": extras, "note": P["note"], "faqs": faq_block(PRICING_FAQS), "phone": PHONE},
+</div>""" % {"extras": extras, "note": P["note"], "table": table_html, "faqs": faq_block(PRICING_FAQS), "phone": PHONE},
         TAIL % {"footer": FOOTER}])
 
 
@@ -532,10 +563,8 @@ COACHES = [
     },
 ]
 
-# The other three, listed on the hub without pages of their own.
+# The rest, listed on the hub without pages of their own.
 OTHER_COACHES = [
-    ("Jared Vevera", "Head Coach: Katy", "Black Belt &middot; 14+ Yrs", "black", "coach-jared",
-     "Head coach of the Katy academy and an instructor at Fulshear."),
     ("Christian Solano", "Instructor", "Brown Belt &middot; 10+ Yrs", "brown", "coach-christian",
      "Over a decade of training forged into sharp no-gi technique."),
     ("Jake Maronge", "Instructor", "Brown Belt &middot; 9 Yrs", "brown", "coach-jake",
@@ -3374,7 +3403,7 @@ def render_coach(c):
     </div>
     <div class="prog-siblings stagger">
 %(others)s
-      <a href="/coaches/" class="prog-sibling"><div class="prog-sibling__title">All nine coaches</div><div class="prog-sibling__desc">Three black belts, three brown belts (one of them a 7th dan in Taekwondo), a national-team wrestler and two coaches of the kids classes</div></a>
+      <a href="/coaches/" class="prog-sibling"><div class="prog-sibling__title">All eight coaches</div><div class="prog-sibling__desc">Two black belts, three brown belts (one of them a 7th dan in Taekwondo), a national-team wrestler and the coaches of the kids classes</div></a>
     </div>
   </div>
 </section>
@@ -3437,7 +3466,7 @@ def render_coach_hub():
   <div class="container">
     <p class="section-label">The staff</p>
     <h1 class="prog-hero__title">Who teaches you</h1>
-    <p class="prog-hero__lead">Three black belts, two brown belts, a Texas National Team wrestler, and three coaches on the kids classes who all still compete themselves. The line runs <a href="/coaches/anthony-curry">Anthony Curry</a>, black belt under Matt Leighton of Citadel BJJ in Iowa City, to <a href="/coaches/shaun-lawler">Shaun Lawler</a>. The only black belt Anthony has promoted in five years of running the academy.</p>
+    <p class="prog-hero__lead">Two black belts, three brown belts (one of them a 7th dan in Taekwondo), a Texas National Team wrestler, and the coaches of the kids classes, who all still compete themselves. The line runs <a href="/coaches/anthony-curry">Anthony Curry</a>, black belt under Matt Leighton of Citadel BJJ in Iowa City, to <a href="/coaches/shaun-lawler">Shaun Lawler</a>. The only black belt Anthony has promoted in five years of running the academy.</p>
     <div class="prog-hero__cta">
       <a data-book-trial href="/#book" class="btn btn--gold">Book a Free Class</a>
       <a href="/schedule" class="btn btn--ghost">See Who Teaches When</a>

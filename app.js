@@ -15,7 +15,6 @@
   // address), so the dot sat on the wrong road. index.html's geo tags and structured data carry the Fulshear pair too, and the tests
   // keep all of them in step.
   var GYM_FULSHEAR = { lat: 29.694132, lng: -95.871867 };   // 6615 West Cross Creek Bend Lane
-  var GYM_KATY = { lat: 29.798309, lng: -95.824537 };       // 1806 Avenue D
 
   // The Google Sheet behind the upcoming tournaments list.
   //
@@ -1380,7 +1379,6 @@
         if (entry.isIntersecting && !mapsInitialized) {
           mapsInitialized = true;
           createLocationMap('map-fulshear', GYM_FULSHEAR.lat, GYM_FULSHEAR.lng);
-          createLocationMap('map-katy', GYM_KATY.lat, GYM_KATY.lng);
           locObserver.unobserve(entry.target);
         }
       });
