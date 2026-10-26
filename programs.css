@@ -546,6 +546,31 @@
 }
 
 .price-card__btn:hover { transform: translateY(-2px); border-color: var(--gold); }
+
+.price-card__join {
+  display: block;
+  text-align: center;
+  margin-top: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--gold);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.price-card__join:hover { color: var(--gold-hover); }
+
+.price-extra__join {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--gold);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.price-extra__join:hover { color: var(--gold-hover); }
 .price-card--feature .price-card__btn:hover { background: var(--gold-hover); }
 
 .price-extras {

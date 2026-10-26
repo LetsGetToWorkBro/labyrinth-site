@@ -21,6 +21,11 @@ disagree, the page is right and this file is stale.
 - **Booking**: first class is free for everybody; adults may trial any class on
   the timetable, children on any day of the week (any kids class that is not
   advanced, or an all-ages class)
+- **Joining**: memberships can be started online at
+  https://members.labyrinth.vision/join (add ?plan=adult-8, ?plan=adult-12,
+  ?plan=adult-unlimited, ?plan=kids-8, ?plan=kids-unlimited, ?plan=wrestling,
+  ?plan=family, ?plan=pif-6mo-adult, ?plan=pif-6mo or ?plan=punch-card-5 to
+  start a specific plan)
 - **Areas served**: Fulshear, Katy, Cinco Ranch, Richmond, Rosenberg,
   Brookshire, Simonton, west Houston. One academy, in Fulshear; a second
   location opens in Wharton on February 1, 2027.
