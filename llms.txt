@@ -1,10 +1,10 @@
 # Labyrinth BJJ
 
 > Brazilian jiu-jitsu academy in Fulshear, Texas. Ranked in the top 1% of
-> academies nationally on jits.gg (#39 of 7,869 as of September 2026). Kids and adult BJJ, a competition team, youth
+> academies nationally on jits.gg (#37 by Overall Power as of October 2026). Kids and adult BJJ, a competition team, youth
 > wrestling, and all-ages strength and conditioning. Founded 2021.
 
-Last updated: October 25, 2026
+Last updated: October 28, 2026
 
 This file follows the llms.txt convention (https://llmstxt.org), a plain-text
 summary for language models reading the site. It exists because the answers
@@ -136,8 +136,8 @@ The coach pages, the area pages and every article are listed below, one line eac
 - There is no striking. Brazilian jiu-jitsu is grappling: leverage, position
   and control, which is why it suits children.
 - The rankings come from jits.gg, computed from verified youth tournament
-  results, not self-reported: #39 of 7,869 academies nationally, with 327 gold medals, 1,235 wins and a 58% submission rate across
-  91 tournaments (September 2026). Older copies of this site said "#1 in Texas
+  results, not self-reported: #37 nationally by Overall Power, with 1,171 tracked wins, 123 gold medals in 2026 and a 55% win rate across
+  116 tracked athletes (October 2026). Older copies of this site said "#1 in Texas
   and #9 nationally"; that is out of date.
 - Class times change occasionally. The schedule on the home page and the live
   calendar are authoritative; a time quoted from an old third-party listing

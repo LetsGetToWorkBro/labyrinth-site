@@ -48,4 +48,4 @@ This file follows the llms.txt convention (https://llmstxt.org). Every fact here
 
 ## Part of Labyrinth BJJ
 
-Labyrinth BJJ was founded in 2021 by Prof. Anthony Curry and is ranked in the top 1% of academies nationally on jits.gg (#39 of 7,869 as of September 24, 2026). Those results belong to the whole Labyrinth team, not to the Wharton gym. Main site: https://labyrinth.vision
+Labyrinth BJJ was founded in 2021 by Prof. Anthony Curry and is ranked in the top 1% of academies nationally on jits.gg (#37 by Overall Power as of October 28, 2026). Those results belong to the whole Labyrinth team, not to the Wharton gym. Main site: https://labyrinth.vision

@@ -1139,8 +1139,8 @@ def team_facts_strip():
     j = jits_data
     return f"""<div class="prog-facts stagger">
       <div class="prog-fact"><div class="prog-fact__label">Nationally</div><div class="prog-fact__value"><em>Top {j.NATIONAL_TOP_PCT}%</em> of academies</div></div>
-      <div class="prog-fact"><div class="prog-fact__label">jits.gg rank</div><div class="prog-fact__value"><em>#{j.NATIONAL_RANK}</em> of {j.NATIONAL_OF:,}</div></div>
-      <div class="prog-fact"><div class="prog-fact__label">Gold medals</div><div class="prog-fact__value"><em>{j.GOLDS}</em></div></div>
+      <div class="prog-fact"><div class="prog-fact__label">jits.gg rank</div><div class="prog-fact__value"><em>#{j.POWER_RANK}</em> by Overall Power</div></div>
+      <div class="prog-fact"><div class="prog-fact__label">Gold medals in 2026</div><div class="prog-fact__value"><em>{j.GOLDS_2026}</em></div></div>
       <div class="prog-fact"><div class="prog-fact__label">Wins tracked</div><div class="prog-fact__value"><em>{j.WINS:,}</em></div></div>
     </div>
     <p class="team-note fade-in">These are the results of the Labyrinth BJJ team as reported by <a href="{j.ACADEMY_URL}" target="_blank" rel="noopener noreferrer">jits.gg</a> as of {j.AS_OF}. They are the whole team's record. Labyrinth BJJ Wharton is new, and none of these numbers are Wharton's.</p>"""
@@ -1750,7 +1750,7 @@ def page_kids(S):
       <p>Most parents come to martial arts for one of three reasons. Their child is being pushed around at school and they want them to be able to handle it. Their child has energy that no amount of playground time absorbs. Or their child has tried a sport, sat on a bench for a season, and quietly decided they are not sporty.</p>
       <p><strong>Brazilian jiu-jitsu</strong> is a grappling art, leverage, position and control, with no striking in it, which makes it the martial art parents and pediatricians tend to be least nervous about. It is also one of the few children's activities where a small child who thinks carefully genuinely beats a bigger one who does not.</p>
       <p>{kids_now(S)}</p>
-      <p>Labyrinth BJJ is ranked in the top {jits_data.NATIONAL_TOP_PCT}% of academies nationally on jits.gg (#{jits_data.NATIONAL_RANK} of {jits_data.NATIONAL_OF:,}, as of {jits_data.AS_OF}). That is a competition statistic about the whole Labyrinth team, not about Wharton. It is the record of the school Wharton belongs to, founded by the instructor Joe trains under.</p>
+      <p>Labyrinth BJJ is ranked in the top {jits_data.NATIONAL_TOP_PCT}% of academies nationally on jits.gg (#{jits_data.POWER_RANK} by Overall Power, as of {jits_data.AS_OF}). That is a competition statistic about the whole Labyrinth team, not about Wharton. It is the record of the school Wharton belongs to, founded by the instructor Joe trains under.</p>
     </div>
   </div>
 </section>
@@ -1876,7 +1876,7 @@ def page_womens(S):
     <div class="prog-prose fade-in">
       <p>Women's self defense at Labyrinth BJJ Wharton is built on the Brazilian jiu-jitsu taught at every Labyrinth gym. Jiu-jitsu is a grappling art: leverage, position and control rather than strength or size, which is why so many people start with it for self defense, and why a smaller person can learn to deal with a bigger one.</p>
       <p>If you have never trained, or you simply have questions about what to expect, call or email us. Your first class is free, with no commitment.</p>
-      <p>Labyrinth BJJ is ranked in the top {jits_data.NATIONAL_TOP_PCT}% of academies nationally on jits.gg (#{jits_data.NATIONAL_RANK} of {jits_data.NATIONAL_OF:,}, as of {jits_data.AS_OF}). That is the whole Labyrinth team's record, not Wharton's, and it is the school this class belongs to.</p>
+      <p>Labyrinth BJJ is ranked in the top {jits_data.NATIONAL_TOP_PCT}% of academies nationally on jits.gg (#{jits_data.POWER_RANK} by Overall Power, as of {jits_data.AS_OF}). That is the whole Labyrinth team's record, not Wharton's, and it is the school this class belongs to.</p>
     </div>
   </div>
 </section>
@@ -2853,7 +2853,7 @@ This file follows the llms.txt convention (https://llmstxt.org). While the site 
 
 ## Part of Labyrinth BJJ
 
-Labyrinth BJJ was founded in 2021 by Prof. Anthony Curry and is ranked in the top {j.NATIONAL_TOP_PCT}% of academies nationally on jits.gg (#{j.NATIONAL_RANK} of {j.NATIONAL_OF:,} as of {j.AS_OF}). Those results belong to the whole Labyrinth team, not to the Wharton gym. Main site: {PARENT_URL}
+Labyrinth BJJ was founded in 2021 by Prof. Anthony Curry and is ranked in the top {j.NATIONAL_TOP_PCT}% of academies nationally on jits.gg (#{j.POWER_RANK} by Overall Power as of {j.AS_OF}). Those results belong to the whole Labyrinth team, not to the Wharton gym. Main site: {PARENT_URL}
 """
     out = [f"# {SITE_NAME}", "",
            f"> Jiu-jitsu and kickboxing gym in Wharton, Texas, part of Labyrinth BJJ. Kids jiu-jitsu, adult kickboxing, women's self defense jiu-jitsu, adult jiu-jitsu (coming soon). Lead instructor: Joe Herrera, a brown belt under Prof. Anthony Curry. The first class is free.", "",
@@ -2890,7 +2890,7 @@ Labyrinth BJJ was founded in 2021 by Prof. Anthony Curry and is ranked in the to
             f"- [Coaches]({S.url}/coaches/)", f"- [Contact and free first class]({S.url}/contact)",
             f"- [Areas served]({S.url}/areas/): El Campo, East Bernard, Boling, Hungerford, Louise",
             "", "## Part of Labyrinth BJJ", "",
-            f"Labyrinth BJJ was founded in 2021 by Prof. Anthony Curry and is ranked in the top {j.NATIONAL_TOP_PCT}% of academies nationally on jits.gg (#{j.NATIONAL_RANK} of {j.NATIONAL_OF:,} as of {j.AS_OF}). Those results belong to the whole Labyrinth team, not to the Wharton gym. Main site: {PARENT_URL}", ""]
+            f"Labyrinth BJJ was founded in 2021 by Prof. Anthony Curry and is ranked in the top {j.NATIONAL_TOP_PCT}% of academies nationally on jits.gg (#{j.POWER_RANK} by Overall Power as of {j.AS_OF}). Those results belong to the whole Labyrinth team, not to the Wharton gym. Main site: {PARENT_URL}", ""]
     return "\n".join(out)
 
 

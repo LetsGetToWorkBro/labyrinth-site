@@ -1,79 +1,78 @@
 #!/usr/bin/env python3
-"""The academy's competition numbers, as jits.gg reports them. One place.
+"""The academy's competition numbers. GENERATED FILE: do not hand-edit.
 
-jits.gg is the source for every ranking and medal count on the site, and it
-sits behind a bot check, so nothing here can fetch it. Somebody opens
-https://jits.gg/academy/labyrinth-bjj-4377 in a browser, copies the page, and
-the numbers go in below. Then run the build (build_programs.py, build_pages.py,
-build_areas.py, build_blog_index.py, stamp_assets.py), which puts them on the
-front page, the competition team page and everywhere else that is generated.
+Written by ~/workspace/labyrinth-stats-publish/publish_stats.py from the
+athlete rows in the Supabase table public.athlete_comp_stats, which the
+weekly jits.gg sync keeps current. Every total below is a sum over those
+rows, so the site can always show its basis:
 
-Where the page gives two figures for the same thing, the higher one is used,
-and only if it is on the page. Gold medals are 327 in the tracked-medal count
-and 324 in the header; wins are 1,235 tracked wins and 1,125 "roster career
-wins". Nothing is rounded up past what the page says, except that #39 of 7,869
-is called the top 1% (it is the top 0.5%). The Texas rank (#13 of 935) is
-kept here for reference but is not shown anywhere: the site says "top 1% in
-the nation" and leaves it there.
+  * WINS, LOSSES and MATCHES sum the tracked career record of every
+    athlete on the jits.gg roster (ATHLETES_TRACKED of them).
+  * GOLDS_2026 sums the roster's 2026 gold medals, the one medal figure
+    with full roster coverage.
+  * CAREER_* sums the career Trophy Case medals of the PROFILED athletes
+    whose full jits.gg profiles are tracked. That coverage is partial,
+    and the site says so where it uses those numbers.
+  * POWER_RANK is the Overall Power standing jits.gg itself shows for
+    the academy, and RIVALS is the head-to-head record jits.gg shows
+    against the two academies above us in Texas. Both are jits-published
+    figures, read off the academy page on AS_OF, not row totals.
 
-The site used to read these from the "Config" and "Athletes" tabs of a Google
-Sheet at page load. That sheet stopped updating in March 2026, still said #9
-nationally and #1 in Texas, and its Athletes tab had a column out of place, so
-it was writing a tier of "yellow · 80" onto the cards. It is no longer read
-for stats; the Events tab still drives the upcoming tournaments list.
-
-The prose on hand-written pages (the blog, the privacy footer, llms.txt) says
-"top 1% nationally" rather than quoting these figures, so it only needs
-touching if that stops being true.
+The figures this file used to hold were copied off the jits.gg academy
+page by hand (September 24, 2026). That page disagrees with itself: its
+header medal counts differ from its own analytics sections, and its
+submission section implies a different win total than its header. The
+site no longer copies academy totals from it.
 """
 import html
 
-AS_OF = "September 24, 2026"
+AS_OF = "October 28, 2026"
 ACADEMY_URL = "https://jits.gg/academy/labyrinth-bjj-4377"
 
-NATIONAL_RANK = 39
+ATHLETES_TRACKED = 116
+WITH_RECORD = 112
+WINS = 1171
+LOSSES = 974
+MATCHES = 2145
+WIN_RATE = 55          # percent of tracked matches won
+GOLDS_2026 = 123
+WITH_GOLD_2026 = 43
+PROFILED = 25
+CAREER_GOLDS = 204
+CAREER_SILVERS = 142
+CAREER_BRONZES = 71
+CAREER_MEDALS = 417
+GOLD_SHARE = 49      # percent of tracked career medals that are gold
+POWER_RANK = 37            # jits.gg Overall Power standing
+
+# Retired names, kept as aliases so older templates still run. The site
+# no longer prints an "of N academies" claim: jits.gg stopped showing
+# the academy count, so NATIONAL_OF is only the last figure it displayed
+# (September 2026) and nothing should publish it. There is deliberately
+# no GOLDS alias: the old GOLDS mixed bases, and the publish rewrites
+# every template that used it to say which golds it means (GOLDS_2026).
+NATIONAL_RANK = POWER_RANK
 NATIONAL_OF = 7869
-STATE_RANK = 13
-STATE_OF = 935
-NATIONAL_TOP_PCT = 1   # 39 / 7,869 = 0.5%
+NATIONAL_TOP_PCT = 1
+RANKED = ATHLETES_TRACKED
 
-ROSTER = 117           # current tracked youth roster
-RANKED = 108           # "ranked fighters"
-GOLDS = 327
-MEDALS = 739
-WINS = 1235
-SUBMISSIONS = 714
-SUB_RATE = 58          # % of wins by submission
-TX_SUB_RATE = 54
-SUB_VS_EXPECTED = 7    # points above expected after adjusting for belt mix
-GOLD_SHARE = 44        # % of medals that are gold
-TX_GOLD_SHARE = 40
-GLOBAL_GOLD_SHARE = 40
-MULTI_EVENT = 78       # % of roster with two or more tournaments
-TX_MULTI_EVENT = 53
-MATCHES = 2053
-TOURNAMENTS = 91
-
-# Head-to-head against the two academies above everyone else in Texas.
+# Head-to-head against the two academies above everyone else in Texas,
+# as jits.gg's Top Rivalries section showed it on AS_OF.
 RIVALS = [
     ("Pablo Silva BJJ", 1, 25, 17),
     ("BJJ Revolution Team", 2, 11, 5),
 ]
 
-# jits.gg's own "Top Fighters" list for the academy, in its order. Rating and
-# record are the two columns whose meaning is certain; the win rate is worked
-# out from the record. The other columns on that table have no headings in the
-# copied text, so they are not used. `url` is set only where the fighter's
-# jits.gg address was already known; the rest link to the academy page, which
-# lists them.
+# The team's top fighters by tracked career wins. Career medals are None
+# where the athlete's full profile is not tracked. `specials` counts
+# career golds at Worlds, Pan Ams and ADCC from the tracked profiles.
 ATHLETES = [
-    # name, rating, wins, losses, jits.gg url or None, instagram or None
-    ("Lincoln Davaul", 4186, 49, 19, "https://jits.gg/fighter/lincoln-edward-davaul-45805", "https://www.instagram.com/headlock_link/"),
-    ("Payton Kubeczka", 4020, 34, 20, None, None),
-    ("Aliya Sultantono", 3688, 23, 10, None, None),
-    ("Case Mozisek", 3685, 43, 17, None, None),
-    ("Ellie Root", 3575, 38, 20, None, None),
-    ("Aston Hu", 3426, 29, 7, None, None),
+    {"name": 'Hadley Annoot', "wins": 68, "losses": 22, "golds": 22, "silvers": 12, "bronzes": 7, "specials": {"worlds": 0, "pans": 0, "adcc": 2}, "url": 'https://jits.gg/fighter/hadley-annoot-39494', "ig": None},
+    {"name": 'Andre Zamora', "wins": 66, "losses": 75, "golds": None, "silvers": None, "bronzes": None, "specials": {"worlds": 0, "pans": 0, "adcc": 0}, "url": None, "ig": None},
+    {"name": 'Lincoln Davaul', "wins": 49, "losses": 19, "golds": 15, "silvers": 4, "bronzes": 4, "specials": {"worlds": 0, "pans": 0, "adcc": 0}, "url": 'https://jits.gg/fighter/lincoln-davaul-304390', "ig": 'https://www.instagram.com/headlock_link/'},
+    {"name": 'Emma Yu', "wins": 48, "losses": 31, "golds": 14, "silvers": 10, "bronzes": 2, "specials": {"worlds": 0, "pans": 0, "adcc": 0}, "url": 'https://jits.gg/fighter/emma-yu-4553', "ig": None},
+    {"name": 'Case Mozisek', "wins": 43, "losses": 17, "golds": 12, "silvers": 7, "bronzes": 2, "specials": {"worlds": 0, "pans": 0, "adcc": 1}, "url": 'https://jits.gg/fighter/case-mozisek-4100', "ig": None},
+    {"name": 'Autumn Huls', "wins": 41, "losses": 17, "golds": 13, "silvers": 10, "bronzes": 1, "specials": {"worlds": 0, "pans": 0, "adcc": 0}, "url": 'https://jits.gg/fighter/autumn-huls-5451', "ig": None},
 ]
 
 
@@ -85,36 +84,40 @@ def n(v):
     return "{:,}".format(v)
 
 
-# ── Rendered blocks, spliced into index.html and used by build_programs ──
+def _plural(count, one, many):
+    return one if count == 1 else many
+
+
+# -- Rendered blocks, spliced into index.html and used by build_programs --
 
 def hero_stats():
     """The four figures under the front page headline."""
     return (
         '<div class="hero__stat">\n'
         '        <div class="hero__stat-value" data-target="%d" data-suffix="">0</div>\n'
-        '        <div class="hero__stat-label">Gold Medals</div>\n'
+        '        <div class="hero__stat-label">Gold Medals in 2026</div>\n'
         '      </div>\n'
         '      <div class="hero__stat">\n'
         '        <div class="hero__stat-value" data-target="%d" data-suffix="">0</div>\n'
         '        <div class="hero__stat-label">Wins</div>\n'
         '      </div>\n'
         '      <div class="hero__stat">\n'
-        '        <div class="hero__stat-value" data-target="%d" data-prefix="Top " data-suffix="%%">0</div>\n'
-        '        <div class="hero__stat-label">Nationally</div>\n'
+        '        <div class="hero__stat-value" data-target="%d" data-prefix="" data-suffix="%%">0</div>\n'
+        '        <div class="hero__stat-label">Win Rate</div>\n'
         '      </div>\n'
         '      <div class="hero__stat">\n'
         '        <div class="hero__stat-value" data-target="%d" data-suffix="">0</div>\n'
-        '        <div class="hero__stat-label">Ranked Athletes</div>\n'
+        '        <div class="hero__stat-label">Tracked Athletes</div>\n'
         '      </div>'
-    ) % (GOLDS, WINS, NATIONAL_TOP_PCT, RANKED)
+    ) % (GOLDS_2026, WINS, WIN_RATE, ATHLETES_TRACKED)
 
 
 def stats_grid():
     cards = [
-        (NATIONAL_TOP_PCT, "Top ", "%", "Nationally &middot; #%d of %s" % (NATIONAL_RANK, n(NATIONAL_OF))),
-        (GOLDS, "", "", "Gold Medals"),
+        (GOLDS_2026, "", "", "Gold Medals in 2026"),
         (WINS, "", "", "Wins"),
-        (SUB_RATE, "", "%", "Wins by Submission &middot; +%d vs Texas" % (SUB_RATE - TX_SUB_RATE)),
+        (WIN_RATE, "", "%", "Win Rate"),
+        (ATHLETES_TRACKED, "", "", "Tracked Athletes"),
     ]
     return "\n".join(
         '<div class="stat-card"><div class="stat-card__value" data-target="%d" data-prefix="%s" data-suffix="%s">0</div>'
@@ -122,14 +125,13 @@ def stats_grid():
 
 
 def meters():
-    # The submission rate is already a card above, so the second bar is the
-    # share of the roster that comes back for another tournament.
     rows = [
-        ("Compete at Two or More Tournaments", MULTI_EVENT,
-         "%d points above the Texas average of %d%%" % (MULTI_EVENT - TX_MULTI_EVENT, TX_MULTI_EVENT)),
-        ("Gold Medal Share", GOLD_SHARE,
-         "%d points above the Texas and global averages &middot; %s golds from %s medals"
-         % (GOLD_SHARE - TX_GOLD_SHARE, n(GOLDS), n(MEDALS))),
+        ("Win Rate", WIN_RATE,
+         "%s wins and %s losses across %s tracked matches"
+         % (n(WINS), n(LOSSES), n(MATCHES))),
+        ("Career Gold Share", GOLD_SHARE,
+         "%s golds from %s career medals tracked across our top %d athletes"
+         % (n(CAREER_GOLDS), n(CAREER_MEDALS), PROFILED)),
     ]
     return "\n".join(
         '<div class="meter">\n'
@@ -146,25 +148,45 @@ def meters():
 
 def athletes():
     out = []
-    for i, (name, rating, w, l, url, ig) in enumerate(ATHLETES, 1):
+    for i, a in enumerate(ATHLETES, 1):
+        name, w, l = a["name"], a["wins"], a["losses"]
         slug = name.lower().replace(" ", "-")
-        blurb = ("Number %d on jits.gg&rsquo;s list of Labyrinth&rsquo;s top fighters, with a %s rating "
-                 "and a %d&ndash;%d record: %d%% of matches won." % (i, n(rating), w, l, win_rate(w, l)))
-        link = url or ACADEMY_URL
+        blurb = ("Number %d on the team by tracked career wins, with a %d&ndash;%d record: "
+                 "%d%% of matches won." % (i, w, l, win_rate(w, l)))
+        if a["golds"] is not None:
+            blurb += (" %s career %s, %s silver and %s bronze on jits.gg."
+                      % (n(a["golds"]), _plural(a["golds"], "gold medal", "gold medals"),
+                         n(a["silvers"]), n(a["bronzes"])))
+            sp = a["specials"] or {}
+            extra = []
+            if sp.get("adcc"):
+                extra.append("%d ADCC %s" % (sp["adcc"], _plural(sp["adcc"], "gold", "golds")))
+            if sp.get("pans"):
+                extra.append("%d Pan American %s" % (sp["pans"], _plural(sp["pans"], "gold", "golds")))
+            if sp.get("worlds"):
+                extra.append("%d World %s" % (sp["worlds"], _plural(sp["worlds"], "title", "titles")))
+            if extra:
+                blurb += " That includes " + ", ".join(extra) + "."
+        stats = ('<span class="athlete-card__stat"><strong>%d-%d</strong> record</span>\n'
+                 '                <span class="athlete-card__stat"><strong>%d%%</strong> win rate</span>'
+                 % (w, l, win_rate(w, l)))
+        if a["golds"] is not None:
+            stats += ('\n                <span class="athlete-card__stat"><strong>%s</strong> career golds</span>'
+                      % n(a["golds"]))
+        link = a["url"] or ACADEMY_URL
         ig_html = ""
-        if ig:
+        if a["ig"]:
             ig_html = ('<a href="%s" target="_blank" rel="noopener noreferrer" class="athlete-card__ig" '
                        'aria-label="%s on Instagram"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" '
                        'stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
                        '<rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>'
-                       '<line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>' % (ig, html.escape(name)))
+                       '<line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg></a>' % (a["ig"], html.escape(name)))
         out.append(
             '<div class="athlete-card" data-athlete="%(slug)s">\n'
-            '              <p class="athlete-card__tier">#%(i)d on the team &middot; %(rating)s rating</p>\n'
+            '              <p class="athlete-card__tier">#%(i)d on the team &middot; %(wins)s career wins</p>\n'
             '              <h4 class="athlete-card__name">%(name)s</h4>\n'
             '              <div class="athlete-card__stats">\n'
-            '                <span class="athlete-card__stat"><strong>%(w)d-%(l)d</strong> record</span>\n'
-            '                <span class="athlete-card__stat"><strong>%(wr)d%%</strong> win rate</span>\n'
+            '                %(stats)s\n'
             '              </div>\n'
             '              <button type="button" class="athlete-card__chevron" aria-expanded="false" aria-controls="athlete-%(slug)s" '
             'aria-label="More about %(name)s">&#9662;</button>\n'
@@ -176,18 +198,13 @@ def athletes():
             '                </div>\n'
             '              </div>\n'
             '            </div>' % {
-                "slug": slug, "i": i, "rating": n(rating), "name": html.escape(name), "w": w, "l": l,
-                "wr": win_rate(w, l), "blurb": blurb, "link": link, "ig": ig_html})
+                "slug": slug, "i": i, "wins": n(w), "name": html.escape(name),
+                "stats": stats, "blurb": blurb, "link": link, "ig": ig_html})
     return "\n            ".join(out)
 
 
 def rivals_line():
-    """'a 25–17 record against Pablo Silva BJJ, #1 in Texas, and 11–5 against ...'"""
+    """'a 25-17 record against Pablo Silva BJJ, #1 in Texas, and 11-5 against ...'"""
     (a, ar, aw, al), (b, br, bw, bl) = RIVALS
     return ("a %d&ndash;%d record against %s, #%d in Texas, and %d&ndash;%d against %s, #%d"
             % (aw, al, a, ar, bw, bl, b, br))
-
-
-if __name__ == "__main__":
-    print(stats_grid())
-    print(athletes())
