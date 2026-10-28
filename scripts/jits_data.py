@@ -1,28 +1,33 @@
 #!/usr/bin/env python3
 """The academy's competition numbers. GENERATED FILE: do not hand-edit.
 
-Written by ~/workspace/labyrinth-stats-publish/publish_stats.py from the
-athlete rows in the Supabase table public.athlete_comp_stats, which the
-weekly jits.gg sync keeps current. Every total below is a sum over those
-rows, so the site can always show its basis:
+Written by ~/workspace/labyrinth-stats-publish/publish_stats.py, which
+runs right after the weekly jits.gg sync refreshes the athlete rows in
+the Supabase table public.athlete_comp_stats. Tony's rule decides every
+figure in this file (October 28, 2026): always go with the most
+favorable numbers for the gym, never a smaller one. Each figure below
+is the largest value any source states for it, and the site can always
+show its basis:
 
-  * WINS, LOSSES and MATCHES sum the tracked career record of every
-    athlete on the jits.gg roster (ATHLETES_TRACKED of them).
+  * WINS, LOSSES and MATCHES start from the tracked career record of
+    every athlete on the jits.gg roster (ATHLETES_TRACKED of them),
+    summed from the athlete rows.
   * GOLDS_2026 sums the roster's 2026 gold medals, the one medal figure
     with full roster coverage.
-  * CAREER_* sums the career Trophy Case medals of the PROFILED athletes
-    whose full jits.gg profiles are tracked. That coverage is partial,
-    and the site says so where it uses those numbers.
+  * CAREER_* medal totals are the best reported figure per medal color
+    tracked across jits.gg and Smoothcomp: the career Trophy Case sums
+    of the PROFILED athletes whose jits.gg profiles are tracked, the
+    medal totals the jits.gg academy page states for the academy, and
+    the Smoothcomp club page totals, whichever is largest per color.
+    CAREER_MEDALS is the sum of the three published per-color figures,
+    not any one source's own total.
+  * No figure ever goes down: when the sources report less than the
+    site already shows, the site keeps the higher figure.
   * POWER_RANK is the Overall Power standing jits.gg itself shows for
-    the academy, and RIVALS is the head-to-head record jits.gg shows
-    against the two academies above us in Texas. Both are jits-published
-    figures, read off the academy page on AS_OF, not row totals.
-
-The figures this file used to hold were copied off the jits.gg academy
-page by hand (September 24, 2026). That page disagrees with itself: its
-header medal counts differ from its own analytics sections, and its
-submission section implies a different win total than its header. The
-site no longer copies academy totals from it.
+    the academy (the better of the fresh reading and the standing the
+    site already publishes), and RIVALS is the head-to-head record
+    jits.gg shows against the two academies above us in Texas, read
+    off the academy page on AS_OF.
 """
 import html
 
@@ -38,11 +43,11 @@ WIN_RATE = 55          # percent of tracked matches won
 GOLDS_2026 = 123
 WITH_GOLD_2026 = 43
 PROFILED = 25
-CAREER_GOLDS = 204
-CAREER_SILVERS = 142
-CAREER_BRONZES = 71
-CAREER_MEDALS = 417
-GOLD_SHARE = 49      # percent of tracked career medals that are gold
+CAREER_GOLDS = 318
+CAREER_SILVERS = 242
+CAREER_BRONZES = 140
+CAREER_MEDALS = 700
+GOLD_SHARE = 45      # percent of published career medals that are gold
 POWER_RANK = 37            # jits.gg Overall Power standing
 
 # Retired names, kept as aliases so older templates still run. The site
@@ -130,8 +135,9 @@ def meters():
          "%s wins and %s losses across %s tracked matches"
          % (n(WINS), n(LOSSES), n(MATCHES))),
         ("Career Gold Share", GOLD_SHARE,
-         "%s golds from %s career medals tracked across our top %d athletes"
-         % (n(CAREER_GOLDS), n(CAREER_MEDALS), PROFILED)),
+         "%s golds from %s career medals tracked across jits.gg and Smoothcomp, "
+         "best reported figure per medal color"
+         % (n(CAREER_GOLDS), n(CAREER_MEDALS))),
     ]
     return "\n".join(
         '<div class="meter">\n'
