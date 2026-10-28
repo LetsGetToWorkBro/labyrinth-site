@@ -428,7 +428,7 @@ COACHES = [
         "description": "Anthony Curry, founder and head instructor of Labyrinth BJJ in Fulshear, TX. Black belt, 14+ years, and the coach who built one of the top 1% of academies in the country.",
         "lead": "Founder and head instructor. He opened Labyrinth in 2021 and built it into one of the top 1% of academies in the country, a ranking computed from match results rather than claimed.",
         "body": [
-            "Anthony Curry started Labyrinth Brazilian Jiu-Jitsu in Fulshear in 2021. Five years later the academy sits <strong>#39 of 7,869 academies nationally</strong>, the top 1%, on jits.gg, which aggregates verified tournament results and ranks academies on what their athletes actually do rather than on what the academy says about itself. It ranks 108 Labyrinth athletes individually.",
+            "Anthony Curry started Labyrinth Brazilian Jiu-Jitsu in Fulshear in 2021. Five years later the academy sits <strong>#37 nationally by Overall Power</strong>, the top 1%, on jits.gg, which aggregates verified tournament results and ranks academies on what their athletes actually do rather than on what the academy says about itself. It tracks 116 Labyrinth athletes individually.",
             "That is the short version and it undersells the part that matters to somebody walking in for the first time. An academy does not get into the top 1% of a country this size on one or two exceptional athletes; it gets there on a room where a lot of ordinary students improve steadily, and building that room is a coaching problem rather than a talent-spotting one.",
             "He is a <strong>black belt with more than fourteen years on the mats</strong>. In Brazilian jiu-jitsu that is a long apprenticeship by design. The black belt takes most people around a decade of consistent training, which is why the rank means something the equivalent belt in other martial arts often does not.",
         ],
@@ -445,13 +445,13 @@ COACHES = [
         },
         "faqs": [
             ("Who is the head instructor at Labyrinth BJJ?",
-             "Professor Anthony Curry, who founded the academy in Fulshear in 2021 and still runs it. He is a black belt with over fourteen years of training, and under his instruction Labyrinth has become one of the top 1% of academies in the country on jits.gg, #39 of 7,869."),
+             "Professor Anthony Curry, who founded the academy in Fulshear in 2021 and still runs it. He is a black belt with over fourteen years of training, and under his instruction Labyrinth has become one of the top 1% of academies in the country on jits.gg, #37 by Overall Power."),
             ("What does “Professor” mean in Brazilian jiu-jitsu?",
              "It is the customary title for a black belt instructor. Colored-belt instructors are usually addressed as “coach”. It is not an academic title. It is the traditional form of address in a BJJ academy, and the black belt behind it typically represents about a decade of training."),
             ("Who is Anthony Curry's black belt under?",
              "Matt Leighton of Citadel BJJ in Iowa City, who co-founded that academy and competes at a high level in no-gi. Lineage matters in Brazilian jiu-jitsu because there is no central licensing body. A black belt is awarded by a person rather than issued by an institution, so asking who promoted a coach is asking whose judgment stands behind the rank."),
             ("How many black belts has he promoted?",
-             "One, in five years of running the academy: Professor Shaun Lawler. Awarding a black belt is the most consequential thing an instructor does, and Labyrinth has produced Pan American champions, 108 nationally ranked athletes and 327 gold medals against exactly one black belt promotion."),
+             "One, in five years of running the academy: Professor Shaun Lawler. Awarding a black belt is the most consequential thing an instructor does, and Labyrinth has produced Pan American champions, 116 tracked athletes and 123 gold medals in 2026 against exactly one black belt promotion."),
             ("Does he still teach, or only run the academy?",
              "He teaches. Labyrinth is an owner-operated academy rather than a franchise with a manager, and the head instructor being on the mats is most of the point of training at one."),
         ],
@@ -519,7 +519,7 @@ COACHES = [
             "where": "Fulshear, Texas",
             "body": [
                 "Shaun Lawler received his black belt from <a href=\"/coaches/anthony-curry\">Professor Anthony Curry</a>, and he is the <strong>only black belt Anthony has ever promoted</strong>, in five years of running the academy.",
-                "That is worth pausing on, because it is the kind of fact that is easy to read past. Awarding a black belt is the most consequential thing an instructor does; it is a permanent statement, made in public, that this person is now qualified to promote others. Plenty of academies hand out several a year. This one has produced Pan American champions, 108 nationally ranked athletes and 327 gold medals, and exactly one black belt.",
+                "That is worth pausing on, because it is the kind of fact that is easy to read past. Awarding a black belt is the most consequential thing an instructor does; it is a permanent statement, made in public, that this person is now qualified to promote others. Plenty of academies hand out several a year. This one has produced Pan American champions, 116 tracked athletes and 123 gold medals in 2026, and exactly one black belt.",
                 "It also completes a line that runs entirely through people who are still on these mats: <strong>Matt Leighton</strong> of Citadel BJJ in Iowa City promoted Anthony, and Anthony promoted Shaun. Whatever standard Leighton set has been passed down twice without leaving the building.",
             ],
         },
@@ -2979,8 +2979,8 @@ def render_legacy():
         <div class="hero__stat-label">In the nation</div>
       </div>
       <div class="hero__stat">
-        <div class="hero__stat-value">""" + jits_data.n(jits_data.GOLDS) + """</div>
-        <div class="hero__stat-label">Gold medals</div>
+        <div class="hero__stat-value">""" + jits_data.n(jits_data.GOLDS_2026) + """</div>
+        <div class="hero__stat-label">Gold medals in 2026</div>
       </div>
       <div class="hero__stat">
         <div class="hero__stat-value">7th</div>
