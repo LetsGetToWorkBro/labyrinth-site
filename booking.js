@@ -281,7 +281,7 @@
   /* Anything else the academy closes for — a seminar, a tournament weekend,
      the days between Christmas and New Year. Plain 'YYYY-MM-DD' strings, and
      the only edit needed to take a date off the calendar. */
-  var CLOSED_DATES = [];
+  var CLOSED_DATES = ['2026-10-31'];
 
   /* A day that runs differently: on these dates some of that weekday's classes do not run and the rest do (a seminar takes the late
      morning, the early workout still happens). Keyed by date; `times` are the start times that are off, written as the timetable
