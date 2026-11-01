@@ -287,9 +287,7 @@
      morning, the early workout still happens). Keyed by date; `times` are the start times that are off, written as the timetable
      writes them, and `why` is what the calendar says. This is the browser's copy of scripts/schedule_data.py's SPECIAL_DAYS, and
      site-test fails if the two disagree. A date that has passed does nothing, so nothing has to be taken out afterwards. */
-  var CLASS_OFF = {
-    '2026-10-24': { why: 'Rolling for Ribbons day', times: ['10:00 AM', '11:00 AM', '12:00 PM'] }
-  };
+  var CLASS_OFF = {};
   function classOffReason(d, timeStr) {
     var o = CLASS_OFF[ymd(d)];
     return o && timeStr && o.times.indexOf(timeStr) !== -1 ? o.why : null;

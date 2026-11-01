@@ -104,20 +104,11 @@ CLASSES = [
 # RETIRE ONE EARLY, or to clean the source up, delete its entry here and its CLASS_OFF line in booking.js, and run
 # build_pages.py (the card goes with TODAY_CARDS' entry for the date).
 
-SPECIAL_DAYS = [
-    {
-        "date": "2026-10-24",
-        "reason": "Rolling for Ribbons day",
-        "title": "Workout, open mat, then Rolling for Ribbons",
-        "plan": [
-            ("9:00 to 10:00 AM", "Workout: MMA Conditioning", "Same as every Saturday. All ages."),
-            ("10:00 to about 10:45 AM", "Open mat", "Drill, roll and warm up. All members welcome."),
-            ("11:00 AM to 12:30 PM", "Rolling for Ribbons", "Our free women\u2019s self defense seminar. No experience needed."),
-        ],
-        "off": ["10:00 AM", "11:00 AM", "12:00 PM"],
-        "link": ("/self-defense-for-women#rsvp", "RSVP for the seminar"),
-    },
-]
+# Each entry: {"date": "YYYY-MM-DD", "reason": "...", "title": "...", "plan": [(time, what, note), ...],
+#              "off": [start times of that weekday's regular classes that do not run], "link": (path, button words)}
+# The last one was Rolling for Ribbons day, Saturday, October 24, 2026 (the workout, an open mat, and the free women's self
+# defense seminar at 11:00). It is out of the list because the day is over, which is the clean-up described above.
+SPECIAL_DAYS = []
 
 
 def _weekday(date):

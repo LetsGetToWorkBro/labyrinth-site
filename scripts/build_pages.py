@@ -1059,28 +1059,49 @@ def today_card():
 # ── The Jiu-Jitsu World League card in the "this month" strip ─────────────────────────────────────────
 #
 # A tournament the families care about gets a card of its own, the full width of the strip and right under the donation card
-# (the one-day card above is the only thing that comes before it), from now until the event is over. It carries the day and the
-# place, and links to JJWL's own page for the event; it opens in a new tab, because it is somebody else's site. The weekday is
-# worked out from the date rather than typed. data-closes is midnight Central at the end of the event day (CDT, UTC-5), so the
-# card, its entry in the hero chip and nothing else go by themselves that night.
-# The facts are from jjworldleague.com's pages for the event (checked October 12, 2026): "The Nationals South II", held in the
-# Fort Bend County EpiCenter (Houston), 28505 Southwest Fwy, Rosenberg, TX 77471, on October 17th, 2026. JJWL gives each event
-# four pages (nat-south-ii-gi-youth, -gi-adults, -nogi-youth, -nogi-adults) and no page for the event as a whole, so the card
-# links to one of them; the others are one click away on that page. The card says nothing about registration (JJWL's own page
-# does, and it changes): it is not an invitation to sign up, it is where the event is.
-# TO RETIRE IT: set JJWL_CARD to None and run this script. TO REUSE IT: replace the facts; nothing here knows this event.
+# (the one-day card above is the only thing that comes before it), from the day it opens until the event is over. It carries the
+# day and the place, and links to JJWL's own page for the event; it opens in a new tab, because it is somebody else's site. The
+# weekday is worked out from the date rather than typed. data-closes is midnight Central at the end of the event day (CDT, UTC-5
+# until the first Sunday of November, CST, UTC-6 after it), so the card, its entry in the hero chip and nothing else go by
+# themselves that night. data-opens (optional) is midnight Central at the start of the day the card is first meant to show.
+# The facts are from jjworldleague.com's pages for each event. JJWL gives an event four pages (gi and no-gi, youth and adults) and
+# no page for the event as a whole, so the card links to one of them (the youth gi page, the one our families use); the others are
+# one click away on that page. The card says nothing about registration or prices (JJWL's own page does, and it changes): it is not
+# an invitation to sign up, it is where the event is.
+#
+# There can be more than one, each with its own days, and only the ones whose days they are show. The Nationals South II (October 17)
+# stays in the list, over, because site-test pins how a tournament's card looks on its days. Each card needs a "date" (the event day),
+# "closes_utc", "title", "chip" (the name in the hero line), "event" (what JJWL calls it), "place", "url" and "cta"; "venue" is kept
+# for whoever reads this and is not shown.
+# TO RETIRE THEM ALL: set JJWL_CARDS to [] and run this script. TO ADD ONE: add its facts to the list; nothing here knows any event.
 
-JJWL_CARD = {
-    "date": "2026-10-17",
-    "closes_utc": "2026-10-18T05:00:00Z",
-    "title": "JJWL Houston",
-    "chip": "JJWL Houston",
-    "event": "The Nationals South II",
-    "venue": "Fort Bend County EpiCenter, Rosenberg, TX",
-    "place": "Rosenberg, TX",
-    "url": "https://www.jjworldleague.com/events/nat-south-ii-gi-youth",
-    "cta": "Event page",
-}
+JJWL_CARDS = [
+    {
+        "date": "2026-10-17",
+        "closes_utc": "2026-10-18T05:00:00Z",
+        "title": "JJWL Houston",
+        "chip": "JJWL Houston",
+        "event": "The Nationals South II",
+        "venue": "Fort Bend County EpiCenter, Rosenberg, TX",
+        "place": "Rosenberg, TX",
+        "url": "https://www.jjworldleague.com/events/nat-south-ii-gi-youth",
+        "cta": "Event page",
+    },
+    {
+        # The Veterans Open, Saturday, December 12, 2026, in the same building (checked November 1, 2026). It opens when the October
+        # cards close, on the first of November, so the strip on any day before then is what it was.
+        "date": "2026-12-12",
+        "opens_utc": "2026-11-01T05:00:00Z",
+        "closes_utc": "2026-12-13T06:00:00Z",
+        "title": "JJWL Veterans Open",
+        "chip": "JJWL Veterans Open",
+        "event": "The Veterans Open",
+        "venue": "Fort Bend County EpiCenter, Rosenberg, TX",
+        "place": "Rosenberg, TX",
+        "url": "https://www.jjworldleague.com/events/veterans-open-gi-youth",
+        "cta": "Event page",
+    },
+]
 
 
 def _medal(size=30):
@@ -1092,14 +1113,14 @@ def _medal(size=30):
 
 
 def jjwl_card():
-    """The Jiu-Jitsu World League card (see JJWL_CARD), or nothing once it has been retired."""
+    """The Jiu-Jitsu World League cards (see JJWL_CARDS), or nothing once they have been retired."""
     import datetime
-    c = JJWL_CARD
-    if not c:
-        return ""
-    d = datetime.date.fromisoformat(c["date"])
-    when = d.strftime("%a, %b ") + str(d.day)
-    return """<a class="event-strip__link event-strip__link--jjwl" href="%(url)s" target="_blank" rel="noopener noreferrer" data-closes="%(closes)s" data-short="%(chip)s">
+    out = []
+    for c in JJWL_CARDS:
+        d = datetime.date.fromisoformat(c["date"])
+        when = d.strftime("%a, %b ") + str(d.day)
+        opens = ' data-opens="%s"' % c["opens_utc"] if c.get("opens_utc") else ""
+        out.append("""<a class="event-strip__link event-strip__link--jjwl" href="%(url)s" target="_blank" rel="noopener noreferrer"%(opens)s data-closes="%(closes)s" data-short="%(chip)s">
       %(photo)s
       <span class="event-strip__icon">%(medal)s</span>
       <span class="event-strip__text">
@@ -1109,14 +1130,15 @@ def jjwl_card():
       </span>
       <span class="event-strip__cta">%(cta)s</span>
     </a>
-    """ % {"url": c["url"], "closes": c["closes_utc"], "chip": c["chip"], "photo": strip_photo("jjwl"), "medal": _medal(30), "when": when, "place": c["place"],
-           "title": c["title"], "event": c["event"], "cta": c["cta"]}
+    """ % {"url": c["url"], "opens": opens, "closes": c["closes_utc"], "chip": c["chip"], "photo": strip_photo("jjwl"), "medal": _medal(30), "when": when,
+           "place": c["place"], "title": c["title"], "event": c["event"], "cta": c["cta"]})
+    return "".join(out)
 
 
 def event_strip():
     """The homepage's "This month at Labyrinth" block: the donation drive, Pink
     October, the free self defense seminar and the kids' HYROX list, as cards right
-    under the hero, a tournament card (see JJWL_CARD) after the donation card, and
+    under the hero, the tournament cards (see JJWL_CARDS) after the donation card, and
     on a holiday or a day that runs differently the day's hours as a card above them (see TODAY_CARDS). Each card
     hides itself after its own last day, and the whole block after the last of
     them, so nobody is invited to something that has gone.
