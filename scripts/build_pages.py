@@ -651,7 +651,7 @@ def render_support():
          "Timetable, what to bring, lost property, coming back after an injury, or a question about which class your child belongs in.",
          "/schedule"),
         ("Cornerman, the round timer",
-         "The free Apple TV app and the browser timer. Its own support page answers most of it; anything left comes to the same inbox.",
+         "The free Apple TV app, the browser timer and the match day scoreboard. Its own support page answers most of it; anything left comes to the same inbox.",
          "https://cornerman.app/support"),
     ]
     cards = "\n".join(
@@ -735,7 +735,7 @@ def render_support():
       <h2 class="section-title section-title--lg">CORNERMAN</h2>
     </div>
     <div class="prog-prose fade-in">
-      <p>Cornerman is the round timer we built for our own wall and then put on the App Store. It runs free in a browser on any screen you already own (a smart TV, a Fire Stick, an old laptop) and there is a free dedicated app for Apple TV. It works offline once loaded, needs no account, and collects nothing.</p>
+      <p>Cornerman is the round timer we built for our own wall and then put on the App Store. It runs free in a browser on any screen you already own (a smart TV, a Fire Stick, an old laptop) and there is a free dedicated app for Apple TV. The timer works offline once loaded, needs no account, and collects nothing. The match day scoreboard is free too, and keeps only the names and scores a gym types into it.</p>
       <p>Support, setup and the paid branding tier all live on its own site: <a href="https://cornerman.app" target="_blank" rel="noopener noreferrer">cornerman.app</a>. Its <a href="https://cornerman.app/support" target="_blank" rel="noopener noreferrer">support page</a> is the fastest route for anything app-specific, and its <a href="https://cornerman.app/privacy" target="_blank" rel="noopener noreferrer">privacy policy</a> covers what it does and does not store.</p>
     </div>
     <div class="prog-siblings stagger">
