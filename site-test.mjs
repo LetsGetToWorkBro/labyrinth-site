@@ -2187,8 +2187,8 @@ check('L6 tells them to call', ((await page.textContent('#bookingInline .booking
   }))
   check('L2h on November 2 the Halloween decorations are gone and the pumpkin orange with them (the page is Thanksgiving now)',
     h2.season === 'thanksgiving' && h2.deco && h2.gold === '#f0a23c', JSON.stringify(h2))
-  check('L2h and only the HYROX card (and its chip) are left of the October block',
-    JSON.stringify(h2.cards) === JSON.stringify(['/hyrox-youngstars']) && /HYROX/.test(h2.chip) && !/Pink/.test(h2.chip), JSON.stringify(h2))
+  check('L2h and only the HYROX card (and its chip) are left of the October block, behind the Veterans Open card (December 12), which is not part of it',
+    JSON.stringify(h2.cards) === JSON.stringify(['https://www.jjworldleague.com/events/veterans-open-gi-youth', '/hyrox-youngstars']) && /^This month: JJWL Veterans Open · Kids HYROX race/.test(h2.chip) && !/Pink|ribbons|donat|self defense/i.test(h2.chip), JSON.stringify(h2))
 
   // The preview switches work any time of year.
   await hh.clock.setFixedTime(new Date('2026-07-10T15:00:00Z'))
@@ -2582,6 +2582,84 @@ for (const sd of SPECIAL_DAYS_PY.days) {
   }
 }
 
+// ── L2jb: the Veterans Open card in "this month" ──
+// The second tournament card: the Veterans Open, Saturday, December 12, 2026, in the same building as the October one (JJWL calls the town Houston; the page we send people to is its youth gi
+// division, the one our families use). The card is the October one's design with the new facts: green, a medal, the same photograph, a day, a town, a name, one line and a button. It opens at
+// Central midnight on the first of November, so every check above that pins a day in October sees the strip as it was, and it goes at the Central midnight that ends December 12.
+// The facts are from jjworldleague.com's page for the event (November 1, 2026).
+{
+  const URLH = 'http://localhost:4620/'
+  const VO = 'https://www.jjworldleague.com/events/veterans-open-gi-youth'
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } })
+  const vp = await ctx.newPage()
+  const read = () => {
+    const a = document.querySelector('a.event-strip__link--jjwl[href$="/veterans-open-gi-youth"]')
+    const t = (el, s) => (el.querySelector(s)?.textContent ?? '').replace(/\s+/g, ' ').trim()
+    // "Full width" is the strip's inside (the grid the cards sit in, less its own side padding), and "below" is HYROX in the row under it rather than beside it.
+    const chip = document.getElementById('heroChip'), r = a.getBoundingClientRect(), cs = s => getComputedStyle(a.querySelector(s)), grid = a.parentElement, gs = getComputedStyle(grid)
+    const inner = grid.getBoundingClientRect().width - parseFloat(gs.paddingLeft) - parseFloat(gs.paddingRight), hy = document.querySelector('#eventStrip a.event-strip__link[href="/hyrox-youngstars"]')
+    return {
+      shown: a.offsetParent !== null && r.height > 0, cards: [...document.querySelectorAll('#eventStrip a.event-strip__link')].filter(x => !x.hidden).map(x => x.getAttribute('href')),
+      chip: chip.hidden ? '' : chip.textContent.replace(/\s+/g, ' ').trim(), eyebrow: t(a, '.event-strip__eyebrow'), title: t(a, 'strong'), cta: t(a, '.event-strip__cta'), all: a.textContent.replace(/\s+/g, ' ').trim(),
+      href: a.getAttribute('href'), target: a.target, rel: a.rel, full: Math.abs(r.width - inner) < 2, below: !hy || hy.getBoundingClientRect().top >= r.bottom - 1, opens: a.getAttribute('data-opens'), closes: a.getAttribute('data-closes'),
+      icon: cs('.event-strip__icon').color, eyebrowColor: cs('.event-strip__eyebrow').color, ctaBg: cs('.event-strip__cta').backgroundColor, ctaFg: cs('.event-strip__cta').color, medal: !!a.querySelector('svg.medal'),
+    }
+  }
+  const at = async (iso, page = vp, q = '') => { await page.clock.setFixedTime(new Date(iso)); await page.goto(URLH + q, { waitUntil: 'load' }); return page.evaluate(read) }
+
+  const a = await at('2026-11-02T15:00:00Z')
+  check('L2jb on November 2 the strip has a card for the Veterans Open: Saturday, December 12, in Rosenberg (the card is short: the day, the town, the name; the venue is on JJWL\'s page)',
+    a.shown && a.eyebrow === 'Sat, Dec 12 · Rosenberg, TX' && a.title === 'JJWL Veterans Open' && /The Veterans Open from the Jiu-Jitsu World League/.test(a.all), JSON.stringify(a))
+  check('L2jb and December 12, 2026 is a Saturday, as the card says', new Date('2026-12-12T12:00:00Z').getUTCDay() === 6 && /^Sat, Dec 12 /.test(a.eyebrow))
+  const u = new globalThis.URL(a.href)
+  check('L2jb it goes to JJWL\'s own page for the event, in a new tab that is told nothing about this site', a.href === VO && u.protocol === 'https:' && u.hostname === 'www.jjworldleague.com' && u.pathname === '/events/veterans-open-gi-youth'
+    && a.target === '_blank' && /\bnoopener\b/.test(a.rel) && /\bnoreferrer\b/.test(a.rel) && a.cta === 'Event page', JSON.stringify(a))
+  check('L2jb the line under the hero buttons names it, ahead of the HYROX race', /^This month: JJWL Veterans Open · Kids HYROX race/.test(a.chip) && !/donat/i.test(a.chip), a.chip)
+  check('L2jb it is the full width of the strip and the first card on the page now the October cards have closed, with HYROX after it', a.full && a.below && a.cards[0] === VO && a.cards[1] === '/hyrox-youngstars' && a.cards.length === 2, JSON.stringify(a))
+  const lum = c => { const [r, g, b] = c.match(/\d+/g).slice(0, 3).map(Number).map(v => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4 }); return 0.2126 * r + 0.7152 * g + 0.0722 * b }
+  const ratio = (f, b) => (Math.max(lum(f), lum(b)) + 0.05) / (Math.min(lum(f), lum(b)) + 0.05)
+  check('L2jb it is the same green card as the October one (the color the tournament list gives JJWL), with a medal and dark letters on the green button, all readable on the dark card',
+    a.medal && a.ctaBg === 'rgb(34, 197, 94)' && a.icon === 'rgb(74, 222, 128)' && a.eyebrowColor === 'rgb(74, 222, 128)' && ratio(a.ctaFg, a.ctaBg) >= 4.5 && ratio(a.eyebrowColor, 'rgb(14, 40, 24)') >= 4.5, JSON.stringify({ ...a, ctaRatio: ratio(a.ctaFg, a.ctaBg) }))
+  check('L2jb it says nothing about registration, a price, a time of day, a coach or a result (JJWL says what is open, and the price changes), and uses no dashes',
+    !/\$|free|price|cost|regist|sign up|rsvp|book|\b\d{1,2}:\d{2}\b|\b(am|pm)\b|coach|professor|champion|medal|gold|\bwin|\bwon\b|compet/i.test(a.all) && !/[–—]/.test(a.all), a.all)
+  check('L2jb its window is written the way the strip reads it: opens at Central midnight on November 1 (CDT, UTC-5), closes at the Central midnight that ends December 12 (CST, UTC-6)',
+    a.opens === '2026-11-01T05:00:00Z' && a.closes === '2026-12-13T06:00:00Z', JSON.stringify({ opens: a.opens, closes: a.closes }))
+
+  // The window: not before the first of November (so a day in October is what it was), there from the first second of it through the whole of the 12th, and gone from the first second after Central midnight that night, for good.
+  const edge = {}
+  for (const [name, iso] of [['october', '2026-10-14T15:00:00Z'], ['lastSecondOfOctober', '2026-11-01T04:59:59Z'], ['opens', '2026-11-01T05:00:00Z'], ['november', '2026-11-02T15:00:00Z'], ['registrationDeadline', '2026-12-09T15:00:00Z'],
+    ['eventMorning', '2026-12-12T14:00:00Z'], ['lateOn', '2026-12-13T05:59:00Z'], ['midnightOut', '2026-12-13T06:00:01Z'], ['nextDay', '2026-12-14T15:00:00Z'], ['nextYear', '2027-12-12T15:00:00Z']]) edge[name] = (await at(iso)).shown
+  check('L2jb it is not there in October, is there from the first second of November through the evening of Saturday, December 12, and gone from the first second after Central midnight that night (and on that date next year)',
+    !edge.october && !edge.lastSecondOfOctober && edge.opens && edge.november && edge.registrationDeadline && edge.eventMorning && edge.lateOn && !edge.midnightOut && !edge.nextDay && !edge.nextYear, JSON.stringify(edge))
+  const after = await at('2026-12-14T15:00:00Z')
+  check('L2jb once the event is over the strip and the hero line are HYROX alone and nothing of the Veterans Open is shown', JSON.stringify(after.cards) === JSON.stringify(['/hyrox-youngstars']) && !/Veterans|JJWL/.test(after.chip) && /HYROX/.test(after.chip), JSON.stringify(after))
+  const october = await at('2026-10-14T15:00:00Z')
+  check('L2jb in October the strip is exactly what it was (the donation, the October tournament, Pink October, the seminar, HYROX), without it', JSON.stringify(october.cards) === JSON.stringify(['/donate', 'https://www.jjworldleague.com/events/nat-south-ii-gi-youth', '/pink-october', '/self-defense-for-women', '/hyrox-youngstars']) && !/Veterans/.test(october.chip), JSON.stringify(october))
+  const same = []
+  for (const [iso, q] of [['2026-11-02T15:00:00Z', ''], ['2026-11-02T15:00:00Z', '?season=off'], ['2026-11-02T15:00:00Z', '?season=christmas'], ['2026-11-02T15:00:00Z', '?season=valentines'], ['2026-12-12T15:00:00Z', '']]) {
+    const r = await at(iso, vp, q)
+    if (!(r.shown && r.ctaBg === 'rgb(34, 197, 94)' && r.icon === 'rgb(74, 222, 128)' && r.full)) same.push(`${iso} ${q}: ${JSON.stringify(r)}`)
+  }
+  check('L2jb under any theme (Thanksgiving, none, a preview of Christmas or Valentine\'s Day, and Christmas itself on the day of the event\'s eve) it is the same green card', same.length === 0, same.join('\n'))
+  await ctx.close()
+
+  // Phones: the card is on the screen, everything in it stays inside it, in the order a person reads it, and nothing makes the page wider.
+  const fits = () => {
+    const a = document.querySelector('a.event-strip__link--jjwl[href$="/veterans-open-gi-youth"]'), r = a.getBoundingClientRect(), top = s => a.querySelector(s).getBoundingClientRect().top, desc = a.querySelectorAll('.event-strip__text > span')[1]
+    return r.height > 0 && r.left >= -0.5 && r.right <= innerWidth + 0.5 && !(document.documentElement.scrollWidth > innerWidth)
+      && [...a.querySelectorAll('*')].every(e => { const b = e.getBoundingClientRect(); return b.width === 0 || (b.left >= r.left - 0.5 && b.right <= r.right + 0.5 && e.scrollWidth <= e.clientWidth + 1) })
+      && top('.event-strip__eyebrow') < top('strong') && top('strong') < desc.getBoundingClientRect().top && desc.getBoundingClientRect().top < top('.event-strip__cta')
+  }
+  for (const [w, h, label] of [[390, 844, 'a phone'], [320, 640, 'the smallest phone'], [820, 1000, 'a tablet']]) {
+    const pc = await browser.newContext({ viewport: { width: w, height: h } })
+    const pp = await pc.newPage()
+    await pp.clock.setFixedTime(new Date('2026-11-02T15:00:00Z'))
+    await pp.goto(URLH, { waitUntil: 'load' })
+    check(`L2jb on ${label} the card fits: inside the screen and in reading order, top to bottom, with nothing sticking out`, await pp.evaluate(fits))
+    await pc.close()
+  }
+}
+
 // ── L2k: the "this month" cards: a real photograph blended into each one, and few words ──
 // Every card has a photograph of our people behind its words (assets/strip-<card>.jpg and .webp, cut by scripts/strip_photos.py, faded into the card by .event-strip__photo). It is decoration, so
 // it has no alt text and is hidden from screen readers; it is the size the page says it is, and it is named with the hash of its file. The cards keep their words short (what it is, when, one line
@@ -2637,7 +2715,8 @@ for (const sd of SPECIAL_DAYS_PY.days) {
   }
   const FIXED = () => { for (const e of document.querySelectorAll('body *')) { const c = getComputedStyle(e); if (c.position === 'fixed' || (c.position === 'sticky' && e.closest('nav,header'))) e.style.visibility = 'hidden' } }
 
-  for (const [label, w, h, iso] of [['a desktop', 1280, 900, '2026-10-14T15:00:00Z'], ['a tablet', 820, 1000, '2026-10-14T15:00:00Z'], ['a phone', 390, 844, '2026-10-14T15:00:00Z'], ['a phone on Columbus Day', 390, 844, '2026-10-12T15:00:00Z'], ['a desktop on Columbus Day', 1280, 900, '2026-10-12T15:00:00Z']]) {
+  for (const [label, w, h, iso, least = 5] of [['a desktop', 1280, 900, '2026-10-14T15:00:00Z'], ['a tablet', 820, 1000, '2026-10-14T15:00:00Z'], ['a phone', 390, 844, '2026-10-14T15:00:00Z'], ['a phone on Columbus Day', 390, 844, '2026-10-12T15:00:00Z'], ['a desktop on Columbus Day', 1280, 900, '2026-10-12T15:00:00Z'],
+    ['a desktop in November, with the Veterans Open and HYROX', 1280, 900, '2026-11-02T15:00:00Z', 2], ['a tablet in November', 820, 1000, '2026-11-02T15:00:00Z', 2], ['a phone in November', 390, 844, '2026-11-02T15:00:00Z', 2]]) {
     const ctx = await browser.newContext({ viewport: { width: w, height: h } })
     const pg = await ctx.newPage()
     await pg.clock.setFixedTime(new Date(iso))
@@ -2658,7 +2737,7 @@ for (const sd of SPECIAL_DAYS_PY.days) {
       }
     }))
     check(`L2k on ${label} every card has a real photograph behind its words: decorative (no alt text, hidden from screen readers), the size the page says, inside the card and faded into it`,
-      info.length >= 5 && info.every(c => c.count === 1 && c.hidden && c.decorative && c.sized && c.inside && c.blended && c.shown), JSON.stringify(info.filter(c => !(c.count === 1 && c.hidden && c.decorative && c.sized && c.inside && c.blended && c.shown))))
+      info.length >= least && info.every(c => c.count === 1 && c.hidden && c.decorative && c.sized && c.inside && c.blended && c.shown), JSON.stringify(info.filter(c => !(c.count === 1 && c.hidden && c.decorative && c.sized && c.inside && c.blended && c.shown))))
     const small = info.filter(c => c.kind !== 'today')
     check(`L2k on ${label} the cards say little: a short line each (at most 60 characters) and at most 140 characters of words in all${w < 600 ? ', and none is taller than a phone screen can take three of' : ''}`,
       small.every(c => c.spans === 1 && c.line > 0 && c.line <= 60 && c.words <= 140 && (w >= 600 || c.height <= 270)), JSON.stringify(small))
