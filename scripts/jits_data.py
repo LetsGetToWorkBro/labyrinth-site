@@ -71,13 +71,17 @@ RIVALS = [
 # The team's top fighters by tracked career wins. Career medals are None
 # where the athlete's full profile is not tracked. `specials` counts
 # career golds at Worlds, Pan Ams and ADCC from the tracked profiles.
+# Refreshed by hand on November 1, 2026 from public.athlete_comp_stats, ahead of
+# the next publish: athletes with hidden_from_leaderboard set (Andre Zamora, Case
+# Mozisek and Koby Mozisek, no longer students) are left out, which also brings
+# Emma Tarnovsky's career record (106-63) onto the list, at the top.
 ATHLETES = [
+    {"name": 'Emma Tarnovsky', "wins": 106, "losses": 63, "golds": 31, "silvers": 24, "bronzes": 14, "specials": {"worlds": 0, "pans": 1, "adcc": 0}, "url": 'https://jits.gg/fighter/emma-tarnovsky-45591', "ig": None},
     {"name": 'Hadley Annoot', "wins": 68, "losses": 22, "golds": 22, "silvers": 12, "bronzes": 7, "specials": {"worlds": 0, "pans": 0, "adcc": 2}, "url": 'https://jits.gg/fighter/hadley-annoot-39494', "ig": None},
-    {"name": 'Andre Zamora', "wins": 66, "losses": 75, "golds": None, "silvers": None, "bronzes": None, "specials": {"worlds": 0, "pans": 0, "adcc": 0}, "url": None, "ig": None},
     {"name": 'Lincoln Davaul', "wins": 49, "losses": 19, "golds": 15, "silvers": 4, "bronzes": 4, "specials": {"worlds": 0, "pans": 0, "adcc": 0}, "url": 'https://jits.gg/fighter/lincoln-davaul-304390', "ig": 'https://www.instagram.com/headlock_link/'},
     {"name": 'Emma Yu', "wins": 48, "losses": 31, "golds": 14, "silvers": 10, "bronzes": 2, "specials": {"worlds": 0, "pans": 0, "adcc": 0}, "url": 'https://jits.gg/fighter/emma-yu-4553', "ig": None},
-    {"name": 'Case Mozisek', "wins": 43, "losses": 17, "golds": 12, "silvers": 7, "bronzes": 2, "specials": {"worlds": 0, "pans": 0, "adcc": 1}, "url": 'https://jits.gg/fighter/case-mozisek-4100', "ig": None},
     {"name": 'Autumn Huls', "wins": 41, "losses": 17, "golds": 13, "silvers": 10, "bronzes": 1, "specials": {"worlds": 0, "pans": 0, "adcc": 0}, "url": 'https://jits.gg/fighter/autumn-huls-5451', "ig": None},
+    {"name": 'Greyson Do', "wins": 41, "losses": 25, "golds": 10, "silvers": 5, "bronzes": 5, "specials": {"worlds": 0, "pans": 0, "adcc": 0}, "url": 'https://jits.gg/fighter/greyson-do-3507', "ig": None},
 ]
 
 
