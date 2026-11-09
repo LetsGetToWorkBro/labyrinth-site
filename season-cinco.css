@@ -47,6 +47,11 @@
     linear-gradient(to bottom, rgba(13, 10, 20, 0.8) 0%, rgba(32, 12, 40, 0.58) 38%, rgba(30, 12, 34, 0.8) 72%, #0d0a14 100%);
 }
 [data-season="cinco"] .hero { padding-bottom: clamp(130px, 18vw, 420px); }
+/* The app launch banner (style.css, .app-banner) hangs under the nav, exactly where the pinata's rope starts, so on the days the banner is up the pinata hangs from the banner's
+   lower edge instead (the banner is 52px tall, 55px where its words wrap) and the words make room for it, as the Christmas pack's sky does (season-christmas.css). Without this the
+   pinata, which you can tap, hangs over the Google Play badge on a phone. */
+[data-season="cinco"] .hero:has(> .app-banner:not([hidden])) { padding-top: calc(var(--nav-height, 72px) + var(--space-16, 64px) + 56px); }
+[data-season="cinco"] .hero:has(> .app-banner:not([hidden])) .cm-pin { top: calc(var(--nav-height, 72px) + 56px); }
 [data-season="cinco"] .hero__h1-visual span { color: var(--gold); text-shadow: 0 0 28px rgba(255, 182, 39, 0.5), 0 0 4px rgba(255, 226, 150, 0.4); }
 [data-season="cinco"] .hero__badge { border-color: rgba(255, 182, 39, 0.55); }
 

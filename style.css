@@ -869,33 +869,6 @@ body {
   font-size: 15px;
   flex-shrink: 0;
 }
-.sauna-detail__launch {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  width: 100%;
-  padding: 12px 24px;
-  background: linear-gradient(135deg, rgba(200,162,76,0.12) 0%, rgba(231,76,60,0.08) 100%);
-  border: 1px solid rgba(200,162,76,0.2);
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--gold);
-  text-decoration: none;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  transition: all 0.25s ease;
-}
-.sauna-detail__launch:hover {
-  background: linear-gradient(135deg, rgba(200,162,76,0.2) 0%, rgba(231,76,60,0.12) 100%);
-  border-color: rgba(200,162,76,0.35);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgba(200,162,76,0.12);
-}
-.sauna-detail__launch-icon {
-  font-size: 18px;
-}
 
 .program-card__trial-btn:hover {
   background: #D4AD5C;
@@ -1517,18 +1490,6 @@ body {
   font-size: 0.8rem;
   color: var(--muted);
   margin-top: 2px;
-}
-.upcoming-tournaments__cal-link {
-  font-family: 'Clash Display', var(--font-sans);
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--gold);
-  text-decoration: none;
-  white-space: nowrap;
-  transition: color 200ms;
-}
-.upcoming-tournaments__cal-link:hover {
-  color: var(--gold-hover);
 }
 .upcoming-tournaments__list {
   display: flex;

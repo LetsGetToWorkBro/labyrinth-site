@@ -57,20 +57,23 @@ the homepage point at it:
 
 - **Sign in** is in the header, beside "Try a Free Class", and is the one tool in the phone menu. It goes to the member portal,
   `https://members.labyrinth.vision/`, in the same tab, so a phone that has the app opens the app from that link. It took the place of the Calendar and Sauna
-  links in both. Those two dashboards are still linked from the footer's Quick Links, the Sauna card, "Upcoming Tournaments", /schedule and the competition
-  team's FAQ: the header was the only place they were swapped out.
+  links in both. Nothing else on the site links calendar.labyrinth.vision or sauna.labyrinth.vision any more: the footer's Quick Links, the Sauna card,
+  "Upcoming Tournaments", /schedule (its button, its footnote and its holiday answer), the competition team's FAQ and llms.txt lost theirs the same
+  day, and the sentences that said "see the live calendar" with them (the holiday answer sends a person to the phone instead). The one place left is
+  sitemap.xml's "Sub-sites" entry for the calendar: a file for search engines, not a link.
 - **The banner** is the line under the nav: the app's seal, one sentence, and the App Store and Google Play badges. It is the `APP-BANNER` block in
-  `index.html`, written by `app_banner()` in `scripts/build_pages.py` from `APP_BANNER` there: the two store addresses and `closes_utc`, the moment it hides itself
-  (midnight Central at the end of January 2027; move that date to keep it longer). `APP_BANNER = None` and a run of `build_pages.py` empties the block. It sits in the
-  hero's top padding, so it moves nothing, and it shares the slot with the donation bar: while a drive is on the bar has the slot and the banner steps aside
-  (style.css, `.app-banner`). The words are the App Store listing's own opening line, cut short.
+  `index.html`, written by `app_banner()` in `scripts/build_pages.py` from `APP_BANNER` there: the two store addresses. It has no end date (the academy asked for it
+  to stay up for now), so it meets every seasonal theme all year, and each pack's own checks hold it. `APP_BANNER = None` and a run of `build_pages.py` empties the
+  block. It sits in the hero's top padding, so it moves nothing, and it shares the slot with the donation bar: while a drive is on the bar has the slot and the
+  banner steps aside (style.css, `.app-banner`). A pack that puts something you can tap in the band under the nav has to start its sky under the banner, as the
+  Christmas pack does for it and for the donation bar (season-christmas.css). The words are the App Store listing's own opening line, cut short.
 - **The badges** in `assets/badge-app-store.svg` and `assets/badge-google-play.png` are the stores' own artwork, not redrawn: Apple's SVG exactly as its
   marketing tools serve it, and Google's PNG cropped to its own edges. `app-launch.test.mjs` holds their hashes; when one is replaced, take the new file from the
   store's download and change the hash there. `assets/app-icon-96.png` is the app's own icon at twice the size the banner shows it.
 
 `app-launch.test.mjs` holds all of it: no Calendar or Sauna in the header or the phone menu; Sign in goes to the portal and is as tall as the CTA; the banner links
-the two listings exactly, is never closer than 8px to the words under it from 320px to 1920px, scrolls nothing sideways, has nothing over it under any season, hides
-on its date, yields to a donation drive, and is the block the generator writes.
+the two listings exactly, is never closer than 8px to the words under it from 320px to 1920px, scrolls nothing sideways, has nothing over it under any seasonal theme
+of the year, is still there years on, yields to a donation drive, and is the block the generator writes; and that neither dashboard is linked or mentioned anywhere.
 
 ## Replacing a photo under the same name
 

@@ -395,7 +395,7 @@ PROGRAMS = [
             ("How do I know if my child is ready to compete?",
              "The coaches will tell you, and they will tell you honestly. Broadly: a child who is comfortable in live rounds against their own gym, who is not distressed when they lose one, and who has asked about competing. A child pushed onto a mat before that usually has one bad day and never asks again."),
             ("What tournaments do you compete at?",
-             "Mostly IBJJF, ADCC and JJWL events, which are the three circuits that matter most in Texas and nationally. There is a live tournament calendar on the front page and at calendar.labyrinth.vision, and coaches corner at the events the team travels to."),
+             "Mostly IBJJF, ADCC and JJWL events, which are the three circuits that matter most in Texas and nationally. There is a live tournament calendar on the front page, and coaches corner at the events the team travels to."),
             ("Is there an extra fee to be on the competition team?",
              "No. Competition classes are included in the unlimited memberships: $199 a month for adults, $249 for kids and teens. You pay tournament organizers their own entry fees when you enter an event, but the academy does not charge a team fee on top of the membership."),
             ("What does the jits.gg ranking actually mean?",

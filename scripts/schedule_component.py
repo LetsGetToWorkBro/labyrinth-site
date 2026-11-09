@@ -178,7 +178,7 @@ def render(uid="sc"):
     <div class="sc__week">
 %(cols)s
     </div>
-    <p class="sc__foot">Tap any class to book it. The first class is free. <strong>Advanced</strong> classes need a gray-white belt or higher, or two years of wrestling; everything else is open to beginners. Closures and tournament weekends are on the <a href="https://calendar.labyrinth.vision" target="_blank" rel="noopener noreferrer">live calendar</a>.</p>
+    <p class="sc__foot">Tap any class to book it. The first class is free. <strong>Advanced</strong> classes need a gray-white belt or higher, or two years of wrestling; everything else is open to beginners.</p>
   </div>""" % {"days": day_buttons, "cols": "\n".join(cols), "specials": specials}
 
 

@@ -8,8 +8,13 @@
  * Banner. The line under the nav names the app and links both stores, with the stores' own badges, unaltered. It takes the
  * hero's top padding and moves nothing: it is never closer than 8px to the words under it, at any width from 320px to 1920px,
  * it never makes the page scroll sideways or clip a word, and nothing sits over it (the seasonal decorations included). A
- * donation drive keeps the slot while it is on; the banner hides itself on its date; without JavaScript the two never overlap and
- * the links are still in the page; and the block in index.html is the one scripts/build_pages.py writes.
+ * donation drive keeps the slot while it is on; the banner has no end date (it is there the day it used to go, a year on and two
+ * years on, under every seasonal theme there is); without JavaScript the two never overlap and the links are still in the page; and
+ * the block in index.html is the one scripts/build_pages.py writes.
+ *
+ * The two dashboards. Nothing on the site links calendar.labyrinth.vision or sauna.labyrinth.vision any more, and nothing is left saying
+ * "see the live calendar": not the footer, the Sauna card, "Upcoming Tournaments", /schedule, the competition team's FAQ, llms.txt, or the
+ * generators that write them. (sitemap.xml's entry for the calendar is a file for search engines, not a link, and is left.)
  *
  * Every check pins its own clock (NOW, or the date it names), so none depends on the day it is run, and SITE_TEST_NOW is not read.
  *
@@ -19,11 +24,12 @@ let chromium
 try { ({ chromium } = await import('playwright-core')) }
 catch { console.log('This test needs playwright-core:\n\n  npm i --no-save playwright-core\n'); process.exit(2) }
 import { createServer } from 'node:http'
-import { readFileSync, existsSync } from 'node:fs'
+import { readFileSync, existsSync, readdirSync } from 'node:fs'
 import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
 import { extname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { PACKS } from './season-theme-checks.mjs'
 
 const ROOT = fileURLToPath(new URL('.', import.meta.url)).replace(/\/$/, '')
 const T = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.json': 'application/json' }
@@ -236,11 +242,12 @@ const WIDTHS = [320, 340, 359, 360, 375, 390, 414, 480, 600, 601, 700, 720, 721,
   await ctx.close()
 }
 
-// Its dates, the donation drive's slot, and the page without scripts.
+// Its dates (it has none), the donation drive's slot, and the page without scripts.
 {
   const at = async now => { const { ctx, page } = await open('/', { w: 1440, now }); const m = await page.evaluate(measure); const d = await page.evaluate(() => { const e = document.getElementById('donateBar'); return !!e && getComputedStyle(e).display !== 'none' && e.getBoundingClientRect().height > 0 }); await ctx.close(); return { ...m, donate: d } }
-  const last = await at('2027-02-01T05:59:00Z'), gone = await at('2027-02-01T06:00:01Z')
-  check('D1 it is on the page until midnight Central at the end of January 2027, and gone the second after', last.shown && !gone.shown && !gone.wide, { last: last.shown, gone: gone.shown })
+  // It had an end, midnight Central at the end of January 2027, until the academy asked for it to stay up. The day after that, a year on, and two years on:
+  const after = await at('2027-02-02T12:00:00Z'), yearOn = await at('2027-11-12T15:00:00Z'), twoYearsOn = await at('2028-11-12T15:00:00Z')
+  check('D1 it has no end date: there the day after the end it used to have (2 February 2027), a year on and two years on', after.shown && yearOn.shown && twoYearsOn.shown && !after.wide && !yearOn.wide && !twoYearsOn.wide, { after: after.shown, yearOn: yearOn.shown, twoYearsOn: twoYearsOn.shown })
   const drive = await at('2026-10-20T15:00:00Z'), over = await at('2026-11-12T15:00:00Z')
   check('D2 while the donation drive is on the bar has the slot and the banner steps aside; once it is over the banner has it', drive.donate && !drive.shown && !over.donate && over.shown, { drive: [drive.donate, drive.shown], over: [over.donate, over.shown] })
   // The first of those two states matters most: the banner must not be anywhere under the bar.
@@ -292,7 +299,11 @@ const sweepAgainstBanner = async () => {
 {
   const bad = []
   let swept = 0, shownEverywhere = true
-  for (const [name, now] of [['thanksgiving', '2026-11-12T15:00:00Z'], ['thanksgiving week', '2026-11-26T15:00:00Z'], ['christmas', '2026-12-18T15:00:00Z'], ['christmas eve', '2026-12-24T15:00:00Z'], ['new year', '2026-12-31T20:00:00Z'], ['new year day', '2027-01-04T15:00:00Z'], ['plain', '2027-01-25T15:00:00Z']]) {
+  // Every seasonal pack on the day its own checks pin (season-theme-checks.mjs), and the days the packs have a different face: Thanksgiving week, Christmas Eve, New Year's Eve,
+  // Halloween and Columbus Day of 2027 (the October of the next year, when the donation drive that has the slot in 2026 is long gone), and two ordinary days.
+  const DAYS = [...Object.entries(PACKS), ['thanksgiving week', '2026-11-26T15:00:00Z'], ['christmas eve', '2026-12-24T15:00:00Z'], ['new year\'s eve', '2026-12-31T20:00:00Z'],
+    ['columbus day', '2027-10-11T15:00:00Z'], ['halloween', '2027-10-25T15:00:00Z'], ['an ordinary day in winter', '2027-01-25T15:00:00Z'], ['an ordinary day in autumn', '2027-09-14T15:00:00Z']]
+  for (const [name, now] of DAYS) {
     for (const [w, mobile] of [[320, true], [390, true], [820, false], [1024, false], [1280, false], [1440, false]]) {
       const { ctx, page } = await open('/', { w, h: 900, mobile, now })
       const m = await page.evaluate(measure)
@@ -303,8 +314,35 @@ const sweepAgainstBanner = async () => {
       await ctx.close()
     }
   }
-  check('S1 under every season in its twelve weeks it is shown, uncovered, clear of the words and inside the page, and no moving decoration crosses it', bad.length === 0, bad)
-  check('S2 the sweep had something to sweep (the seasons\' moving decorations are really being moved), and the banner was shown on every day', swept > 0 && shownEverywhere, { swept, shownEverywhere })
+  check('S1 under every seasonal theme of the year it is shown, uncovered, clear of the words and inside the page, and no moving decoration crosses it', bad.length === 0, bad)
+  check('S2 the sweep had something to sweep (the seasons\' moving decorations are really being moved), and the banner was shown on every one of the ' + DAYS.length + ' days', swept > 0 && shownEverywhere, { swept, shownEverywhere })
+}
+
+// The two dashboards are gone from the site: from every page, from the files that write the pages, and from what an assistant reads.
+{
+  const walk = dir => readdirSync(join(ROOT, dir), { withFileTypes: true }).flatMap(e => e.name === 'node_modules' || e.name === '.git' || e.name === 'wharton-site' ? [] : e.isDirectory() ? walk(join(dir, e.name)) : [join(dir, e.name)])
+  const files = walk('.').filter(f => /\.html$/.test(f)).concat(['llms.txt', 'scripts/build_pages.py', 'scripts/build_programs.py', 'scripts/schedule_component.py'])
+  const text = f => readFileSync(join(ROOT, f), 'utf8')
+  check('R1 the site has more than thirty pages to look through (so the walk is real)', files.filter(f => /\.html$/.test(f)).length > 30, files.length)
+  const names = files.filter(f => /(?:calendar|sauna)\.labyrinth\.vision/i.test(text(f)))
+  check('R2 no page, no generator and not llms.txt names calendar.labyrinth.vision or sauna.labyrinth.vision', names.length === 0, names)
+  const words = files.filter(f => /Sauna Dashboard|Live Calendar|Full Calendar|Full Schedule Calendar|the full calendar|the live calendar|live calendar/i.test(text(f)))
+  check('R3 nothing is left that points at them in words: no "Sauna Dashboard", "Live Calendar", "Full Calendar", "the full calendar" or "live calendar"', words.length === 0, words)
+  const css = text('style.css')
+  check('R4 their rules are out of the stylesheet too (nothing styles a link that is not there)', !/sauna-detail__launch|upcoming-tournaments__cal-link/.test(css))
+  const sched = text('schedule.html')
+  const took = [(sched.match(/If you are unsure about a holiday or a tournament weekend, call or text \(281\) 393-7983 before you come\./g) || []).length,
+    /everything else is open to beginners\.<\/p>/.test(sched), /Check back soon for new events/.test(text('index.html')), /<h4>Quick Links<\/h4>\s*<p><a data-book-trial href="\/#book">Book a Class<\/a><\/p>/.test(text('index.html'))]
+  check('R5 what took their place says only what is true: /schedule\'s holiday answer sends a person to the phone, in the answer and in its structured data; the footnote ends at the beginners; the empty tournament list says check back; the footer\'s first link is Book a Class',
+    JSON.stringify(took) === JSON.stringify([2, true, true, true]), took)
+  const hosts = []
+  for (const path of ['/', '/schedule', '/programs/bjj-competition-team', '/pricing', '/coaches/']) {
+    const { ctx, page } = await open(path, { w: 1280 })
+    const bad = await page.evaluate(() => [...document.querySelectorAll('a[href]')].filter(a => /(^|\.)(calendar|sauna)\.labyrinth\.vision$/i.test(a.hostname)).map(a => a.href))
+    if (bad.length) hosts.push([path, bad])
+    await ctx.close()
+  }
+  check('R6 in a browser, once the scripts have run (the tournament cards are built by one), no link on the home page, /schedule, the competition team page, /pricing or the coaches goes to either', hosts.length === 0, hosts)
 }
 
 // The page's block is what the generator writes: a hand edit, or a changed address in only one place, fails here.
@@ -314,6 +352,7 @@ const sweepAgainstBanner = async () => {
   const m = html.match(/<!-- APP-BANNER:START[^>]*-->([\s\S]*?)<!-- APP-BANNER:END -->/)
   check('G1 the banner in index.html is exactly what scripts/build_pages.py writes', !!m && gen.trim().length > 0 && m[1].trim() === gen.trim(), m ? 'differs' : 'no APP-BANNER block')
   check('G2 the generator carries the same two addresses as the listings', gen.includes('href="' + APPLE + '"') && gen.includes('href="' + GOOGLE + '"'))
+  check('G3 the block carries no date and no script: nothing in it can take the banner down (the CSS, and the page, decide)', !/data-closes|<script/i.test(m ? m[1] : 'x'), m && m[1].slice(0, 120))
 }
 
 await browser.close(); server.close()

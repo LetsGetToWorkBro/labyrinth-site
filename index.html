@@ -290,7 +290,7 @@ button {
     valentines:["./season-valentines.css?v=634b7b79","./season-valentines.js?v=b29fea98"],
     easter:["./season-easter.css?v=03f70ff5","./season-easter.js?v=995f65b8"],
     stpatricks:["./season-stpatricks.css?v=11bdc353","./season-stpatricks.js?v=049c66b4"],
-    cinco:["./season-cinco.css?v=43f058cd","./season-cinco.js?v=844dfc32"],
+    cinco:["./season-cinco.css?v=10b097ff","./season-cinco.js?v=844dfc32"],
     memorial:["./season-memorial.css?v=60a85598","./season-memorial.js?v=135c8dc0"],
     independence:["./season-independence.css?v=ed559eab","./season-independence.js?v=cf93c426"]
   };
@@ -314,7 +314,7 @@ button {
       if(/\.css(\?|$)/.test(u)){var c=document.createElement('link');c.rel='stylesheet';c.href=u;document.head.appendChild(c)}
       else{var j=document.createElement('script');j.async=false;j.src=u;document.head.appendChild(j)}})}}
 })()</script>
-<link rel="stylesheet" href="./style.css?v=42b6770f">
+<link rel="stylesheet" href="./style.css?v=3acb3c41">
 <link rel="stylesheet" href="./season.css?v=c67a099d">
 <link rel="stylesheet" href="./booking.css?v=e7d23cd6">
 <link rel="stylesheet" href="./chat.css?v=927c6ee4">
@@ -604,8 +604,7 @@ button {
 <script>(function(){document.querySelectorAll('[data-donate]').forEach(function(e){if(Date.now()>Date.parse(e.getAttribute('data-closes')))e.hidden=true})})()</script>
   <!-- DONATE-BAR:END -->
   <!-- APP-BANNER:START generated from scripts/build_pages.py; do not edit -->
-  <aside class="app-banner" id="appBanner" aria-label="Get the Labyrinth BJJ app" data-app-banner data-closes="2027-02-01T06:00:00Z"><img class="app-banner__icon" src="./assets/app-icon-96.png" width="96" height="96" alt=""><p class="app-banner__text"><strong class="app-banner__long">The Labyrinth BJJ app is here.</strong><strong class="app-banner__short">Our app is here</strong><span class="app-banner__more"> Classes, check-in and your belt progress.</span></p><span class="app-banner__stores"><a class="app-banner__store app-banner__store--apple" href="https://apps.apple.com/us/app/labyrinth-bjj/id6825475312" target="_blank" rel="noopener noreferrer"><img src="./assets/badge-app-store.svg" width="120" height="40" alt="Download Labyrinth BJJ on the App Store"></a><a class="app-banner__store app-banner__store--google" href="https://play.google.com/store/apps/details?id=vision.labyrinth.bjj" target="_blank" rel="noopener noreferrer"><img src="./assets/badge-google-play.png" width="564" height="168" alt="Get Labyrinth BJJ on Google Play"></a></span></aside>
-<script>(function(){document.querySelectorAll('[data-app-banner]').forEach(function(e){if(Date.now()>Date.parse(e.getAttribute('data-closes')))e.hidden=true})})()</script>
+  <aside class="app-banner" id="appBanner" aria-label="Get the Labyrinth BJJ app"><img class="app-banner__icon" src="./assets/app-icon-96.png" width="96" height="96" alt=""><p class="app-banner__text"><strong class="app-banner__long">The Labyrinth BJJ app is here.</strong><strong class="app-banner__short">Our app is here</strong><span class="app-banner__more"> Classes, check-in and your belt progress.</span></p><span class="app-banner__stores"><a class="app-banner__store app-banner__store--apple" href="https://apps.apple.com/us/app/labyrinth-bjj/id6825475312" target="_blank" rel="noopener noreferrer"><img src="./assets/badge-app-store.svg" width="120" height="40" alt="Download Labyrinth BJJ on the App Store"></a><a class="app-banner__store app-banner__store--google" href="https://play.google.com/store/apps/details?id=vision.labyrinth.bjj" target="_blank" rel="noopener noreferrer"><img src="./assets/badge-google-play.png" width="564" height="168" alt="Get Labyrinth BJJ on Google Play"></a></span></aside>
   <!-- APP-BANNER:END -->
   <canvas id="hero-maze-canvas"></canvas>
   <!-- A still, not the loop. The video was busy behind the headline, and it
@@ -992,10 +991,6 @@ button {
                     <span>$60/mo add-on</span>
                   </div>
                 </div>
-                <a href="https://sauna.labyrinth.vision" target="_blank" rel="noopener noreferrer" class="sauna-detail__launch">
-                  <span class="sauna-detail__launch-icon">♨️</span>
-                  Open Sauna Dashboard
-                </a>
               </div>
             </div>
           </div>
@@ -1300,7 +1295,6 @@ button {
           <h3 class="upcoming-tournaments__title">Upcoming Tournaments</h3>
           <p class="upcoming-tournaments__sub">Live from the competition calendar</p>
         </div>
-        <a href="https://calendar.labyrinth.vision" target="_blank" rel="noopener noreferrer" class="upcoming-tournaments__cal-link">Full Calendar →</a>
       </div>
       <div class="upcoming-tournaments__list" id="tournamentList">
         <!-- Populated by JS -->
@@ -1311,7 +1305,7 @@ button {
       <div class="upcoming-tournaments__empty" id="tournamentEmpty" style="display:none">
         <span class="upcoming-tournaments__empty-icon">📅</span>
         <p class="upcoming-tournaments__empty-text">No upcoming tournaments scheduled</p>
-        <p class="upcoming-tournaments__empty-sub">Check the full calendar for future events</p>
+        <p class="upcoming-tournaments__empty-sub">Check back soon for new events</p>
       </div>
     </div>
   </div>
@@ -1998,7 +1992,7 @@ button {
         </ul>
       </section>
     </div>
-    <p class="sc__foot">Tap any class to book it. The first class is free. <strong>Advanced</strong> classes need a gray-white belt or higher, or two years of wrestling; everything else is open to beginners. Closures and tournament weekends are on the <a href="https://calendar.labyrinth.vision" target="_blank" rel="noopener noreferrer">live calendar</a>.</p>
+    <p class="sc__foot">Tap any class to book it. The first class is free. <strong>Advanced</strong> classes need a gray-white belt or higher, or two years of wrestling; everything else is open to beginners.</p>
   </div>
          <!-- SCHEDULE:END -->
 
@@ -2374,9 +2368,7 @@ button {
 
       <div class="footer__col">
         <h4>Quick Links</h4>
-        <p><a href="https://calendar.labyrinth.vision" target="_blank" rel="noopener noreferrer">Full Schedule Calendar</a></p>
-        <p style="margin-top:8px"><a href="https://sauna.labyrinth.vision" target="_blank" rel="noopener noreferrer">Sauna Dashboard</a></p>
-        <p style="margin-top:8px"><a data-book-trial href="/#book">Book a Class</a></p>
+        <p><a data-book-trial href="/#book">Book a Class</a></p>
         <p style="margin-top:8px"><a href="https://jits.gg/academy/labyrinth-bjj-4377" target="_blank" rel="noopener noreferrer">Competition Stats</a></p>
         <p style="margin-top:8px"><a href="https://search.google.com/local/writereview?placeid=ChIJ_1CnkicjQYYRRmDMgvdDMmI" target="_blank" rel="noopener noreferrer">Leave a Review</a></p>
         <p style="margin-top:8px"><a href="https://www.instagram.com/labyrinthbjjfulshear/" target="_blank" rel="noopener noreferrer">Instagram</a></p>
