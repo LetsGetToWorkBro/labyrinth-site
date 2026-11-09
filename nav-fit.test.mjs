@@ -1,7 +1,7 @@
 /**
  * The nav must fit at every desktop width.
  *
- * It carries 12 links, a phone number and a CTA. The gap used to be
+ * It carries 11 links, a phone number, a Sign in button and a CTA (and a Donate button while a drive is on). The gap used to be
  * clamp(12px, 1.5vw, 32px) (scaled to the VIEWPORT) while .nav__inner stayed
  * capped at 1200px, so a wider monitor pushed the links further past the box:
  * 82px over at 1280, 176px at 1728. On a MacBook that reads as the nav bar

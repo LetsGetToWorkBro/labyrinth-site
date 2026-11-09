@@ -223,32 +223,12 @@ body {
   box-shadow: 0 0 8px rgba(200, 162, 76, 0.5), 0 0 16px rgba(200, 162, 76, 0.2);
 }
 
-/* Nav divider + external links */
+/* Nav divider */
 .nav__divider {
   width: 1px;
   height: 16px;
   background: var(--border);
   flex-shrink: 0;
-}
-.nav__link--ext {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 13px;
-  opacity: 0.7;
-}
-.nav__link--ext:hover {
-  opacity: 1;
-}
-.nav__link--ext::after {
-  display: none;
-}
-.nav__link--ext svg {
-  opacity: 0.6;
-  transition: opacity var(--transition-fast);
-}
-.nav__link--ext:hover svg {
-  opacity: 1;
 }
 
 .nav__cta {
@@ -269,6 +249,45 @@ body {
 
 .nav__cta:active {
   transform: translateY(0);
+}
+
+/* Sign in: the member portal (members.labyrinth.vision), in the header beside "Try a Free Class". It took the place of the Calendar
+   and Sauna links. Outlined where the CTA is filled, so the header has one main button and one second one, and the same height as
+   the CTA: a 1px border stands in for one pixel of its 10px padding, and the line is pinned to the CTA's (14px of Clash/General Sans
+   at the body's normal line height) so a fallback font cannot make the two differ. nowrap, so a tight header wraps its links first. */
+.nav__signin {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 17px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--radius-sm);
+  background: rgba(10, 10, 10, 0.3);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.6;
+  white-space: nowrap;
+  transition: border-color var(--transition-fast), color var(--transition-fast), background var(--transition-fast);
+}
+.nav__signin svg {
+  flex-shrink: 0;
+  opacity: 0.8;
+  transition: opacity var(--transition-fast);
+}
+.nav__signin:hover,
+.nav__signin:focus-visible {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(200, 162, 76, 0.1);
+}
+.nav__signin:hover svg,
+.nav__signin:focus-visible svg {
+  opacity: 1;
+}
+.nav__signin:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
 }
 
 /* Hamburger */
@@ -360,6 +379,15 @@ body {
 }
 .nav__mobile-tool svg {
   opacity: 0.6;
+}
+/* The phone menu's one tool now: Sign in, a full row, in the main text colour (the muted grey was for a second-class link). */
+.nav__mobile-tool.nav__mobile-tool--signin {
+  color: var(--text) !important;
+  font-size: 17px !important;
+  padding: 16px !important;
+}
+.nav__mobile-tool.nav__mobile-tool--signin svg {
+  opacity: 0.85;
 }
 
 .nav__mobile .nav__cta {
@@ -840,33 +868,6 @@ body {
 .sauna-detail__feature-icon {
   font-size: 15px;
   flex-shrink: 0;
-}
-.sauna-detail__launch {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  width: 100%;
-  padding: 12px 24px;
-  background: linear-gradient(135deg, rgba(200,162,76,0.12) 0%, rgba(231,76,60,0.08) 100%);
-  border: 1px solid rgba(200,162,76,0.2);
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--gold);
-  text-decoration: none;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  transition: all 0.25s ease;
-}
-.sauna-detail__launch:hover {
-  background: linear-gradient(135deg, rgba(200,162,76,0.2) 0%, rgba(231,76,60,0.12) 100%);
-  border-color: rgba(200,162,76,0.35);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 20px rgba(200,162,76,0.12);
-}
-.sauna-detail__launch-icon {
-  font-size: 18px;
 }
 
 .program-card__trial-btn:hover {
@@ -1489,18 +1490,6 @@ body {
   font-size: 0.8rem;
   color: var(--muted);
   margin-top: 2px;
-}
-.upcoming-tournaments__cal-link {
-  font-family: 'Clash Display', var(--font-sans);
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--gold);
-  text-decoration: none;
-  white-space: nowrap;
-  transition: color 200ms;
-}
-.upcoming-tournaments__cal-link:hover {
-  color: var(--gold-hover);
 }
 .upcoming-tournaments__list {
   display: flex;
@@ -5362,6 +5351,48 @@ body {
   .donate-bar { gap: 10px; font-size: 14px; padding: 8px 12px; }
   .donate-bar__long { display: none; }
   .donate-bar__short { display: inline; }
+}
+
+/* The app launch banner (scripts/build_pages.py: APP_BANNER and app_banner). A line under the nav at the top of the homepage hero,
+   in the slot the donation bar uses: it sits in the hero's own top padding (the content starts 64px under the nav) and is 52px at
+   most, so it moves nothing and cannot touch the words under it. A drive is time-boxed and this is not, so the bar wins the slot
+   while one is on and the banner steps aside (the first rule below). The badges are the stores' own artwork, unaltered, with the
+   clear space they ask for supplied by the gap and the padding around them. Apple asks for 40px on a screen, a quarter of the height clear on every
+   side, and allows a smaller one in a banner on a mobile device if it is clearly legible; Google asks for 28px at the least, and a Google Play badge no
+   smaller than the other store's beside it. So: 40px and a 10px gap here, 32px and an 8px gap on a phone, and the two always the same height. */
+.app-banner {
+  position: absolute; top: var(--nav-height); left: 0; right: 0; z-index: 4;
+  display: flex; align-items: center; justify-content: center; gap: 14px;
+  min-height: 52px; padding: 6px var(--space-4);
+  background: rgba(12, 12, 12, 0.92); border-bottom: 1px solid rgba(200, 162, 76, 0.5);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+  color: var(--text); font-size: 15px; line-height: 1.3;
+}
+.app-banner[hidden], .donate-bar:not([hidden]) ~ .app-banner { display: none; }
+.app-banner__icon { width: 36px; height: 36px; flex-shrink: 0; border-radius: 8px; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.14); }
+.app-banner__text { margin: 0; min-width: 0; }
+.app-banner__text strong { font-weight: 700; color: var(--gold); }
+.app-banner__more { color: rgba(240, 240, 240, 0.78); }
+.app-banner__short { display: none; }
+.app-banner__stores { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.app-banner__store { display: block; line-height: 0; border-radius: 7px; }
+.app-banner__store img { display: block; height: 40px; width: auto; }
+.app-banner__store:hover { filter: brightness(1.12); }
+.app-banner__store:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+@media (max-width: 720px) {
+  /* One row on a phone or a narrow window: the seal, four words, and both badges. The long sentence and the second line go; they are on
+     the badges' pages. (720 and not 600: at 601px the long sentence wraps to three lines and the banner outgrows the hero's padding.) */
+  .app-banner { justify-content: space-between; gap: 10px; padding: 8px 12px; }
+  .app-banner__icon { width: 32px; height: 32px; border-radius: 7px; }
+  .app-banner__text { flex: 1; font-size: 14px; }
+  .app-banner__long, .app-banner__more { display: none; }
+  .app-banner__short { display: inline; }
+  .app-banner__stores { gap: 8px; }
+  .app-banner__store img { height: 32px; }
+}
+@media (max-width: 359px) {
+  .app-banner__icon { display: none; }
 }
 
 .nav__donate {

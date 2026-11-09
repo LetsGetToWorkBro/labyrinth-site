@@ -109,7 +109,7 @@ SCHEDULE_FAQS = [
     ("Do you run early morning classes?",
      "Yes: 6:30 AM, Monday through Thursday. Gi on Monday and Wednesday, No-Gi on Tuesday and Thursday. It is the class people are most skeptical about and the one they end up building the week around."),
     ("Does the timetable change in school holidays?",
-     "Occasionally, and the live calendar is the place to check. Calendar.labyrinth.vision carries any changes, closures and tournament weekends. This page is the standing weekly timetable."),
+     "Occasionally. This page is the standing weekly timetable. If you are unsure about a holiday or a tournament weekend, call or text (281) 393-7983 before you come."),
     ("Is open mat only for members?",
      "No. Sunday open mat at 10:30 AM is free rolling for all levels and all affiliations. Visitors from other academies are welcome, and so is anybody who wants to see the room before committing to anything."),
 ]
@@ -150,7 +150,6 @@ def render_schedule():
     <p class="prog-hero__lead">%(total)d classes a week, seven days, in Fulshear. Adults train from 6:30 in the morning to half past seven at night; kids run from 4:45 PM on weekdays and through Saturday morning. Every class here is bookable, the first one is free, and a child can start on any day of the week.</p>
     <div class="prog-hero__cta">
       <a data-book-trial href="/#book" class="btn btn--gold">Book a Free Class</a>
-      <a href="https://calendar.labyrinth.vision" target="_blank" rel="noopener noreferrer" class="btn btn--ghost">Live Calendar</a>
     </div>
     <div class="prog-facts">
 %(facts)s    </div>
@@ -1302,6 +1301,46 @@ def donate_nav_mobile():
     return ('<a href="%s" class="nav__donate nav__donate--mobile" data-donate data-closes="%s">%s'
             '<span>Donate to Rolling for Ribbons</span><b aria-hidden="true">&rarr;</b></a>'
             % (DONATE["path"], DONATE["closes_utc"], ribbon(22)))
+
+
+# ── The app launch banner (the homepage) ─────────────────────────────────────
+#
+# The Labyrinth BJJ app (bundle vision.labyrinth.bjj, "Labyrinth BJJ" on both stores) went out on 9 November 2026. This is the line under
+# the nav that says so, with the two stores' own badges. It takes the donation bar's slot (style.css gives the slot to the bar while a
+# drive is on, so the two never overlap). It has no end date: the academy asked for it to stay up for now, so it is on the page every day
+# of the year, under every seasonal theme (each pack's own checks hold it), until somebody takes it down (the last point below).
+#
+#   - The two addresses are the listings' own, read on the day it launched (the App Store page for id 6825475312; the Play page for the
+#     package). site-test.mjs holds the page to them, and to the badges being the stores' artwork, unaltered, in assets/.
+#   - The words are the App Store listing's own opening line ("Classes, check-in, your belt progress and messages with the front desk"),
+#     cut short, so the banner promises nothing the app does not say it does.
+#   - To take it down, set APP_BANNER to None and run this file: the block is emptied and nothing else on the page moves. The
+#     ".app-banner" rules in style.css (and the Christmas pack's one under it), the three assets/ files and app-launch.test.mjs can go with it.
+APP_BANNER = {
+    "apple": "https://apps.apple.com/us/app/labyrinth-bjj/id6825475312",
+    "google": "https://play.google.com/store/apps/details?id=vision.labyrinth.bjj",
+}
+
+
+def app_banner():
+    """The strip under the nav that announces the app: the seal, one sentence, and the App Store and Google Play badges.
+    A phone gets the short sentence and no second line (style.css). No script, no date: it is there for everybody, scripts or not."""
+    if APP_BANNER is None:
+        return ""
+    return (
+        '<aside class="app-banner" id="appBanner" aria-label="Get the Labyrinth BJJ app">'
+        '<img class="app-banner__icon" src="./assets/app-icon-96.png" width="96" height="96" alt="">'
+        '<p class="app-banner__text">'
+        '<strong class="app-banner__long">The Labyrinth BJJ app is here.</strong>'
+        '<strong class="app-banner__short">Our app is here</strong>'
+        '<span class="app-banner__more"> Classes, check-in and your belt progress.</span></p>'
+        '<span class="app-banner__stores">'
+        '<a class="app-banner__store app-banner__store--apple" href="%(apple)s" target="_blank" rel="noopener noreferrer">'
+        '<img src="./assets/badge-app-store.svg" width="120" height="40" alt="Download Labyrinth BJJ on the App Store"></a>'
+        '<a class="app-banner__store app-banner__store--google" href="%(google)s" target="_blank" rel="noopener noreferrer">'
+        '<img src="./assets/badge-google-play.png" width="564" height="168" alt="Get Labyrinth BJJ on Google Play"></a>'
+        '</span></aside>'
+    ) % APP_BANNER
 
 
 # ── Seasonal themes (the homepage) ───────────────────────────────────────────
@@ -3585,13 +3624,14 @@ def main():
     splice(index, "DONATE-BAR", donate_bar())
     splice(index, "DONATE-NAV", donate_nav())
     splice(index, "DONATE-NAV-MOBILE", donate_nav_mobile())
+    splice(index, "APP-BANNER", app_banner())
     splice(index, "SEASON-HERO", season_hero())
     splice(index, "SEASON-FOOTER", season_footer())
     for sec_id in SEASON_SECTIONS:
         if sec_id == "eventStrip":
             continue
         splice(index, "SEASON-SEC-" + sec_id, season_section(sec_id))
-    print("wrote the this-month cards, hero chip, donation bar and nav buttons, and seasonal decoration into index.html")
+    print("wrote the this-month cards, hero chip, donation bar, app banner and nav buttons, and seasonal decoration into index.html")
     with open(os.path.join(ROOT, "self-defense-for-women.html"), "w", encoding="utf-8") as fh:
         fh.write(stamp(render_event_rsvp()))
     print("wrote self-defense-for-women.html")

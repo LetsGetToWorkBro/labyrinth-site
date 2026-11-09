@@ -89,7 +89,6 @@ Texas National Team).
 - [Blog](https://labyrinth.vision/blog/): articles for parents and adult
   beginners: choosing a gym, what a first class is like, costs, BJJ for children
   with ADHD, BJJ versus wrestling, starting after forty
-- [Full class calendar](https://calendar.labyrinth.vision)
 
 The coach pages, the area pages and every article are listed below, one line each.
 
@@ -139,6 +138,6 @@ The coach pages, the area pages and every article are listed below, one line eac
   results, not self-reported: #36 nationally by Overall Power, with 1,386 tracked wins, 128 gold medals in 2026 and a 55% win rate across
   120 tracked athletes (November 2026). Older copies of this site said "#1 in Texas
   and #9 nationally"; that is out of date.
-- Class times change occasionally. The schedule on the home page and the live
-  calendar are authoritative; a time quoted from an old third-party listing
-  may not be.
+- Class times change occasionally. The schedule on the home page and at
+  labyrinth.vision/schedule is authoritative; a time quoted from an old
+  third-party listing may not be.
