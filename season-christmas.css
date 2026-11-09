@@ -41,6 +41,9 @@
 /* ── The hero: the photograph goes to a cold blue night, the headline catches the light, snowy hills come up along the bottom ───── */
 [data-season="christmas"] .hero { --xm-h: clamp(150px, 19.5vw, 500px); --xm-top: var(--nav-height, 72px); padding-bottom: var(--xm-h); }
 /* While the pink donation bar hangs under the nav (it does until it closes) the sky starts under it: the lights, the sleigh and the moon hang from there, and the words make room. */
+/* The app launch banner (style.css, .app-banner) hangs in the same place, a little taller (52px; 55px where its words wrap), and the sky starts under it in the same way. It comes BEFORE the bar's
+   rule on purpose: the two match on the same specificity, and while a drive is on the banner steps aside for the bar (its own rule, style.css), so the later rule, the bar's, must be the one that wins. */
+[data-season="christmas"] .hero:has(> .app-banner:not([hidden])) { --xm-top: calc(var(--nav-height, 72px) + 56px); padding-top: calc(var(--nav-height, 72px) + var(--space-16, 64px) + 56px); }
 [data-season="christmas"] .hero:has(> .donate-bar:not([hidden])) { --xm-top: calc(var(--nav-height, 72px) + 50px); padding-top: calc(var(--nav-height, 72px) + var(--space-16, 64px) + 50px); }
 [data-season="christmas"] .hero__still img { filter: saturate(0.6) brightness(0.8) contrast(1.05); }
 [data-season="christmas"] .hero__bg::after {

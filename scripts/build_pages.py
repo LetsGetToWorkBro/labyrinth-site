@@ -1275,6 +1275,48 @@ def donate_nav_mobile():
             % (DONATE["path"], DONATE["closes_utc"], ribbon(22)))
 
 
+# ── The app launch banner (the homepage) ─────────────────────────────────────
+#
+# The Labyrinth BJJ app (bundle vision.labyrinth.bjj, "Labyrinth BJJ" on both stores) went out on 9 November 2026. This is the line under
+# the nav that says so, with the two stores' own badges. It takes the donation bar's slot (style.css gives the slot to the bar while a
+# drive is on, so the two never overlap) and hides itself on `closes_utc` the way the bar does, so a launch notice cannot go stale.
+#
+#   - The two addresses are the listings' own, read on the day it launched (the App Store page for id 6825475312; the Play page for the
+#     package). site-test.mjs holds the page to them, and to the badges being the stores' artwork, unaltered, in assets/.
+#   - The words are the App Store listing's own opening line ("Classes, check-in, your belt progress and messages with the front desk"),
+#     cut short, so the banner promises nothing the app does not say it does.
+#   - To take it down early, set APP_BANNER to None and run this file: the block is emptied and nothing else on the page moves. The
+#     ".app-banner" rules in style.css, the three assets/ files and the "app-launch" checks in site-test.mjs can go with it.
+APP_BANNER = {
+    "apple": "https://apps.apple.com/us/app/labyrinth-bjj/id6825475312",
+    "google": "https://play.google.com/store/apps/details?id=vision.labyrinth.bjj",
+    "closes_utc": "2027-02-01T06:00:00Z",  # midnight Central at the end of January 2027: twelve weeks on the page, then gone
+}
+
+
+def app_banner():
+    """The strip under the nav that announces the app: the seal, one sentence, and the App Store and Google Play badges.
+    A phone gets the short sentence and no second line (style.css). The script after it hides it once `closes_utc` has passed."""
+    if APP_BANNER is None:
+        return ""
+    return (
+        '<aside class="app-banner" id="appBanner" aria-label="Get the Labyrinth BJJ app" data-app-banner data-closes="%(closes_utc)s">'
+        '<img class="app-banner__icon" src="./assets/app-icon-96.png" width="96" height="96" alt="">'
+        '<p class="app-banner__text">'
+        '<strong class="app-banner__long">The Labyrinth BJJ app is here.</strong>'
+        '<strong class="app-banner__short">Our app is here</strong>'
+        '<span class="app-banner__more"> Classes, check-in and your belt progress.</span></p>'
+        '<span class="app-banner__stores">'
+        '<a class="app-banner__store app-banner__store--apple" href="%(apple)s" target="_blank" rel="noopener noreferrer">'
+        '<img src="./assets/badge-app-store.svg" width="120" height="40" alt="Download Labyrinth BJJ on the App Store"></a>'
+        '<a class="app-banner__store app-banner__store--google" href="%(google)s" target="_blank" rel="noopener noreferrer">'
+        '<img src="./assets/badge-google-play.png" width="564" height="168" alt="Get Labyrinth BJJ on Google Play"></a>'
+        '</span></aside>\n'
+        '<script>(function(){document.querySelectorAll(\'[data-app-banner]\').forEach(function(e){'
+        'if(Date.now()>Date.parse(e.getAttribute(\'data-closes\')))e.hidden=true})})()</script>'
+    ) % APP_BANNER
+
+
 # ── Seasonal themes (the homepage) ───────────────────────────────────────────
 #
 # The homepage dresses for the holiday. season.js (inline in <head>) looks at the
@@ -3556,13 +3598,14 @@ def main():
     splice(index, "DONATE-BAR", donate_bar())
     splice(index, "DONATE-NAV", donate_nav())
     splice(index, "DONATE-NAV-MOBILE", donate_nav_mobile())
+    splice(index, "APP-BANNER", app_banner())
     splice(index, "SEASON-HERO", season_hero())
     splice(index, "SEASON-FOOTER", season_footer())
     for sec_id in SEASON_SECTIONS:
         if sec_id == "eventStrip":
             continue
         splice(index, "SEASON-SEC-" + sec_id, season_section(sec_id))
-    print("wrote the this-month cards, hero chip, donation bar and nav buttons, and seasonal decoration into index.html")
+    print("wrote the this-month cards, hero chip, donation bar, app banner and nav buttons, and seasonal decoration into index.html")
     with open(os.path.join(ROOT, "self-defense-for-women.html"), "w", encoding="utf-8") as fh:
         fh.write(stamp(render_event_rsvp()))
     print("wrote self-defense-for-women.html")
