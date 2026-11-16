@@ -31,17 +31,17 @@ show its basis:
 """
 import html
 
-AS_OF = "November 9, 2026"
+AS_OF = "November 16, 2026"
 ACADEMY_URL = "https://jits.gg/academy/labyrinth-bjj-4377"
 
-ATHLETES_TRACKED = 120
-WITH_RECORD = 116
-WINS = 1386
-LOSSES = 1119
-MATCHES = 2505
-WIN_RATE = 55          # percent of tracked matches won
-GOLDS_2026 = 128
-WITH_GOLD_2026 = 45
+ATHLETES_TRACKED = 141
+WITH_RECORD = 137
+WINS = 1985
+LOSSES = 1457
+MATCHES = 3442
+WIN_RATE = 58          # percent of tracked matches won
+GOLDS_2026 = 184
+WITH_GOLD_2026 = 61
 PROFILED = 28
 CAREER_GOLDS = 318
 CAREER_SILVERS = 245
@@ -73,11 +73,11 @@ RIVALS = [
 # career golds at Worlds, Pan Ams and ADCC from the tracked profiles.
 ATHLETES = [
     {"name": 'Emma Tarnovsky', "wins": 110, "losses": 64, "golds": 33, "silvers": 24, "bronzes": 14, "specials": {"worlds": 0, "pans": 1, "adcc": 0}, "url": 'https://jits.gg/fighter/emma-tarnovsky-45591', "ig": None},
-    {"name": 'Hadley Annoot', "wins": 69, "losses": 23, "golds": 22, "silvers": 12, "bronzes": 8, "specials": {"worlds": 0, "pans": 0, "adcc": 2}, "url": 'https://jits.gg/fighter/hadley-annoot-39494', "ig": None},
+    {"name": 'Emma Tarnovsky', "wins": 106, "losses": 63, "golds": None, "silvers": None, "bronzes": None, "specials": {"worlds": 0, "pans": 0, "adcc": 0}, "url": None, "ig": None},
+    {"name": 'Hadley Annoot', "wins": 68, "losses": 22, "golds": 22, "silvers": 12, "bronzes": 7, "specials": {"worlds": 0, "pans": 0, "adcc": 2}, "url": 'https://jits.gg/fighter/hadley-annoot-39494', "ig": None},
     {"name": 'Andre Zamora', "wins": 66, "losses": 75, "golds": None, "silvers": None, "bronzes": None, "specials": {"worlds": 0, "pans": 0, "adcc": 0}, "url": None, "ig": None},
     {"name": 'Lincoln Davaul', "wins": 49, "losses": 19, "golds": 15, "silvers": 4, "bronzes": 4, "specials": {"worlds": 0, "pans": 0, "adcc": 0}, "url": 'https://jits.gg/fighter/lincoln-davaul-304390', "ig": 'https://www.instagram.com/headlock_link/'},
-    {"name": 'Emma Yu', "wins": 48, "losses": 31, "golds": 14, "silvers": 10, "bronzes": 2, "specials": {"worlds": 0, "pans": 0, "adcc": 0}, "url": 'https://jits.gg/fighter/emma-yu-4553', "ig": None},
-    {"name": 'Case Mozisek', "wins": 43, "losses": 16, "golds": 12, "silvers": 7, "bronzes": 2, "specials": {"worlds": 0, "pans": 0, "adcc": 1}, "url": 'https://jits.gg/fighter/case-mozisek-4100', "ig": None},
+    {"name": 'Emma Yu', "wins": 48, "losses": 31, "golds": None, "silvers": None, "bronzes": None, "specials": {"worlds": 0, "pans": 0, "adcc": 0}, "url": None, "ig": None},
 ]
 
 
