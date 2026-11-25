@@ -292,12 +292,6 @@
   </url>
 
   <!-- Sub-sites -->
-  <url>
-    <loc>https://calendar.labyrinth.vision/</loc>
-    <lastmod>2026-07-28</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
 
   <!-- Support. The privacy policy is deliberately noindex and is therefore not
        listed here: submitting a URL you have told Google not to index is an
