@@ -53,7 +53,6 @@
     {name:'Adult & Teens', type:'No-Gi', day:'Sat', time:'11:00 AM', crm:'Adult BJJ'},
     {name:'Strength & Conditioning', type:'', day:'Tue', time:'4:15 PM', crm:'Strength & Conditioning'},
     {name:'Strength & Conditioning', type:'', day:'Thu', time:'4:15 PM', crm:'Strength & Conditioning'},
-    {name:'MMA Conditioning', type:'', day:'Sat', time:'9:00 AM', crm:'MMA Conditioning'},
     {name:'Open Mat', type:'', day:'Sun', time:'10:30 AM', crm:'Open Mat'}
   ];
   /* The classes a child who has never trained here may book into: every class
@@ -64,9 +63,9 @@
      Kids BJJ for three to six runs on Monday, Wednesday and Friday; seven and
      up has a class on each of those days too, then No-Gi grappling on a
      Saturday morning and Youth Wrestling on Wednesday, Thursday and Sunday.
-     Strength & Conditioning (Tuesday and Thursday) and MMA Conditioning
-     (Saturday) are for all ages, so they are also bookable straight from the
-     timetable, and they are what a child of any age can start in on those days.
+     Strength & Conditioning (Tuesday and Thursday) is for all ages, so it
+     is also bookable straight from the timetable, and it is what a child of
+     any age can start in on those days.
 
      Not here: the advanced grappling classes (Tuesday, Thursday, Saturday
      noon), which need a gray-white belt or two years of wrestling, and Open
@@ -86,7 +85,6 @@
     {name:'Kids BJJ (3\u20136)', type:'Gi', day:'Fri', time:'4:45 PM', crm:'Kids 3-6'},
     {name:'Kids BJJ Comp (7\u201312)', type:'Gi', day:'Fri', time:'5:15 PM', crm:'Kids 7-12'},
     {name:'Teens BJJ Comp (12\u201315)', type:'Gi', day:'Fri', time:'5:15 PM', crm:'Teens'},
-    {name:'MMA Conditioning (all ages)', type:'', day:'Sat', time:'9:00 AM', crm:'MMA Conditioning'},
     {name:'Kids Grappling (7\u201312)', type:'No-Gi', day:'Sat', time:'10:00 AM', crm:'Kids 7-12'},
     {name:'Youth Wrestling (7\u201317)', type:'', day:'Sun', time:'1:00 PM', crm:'Wrestling'}
   ];

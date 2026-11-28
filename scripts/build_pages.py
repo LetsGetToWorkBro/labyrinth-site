@@ -101,7 +101,7 @@ def faq_schema(faqs):
 
 SCHEDULE_FAQS = [
     ("Can I just turn up to a class?",
-     "For a first class, book it. It takes a minute and it means a coach is expecting you and has a loaner gi ready. Adults can book into any class on this timetable. Kids can start on any day of the week: pick any kids class that is not marked Advanced, or one of the all-ages classes (strength and conditioning, MMA conditioning)."),
+     "For a first class, book it. It takes a minute and it means a coach is expecting you and has a loaner gi ready. Adults can book into any class on this timetable. Kids can start on any day of the week: pick any kids class that is not marked Advanced, or one of the all-ages classes (strength and conditioning)."),
     ("What does ADV mean on the timetable?",
      "Advanced. Those classes need a gray-white belt or higher, or two or more years of wrestling. They move faster and drill at a higher intensity. Every class without that marker is open to a complete beginner, including somebody who has never trained anywhere."),
     ("What is the difference between the Gi and No-Gi classes?",
@@ -178,7 +178,6 @@ def render_schedule():
       <a href="/programs/adult-bjj-fulshear" class="prog-sibling"><div class="prog-sibling__title">Adults, any level</div><div class="prog-sibling__desc">6:30 AM, 11:00 AM and 6:30 PM. Gi and No-Gi, complete beginners included.</div></a>
       <a href="/programs/bjj-competition-team" class="prog-sibling"><div class="prog-sibling__title">Competition team</div><div class="prog-sibling__desc">Friday evening, plus the advanced grappling sessions midweek and Saturday at noon.</div></a>
       <a href="/programs/youth-wrestling-fulshear" class="prog-sibling"><div class="prog-sibling__title">Youth wrestling</div><div class="prog-sibling__desc">Wednesday and Thursday at 7:30 PM, Sunday at 1:00 PM. Ages 7–17.</div></a>
-      <a href="/coaches/scott-jones" class="prog-sibling"><div class="prog-sibling__title">MMA Conditioning</div><div class="prog-sibling__desc">Saturday at 9:00 AM, all ages, with Scott Jones. A first class is free.</div></a>
       <a href="/blog/strength-and-conditioning-for-kids-fulshear" class="prog-sibling"><div class="prog-sibling__title">Strength &amp; conditioning</div><div class="prog-sibling__desc">Tuesday and Thursday at 4:15 PM. All ages in one session, in every membership.</div></a>
       <a href="/pricing" class="prog-sibling"><div class="prog-sibling__title">What it costs</div><div class="prog-sibling__desc">Every membership, punch card and add-on, with nothing held back for a phone call.</div></a>
     </div>
@@ -464,7 +463,7 @@ COACHES = [
         "slug": "scott-jones",
         "name": "Scott Jones",
         "short": "Scott Jones",
-        "role": "MMA Conditioning Coach",
+        "role": "Head Coach",
         # The Taekwondo rank, named as such. See .belt-bar--tkd in style.css:
         # a bare black belt on this site would be read as a BJJ black belt.
         "rank": "7th Dan Taekwondo &middot; BJJ Brown Belt",
@@ -475,22 +474,18 @@ COACHES = [
         "years": "30+ years",
         "belt": "tkd",
         "photo": "coach-scott",
-        "title": "Scott Jones: MMA Conditioning &amp; Taekwondo | Labyrinth BJJ Fulshear",
-        "description": "Scott Jones, 7th dan Taekwondo black belt and BJJ brown belt, coaches MMA Conditioning, an all-ages class, at Labyrinth BJJ in Fulshear, TX. 30+ years teaching.",
+        "title": "Scott Jones: Head Coach &amp; Taekwondo | Labyrinth BJJ Fulshear",
+        "description": "Scott Jones, 7th dan Taekwondo black belt and BJJ brown belt, is a head coach at Labyrinth BJJ in Fulshear, TX. 30+ years teaching.",
         "lead": "A 7th dan Taekwondo black belt with more than 27 years in MMA, who built Team Legacy from nothing and then merged it into Labyrinth, bringing his whole room with him.",
         "body": [
             "Scott Jones founded Team Legacy Martial Arts and built it from nothing. When Team Legacy <a href=\"/legacy/\">merged with Labyrinth</a>, he did not change jobs; he brought his school with him, students and all, and now coaches here full time. If your child learned from Coach Scott at Team Legacy, they still do.",
             "He is a 7th dan black belt in Taekwondo and a brown belt in Brazilian jiu-jitsu, with more than 27 years of MMA behind him and over thirty years of teaching children and adults: more time on the mat as a teacher than anyone else on our staff. He has trained at Labyrinth since the day it opened, and he was the first student ever to tap our head coach in a live roll.",
-            "That combination is why he runs <strong>MMA Conditioning</strong>. A striking black belt who is also a jiu-jitsu player can teach anybody, child or adult, to stand, move and defend themselves without losing sight of what happens when the fight reaches the ground, which is where most of the rest of this timetable lives.",
+            "That combination shapes how he coaches. A striking black belt who is also a jiu-jitsu player can teach anybody, child or adult, to stand, move and defend themselves without losing sight of what happens when the fight reaches the ground, which is where most of the rest of this timetable lives.",
         ],
-        "teaches_note": "He runs MMA Conditioning on Saturday mornings, open to all ages, and the families who trained with him at Team Legacy train with him here.",
+        "teaches_note": "The families who trained with him at Team Legacy train with him here.",
         "faqs": [
-            ("Who teaches MMA Conditioning at Labyrinth BJJ?",
-             "Scott Jones, a 7th dan Taekwondo black belt and BJJ brown belt with more than 27 years in MMA. MMA Conditioning runs on Saturdays at 9:00 AM, is open to all ages, and a first class is free."),
             ("Is this the same Coach Scott from Team Legacy?",
              "Yes. Team Legacy Martial Arts merged with Labyrinth BJJ and Scott came with it; he coaches here full time. Children who trained with him at Team Legacy still train with him."),
-            ("Do I need striking or martial arts experience for MMA Conditioning?",
-             "No. The class is open to beginners of any age, and a first class is free. Come in comfortable workout clothes; we will talk you through what to wear for MMA once you decide to carry on."),
         ],
     },
     {
@@ -2524,7 +2519,7 @@ def render_hyrox():
         <span class="hx-coach__body">
           <strong>Coach Scott Jones</strong>
           <em>7th dan Taekwondo black belt &middot; 30+ years teaching</em>
-          <span>Founded Team Legacy Martial Arts, now coaches full time at Labyrinth, and runs Saturday MMA Conditioning.</span>
+          <span>Founded Team Legacy Martial Arts, now coaches full time at Labyrinth.</span>
         </span>
       </a>
     </div>
